@@ -104,7 +104,7 @@ class CustomerController extends Controller
     {
         $arr_data = [
            // Do not allow any shady characters
-           'subscribername' => 'max:255|regex:/^[\w-]*$/', // alpha num with white space
+           'subscribername' => 'max:255|regex:/^[\s\w-]*$/', // alpha num with white space
            'phone_number' => 'max:999999999999999|numeric',
            'email' => 'max:255|email',
            'data_country' => 'max:255|alpha_num',
