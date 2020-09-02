@@ -112,7 +112,7 @@ class CustomerController extends Controller
         ];
         if($request->last_name != null)
         {
-          $arr_data['last_name'] = 'max:255|regex:[A-Za-z1-9 ]';
+          $arr_data['last_name'] = 'max:255|regex:/^[\s\w-]*$/';
         }
         $validator = Validator::make($request->all(), $arr_data);
         if ($validator->fails()) {
