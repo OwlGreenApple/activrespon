@@ -37,7 +37,7 @@ class CheckAdditional
           'label_phone'=>['required','max:30'],
           'label_email'=>['required','max:30'],
           'button_rename'=>['required','max:30'],
-          'conf_message'=>['required','max:500'],
+          'conf_message'=>['required','max:5000'],
         ];
 
         $messages = [
