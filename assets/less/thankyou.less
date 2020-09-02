@@ -1,0 +1,143 @@
+/* CSS Document */
+body,
+html {
+  width: 100%;
+  height: 100%;
+  background-image: none;
+}
+
+
+/*SETUP*/
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: SourceSansPro-Regular, sans-serif;
+  font-weight: 700;
+}
+
+hr.orn {
+    border-top: 3px solid #106BC8;
+    width: 10%;
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*PAGE TITLE*/
+.page-title {
+  background-image: url(../design/new-bg.jpg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center top;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  position: relative;
+  width: 100%;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  margin-top: 0px;
+}
+
+.page-title h1 {
+  text-align: center;
+  color: #505050;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.pg-title {
+  padding-top: 30px;
+  text-align: center;
+  max-width: 600px;
+  display: block;
+  margin: 0 auto;
+  color: #505050;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+
+/*KONTEN*/
+.konten {
+  margin-bottom: 50px;
+}
+
+.card {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: #FCFCFC;
+  text-align: center;
+  padding: 15px 0 15px 0;
+  border: 1px solid rgba(0,0,0,.125);
+}
+
+.card-payment {
+  background-color: #fcf9f2;
+  border-color: #fcf1d1;
+}
+
+.card-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.card-text {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.btn-confirm-thankyou {
+  font-size: 19px;
+  padding: 10px 30px;    
+}
+
+.free-underline{
+  text-decoration : none!important;
+}
+
+/*MEDIA QUERIES*/
+@media (max-width: 575.98px) {
+  .page-title {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  
+  .page-title h1 {
+    font-size: 30px;
+  }
+
+  .pg-title {
+    padding-top: 10px;
+    font-size: 16px;
+    max-width: 310px;
+  }
+
+  hr.orn {
+    width: 33%;
+  }
+}
+
+@media (max-width: 769px) {
+  .btn-confirm-thankyou {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 200px) and (max-width : 767px) {
+  .btn-confirm-thankyou {
+    font-size: 12px;
+    padding : 10px 22px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {}
+
+@media (min-width: 768px) and (max-width: 991.98px) {}
+
