@@ -423,7 +423,7 @@ class CampaignController extends Controller
     public function addMessageEvent($campaign_id)
     {
       $user_id = Auth::id();
-      $campaign = Campaign::where([['campaigns.id',$campaign_id],['campaigns.user_id',$user_id],['lists.status','>',0]])->join('lists','lists.id','=','campaigns.list_id')->first();
+      $campaign = Campaign::where([['campaigns.id',$campaign_id],['campaigns.user_id',$user_id],['lists.status','>',0]])->join('lists','lists.id','=','campaigns.list_id')->select('campaigns.*')->first();
 
       if(is_null($campaign))
       {
@@ -451,9 +451,10 @@ class CampaignController extends Controller
       $data['campaign_name'] = $campaign->name;
       $data['currentlist'] = $current_list->label;
       $data['currentlistid'] = $campaign->list_id;
-      $data['published'] = $campaign->status;
       $data['date_event'] = $date_event;
       $data['list_id'] = $campaign->list_id;
+      $data['published'] = $campaign->status;
+
       return view('event.add-message-event',$data);
     }
 
