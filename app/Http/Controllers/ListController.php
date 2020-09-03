@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Maatwebsite\Excel\Facades\Excel;
-// use App\Exports\ListSubscribersExport;
-use App\Imports\ListSubscribersImport;
+use App\Exports\ListSubscribersExport;
+// use App\Imports\ListSubscribersImport;
 use App\Imports\SubscriberImport;
 use App\Rules\ImportValidation;
 // use App\External\ExcelValueBinder;
@@ -1369,100 +1369,28 @@ class ListController extends Controller
         return substr(str_shuffle($permitted_chars), 0, 8);
     }
 
-    // EXPORT SUBSCRIBER / CUSTOMER INTO CSV
+    // EXPORT SUBSCRIBER / CUSTOMER INTO XLSX
 
-    public function exportListExcelSubscriber($list_id,$import)
-    {
-        $userid = Auth::id();
+    public function exportListExcelSubscriber($list_id,$import){
+        $id_user = Auth::id();
         $check = UserList::where('id',$list_id)->first();
+        $day = Carbon::now()->toDateString();
+
+        if($import == 1)
+        {
+          $filename = 'list-'.$check->label.'-'.$day.'-for-import.xlsx';
+        }
+        else
+        {
+          $filename = 'list-'.$check->label.'-'.$day.'-for-data.xlsx';
+        }
 
         if(is_null($check))
         {
             return redirect('lists');
         }
 
-        $day = Carbon::now()->toDateString();
-
-        if($import == 1)
-        {
-          $filename = 'list-'.$check->label.'-'.$day.'-for-import';
-        }
-        else
-        {
-          $filename = 'list-'.$check->label.'-'.$day.'-for-data';
-        }
-
-        $list_subscriber = Customer::query()->where([['list_id',$list_id],['user_id','=',$userid]])->select('name','telegram_number','email','additional')->get();
-
-        $data = array(
-            'import'=>$import,
-            'customers'=>$list_subscriber,
-        );
-
-        Excel::create($filename, function($excel) use ($data) 
-        {
-          $excel->sheet('New sheet', function($sheet) use ($data) 
-          {
-            
-              if($data['customers']->count() > 0)
-              {
-                if($data['import'] == 1)
-                {
-                  $column[0] = array();
-                  foreach($data['customers'] as $row)
-                  {
-                      $phone = $row->telegram_number;
-                      if(substr($phone,0,1) == '+')
-                      {
-                          $phone = str_replace("+", "", $phone);
-                      }
-
-                      $column[] = array(
-                        $row->name,
-                        $phone,
-                        $row->email
-                      );
-                  }
-                }
-                else
-                {
-                  $column[0] = $column[1] = array();
-                  foreach($data['customers'] as $row)
-                  {
-                      $phone = $row->telegram_number;
-                      if(substr($phone,0,1) == '+')
-                      {
-                          $phone = str_replace("+", "", $phone);
-                      }
-
-                      $column[] = array(
-                        $row->name,
-                        $phone,
-                        $row->email,
-                        $this->renderAdditional($row->additional)
-                      ); //end array
-                  } 
-                } // end else 
-              }
-
-              $sheet->fromArray($column, null, 'A1', false, false);
-
-              if($data['import'] == 0)
-              {
-                $sheet->cell('A1', 'Customer Name'); 
-                $sheet->cell('B1', 'WA Number'); 
-                $sheet->cell('C1', 'Customer Email');
-                $sheet->cell('D1', 'Additional'); 
-              }
-              else
-              {
-                $sheet->cell('A1', 'name'); 
-                $sheet->cell('B1', 'phone'); 
-                $sheet->cell('C1', 'email');
-              } 
-              
-          });
-        })->export('xlsx');
+        return Excel::download(new ListSubscribersExport($list_id,$import), $filename);
     }
 
     public function renderAdditional($addt)
@@ -1537,27 +1465,101 @@ class ListController extends Controller
         }
     }
 
-    /*public function exportListCSVSubscriber($list_id,$import){
-        $id_user = Auth::id();
-        $check = UserList::where('id',$list_id)->first();
-        $day = Carbon::now()->toDateString();
+    /*
+      public function exportListExcelSubscriber($list_id,$import)
+      {
+          $userid = Auth::id();
+          $check = UserList::where('id',$list_id)->first();
 
-        if($import == 1)
-        {
-          $filename = 'list-'.$check->label.'-'.$day.'-for-import.csv';
-        }
-        else
-        {
-          $filename = 'list-'.$check->label.'-'.$day.'-for-data.csv';
-        }
+          if(is_null($check))
+          {
+              return redirect('lists');
+          }
 
-        if(is_null($check))
-        {
-            return redirect('lists');
-        }
+          $day = Carbon::now()->toDateString();
 
-        return Excel::download(new ListSubscribersExport($list_id,$import), $filename);
-    }*/
+          if($import == 1)
+          {
+            $filename = 'list-'.$check->label.'-'.$day.'-for-import';
+          }
+          else
+          {
+            $filename = 'list-'.$check->label.'-'.$day.'-for-data';
+          }
+
+          $list_subscriber = Customer::query()->where([['list_id',$list_id],['user_id','=',$userid]])->select('name','telegram_number','email','additional')->get();
+
+          $data = array(
+              'import'=>$import,
+              'customers'=>$list_subscriber,
+          );
+
+          Excel::create($filename, function($excel) use ($data) 
+          {
+            $excel->sheet('New sheet', function($sheet) use ($data) 
+            {
+              
+                if($data['customers']->count() > 0)
+                {
+                  if($data['import'] == 1)
+                  {
+                    $column[0] = array();
+                    foreach($data['customers'] as $row)
+                    {
+                        $phone = $row->telegram_number;
+                        if(substr($phone,0,1) == '+')
+                        {
+                            $phone = str_replace("+", "", $phone);
+                        }
+
+                        $column[] = array(
+                          $row->name,
+                          $phone,
+                          $row->email
+                        );
+                    }
+                  }
+                  else
+                  {
+                    $column[0] = $column[1] = array();
+                    foreach($data['customers'] as $row)
+                    {
+                        $phone = $row->telegram_number;
+                        if(substr($phone,0,1) == '+')
+                        {
+                            $phone = str_replace("+", "", $phone);
+                        }
+
+                        $column[] = array(
+                          $row->name,
+                          $phone,
+                          $row->email,
+                          $this->renderAdditional($row->additional)
+                        ); //end array
+                    } 
+                  } // end else 
+                }
+
+                $sheet->fromArray($column, null, 'A1', false, false);
+
+                if($data['import'] == 0)
+                {
+                  $sheet->cell('A1', 'Customer Name'); 
+                  $sheet->cell('B1', 'WA Number'); 
+                  $sheet->cell('C1', 'Customer Email');
+                  $sheet->cell('D1', 'Additional'); 
+                }
+                else
+                {
+                  $sheet->cell('A1', 'name'); 
+                  $sheet->cell('B1', 'phone'); 
+                  $sheet->cell('C1', 'email');
+                } 
+                
+            });
+          })->export('xlsx');
+      }
+    */
 
     /* *************************************** 
         OLD CODES
