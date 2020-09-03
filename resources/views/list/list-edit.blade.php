@@ -1343,7 +1343,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
               for ( var property in err.errors ) {
                 msg += err.errors[property][0]+"\n"; // get message by object name
               }*/
-              $(".error_notif").html('<div class="alert alert-danger">Error, sorry unable to import, maybe your csv file is corrupt or data unavailable</div>');
+              $(".error_notif").html('<div class="alert alert-danger">Error, sorry unable to import, maybe your file is corrupt or data unavailable</div>');
               $('input[name="csv_file"]').val('');
               displayCustomer();
             }
