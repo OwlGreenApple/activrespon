@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\ListController;
 
+
 class ListSubscribersImport implements ToCollection,WithStartRow 
 {
     /**
@@ -29,6 +30,19 @@ class ListSubscribersImport implements ToCollection,WithStartRow
     public function __construct(int $idlist)
     {
         $this->id_list = $idlist;
+    }
+
+    public function bindValue(PHPExcel_Cell $cell, $value = null)
+    {
+        if (is_numeric($value))
+        {
+            $cell->setValueExplicit($value, PHPExcel_Cell_DataType::TYPE_STRING);
+
+            return true;
+        }
+        
+        // else return default behavior
+        return parent::bindValue($cell, $value);
     }
     
     public function collection(Collection $rows)
@@ -63,7 +77,7 @@ class ListSubscribersImport implements ToCollection,WithStartRow
            '*.name'=> ['required'],
            '*.phone'=> ['required'],
            // '*.phone'=> ['required_if:*.username,==,'.null.'',new TelegramNumber],
-           '*.email'=> ['required','email'],
+           '*.email'=> ['email'],
            //'*.username'=> ['required_if:*.phone,==,'.null.''],
         ];
 
@@ -102,7 +116,7 @@ class ListSubscribersImport implements ToCollection,WithStartRow
 
     public function startRow(): int
     {
-        return 3;
+        return 2;
     }
 
     public function checkPhone($row){
@@ -129,9 +143,11 @@ class ListSubscribersImport implements ToCollection,WithStartRow
         return $row;
     }
 
-    public function checkUniquePhone($number,$email,$list_id){
-        $phone_number = Customer::where([['list_id',$list_id],['telegram_number','=',$number],['email','=',$email]])->first();
-        if(is_null($phone_number))
+    private function checkUniquePhone($number,$list_id)
+    {
+        $userid = Auth::id();
+        $customer = Customer::where([['user_id',$userid],['list_id',$list_id],['telegram_number','=',$number]])->first();
+        if(is_null($customer))
         {
            return true;
         }
@@ -140,7 +156,7 @@ class ListSubscribersImport implements ToCollection,WithStartRow
         }
     }
     
-    public function checkUniqueEmail($email,$list_id){
+    /*public function checkUniqueEmail($email,$list_id){
         $email = Customer::where([['email','=',$email],['list_id',$list_id],])->first();
         if(is_null($email))
         {
@@ -149,7 +165,7 @@ class ListSubscribersImport implements ToCollection,WithStartRow
         else {
            return false;
         }
-    }
+    }*/
 
 /* end class */    
 }

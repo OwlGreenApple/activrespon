@@ -56,7 +56,7 @@
         <div class="form-group row">
           <label class="col-6 col-sm-4 col-md-4 col-lg-3 col-form-label">Status Event :</label>
           <div class="col-6 col-sm-8 col-md-8 col-lg-9 py-2">
-            <strong>@if($published == 1) Published @else Draft @endif</strong>
+            <strong>@if($published == 0) Draft @else Published @endif</strong>
           </div>
         </div>
 

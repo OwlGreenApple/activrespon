@@ -12,7 +12,6 @@
 
 @if($customer->count() > 0)
   <tbody>
-      <tr><!-- give row space for import --></tr>
       @foreach($customer as $row)
         <tr>
           <td>{{ $row->name }}</td>
