@@ -954,7 +954,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 		$("body").on("click","#btn-save-autoreply",function(e){
 			var data = $('#form-auto-reply').serializeArray();
 			data.push(
-				{name:'idlist', value:<?php echo $data['listid']; ?>,
+				{name:'idlist', value:'<?php echo $data['listid']; ?>',
 			);
 			e.preventDefault();
        $.ajax({
