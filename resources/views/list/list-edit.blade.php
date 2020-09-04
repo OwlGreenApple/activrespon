@@ -290,7 +290,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
         <div class="autoreply_error"><!-- display error message --></div>
 
 				<form id="form-auto-reply">
-					<input type="hidden" name="idlist">
+					<input type="hidden" name="idlist" id="idlist">
           <div class="form-check mt-2">
             <input class="form-check-input" type="radio" name="is_secure" id="standardRadio" value="0" checked>
             <label class="form-check-label" for="standardRadio">
@@ -952,10 +952,11 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
   function saveAutoReply()
   {
 		$("body").on("click","#btn-save-autoreply",function(e){
+      $("#idlist").val('<?php echo $data['listid']; ?>');
 			var data = $('#form-auto-reply').serializeArray();
-			data.push(
-				{name:'idlist', value:'<?php echo $data['listid']; ?>',}
-			);
+			// data.push(
+				// {name:'idlist', value:'<?php echo $data['listid']; ?>',}
+			// );
 			e.preventDefault();
        $.ajax({
 					headers: {
