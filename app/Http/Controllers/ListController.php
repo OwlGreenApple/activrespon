@@ -173,6 +173,7 @@ class ListController extends Controller
         $new_reminder = new Reminder;
         $new_reminder->user_id = $user->id;
         $new_reminder->list_id = $request->idlist;
+        $new_reminder->campaign_id = 0;
         $new_reminder->message = $request->autoreply;
         $new_reminder->days = 0;
         $new_reminder->is_event = 0;
@@ -183,7 +184,7 @@ class ListController extends Controller
         }
         catch(QueryException $e)
         {
-          //$e->getMessage();
+          // return $e->getMessage();
           return response()->json([
             "status"=>"error",
             "message"=>'Sorry, currently our system is too busy',
