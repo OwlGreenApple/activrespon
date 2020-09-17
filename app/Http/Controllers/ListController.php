@@ -152,6 +152,7 @@ class ListController extends Controller
         $reminder->message = $request->autoreply;
         if ($request->is_secure) {
           $reminder->status = 0;
+          $reminder->reminder_id = 0;
         }
 
         try
