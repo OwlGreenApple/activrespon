@@ -292,6 +292,7 @@ class ListController extends Controller
         $reminder->user_id = $user->id;
         $reminder->list_id = $listid;
         $reminder->message = $autoreply;
+        $reminder->campaign_id = 0;
         if ($request->is_secure) {
           $reminder->status = 0;
         }
