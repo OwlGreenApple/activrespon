@@ -177,6 +177,7 @@ class ListController extends Controller
         $new_reminder->message = $request->autoreply;
         $new_reminder->days = 0;
         $new_reminder->is_event = 0;
+        $new_reminder->reminder_id = 0;
 
         try
         {
