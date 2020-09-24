@@ -102,7 +102,7 @@
       <div class="modal-body">
 
           <input type="hidden" name="idmessage" id="idmessage">
-          <button type="button" class="close" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn" data-dismiss="modal">Cancel</button>
           <button id="btn-process-resend" type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
         </table>
       </div>
