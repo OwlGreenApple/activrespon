@@ -32,6 +32,7 @@ class MessageController extends Controller
     public function load_message_system(Request $request){
       //list messages admin
       $messages = Message::where("key",env("REMINDER_PHONE_KEY"))
+                  ->orderBy("created_at","desc")
                   ->get();
 
       $arr['view'] = (string) view('admin.list-message-system.content')
@@ -40,5 +41,12 @@ class MessageController extends Controller
       return $arr;
     }
 
+    public function resend(Request $request){
+      $message = Message::find($request->id);
+      $message->status = 10;
+      $message->save();
+      
+      return "success";
+    }
 
 }

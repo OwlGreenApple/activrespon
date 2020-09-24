@@ -49,13 +49,7 @@
 
       <div id="pesan" class="alert"></div>
 
-      <br>  
 
-      <div class="form-group">
-        <div id="user-charts" style="height: 300px; width: 100%;"></div>
-      </div>
-
-      <br>
 
       <div class="form-group">
       
@@ -93,6 +87,31 @@
   </div>
 </div>
 
+<!-- Modal View confirm delete -->
+<div class="modal fade" id="modal-confirm-delete" role="dialog">
+  <div class="modal-dialog">
+    
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modaltitle">
+          Are you sure want to delete
+        </h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+
+          <input type="hidden" name="idmessage" id="idmessage">
+          <button type="button" class="close" data-dismiss="modal">Cancel</button>
+          <button id="btn-process-resend" type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
+        </table>
+      </div>
+    </div>
+      
+  </div>
+</div>
+
+
 </section>
 
 <script type="text/javascript">
@@ -119,6 +138,29 @@
     // $('.formatted-date').datepicker({
       // dateFormat: 'yy/mm/dd',
     // });
+    
+    $( "body" ).on( "click", ".btn-resend", function() {
+      $('#idmessage').val($(this).attr('data-id'));
+    });
+    $( "body" ).on( "click", "#btn-process-resend", function() {
+      $.ajax({
+        type : 'GET',
+        url : "<?php echo url('/list-message-system/resend') ?>",
+        dataType: 'text',
+        data : {'id':$('#idmessage').val()},
+        beforeSend: function()
+        {
+          $('#loader').show();
+          $('.div-loading').addClass('background-load');
+        },
+        success: function(result) {
+          $('#loader').hide();
+          $('.div-loading').removeClass('background-load');
+          alert("message process");
+          
+        }
+      });
+    });
   });
 
   

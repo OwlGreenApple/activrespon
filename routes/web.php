@@ -149,6 +149,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   //list message system
   Route::get('/list-message-system','Admin\MessageController@index');
   Route::get('/list-message-system/load','Admin\MessageController@load_message_system');
+  Route::get('/list-message-system/resend','Admin\MessageController@resend');
 });
 
 /* SETTING */
