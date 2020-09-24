@@ -9,7 +9,7 @@
     table.destroy();
     $.ajax({
       type : 'GET',
-      url : "<?php echo url('/list-user/load-user') ?>",
+      url : "<?php echo url('/list-message-system/load') ?>",
       dataType: 'text',
       beforeSend: function()
       {
