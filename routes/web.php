@@ -145,6 +145,10 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
     return view('admin.list-phone.index');
   });
   Route::get('/list-phone/load','Admin\PhoneController@load_phone');
+
+  //list message system
+  Route::get('/list-message-system','Admin\MessageController@index');
+  Route::get('/list-message-system/load','Admin\MessageController@load_message_system');
 });
 
 /* SETTING */
