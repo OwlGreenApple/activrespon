@@ -43,7 +43,7 @@ class CheckCallingCode
         }
 
         //TO AVOID IF USER CHANGE THEIR PHONE NUMBER AFTER OTP
-        /*$opt_code = Cookie::get('opt_code');
+        /* marking OTP $opt_code = Cookie::get('opt_code');
         $phone_number = $request->code_country.$request->phone_number;
 
         if($opt_code == null)

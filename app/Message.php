@@ -12,7 +12,8 @@ class Message extends Model
   * 1 -> executed
   */
   protected $table = 'messages';
-	public static function create_message($phone_number,$message,$key,$mode=0){
+	// public static function create_message($phone_number,$message,$key,$mode=0){
+	public static function create_message($phone_number,$message,$key,$mode=1){
     $message_send = new Message;
     $message_send->phone_number=$phone_number;
     $message_send->message= $message;

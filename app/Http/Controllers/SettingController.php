@@ -117,8 +117,8 @@ class SettingController extends Controller
       // di fixkan
       //0-> simi 
       //1->woowa
-			// session(['mode'=>1]); //difixkan woowa
-      $this->check_table_server($user->id); //difixkan simi, cek dulu ada ngga server available, klo ga ada dikasi ke woowa
+			session(['mode'=>1]); //difixkan woowa
+      // $this->check_table_server($user->id); //difixkan simi, cek dulu ada ngga server available, klo ga ada dikasi ke woowa
       
       
 
@@ -401,6 +401,7 @@ class SettingController extends Controller
          $session_server = session("server_id");
       }
 
+      //marking OTP
       // if(is_null($check_otp))
       // {
         // $data = array(
