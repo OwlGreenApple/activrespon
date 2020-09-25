@@ -401,20 +401,20 @@ class SettingController extends Controller
          $session_server = session("server_id");
       }
 
-      if(is_null($check_otp))
-      {
-        $data = array(
-          'status'=>'expired',
-          'message'=>'Your otp code is not available or expired!',
-        );   
-      }
-      else
-      {
+      // if(is_null($check_otp))
+      // {
+        // $data = array(
+          // 'status'=>'expired',
+          // 'message'=>'Your otp code is not available or expired!',
+        // );   
+      // }
+      // else
+      // {
+      // }
         $data = array(
           'status'=>'success',
           'button'=>'<button type="button" id="button-connect" class="btn btn-custom" data-attr='.$session_server.'>Connect</button>',
         );   
-      }
       return response()->json($data);
     }
 
