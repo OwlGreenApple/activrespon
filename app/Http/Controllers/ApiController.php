@@ -14,6 +14,7 @@ use App\Console\Commands\SendWA as wamessage;
 use Mail;
 use App\Http\Controllers\CustomerController;
 use App\Helpers\ApiHelper;
+use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Storage;
 use App\Message;
 use App\PhoneNumber;
@@ -251,6 +252,19 @@ class ApiController extends Controller
     {
       $obj = json_decode($request->getContent());
       return ApiHelper::send_message($obj->customer_phone,$obj->message,$obj->key_woowa);
+    }
+    
+    public function send_wamate(Request $request)
+    {
+      $obj = json_decode($request->getContent());
+      return WamateHelper::send($obj->customer_phone,$obj->message,$obj->device_key);
+    }
+    
+    public function send_image_url_wamate(Request $request)
+    {
+      $obj = json_decode($request->getContent());
+      Storage::disk('local')->put('temp-send-image-simi/'.$obj->image, file_get_contents(Storage::disk('s3')->url($obj->image)));
+      $send_message = WamateHelper::send_image($obj->customer_phone,$obj->curl,$obj->message,$obj->server_url);
     }
     
     public function send_image_url_simi(Request $request)

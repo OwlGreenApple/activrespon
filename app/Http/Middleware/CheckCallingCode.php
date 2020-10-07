@@ -44,10 +44,10 @@ class CheckCallingCode
 
         //TO AVOID IF USER CHANGE THEIR PHONE NUMBER AFTER OTP
         /* marking OTP 
-        $opt_code = Cookie::get('opt_code');
+        $otp_code = Cookie::get('otp_code');
         $phone_number = $request->code_country.$request->phone_number;
 
-        if($opt_code == null)
+        if($otp_code == null)
         {
            $error = array(
               'status'=>'error',
@@ -57,7 +57,7 @@ class CheckCallingCode
         }
         else
         {
-           $opt = OTP::where([['phone_number','=',$phone_number],['code','=',$opt_code],['user_id','=',Auth::id()]])->orderBy('id','desc')->first();
+           $opt = OTP::where([['phone_number','=',$phone_number],['code','=',$otp_code],['user_id','=',Auth::id()]])->orderBy('id','desc')->first();
 
            if(is_null($opt))
            {

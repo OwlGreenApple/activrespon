@@ -43,6 +43,8 @@ Route::post('send-message-queue-system','ApiController@send_message_queue_system
 /* API accessed from automation*/
 Route::post('send-simi','ApiController@send_simi');
 Route::post('send-message-automation','ApiController@send_message');
+Route::post('send-wamate','ApiController@send_wamate');
+Route::post('send-image-url-wamate','ApiController@send_image_url_wamate');
 Route::post('send-image-url-simi','ApiController@send_image_url_simi');
 Route::post('send-image-url','ApiController@send_image_url');
 Route::post('send-message-wassenger-automation','ApiController@send_message_wassenger_automation');
@@ -154,7 +156,8 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 
 /* SETTING */
 Route::group(['middleware'=>['auth','web']],function(){
-  Route::get('settings/{mod?}', 'SettingController@index');
+  // Route::get('settings/{mod?}', 'SettingController@index');
+  Route::get('settings', 'SettingController@index');
   Route::post('save-settings', 'SettingController@settingsUser')->middleware('usersettings');
   Route::get('load-phone-number', 'SettingController@load_phone_number');
   Route::get('signout', 'Auth\LoginController@logout');

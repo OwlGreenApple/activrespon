@@ -675,7 +675,6 @@ class ApiHelper
 				'apikey:a802233777d9riz1b11dk7d70531ab99'
 		));
 
-		// Submit the POST request
 		$result = curl_exec($ch);
 
 		// Close cURL session handle

@@ -23,6 +23,7 @@ class PhoneNumber extends Model
 	mode 
 	0 -> Simi
 	1 -> Woowa
+	2 -> Wamate(Simi New)
 	
 	if mode == 0 -> filename -> ""
 	if mode == 1 -> filename -> key

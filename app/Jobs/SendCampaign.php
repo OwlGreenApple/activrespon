@@ -195,7 +195,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_message($customer_phone,$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_message_wassenger($customer_phone,$message,$key);
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
                   }
                 }
                 else {
@@ -354,6 +354,9 @@ class SendCampaign implements ShouldQueue
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
                     $send_message = $this->send_message($customer_phone,$message,$key);
+                  }
+                  if ($phoneNumber->mode == 2) {
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
                   }
                 }
                 else {
@@ -537,6 +540,9 @@ class SendCampaign implements ShouldQueue
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
                     $send_message = $this->send_message($customer_phone,$message,$key);
                   }
+                  if ($phoneNumber->mode == 2) {
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
+                  }
                 }
                 else {
                     if ($phoneNumber->mode == 0) {
@@ -713,6 +719,9 @@ class SendCampaign implements ShouldQueue
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
                     $send_message = $this->send_message($customer_phone,$message,$key);
+                  }
+                  if ($phoneNumber->mode == 2) {
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
                   }
                 }
                 else {
@@ -938,6 +947,65 @@ class SendCampaign implements ShouldQueue
       );
 
 		  $url = "https://activrespon.com/dashboard/send-message-automation";
+
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+      ));
+
+      $response = curl_exec($curl);
+      $err = curl_error($curl);
+
+      curl_close($curl);
+      return $response;
+    }
+    
+    public function send_wamate($customer_phone,$message,$device_key){
+      $curl = curl_init();
+
+      $data = array(
+          'customer_phone'=>$customer_phone,
+          'message'=>$message,
+          'device_key'=>$device_key,
+      );
+
+		  $url = "https://activrespon.com/dashboard/send-wamate";
+
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+      ));
+
+      $response = curl_exec($curl);
+      $err = curl_error($curl);
+
+      curl_close($curl);
+      return $response;
+    }
+    
+    public function send_image_url_wamate($customer_phone,$urls3,$message,$key){
+      $curl = curl_init();
+
+      $data = array(
+          'customer_phone'=>$customer_phone,
+          'urls3'=>$urls3,
+          'message'=>$message,
+          'key_woowa'=>$key,
+      );
+
+		  $url = "https://activrespon.com/dashboard/send-image-url-wamate";
 
       curl_setopt_array($curl, array(
         CURLOPT_URL => $url,

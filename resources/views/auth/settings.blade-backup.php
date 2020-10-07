@@ -862,7 +862,7 @@
             $("#secs").html('0'+sc);
           }
 
-					<?php if (session('mode')==0 || session('mode')==2) { ?>
+					<?php if (session('mode')==0) { ?>
           if( (scd == 33) || (scd == 60) || (scd == 90) || (scd == 120) || (scd == 180) || (scd == 233) || (scd == 287) || (scd == 329) || (scd == 359) ) {
 					<?php } ?>
 					<?php if (session('mode')==1) { ?>

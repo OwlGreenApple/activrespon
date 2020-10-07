@@ -20,6 +20,7 @@ use App\OTP;
 use App\Rules\TelNumber;
 use App\Rules\AvailablePhoneNumber;
 use App\Helpers\ApiHelper;
+use App\Helpers\WamateHelper;
 use App\Helpers\Alert;
 use DB;
 use Cookie;
@@ -45,6 +46,28 @@ class SettingController extends Controller
     public function index()
     {
       $user = Auth::user();
+
+      /*
+      1. klo blm daftar direg
+      2. login, password selalu fix ada di WamateHelper::reg    -> (setelah login maka) update id, token bearer ditabel user  
+      3. get id, token bearer 
+      4. get list no hp 
+      5. bisa scan 
+      */
+      $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
+      if (is_null($user->email_wamate) ) {
+        $result = WamateHelper::reg($email_wamate);
+        $user->email_wamate = $email_wamate;
+        $user->save();
+      }
+      if (is_null($user->token) ) {
+        $result = json_decode(WamateHelper::login($email_wamate));
+        $user->token = $result->token;
+        $user->refresh_token = $result->refreshToken;
+        $user->save();
+      }
+      
+      
       $day_left = User::find($user->id)->day_left;
       $expired = Carbon::now()->addDays($day_left)->toDateString();
       $mod = request()->get('mod');
@@ -117,7 +140,8 @@ class SettingController extends Controller
       // di fixkan
       //0-> simi 
       //1->woowa
-			session(['mode'=>1]); //difixkan woowa
+			// session(['mode'=>1]); //difixkan woowa
+			session(['mode'=>2]); //difixkan Wamate (new simi)
       // $this->check_table_server($user->id); //difixkan simi, cek dulu ada ngga server available, klo ga ada dikasi ke woowa
       
       
@@ -334,30 +358,47 @@ class SettingController extends Controller
 
     public function getOTP(Request $request)
     {
-       $userid = Auth::id();
-       $phone_number = $request->code_country.$request->phone_number;
-       $current_time = Carbon::now();
+      $user = Auth::user();
+      $phone_number = $request->code_country.$request->phone_number;
+      $current_time = Carbon::now();
 
-       $rules = [
+      $rules = [
             'code_country' => ['required',new CheckPlusCode,new CheckCallCode],
             'phone_number' => ['required','numeric','digits_between:6,18',new InternationalTel]
-        ];
+      ];
 
-        $validator = Validator::make($request->all(),$rules);
+      $validator = Validator::make($request->all(),$rules);
 
-        if($validator->fails())
-        {
-            $err = $validator->errors();
-            $error = array(
-              'status'=>'error',
-              'phone_number'=>$err->first('phone_number'),
-              'code_country'=>$err->first('code_country'),
-            );
+      if($validator->fails())
+      {
+        $err = $validator->errors();
+        $error = array(
+          'status'=>'error',
+          'phone_number'=>$err->first('phone_number'),
+          'code_country'=>$err->first('code_country'),
+        );
 
-            return response()->json($error);
-        }
+        return response()->json($error);
+      }
+        
+      //cek phone number uda connected blm, klo uda connect ga perlu lagi process untuk connect ulang 
+      $phoneNumber = PhoneNumber::
+                      where("phone_number",$phone_number)
+                      ->where("user_id",$user->id)
+                      ->where("status",2)
+                      ->first();
+      if (!is_null($phoneNumber) ){
+        $error = array(
+          'status'=>'error',
+          'phone_number'=>Alert::exists_phone(),
+          'code_country'=>"",
+        );
 
-       $check_otp = OTP::where([['user_id','=',$userid],['phone_number','=',$phone_number]])->whereRaw('NOW() <= valid')->first();
+        return response()->json($error);
+      }
+      
+
+       $check_otp = OTP::where([['user_id','=',$user->id],['phone_number','=',$phone_number]])->whereRaw('NOW() <= valid')->first();
        $code_raw = '0123456789';
 
        if(is_null($check_otp))
@@ -366,7 +407,7 @@ class SettingController extends Controller
           $valid = $current_time->addMinutes(5);
 
           $otp = new OTP;
-          $otp->user_id = $userid;
+          $otp->user_id = $user->id;
           $otp->code = $code;
           $otp->phone_number = $phone_number;
           $otp->valid = $valid;
@@ -377,7 +418,7 @@ class SettingController extends Controller
           $code = $check_otp->code;
        }
 
-       Cookie::queue(Cookie::make('opt_code', $code, 60));
+       Cookie::queue(Cookie::make('otp_code', $code, 60));
 
        $message ='';
        $message .= 'Hi '.Auth::user()->username."\n\n";
@@ -419,7 +460,7 @@ class SettingController extends Controller
       return response()->json($data);
     }
 
-		//woowa + spiderman
+		//woowa + spiderman(old simi) + wamate (new simi)
     public function connect_phone(Request $request)
     {
       $user = Auth::user();
@@ -434,36 +475,46 @@ class SettingController extends Controller
       $resend = $request->resend;
       $phone_number = $request->code_country.$request->phone_number;
 
-      //pastikan phone number hanya 1 phone number
-      // $countphoneNumber = PhoneNumber::where("user_id",$user->id)->first();
-      // if(!is_null($countphoneNumber) && $resend == null){
-          // $arr['status'] = 'error';
-          // $arr['message'] = Alert::one_number();
-          // return $arr;
-      // }
+      //cek phone number uda connected blm 
+      $phoneNumber = PhoneNumber::
+                      where("phone_number",$phone_number)
+                      ->where("user_id",$user->id)
+                      ->where("status",2)
+                      ->first();
+      if (!is_null($phoneNumber) ){
+        $arr['status'] = 'error';
+        $arr['message'] = Alert::exists_phone();
+        return $arr;
+      }
 
-      //cek phone number uda ada didatabase ngga 
+      // OPT code
+      $otp_code = Cookie::get('otp_code');
+      if($otp_code <> null)
+      {
+        Cookie::queue(Cookie::forget('otp_code'));
+      }
+
+
+      $is_registered = false;
       $phoneNumber = PhoneNumber::
                       where("phone_number",$phone_number)
                       ->where("user_id",$user->id)
                       ->first();
-
       if (!is_null($phoneNumber) ){
-        if ($phoneNumber->status == 2){
-          $arr['status'] = 'error';
-          $arr['message'] = Alert::exists_phone();
-          return $arr;
-        }
+        $is_registered = true;
       }
-
-      // OPT code
-      $opt_code = Cookie::get('opt_code');
-      if($opt_code <> null)
-      {
-        Cookie::queue(Cookie::forget('opt_code'));
+      else {
+        $phoneNumber = new PhoneNumber();
+        $phoneNumber->user_id = $user->id;
+        $phoneNumber->phone_number = $phone_number;
+        $phoneNumber->counter = 0;
+        $phoneNumber->status = 0;
+        $phoneNumber->mode = session('mode');
+        $phoneNumber->filename = "";
+        $phoneNumber->save();
       }
       
-			if (session('mode')==0) {
+      if (session('mode')==0) {
 				$server = Server::find(session("server_id"));
 				if (is_null($server)){
 					$data = array(
@@ -477,35 +528,29 @@ class SettingController extends Controller
 			}
 			if (session('mode')==1) {
 				$qr_status = ApiHelper::qr_status($phone_number);
-				//PHONE REGISTER TO API
-        if ($qr_status==$phone_number) {
-          $phoneNumber = PhoneNumber::
-                      where("phone_number",$phone_number)
-                      ->where("status",2)
-                      ->first();
-          if (!is_null($phoneNumber)){
-            $arr['status'] = 'error';
-            $arr['message'] = Alert::exists_phone();
-            return $arr;
-          }
-        }
+
         if ($qr_status==$phone_number."_not_your_client") {
           $registered_phone = ApiHelper::reg($phone_number,$user->name);
         }
 			}
+      if (session('mode')==2) { //new wamate
+        // $result = WamateHelper::get_devices($user->token);
+        //direct langsung ke idnya, klo ga ada maka akan buat new device
+        if ($is_registered) {
+        }
+        else {
+          $result = json_decode(WamateHelper::create_device($user->token,'device-'.$phoneNumber->id));
+          $phoneNumber->wamate_id = $result->id;
+          $phoneNumber->device_key = $result->device_key;
+          $phoneNumber->save();
+        }
+      }
 
       $phoneNumber = PhoneNumber::
                       where("user_id",$user->id)
                       ->first();
       if(is_null($phoneNumber)){
-        $phoneNumber = new PhoneNumber();
-        $phoneNumber->user_id = $user->id;
-        $phoneNumber->phone_number = $phone_number;
-        $phoneNumber->counter = 0;
-        $phoneNumber->status = 0;
-        $phoneNumber->mode = session('mode');
-        $phoneNumber->filename = "";
-        $phoneNumber->save();
+//
       }
       else {
         if (session('mode')==1) {
@@ -531,10 +576,10 @@ class SettingController extends Controller
     public function verify_phone(Request $request)
     {
       $user = Auth::user();
-      /*new system $phoneNumber = PhoneNumber::
+      $phoneNumber = PhoneNumber::
                       where("phone_number",$request->phone_number)
                       ->where("user_id",$user->id)
-                      ->first();*/
+                      ->first();
 			if (session('mode')==0) {
 				$server = Server::find(session("server_id"));
 				if (is_null($server)){
@@ -592,6 +637,7 @@ class SettingController extends Controller
         }
 
         if ($qr_status=="none"){
+          /*
           $phoneNumber = PhoneNumber::
                           where("user_id",$user->id)
                           ->first();
@@ -602,6 +648,13 @@ class SettingController extends Controller
               $phoneNumber->filename = $key;
               $phoneNumber->save();
             }
+          }
+          */
+          if ($phoneNumber->filename == "") {
+            $key = $this->get_key($request->phone_number);
+
+            $phoneNumber->filename = $key;
+            $phoneNumber->save();
           }
 
           $qr_code = ApiHelper::get_qr_code($request->phone_number);
@@ -638,6 +691,15 @@ class SettingController extends Controller
         }
 				return response()->json($data);
 			}
+    
+			if (session('mode')==2) {
+        $qr_code = WamateHelper::pair($user->token,$phoneNumber->wamate_id);
+        $data = array(
+          'status'=>'success',
+          'data'=>$qr_code,
+        );
+				return response()->json($data);
+      }
     }
 
     /*
@@ -691,7 +753,12 @@ class SettingController extends Controller
 						$flag_connect = true;
 					}
 				}
-				
+				if (session('mode')==2) {
+          $result = json_decode(WamateHelper::show_device($user->token,$phoneNumber->wamate_id));
+          if ($result->status=="PAIRED"){
+						$flag_connect = true;
+          }
+        }
 				if ($flag_connect){
           $response['status'] = $this->login($no_wa);
 				}
@@ -724,9 +791,8 @@ class SettingController extends Controller
       try{
         $phoneNumber = PhoneNumber::
               where("user_id",$user->id)
+              ->where("phone_number",$no_wa)
               ->first();
-        $phoneNumber->user_id = $user->id;
-        $phoneNumber->phone_number = $no_wa;
         $phoneNumber->filename = $key;
         $phoneNumber->counter = env('COUNTER');
         $phoneNumber->counter2 = env('COUNTER2');
@@ -823,8 +889,8 @@ class SettingController extends Controller
 				$arr['status'] = 'success';
 				$arr['message'] = "The phone number has been deleted";
 				return $arr;
-			}
-			else {
+			}      
+			else if ($phoneNumber->mode == 1){
 				// $delete_api = ApiHelper::unreg($wa_number);
 
 				/*if($delete_api !== "success")
@@ -849,6 +915,14 @@ class SettingController extends Controller
 					$arr['message'] = "Error! Sorry unable to delete your phone number";
 				} 
 			}
+			else if ($phoneNumber->mode == 2){
+        $result = WamateHelper::delete_devices($phoneNumber->wamate_id,$user->token);
+        
+        $phoneNumber->delete();
+        
+        $arr['status'] = 'success';
+        $arr['message'] = "The phone number has been deleted";
+      }
 
       return $arr;
     }

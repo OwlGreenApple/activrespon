@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFieldServerNameToServer extends Migration
+class AddColumnWamateidFromPhoneNumbers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddFieldServerNameToServer extends Migration
      */
     public function up()
     {
-        Schema::table('servers', function (Blueprint $table) {
-            $table->string('server_name')->nullable();
+        Schema::table('phone_numbers', function (Blueprint $table) {
+            $table->bigInteger('wamate_id')->default(0);
+            $table->string('device_key')->nullable();
         });
     }
 
@@ -25,7 +26,7 @@ class AddFieldServerNameToServer extends Migration
      */
     public function down()
     {
-        Schema::table('server', function (Blueprint $table) {
+        Schema::table('phone_numbers', function (Blueprint $table) {
             //
         });
     }
