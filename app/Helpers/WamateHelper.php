@@ -193,7 +193,7 @@ class WamateHelper
  	public static function pair($token,$device_id)
   {
 		// Prepare new cURL resource
-		$ch = curl_init("http://128.199.191.249/devices/".$device_id."/pair?html=true");
+		$ch = curl_init("http://128.199.191.249/devices/".$device_id);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");

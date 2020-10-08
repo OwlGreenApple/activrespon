@@ -693,11 +693,19 @@ class SettingController extends Controller
 			}
     
 			if (session('mode')==2) {
-        $qr_code = WamateHelper::pair($user->token,$phoneNumber->wamate_id);
-        $data = array(
-          'status'=>'success',
-          'data'=>$qr_code,
-        );
+        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
+        if ($res->status == "idle") {
+					$data = array(
+						'status'=>'error',
+						'phone_number'=>Alert::qrcode(),
+					);
+        }
+        else if ($res->status == "pairing") {
+          $data = array(
+            'status'=>'success',
+            'data'=>'<img src="data:image/jpeg;base64,'.base64_encode($res->qr_code).'"/>',
+          );
+        }
 				return response()->json($data);
       }
     }
