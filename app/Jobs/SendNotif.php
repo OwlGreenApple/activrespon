@@ -61,7 +61,7 @@ class SendNotif implements ShouldQueue
                     ->get();
         foreach($messages as $message) {
           $send_message = $this->send_wamate($message->phone_number,$message->message,$message->key);
-          $status = $this->getStatus($send_message,0);
+          $status = $this->getStatus($send_message,2);
           
           $message->status = $status;
           $message->save();

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\HelpersApiHelper;
 use App\PhoneNumber;
 use App\Server;
+use App\User;
 use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 
@@ -49,6 +50,7 @@ class CheckConnection extends Command
           {
             $idphone_number = $row->id;
             $phone = PhoneNumber::find($idphone_number);
+            $user = User::find($phone->user_id);
 						$status = false;
 						
 						if ($row->mode == 0 ) {
