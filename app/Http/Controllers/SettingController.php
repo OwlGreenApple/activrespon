@@ -701,7 +701,6 @@ class SettingController extends Controller
 					);
         }
         else if (strtoupper($res->status) == "PAIRING") {
-          $qr_code = $arr_res['qr_code'];
           $data = array(
             'status'=>'success',
             'data'=>'<img src="'.$res->qr_code.'"/>',
