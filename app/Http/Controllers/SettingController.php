@@ -726,12 +726,6 @@ class SettingController extends Controller
 					}
 				}
 				$user = Auth::user();
-        //buat mode 2
-        $phoneNumber = PhoneNumber::
-                      where("phone_number",$request->phone_number)
-                      ->where("user_id",$user->id)
-                      ->first();
-
         if($request->phone_number <> null)
         {
             $no_wa = $request->phone_number;
@@ -740,6 +734,12 @@ class SettingController extends Controller
         {
             $no_wa = $request->no_wa;
         }
+        //buat mode 2
+        $phoneNumber = PhoneNumber::
+                      where("phone_number",$no_wa)
+                      ->where("user_id",$user->id)
+                      ->first();
+
 
         $wa_number = substr($no_wa, 1);
 				$flag_connect = false;
