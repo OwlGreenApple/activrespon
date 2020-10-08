@@ -726,6 +726,11 @@ class SettingController extends Controller
 					}
 				}
 				$user = Auth::user();
+        //buat mode 2
+        $phoneNumber = PhoneNumber::
+                      where("phone_number",$request->phone_number)
+                      ->where("user_id",$user->id)
+                      ->first();
 
         if($request->phone_number <> null)
         {
