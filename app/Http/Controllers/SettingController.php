@@ -693,8 +693,7 @@ class SettingController extends Controller
 			}
     
 			if (session('mode')==2) {
-        $arr_res = WamateHelper::pair($user->token,$phoneNumber->wamate_id);
-        $res = json_decode($arr_res['res']);
+        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
         if (strtoupper($res->status) == "IDLE") {
 					$data = array(
 						'status'=>'error',
@@ -705,7 +704,7 @@ class SettingController extends Controller
           $qr_code = $arr_res['qr_code'];
           $data = array(
             'status'=>'success',
-            'data'=>'<img src="'.$qr_code.'"/>',
+            'data'=>'<img src="'.$res->qr_code.'"/>',
           );
         }
 				return response()->json($data);
@@ -1031,6 +1030,36 @@ class SettingController extends Controller
 
     public function test_send_message()
     {
+      // Prepare new cURL resource
+      $ch = curl_init("http://128.199.191.249/devices/4/pair");
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+      // Set HTTP Header 
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          'Content-Type: application/json',
+          'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjQsImlhdCI6MTYwMjE0NDIzMX0.PRoFJ7oa0JPAKv_m9RUBXnwyBpvR5RnLlTxazXutQSI'
+      ));
+
+      
+      $result = curl_exec($ch);
+
+      // Close cURL session handle
+      curl_close($ch);
+      $decode = json_decode($result);
+      dd($decode);
+      
+      return [
+        'res'=>$result,
+        'qr_code'=>'<img src="'.$decode->qr_code.'"/>',
+      ];      
+      
+      
+      exit;
+      
+      
+      
 			// A sample PHP Script to POST data using cURL
 				// Data in JSON format
 

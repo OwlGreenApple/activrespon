@@ -193,7 +193,7 @@ class WamateHelper
  	public static function pair($token,$device_id)
   {
 		// Prepare new cURL resource
-		$ch = curl_init("http://128.199.191.249/devices/".$device_id);
+		$ch = curl_init("http://128.199.191.249/devices/".$device_id.'/pair');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -209,11 +209,7 @@ class WamateHelper
 
 		// Close cURL session handle
 		curl_close($ch);
-    $decode = json_decode($result);
-    return [
-      'res'=>$result,
-      'qr_code'=>'<img src="'.$decode->qr_code.'"/>',
-    ];
+    return $result;
 
 	}
 
