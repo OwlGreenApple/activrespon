@@ -209,8 +209,11 @@ class WamateHelper
 
 		// Close cURL session handle
 		curl_close($ch);
-
-    return $result;
+    $decode = json_decode($result);
+    return [
+      'res'=>$result,
+      'qr_code'=>'<img src="'.$decode->qr_code.'"/>',
+    ];
 
 	}
 

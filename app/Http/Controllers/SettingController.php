@@ -693,7 +693,8 @@ class SettingController extends Controller
 			}
     
 			if (session('mode')==2) {
-        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
+        $arr_res = WamateHelper::pair($user->token,$phoneNumber->wamate_id);
+        $res = json_decode($arr_res['res']);
         if (strtoupper($res->status) == "IDLE") {
 					$data = array(
 						'status'=>'error',
@@ -701,9 +702,10 @@ class SettingController extends Controller
 					);
         }
         else if (strtoupper($res->status) == "PAIRING") {
+          $qr_code = $arr_res['qr_code'];
           $data = array(
             'status'=>'success',
-            'data'=>'<img src="'.$res->qr_code.'"/>',
+            'data'=>'<img src="'.$qr_code.'"/>',
           );
         }
 				return response()->json($data);
