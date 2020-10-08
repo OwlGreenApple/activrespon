@@ -703,7 +703,7 @@ class SettingController extends Controller
         else if (strtoupper($res->status) == "PAIRING") {
           $data = array(
             'status'=>'success',
-            'data'=>'<img src="data:image/jpeg;base64,'.base64_encode($res->qr_code).'"/>',
+            'data'=>'<img src="'.$res->qr_code.'"/>',
           );
         }
 				return response()->json($data);
