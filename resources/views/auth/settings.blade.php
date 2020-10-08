@@ -996,6 +996,11 @@
 				if (result.status!="none"){
 					$('.message').show();
 					$('.message').html(result.status);
+          <?php if (session('mode')==2) { ?>
+            if (result.data!="") {
+              $("#qr-code").html(result.data);
+            }
+          <?php } ?>
 				}  
 				if (result.status=="Congratulations, your phone is connected"){
 					$('#div-verify').hide();

@@ -7,6 +7,7 @@ use App\HelpersApiHelper;
 use App\PhoneNumber;
 use App\Server;
 use App\Helpers\ApiHelper;
+use App\Helpers\WamateHelper;
 
 class CheckConnection extends Command
 {
@@ -46,10 +47,8 @@ class CheckConnection extends Command
         {
           foreach($phone_numbers AS $row)
           {
-            if ($row->mode == 2 ) {//wassenger
-              continue;
-            }
             $idphone_number = $row->id;
+            $phone = PhoneNumber::find($idphone_number);
 						$status = false;
 						
 						if ($row->mode == 0 ) {
@@ -79,8 +78,14 @@ class CheckConnection extends Command
 								// }
 							// }
 						}
+            
+            if ($row->mode == 2 ) {
+              $result = json_decode(WamateHelper::show_device($user->token,$phone->wamate_id));
+              if (strtoupper($result->status)=="PAIRED"){
+                $status = true;
+              }
+            }
 						
-						$phone = PhoneNumber::find($idphone_number);
 						if (!$status) {
 							$phone->status = 1;
 						}

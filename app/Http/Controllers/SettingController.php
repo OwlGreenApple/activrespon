@@ -767,8 +767,22 @@ class SettingController extends Controller
 					}
 				}
 				if (session('mode')==2) {
-          $result = json_decode(WamateHelper::show_device($user->token,$phoneNumber->wamate_id));
-          if (strtoupper($result->status)=="PAIRED"){
+          // $result = json_decode(WamateHelper::show_device($user->token,$phoneNumber->wamate_id));
+          // if (strtoupper($result->status)=="PAIRED"){
+          $result = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
+          if (strtoupper($result->status) == "IDLE") {
+            $response = array(
+              'status'=>'error',
+              'data'=>"",
+            );
+          }
+          else if (strtoupper($result->status) == "PAIRING") {
+            $response = array(
+              'status'=>'success',
+              'data'=>'<img src="'.$result->qr_code.'"/>',
+            );
+          }
+          else if (strtoupper($result->status) == "PAIRED") {
 						$flag_connect = true;
           }
         }
