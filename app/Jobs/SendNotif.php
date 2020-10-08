@@ -53,6 +53,22 @@ class SendNotif implements ShouldQueue
 			if ($this->attempts() == 1) {
         // ApiHelper::send_simi($this->phone,$this->message,$this->key);
 
+        //status 11 dari campaign controller
+        //wamate
+        $messages = Message::
+                    where("status",11)
+                    ->where('key',$this->key)
+                    ->get();
+        foreach($messages as $message) {
+          $send_message = $this->send_wamate($message->phone_number,$message->message,$message->key);
+          $status = $this->getStatus($send_message,0);
+          
+          $message->status = $status;
+          $message->save();
+
+          sleep(mt_rand(1, 30));
+        }
+
         //status 6 dari campaign controller
         //Simi
         $messages = Message::
@@ -184,6 +200,16 @@ class SendNotif implements ShouldQueue
 				}
 			}
 
+      if ($mode == 2) {
+				$obj = json_decode($send_message);
+        if ($obj->status == 500){
+          $status = 3;
+        }
+        else {
+          $status = 1;
+        }
+      }
+
       return $status;
     }
 
@@ -226,6 +252,35 @@ class SendNotif implements ShouldQueue
       );
 
 		  $url = "https://activrespon.com/dashboard/send-message-automation";
+
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+      ));
+
+      $response = curl_exec($curl);
+      $err = curl_error($curl);
+
+      curl_close($curl);
+      return $response;
+    }
+    
+    public function send_wamate($customer_phone,$message,$device_key){
+      $curl = curl_init();
+
+      $data = array(
+          'customer_phone'=>$customer_phone,
+          'message'=>$message,
+          'device_key'=>$device_key,
+      );
+
+		  $url = "https://activrespon.com/dashboard/send-wamate";
 
       curl_setopt_array($curl, array(
         CURLOPT_URL => $url,

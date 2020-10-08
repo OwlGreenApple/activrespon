@@ -210,6 +210,10 @@ class CampaignController extends Controller
 						$message_send->key=$key;
 						$message_send->status=7;
 					}
+					if ($phoneNumber->mode == 2) {
+						$message_send->key=$phoneNumber->device_key;
+						$message_send->status=11;
+					}
 					$message_send->customer_id=0;
 					$message_send->save();
 

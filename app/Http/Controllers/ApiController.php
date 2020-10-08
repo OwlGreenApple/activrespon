@@ -264,7 +264,7 @@ class ApiController extends Controller
     {
       $obj = json_decode($request->getContent());
       Storage::disk('local')->put('temp-send-image-simi/'.$obj->image, file_get_contents(Storage::disk('s3')->url($obj->image)));
-      $send_message = WamateHelper::send_image($obj->customer_phone,$obj->curl,$obj->message,$obj->server_url);
+      $send_message = WamateHelper::send_image($obj->customer_phone,$obj->curl,$obj->message,$obj->device_key);
     }
     
     public function send_image_url_simi(Request $request)
