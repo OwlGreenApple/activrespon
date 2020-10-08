@@ -694,13 +694,13 @@ class SettingController extends Controller
     
 			if (session('mode')==2) {
         $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
-        if ($res->status == "idle") {
+        if (strtoupper($res->status) == "IDLE") {
 					$data = array(
 						'status'=>'error',
 						'phone_number'=>Alert::qrcode(),
 					);
         }
-        else if ($res->status == "pairing") {
+        else if (strtoupper($res->status) == "PAIRING") {
           $data = array(
             'status'=>'success',
             'data'=>'<img src="data:image/jpeg;base64,'.base64_encode($res->qr_code).'"/>',
@@ -763,7 +763,7 @@ class SettingController extends Controller
 				}
 				if (session('mode')==2) {
           $result = json_decode(WamateHelper::show_device($user->token,$phoneNumber->wamate_id));
-          if ($result->status=="PAIRED"){
+          if (strtoupper($result->status)=="PAIRED"){
 						$flag_connect = true;
           }
         }
