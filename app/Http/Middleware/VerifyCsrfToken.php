@@ -31,6 +31,8 @@ class VerifyCsrfToken extends Middleware
         'send-image-url',
         'send-message-wassenger-automation',
         'send-message-queue-system',
+        'send-wamate',
+        'send-image-url-wamate',
         
         //wp callback
         'send-message-queue-system-wp-activtemplate',
