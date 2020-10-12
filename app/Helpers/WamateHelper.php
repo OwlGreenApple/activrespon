@@ -166,7 +166,7 @@ class WamateHelper
     "updated_at": "2020-10-07 08:35:46"
 }
 */
-  public static function send($to,$message,$device_key)
+  public static function send_message($to,$message,$device_key)
   {
     $url='http://'.self::ip_server().'/messages/send-text';
     
