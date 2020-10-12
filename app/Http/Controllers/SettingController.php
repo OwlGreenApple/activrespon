@@ -897,6 +897,7 @@ class SettingController extends Controller
 
     public function delete_phone(Request $request)
     {
+      $user = Auth::user();
       $phoneNumber = PhoneNumber::find($request->id);
       $wa_number = $phoneNumber->phone_number;
       $arr['check_button'] = '<button id="btn-check" type="button" class="btn btn-custom">Check Phone Number</button>';
