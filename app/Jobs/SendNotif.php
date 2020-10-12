@@ -53,6 +53,7 @@ class SendNotif implements ShouldQueue
 			if ($this->attempts() == 1) {
         // ApiHelper::send_simi($this->phone,$this->message,$this->key);
 
+print_r($this->key);
         //status 11 dari campaign controller
         //wamate
         $messages = Message::
