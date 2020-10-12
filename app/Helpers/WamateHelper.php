@@ -169,7 +169,9 @@ class WamateHelper
   public static function send($to,$message,$device_key)
   {
     $url='http://'.self::ip_server().'/devices';
-
+    
+    $to = str_replace("+","",$to);
+    
     $data = array(
       "to" => $to,
       "message" => $message,
