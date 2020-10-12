@@ -536,9 +536,10 @@ class SettingController extends Controller
       if (session('mode')==2) { //new wamate
         // $result = WamateHelper::get_devices($user->token);
         //direct langsung ke idnya, klo ga ada maka akan buat new device
-        if ($is_registered) {
+        // if ($is_registered) {
+        if ($phoneNumber->wamate_id != 0) {
         }
-        else {
+        else if ($phoneNumber->wamate_id == 0) {
           $result = json_decode(WamateHelper::create_device($user->token,'device-'.$phoneNumber->id));
           $phoneNumber->wamate_id = $result->id;
           $phoneNumber->device_key = $result->device_key;

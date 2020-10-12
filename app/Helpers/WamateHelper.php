@@ -14,7 +14,7 @@ class WamateHelper
   }
 
   static function ip_server(){
-    return '188.166.221.181';
+    return '188.166.221.181:3333';
   }
   
   public function go_curl($url,$data,$method)
