@@ -12,6 +12,10 @@ class WamateHelper
   static function password(){
     return 'qWer123Zxc';
   }
+
+  static function ip_server(){
+    return '188.166.221.181';
+  }
   
   public function go_curl($url,$data,$method)
   {
@@ -35,7 +39,7 @@ class WamateHelper
 
   public static function reg($email)
   {
-    $url='http://128.199.191.249/auth/register';
+    $url='http://'.self::ip_server().'/auth/register';
 
     $data = array(
       "email" => $email,
@@ -86,7 +90,7 @@ class WamateHelper
 */
   public static function login($email)
   {
-    $url='http://128.199.191.249/auth/login';
+    $url='http://'.self::ip_server().'/auth/login';
 
     $data = array(
       "email" => $email,
@@ -115,7 +119,7 @@ class WamateHelper
   
   public static function create_device($token,$name)
   {
-    $url='http://128.199.191.249/devices';
+    $url='http://'.self::ip_server().'/devices';
 
     $data = array(
       "name" => $name,
@@ -164,7 +168,7 @@ class WamateHelper
 */
   public static function send($to,$message,$device_key)
   {
-    $url='http://128.199.191.249/devices';
+    $url='http://'.self::ip_server().'/devices';
 
     $data = array(
       "to" => $to,
@@ -193,7 +197,7 @@ class WamateHelper
  	public static function pair($token,$device_id)
   {
 		// Prepare new cURL resource
-		$ch = curl_init("http://128.199.191.249/devices/".$device_id.'/pair');
+		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id.'/pair');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -216,7 +220,7 @@ class WamateHelper
  	public static function show_device($token,$device_id)
   {
 		// Prepare new cURL resource
-		$ch = curl_init("http://128.199.191.249/devices/".$device_id);
+		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -241,7 +245,7 @@ class WamateHelper
  	public static function get_devices($token)
   {
 		// Prepare new cURL resource
-		$ch = curl_init("http://128.199.191.249/devices");
+		$ch = curl_init('http://'.self::ip_server().'/devices');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -266,7 +270,7 @@ class WamateHelper
  	public static function delete_devices($device_id,$token)
   {
 		// Prepare new cURL resource
-		$ch = curl_init("http://128.199.191.249/devices/".$device_id);
+		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");

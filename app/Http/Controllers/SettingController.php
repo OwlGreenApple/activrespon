@@ -1049,7 +1049,7 @@ class SettingController extends Controller
     public function test_send_message()
     {
       // Prepare new cURL resource
-      $ch = curl_init("http://128.199.191.249/devices/4/pair");
+      $ch = curl_init("http://188.166.221.181/devices/4/pair");
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLINFO_HEADER_OUT, true);
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
