@@ -52,6 +52,7 @@ class QueueMessage extends Command
 			foreach($messages as $message) {
         SendNotif::dispatch($message->key);
       }
+      dd($messages);
 		}
  
 /* End command class */    
