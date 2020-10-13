@@ -146,6 +146,34 @@ class WamateHelper
     return $res;
   }
 
+
+  /*
+  buat chat app
+  */
+ 	public static function get_message($device_key)
+  {
+		// Prepare new cURL resource
+		$ch = curl_init('http://'.self::ip_server().'/messages/');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+		// Set HTTP Header 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+				'Content-Type: application/json',
+				'device-key : '.$device_key
+		));
+
+		
+		$result = curl_exec($ch);
+
+		// Close cURL session handle
+		curl_close($ch);
+
+    return $result;
+
+	}
+
 /*
 { error 
     "status": 500,
