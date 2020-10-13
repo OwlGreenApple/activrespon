@@ -217,11 +217,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                    storage_path('app/temp-send-image-simi/'.$row->image),
-                                    mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    basename($row->image)
-                                  ),$message,$phoneNumber->device_key,$row->image);
+                    $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
                   }
                 }
 
@@ -385,11 +381,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                    storage_path('app/temp-send-image-simi/'.$row->image),
-                                    mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    basename($row->image)
-                                  ),$message,$phoneNumber->device_key,$row->image);
+                    $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
                   }
                 }
 
@@ -577,11 +569,7 @@ class SendCampaign implements ShouldQueue
                       $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                     }
                     if ($phoneNumber->mode == 2) {
-                      $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                      storage_path('app/temp-send-image-simi/'.$row->image),
-                                      mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      basename($row->image)
-                                    ),$message,$phoneNumber->device_key,$row->image);
+                      $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
                     }
                 }
                   
@@ -764,11 +752,7 @@ class SendCampaign implements ShouldQueue
                       $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                     }
                     if ($phoneNumber->mode == 2) {
-                      $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                      storage_path('app/temp-send-image-simi/'.$row->image),
-                                      mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      basename($row->image)
-                                    ),$message,$phoneNumber->device_key,$row->image);
+                      $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
                     }
                 }
 
