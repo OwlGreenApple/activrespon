@@ -196,7 +196,42 @@ class WamateHelper
     return $res;
   }
 
- 	public static function pair($token,$device_id)
+ 	public static function send_image($to,$urls3,$message,$device_key)
+  {
+    $url='http://'.self::ip_server().'/messages/send-text';
+		$to = str_replace("+","",$to);
+
+		$postfields = array(
+				'to' => $to,
+				'message' => $message,
+				'type' => "image",
+				'media_url' => $urls3
+		);
+
+		// Prepare new cURL resource
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+
+		// Set HTTP Header for POST request 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+				"Content-Type:multipart/form-data",
+				'device-key: '.$device_key
+		));
+
+		// Submit the POST request
+		$result = curl_exec($ch);
+		 
+		// Close cURL session handle
+		curl_close($ch);
+
+		// return "success";
+		return $result;
+	}
+  
+	public static function pair($token,$device_id)
   {
 		// Prepare new cURL resource
 		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id.'/pair');

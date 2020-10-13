@@ -1032,15 +1032,14 @@ class SendCampaign implements ShouldQueue
       return $response;
     }
     
-    public function send_image_url_wamate($customer_phone,$curl,$message,$device_key,$image){
+    public function send_image_url_wamate($customer_phone,$urls3,$message,$device_key){
       $curl = curl_init();
 
       $data = array(
           'customer_phone'=>$customer_phone,
-          'curl'=>$curl,
+          'urls3'=>$urls3,
           'message'=>$message,
           'device_key'=>$device_key,
-          'image'=>$image,
       );
 
 		  $url = "https://activrespon.com/dashboard/send-image-url-wamate";
