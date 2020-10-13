@@ -198,7 +198,7 @@ class WamateHelper
 
  	public static function send_image($to,$urls3,$message,$device_key)
   {
-    $url='http://'.self::ip_server().'/messages/send-text';
+    $url='http://'.self::ip_server().'/messages/send-media';
 		$to = str_replace("+","",$to);
 
 		$postfields = array(
