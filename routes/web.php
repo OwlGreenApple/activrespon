@@ -309,6 +309,11 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
 	Route::get('reminderautoreply','ReminderController@reminderAutoReply')->name('reminderautoreply');
 	Route::post('addreminderautoreply','ReminderController@addReminderAutoReply')->name('addreminderautoreply');
 
+  /* CHATS */
+  Route::get('chats','ChatsController@index');
+  Route::post('member_save','ChatsController@add_member');
+  Route::get('get_chat_member','ChatsController@getMembers');
+
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');
   Route::get('resend_broadcast','BroadCastController@resendMessage');
