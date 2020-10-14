@@ -94,6 +94,7 @@
     add_member_form();
     add_member();
     loadMember();
+    delete_member();
   });
 
   function add_member_form()
@@ -152,27 +153,71 @@
       type : 'GET',
       url : "{{ url('get_chat_member') }}",
       dataType: 'html',
+      beforeSend: function() {
+        $('#loader').show();
+        $('.div-loading').addClass('background-load');
+      },
       success: function(result){
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
         $("#chat_members").html(result);
       },
       error : function(xhr)
       {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
         console.log(xhr.responseText);
       }
     });
   }
 
+  function delete_member()
+  {
+    $( "body" ).on("click", ".delete-member", function() {
+      var id = $(this).attr('id');
+      var del_warning = confirm('Are you sure to delete this member?');
 
-  $( "body" ).on( "click", ".view-details", function() {
-    var id = $(this).attr('data-id');
+      if(del_warning == true)
+      {
+          $.ajax({
+            type : "GET",
+            url : "{{ url('delete-chat-member') }}",
+            data : {"id":id},
+            dataType : "json",
+            beforeSend: function() 
+            {
+              $('#loader').show();
+              $('.div-loading').addClass('background-load');
+            },
+            success : function(result)
+            {
+              $('#loader').hide();
+              $('.div-loading').removeClass('background-load');
 
-    $('.details-'+id).toggleClass('d-none');
-  });
-  
-  $( "body" ).on( "click", ".btn-search", function() {
-    currentPage = '';
-    refresh_page();
-  });
+              if(result.response == true)
+              {
+                $(".error").html("<div class='alert alert-success'>Member has been deleted</div>");
+                loadMember();
+              }
+              else
+              {
+                $(".error").html("<div class='alert alert-danger'>Sorry our server is too busy, please try again later.</div>");
+              }
+            },
+            error : function(xhr){
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+                console.log(xhr.responseText);
+            }
+          });
+      }
+      else
+      {
+          return false;
+      }
+      
+    });
+  }
 
   $( "body" ).on( "click", ".btn-confirm", function() {
     $('#id_confirm').val($(this).attr('data-id'));
