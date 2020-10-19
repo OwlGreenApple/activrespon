@@ -675,7 +675,8 @@ class SettingController extends Controller
             );
           }
 				}
-        else if (($qr_status == $request->phone_number) || ($qr_status == "phone_offline")){
+        // else if (($qr_status == $request->phone_number) || ($qr_status == "phone_offline")){
+        else if ($qr_status == $request->phone_number){
           $isLogin = $this->login($request->phone_number);
           $data = array(
             'status'=>'login',
