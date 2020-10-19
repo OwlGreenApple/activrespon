@@ -13,8 +13,8 @@
         <td>{{ $no }}</td>
         <td>{{ $row->member_name }}</td>
         <td>{{ $row->phone }}</td>
-        <td><button id="{{ $row->id }}" type="button" class="btn btn-primary btn-sm">Start Chat</button></td>
-        <td><button id="{{ $row->id }}" type="button" class="btn btn-danger btn-sm">Delete Member</button></td>
+        <td><button id="{{ $row->id }}" type="button" class="btn btn-primary btn-sm btn-chat">Start Chat</button></td>
+        <td><button id="{{ $row->id }}" type="button" class="btn btn-danger btn-sm delete-member">Delete Member</button></td>
       </tr>
       @php $no++; @endphp
     @endforeach

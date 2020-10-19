@@ -38,5 +38,22 @@ class ChatsController extends Controller
        return view('chats.content',['members'=>$members]);
     }
 
+    public function deleteMembers(Request $request)
+    {
+       $id = $request->id;
+       $user_id = Auth::id();
+       try
+       {
+          ChatMembers::where([['id',$id],['user_id',$user_id]])->delete();
+          $data['response'] = true;
+       }
+       catch(QueryException $e)
+       {
+          $data['response'] = false;
+       }
+
+       return $data;
+    }
+
 /* end class */
 }

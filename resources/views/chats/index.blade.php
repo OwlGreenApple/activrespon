@@ -58,30 +58,164 @@
   </div>
 </div>
 
-<!-- Modal Confirm Delete -->
-<div class="modal fade" id="confirm-delete" role="dialog">
-  <div class="modal-dialog">
+<!-- Modal Chat -->
+<div class="modal fade" id="chat_room" role="dialog">
+  <div class="modal-dialog chat-size">
     
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modaltitle">
-          Delete Confirmation
+          Chat 
         </h5>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
-        Are you sure you want to delete?
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4 chat-box px-0">
+              <div class="col-md-12 mb-2">
 
-        <input type="hidden" name="id_delete" id="id_delete">
-      </div>
-      <div class="modal-footer" id="foot">
-        <button class="btn btn-primary" id="btn-delete-ok" data-dismiss="modal">
-          Yes
-        </button>
-        <button class="btn" data-dismiss="modal">
-          Cancel
-        </button>
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div> 
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div>
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div> 
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div>
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div> 
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div>
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div> 
+
+                <div class="row chat-name">
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                    <div class="chat-user">Name</div>
+                    <div class="chat-text-user">Available</div>
+                  </div>
+                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                    <div class="chat-time">09:00</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-8 chat-box">
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
+                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
+                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12 mt-2">
+          <div class="row">
+            <div class="col-lg-4">&nbsp;</div>
+            <div class="col-lg-8">
+              <form id="send-message">
+                <textarea class="form-control"></textarea>
+                <button align="right" class="btn btn-success btn-sm mt-2 float-right">Send</button>
+                <div class="clearfix"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      <!-- end modal body -->
       </div>
     </div>
       
@@ -94,6 +228,8 @@
     add_member_form();
     add_member();
     loadMember();
+    delete_member();
+    openChatRoom();
   });
 
   function add_member_form()
@@ -152,67 +288,84 @@
       type : 'GET',
       url : "{{ url('get_chat_member') }}",
       dataType: 'html',
+      beforeSend: function() {
+        $('#loader').show();
+        $('.div-loading').addClass('background-load');
+      },
       success: function(result){
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
         $("#chat_members").html(result);
       },
       error : function(xhr)
       {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
         console.log(xhr.responseText);
       }
     });
   }
 
+  function delete_member()
+  {
+    $( "body" ).on("click", ".delete-member", function() {
+      var id = $(this).attr('id');
+      var del_warning = confirm('Are you sure to delete this member?');
 
-  $( "body" ).on( "click", ".view-details", function() {
-    var id = $(this).attr('data-id');
+      if(del_warning == true)
+      {
+        $.ajax({
+          type : "GET",
+          url : "{{ url('delete-chat-member') }}",
+          data : {"id":id},
+          dataType : "json",
+          beforeSend: function() 
+          {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+          },
+          success : function(result)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
 
-    $('.details-'+id).toggleClass('d-none');
-  });
-  
-  $( "body" ).on( "click", ".btn-search", function() {
-    currentPage = '';
-    refresh_page();
-  });
+            if(result.response == true)
+            {
+              $(".error").html("<div class='alert alert-success'>Member has been deleted</div>");
+              loadMember();
+            }
+            else
+            {
+              $(".error").html("<div class='alert alert-danger'>Sorry our server is too busy, please try again later.</div>");
+            }
+          },
+          error : function(xhr){
+              $('#loader').hide();
+              $('.div-loading').removeClass('background-load');
+              console.log(xhr.responseText);
+          }
+        });
+      }
+      else
+      {
+          return false;
+      }
+      
+    });
+  }
 
-  $( "body" ).on( "click", ".btn-confirm", function() {
-    $('#id_confirm').val($(this).attr('data-id'));
-    $('#mod-no_order').html($(this).attr('data-no-order'));
-    $('#mod-package').html($(this).attr('data-package'));
+  function openChatRoom()
+  {
+    $( "body" ).on( "click", ".btn-chat", function() {
+     $("#chat_room").modal();
+    });
+  }
 
-    var total = parseInt($(this).attr('data-total'));
-    $('#mod-total').html('Rp. ' + total.toLocaleString());
-    var diskon = parseInt($(this).attr('data-discount'));
-		if (diskon == 0 ) {
-			$("#div-discount").hide();
-		}
-    $('#mod-discount').html('Rp. ' + diskon.toLocaleString());
-    $('#mod-date').html($(this).attr('data-date'));
-
-    var keterangan = '-';
-   // console.log($(this).attr('data-keterangan'));
-    if($(this).attr('data-keterangan')!='' || $(this).attr('data-keterangan')!=null){
-      keterangan = $(this).attr('data-keterangan');
-    }
-
-    $('#mod-keterangan').html(keterangan);
-  });
 
   $( "body" ).on( "click", ".popup-newWindow", function()
   {
     event.preventDefault();
     window.open($(this).attr("href"), "popupWindow", "width=600,height=600,scrollbars=yes");
-  });
-
-  $( "body" ).on( "click", ".btn-delete", function() {
-    $('#id_delete').val($(this).attr('data-id'));
-  });
-
-  $( "body" ).on( "click", "#btn-delete-ok", function() {
-    delete_order();
-  });
-
-  $(document).on('click', '.checkAll', function (e) {
-    $('input:checkbox').not(this).prop('checked', this.checked);
   });
 
 </script>
