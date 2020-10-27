@@ -7,17 +7,19 @@
       <th>Delete</th>
   </thead>
   <tbody>
+  @if(count($members) > 0)
     @php $no = 1; @endphp
     @foreach($members as $row)
       <tr>
         <td>{{ $no }}</td>
-        <td>{{ $row->member_name }}</td>
-        <td>{{ $row->phone }}</td>
-        <td><button id="{{ $row->id }}" type="button" class="btn btn-primary btn-sm btn-chat">Start Chat</button></td>
+        <td>{{ $row->name }}</td>
+        <td>{{ $row->phone_number }}</td>
+        <td><button id="{{ $row->member_id }}" type="button" class="btn btn-primary btn-sm btn-chat">Start Chat</button></td>
         <td><button id="{{ $row->id }}" type="button" class="btn btn-danger btn-sm delete-member">Delete Member</button></td>
       </tr>
       @php $no++; @endphp
     @endforeach
+  @endif
   </tbody>
 </table>
 

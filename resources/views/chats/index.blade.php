@@ -11,7 +11,7 @@
     </div>
 
     <div class="col-md-12">
-      <button id="add_member" class="btn btn-primary">Add Member</button>
+      <button id="add_member" class="btn btn-primary btn-sm">Add Member</button>
       <div class="error"><!-- error when unable to insert database --></div>
       <div class="card-body table-responsive">
         <div id="chat_members"><!-- data --></div>
@@ -39,18 +39,19 @@
 
       <form id="add_member_chat">
         <div class="modal-body">
+            <span class="error_save"></span>
             <div class="form-group">
-              <label><b>Member Name</b></label>
-              <input type="text" class="form-control" name="member_name" />
+              <label><b>Email Member</b></label>
+              <input type="email" class="form-control" name="email" />
             </div>
-            <div class="form-group">
+           <!--  <div class="form-group">
               <label><b>Phone Number</b></label>
               <input type="text" class="form-control" name="phone_number" />
-            </div>
+            </div> -->
         </div>
         <div class="modal-footer">
           <button class="btn btn-primary">Save</button>
-          <button class="btn" data-dismiss="modal">Cancel</button>
+          <button class="btn" data-dismiss="modal">Close</button>
         </div>
       </form>
     </div>
@@ -66,140 +67,22 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modaltitle">
-          Chat 
+          Chat Box
         </h5>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
       </div>
       <div class="modal-body">
         <div class="col-md-12">
           <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-4 chat-box px-0">
-              <div class="col-md-12 mb-2">
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div> 
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
+                <div id="chat_room_member" class="col-md-12 mb-2">
+                  <!-- displaying chat members -->
                 </div>
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div> 
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div>
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div> 
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div>
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div> 
-
-                <div class="row chat-name">
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                    <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
-                  </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-                    <div class="chat-user">Name</div>
-                    <div class="chat-text-user">Available</div>
-                  </div>
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                    <div class="chat-time">09:00</div>
-                  </div>
-                </div>
-
               </div>
-            </div>
-            <div class="col-lg-8 col-md-8 col-sm-8 chat-box">
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div> 
-                <div class="alert alert-primary col-md-12 chat-text">You : aaaaaaaa</div>
-                <div class="alert alert-success col-md-12 chat-text">Friend : cccccccc</div>
-            </div>
+
+              <div id="content_chat" class="col-lg-8 col-md-8 col-sm-8 chat-box">
+                <!-- displaying chat id -->
+              </div>
           </div>
         </div>
 
@@ -207,11 +90,14 @@
           <div class="row">
             <div class="col-lg-4">&nbsp;</div>
             <div class="col-lg-8">
-              <form id="send-message">
-                <textarea class="form-control"></textarea>
-                <button align="right" class="btn btn-success btn-sm mt-2 float-right">Send</button>
+              <span class="error_send"></span>
+              
+              <div>
+                <textarea id="divInput-description-post" class="form-control"></textarea>
+                <button id="close_chat" type="button" align="left" class="btn btn-warning btn-sm mt-2 float-left">Close</button>
+                <button type="button" align="right" class="btn btn-success btn-sm mt-2 float-right btn-send">Send</button>
                 <div class="clearfix"></div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -230,7 +116,89 @@
     loadMember();
     delete_member();
     openChatRoom();
+    emojiOne();
+    sending_message();
   });
+
+  function emojiOne()
+  {
+    $("#divInput-description-post").emojioneArea({
+      placeholder: "Type a message",
+      pickerPosition: "bottom"
+    });
+  }
+
+  function sending_message()
+  {
+    $(".btn-send").click(function(){
+      var recipient = $(this).attr('id');
+      var messages = $("#divInput-description-post").emojioneArea()[0].emojioneArea.getText();
+      sendMesssage(recipient,messages);
+    });
+  }
+
+  function sendMesssage(recipient,messages)
+  {
+    var data = {
+      "recipient":recipient,
+      "messages":messages,
+    };
+
+    $.ajaxSetup({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+    $.ajax({
+      type : 'POST',
+      url : "{{ url('send_chat_message') }}",
+      data : data,
+      dataType: 'json',
+      beforeSend: function() {
+        $(".btn-send").prop('disabled',true).text('Sending...');
+      },
+      success: function(result) {
+        $(".btn-send").text('Send').prop('disabled',false);
+
+        if(result.response == true)
+        {
+          $(".error_send").html('');
+          load_messages(result.recipient);
+          $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText('');
+        }
+        
+        if(result.response == false)
+        {
+          $(".error_send").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
+        }
+      },
+      error: function(xhr)
+      {
+        $(".btn-send").text('Send').prop('disabled',false);
+        console.log(xhr.responseText);
+      }
+    });
+  }
+
+  function load_messages(user_recipient)
+  {
+    var data = {"user_recipient" : user_recipient};
+    $.ajax({
+      type : 'GET',
+      url : "{{ url('get_chat_messages') }}",
+      data : data,
+      dataType: 'html',
+      success: function(result){
+        $("#content_chat").html(result);
+        var scrolls = $("#content_chat").prop("scrollHeight");
+        $("#content_chat").scrollTop(scrolls);
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
+  }
 
   function add_member_form()
   {
@@ -266,12 +234,23 @@
       success: function(result) {
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
+
         if(result.response == true){
           loadMember();
           $("input").val('');
         }
+        else if(result.response === 0){
+          $(".error_save").html("<div class='alert alert-danger'>Invalid email</div>");
+        }
+        else if(result.response == "available"){
+          $(".error_save").html("<div class='alert alert-danger'>Email has registered</div>");
+        } 
+        else if(result.response == "empty"){
+          $(".error_save").html("<div class='alert alert-danger'>Email shouldn\'t be empty</div>");
+        }
         else{
           $(".error").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
+          $("#add_member_form").modal('hide');
         }
       },
       error : function(xhr)
@@ -283,10 +262,11 @@
     });
   }
 
-  function loadMember() {
+  function loadMember(chat) {
     $.ajax({
       type : 'GET',
       url : "{{ url('get_chat_member') }}",
+      data : {'chat_room':chat},
       dataType: 'html',
       beforeSend: function() {
         $('#loader').show();
@@ -295,7 +275,15 @@
       success: function(result){
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
-        $("#chat_members").html(result);
+
+        if(chat == 1)
+        {
+          $("#chat_room_member").html(result);
+        }
+        else
+        {
+          $("#chat_members").html(result);
+        }
       },
       error : function(xhr)
       {
@@ -356,11 +344,32 @@
 
   function openChatRoom()
   {
-    $( "body" ).on( "click", ".btn-chat", function() {
-     $("#chat_room").modal();
+    $( "body" ).on("click", ".btn-chat", function() 
+    {
+      var id = $(this).attr('id'); //recipient id
+      $("#chat_room").modal({backdrop: 'static', keyboard: false});
+      $(".btn-send").attr('id',id);
+      loadMember(1);
+      load_messages(id);
+
+      setTimeout(function(){
+        getNewMessages(id);
+      },300);
+      
     });
   }
 
+   function getNewMessages(recipient_id)
+  {
+      var get_messages = setInterval(function(){
+        load_messages(recipient_id);
+      },2500);
+
+      $("#close_chat").click(function(){
+          $("#chat_room").modal('hide');
+          clearInterval(get_messages);
+      });
+  }
 
   $( "body" ).on( "click", ".popup-newWindow", function()
   {
