@@ -316,6 +316,8 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('delete-chat-member','ChatsController@deleteMembers');
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::get('get_chat_messages','ChatsController@getChatMessages');
+  Route::get('response-invitation','ChatsController@member_invitation');
+  Route::get('delete_chat','ChatsController@delChat');
 
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');

@@ -11,8 +11,8 @@
     </div>
 
     <div class="col-md-12">
-      <button id="add_member" class="btn btn-primary btn-sm">Add Member</button>
       <div class="error"><!-- error when unable to insert database --></div>
+      <button id="add_member" class="btn btn-primary btn-sm">Add Member</button>
       <div class="card-body table-responsive">
         <div id="chat_members"><!-- data --></div>
       </div>
@@ -94,8 +94,13 @@
               
               <div>
                 <textarea id="divInput-description-post" class="form-control"></textarea>
+
                 <button id="close_chat" type="button" align="left" class="btn btn-warning btn-sm mt-2 float-left">Close</button>
+
+                <button id="del_chat" type="button" align="left" class="btn btn-danger ml-2 btn-sm mt-2 float-left">Delete</button>
+
                 <button type="button" align="right" class="btn btn-success btn-sm mt-2 float-right btn-send">Send</button>
+
                 <div class="clearfix"></div>
               </div>
             </div>
@@ -116,9 +121,107 @@
     loadMember();
     delete_member();
     openChatRoom();
+    openChatBox();
     emojiOne();
     sending_message();
+    responseInvitation();
+    delChat();
   });
+
+  function delChat()
+  {
+    $("#del_chat").click(function()
+    {
+      var recipient_id = $(".btn-chat").attr('id');
+      var warn = confirm("Are you sure to delete these chats? \n WARNIG : this cannot be undone");
+
+      if(warn == false)
+      {
+        return false;
+      }
+      else
+      {
+        $.ajax({
+          type : 'GET',
+          url : '{{ url("delete_chat") }}',
+          data : {'recipient_id':recipient_id},
+          dataType : 'json',
+          beforeSend: function() {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+          },
+          success : function(result)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+
+            if(result.response == 1)
+            {
+              load_messages(recipient_id);
+              $(".error_send").html("<div class='alert alert-success'>Your data has been cleared up");
+            }
+            else
+            {
+              load_messages(recipient_id);
+              $(".error_send").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
+            }
+
+            $(".alert").delay(2000).fadeOut(3000);
+          },
+          error : function(xhr)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            console.log(xhr.responseText);
+          }
+        });
+      }
+      
+    });
+  }
+
+  function responseInvitation()
+  {
+     $("body").on("click",".response",function(){
+        var data = {
+          'sender':$(this).attr('id'),
+          'invitor':$(this).attr('data-invited'),
+          'response':$(this).attr('data-status')
+        };
+
+        $.ajax({
+          type : 'GET',
+          url : '{{ url("response-invitation") }}',
+          data : data,
+          dataType : 'json',
+          beforeSend: function() {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+          },
+          success : function(result)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+
+            if(result.response == 1)
+            {
+              loadMember();
+              $(".error").html("<div class='alert alert-success'>Your data has been changed");
+            }
+            else
+            {
+              $(".error").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
+            }
+          },
+          error : function(xhr)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            console.log(xhr.responseText);
+          }
+        });
+     });
+  }
 
   function emojiOne()
   {
@@ -356,6 +459,15 @@
         getNewMessages(id);
       },300);
       
+    });
+  }
+
+  function openChatBox()
+  {
+    $( "body" ).on("click", ".chat-user", function() 
+    {
+      var id = $(this).attr('id'); //user id
+      load_messages(id);
     });
   }
 

@@ -6,7 +6,7 @@
       </div>
 
       <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
-        <div class="chat-user">{{ $row->name }}</div>
+        <div id="{{ $row['invited_id'] }}" class="chat-user">{{ $row['name'] }}</div>
         <div class="chat-text-user">Available</div>
       </div>
 
