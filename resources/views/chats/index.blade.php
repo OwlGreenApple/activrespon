@@ -184,7 +184,7 @@
   {
      $("body").on("click",".response",function(){
         var data = {
-          'sender':$(this).attr('id'),
+          'id_invited':$(this).attr('id'),
           'invitor':$(this).attr('data-invited'),
           'response':$(this).attr('data-status')
         };
