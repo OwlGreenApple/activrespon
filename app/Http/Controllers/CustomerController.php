@@ -24,6 +24,7 @@ use App\Helpers\ApiHelper;
 use App\Rules\CheckWANumbers;
 use App\Http\Controllers\ApiController as API;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\ApiWPController;
 
 class CustomerController extends Controller
 {
@@ -302,6 +303,13 @@ class CustomerController extends Controller
               if($list->id == 121)
               {
                 $api->listActivCampaign($request->email,$request->subscribername,$request->last_name,$phone_number,8);
+              }
+              
+              if ($list->id == 216)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'hc716nc2ry622');
               }
 
                $user_id = $list->user_id;
