@@ -180,7 +180,7 @@ return [
         // App\Providers\AlertServiceProvider::class,
 
         'Maatwebsite\Excel\ExcelServiceProvider',
-
+        Webup\LaravelSendinBlue\SendinBlueServiceProvider::class,
     ],
 
     /*
