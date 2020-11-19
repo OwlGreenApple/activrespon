@@ -312,6 +312,13 @@ class CustomerController extends Controller
                 $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'hc716nc2ry622');
               }
 
+              if ($list->id == 219)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'te7027awnw9f8');
+              }
+
                $user_id = $list->user_id;
                $list_id = $list->id;
                return $this->addSubscriber($list_id,$customer_id,$customer_join,$user_id);
