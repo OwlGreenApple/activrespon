@@ -298,7 +298,7 @@ class ApiController extends Controller
         $cust->list_id = $data['list_id'];
         $cust->name = $data['name'];
         $cust->email = $data['email'];
-        $cust->wa_number = $data['wa_no'];
+        $cust->telegram_number = $data['wa_no'];
         $cust->save();
         $cust::create_link_unsubs($cust->id,$list->id);
         $customer_subscribe_date = $cust->created_at;

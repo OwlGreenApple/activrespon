@@ -180,6 +180,7 @@ class CustomerController extends Controller
               $customer->email = strip_tags($request->email);
               $customer->code_country = strip_tags($request->data_country);
               $customer->status = 1;
+              $customer->telegram_number = "";
               if($request->phone_number != null)
               {
                 $customer->telegram_number = strip_tags($phone_number);
@@ -731,7 +732,7 @@ class CustomerController extends Controller
             $customer->user_id = $get_id_list->user_id;
             $customer->list_id = $get_id_list->id;
             $customer->name = $request->name;
-            $customer->wa_number = $wa_number;
+            $customer->telegram_number = $wa_number;
             $customer->additional = $addt;
             $customer->save();
             $customer::create_link_unsubs($customer->id,$get_id_list->id);
