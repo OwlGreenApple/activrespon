@@ -34,6 +34,12 @@
 
     <script src="https://www.google.com/recaptcha/api.js?render=<?php echo env('GOOGLE_RECAPTCHA_SITE_KEY');?>"></script>
     
+    <?php if ($listname=="q6y3juoz"){ ?>    
+      <!-- Pixel Code for https://activproof.com/package/ -->
+      <script async src="https://activproof.com/package/pixel/9jq97p9rzcukhh6z3p5cf7ro1kewcz9s"></script>
+      <!-- END Pixel Code -->
+    <?php } ?>    
+    
 </head>
 
 <body class="act-tel-subscribe-page">
@@ -70,6 +76,7 @@
                     <div class="form-group">
                       <label>{{ $label_name }}*</label>
                       <input type="text" name="subscribername" class="form-control" />
+                      <input type="hidden" id="country" name="country" />
                       <span class="error name"></span>
                     </div>
 
@@ -194,6 +201,11 @@
 <script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
+      $.get("https://api.ipdata.co?api-key=test", function(response) {
+          // console.log(response.country_name);
+          $("#country").val(response.country_name);
+      }, "jsonp");    
+    
       //choose();
       grecaptcha.ready(function() {
         grecaptcha.execute("<?php echo env('GOOGLE_RECAPTCHA_SITE_KEY');?>", {action: 'contact_form'}).then(function(token) {
