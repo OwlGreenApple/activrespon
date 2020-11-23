@@ -319,6 +319,35 @@ class CustomerController extends Controller
                 $apiWPController = new ApiWPController;
                 $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'te7027awnw9f8');
               }
+              
+              
+              if ($list->id == 216)
+              {
+                $url='https://activproof.com/package/pixel-webhook/4372184ccdfa544983dd5c9259808099';
+
+                $data = array(
+                  "subscribername" => $request->subscribername.' '.$request->last_name,
+                  "country" => "test",
+                );
+
+                $data_string = json_encode($data);
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_VERBOSE, 0);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                  'Content-Type: application/json',
+                  'Content-Length: ' . strlen($data_string)
+                ));
+                $res=curl_exec($ch);
+                // return $res;
+              }
+              
 
                $user_id = $list->user_id;
                $list_id = $list->id;
