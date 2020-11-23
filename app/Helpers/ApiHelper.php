@@ -12,6 +12,10 @@ class ApiHelper
   static function bar(){
     return 'fb6d0ba27c5170239c7bc08f043e985eee2c913b997ada89';
   }
+
+  static function simiIP(){
+    return "188.166.221.181:3333";
+  }
   
   public function go_curl($url,$data,$method)
   {
@@ -660,6 +664,43 @@ class ApiHelper
 		// return "success";
 		return $result;
 	}
+
+  
+  public static function send_image_url_wamate($phoneNumber,$image,$message,$device_key)
+  {
+    // dd($image);
+    $phoneNumber = str_replace("+","",$phoneNumber);
+     
+    $postfields = array(
+        "to" => $phoneNumber,
+        "message" => $message,
+        "media_url"=>$image,
+        "type"=>"image",
+        "reply_for"=> 0
+    );
+
+    // Prepare new cURL resource
+    $ch = curl_init(self::simiIP().'/messages/send-media');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+
+    // Set HTTP Header for POST request 
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "Content-Type:multipart/form-data",
+        "device-key:".$device_key.""
+    ));
+
+    // Submit the POST request
+    $result = curl_exec($ch);
+     
+    // Close cURL session handle
+    curl_close($ch);
+
+    // return "success";
+    return $result;
+  }
 
  	public static function get_qr_code_simi($url)
   {
