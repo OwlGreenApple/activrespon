@@ -279,7 +279,7 @@ class SendNotif implements ShouldQueue
           'customer_phone'=>$customer_phone,
           'message'=>$message,
           'device_key'=>$device_key,
-      );
+      ); 
 
 		  $url = "https://activrespon.com/dashboard/send-wamate";
 
