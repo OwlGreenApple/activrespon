@@ -194,9 +194,9 @@
                                 <a class="nav-link {{ (request()->is('list-user')) ? 'active' : '' }}" href="{{ url('list-user') }}">Admin Page</a>
 															</li>
 														@endif
-                             <li class="nav-item">
+                             <!--<li class="nav-item">
                                 <a class="nav-link {{ (request()->is('chats')) ? 'active' : '' }}" href="{{ url('chats') }}">Chats</a>
-                            </li>
+                            </li>-->
                         @endif 
                     </ul>
                     <ul class="navbar-nav mr-auto"><!-- separator --></ul>
