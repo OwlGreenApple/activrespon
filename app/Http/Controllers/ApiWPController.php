@@ -150,7 +150,7 @@ class ApiWPController extends Controller
           $phone_number = preg_replace("/^[0-9]/", "+62", $str);
         }
         
-        if ($request->event == "checkout-completed"){
+        // if ($request->event == "checkout-completed"){
           //list khusus activtemplate https://activrespon.com/dashboard/a1yqnefs
           $list = UserList::where('name',"jsavpwkm")->first();
 
@@ -177,7 +177,7 @@ class ApiWPController extends Controller
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
           }
-        }
+        // }
         
         $message_send = Message::create_message($phone_number,$request->content,env('REMINDER_PHONE_KEY'));
         

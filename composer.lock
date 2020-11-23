@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "cb44eaafbaee9f43bc2fd098fd8356c2",
+=======
+    "content-hash": "eca9d6720be8c67c0f85ef8a75c4e6dc",
+>>>>>>> 22d022789685cb860ff5add2db9ef2cfb5b6fb1f
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3525,6 +3529,65 @@
             "time": "2020-09-08T12:21:27+00:00"
         },
         {
+            "name": "sendinblue/api-v3-sdk",
+            "version": "v7.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sendinblue/APIv3-php-library.git",
+                "reference": "4b7c9b1c0aadd90d7fc24286e4247add57606e6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sendinblue/APIv3-php-library/zipball/4b7c9b1c0aadd90d7fc24286e4247add57606e6c",
+                "reference": "4b7c9b1c0aadd90d7fc24286e4247add57606e6c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "guzzlehttp/guzzle": "^6.2 || ^7.0",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~1.12",
+                "phpunit/phpunit": "^4.8",
+                "squizlabs/php_codesniffer": "~2.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "7.x.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SendinBlue\\Client\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SendinBlue Developers",
+                    "email": "contact@sendinblue.com",
+                    "homepage": "https://www.sendinblue.com/"
+                }
+            ],
+            "description": "Official SendinBlue provided RESTFul API V3 php library",
+            "homepage": "https://github.com/sendinblue/APIv3-php-library",
+            "keywords": [
+                "api",
+                "php",
+                "sdk",
+                "sendinblue",
+                "swagger"
+            ],
+            "time": "2020-11-03T07:43:07+00:00"
+        },
+        {
             "name": "swiftmailer/swiftmailer",
             "version": "v6.2.3",
             "source": {
@@ -6060,6 +6123,7 @@
             "time": "2020-07-22T23:32:04+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "zendframework/zend-code",
             "version": "3.4.1",
             "source": {
@@ -6097,15 +6161,49 @@
                     "dev-master": "3.4.x-dev",
                     "dev-develop": "3.5.x-dev",
                     "dev-dev-4.0": "4.0.x-dev"
+=======
+            "name": "webup/laravel-sendinblue",
+            "version": "v3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/agence-webup/laravel-sendinblue.git",
+                "reference": "dd1deeb9e114945d592a26fb79de08b38bbb8a3d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/agence-webup/laravel-sendinblue/zipball/dd1deeb9e114945d592a26fb79de08b38bbb8a3d",
+                "reference": "dd1deeb9e114945d592a26fb79de08b38bbb8a3d",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2|^7.0",
+                "illuminate/mail": "^7.0|^8.0",
+                "sendinblue/api-v3-sdk": "^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0|^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Webup\\LaravelSendinBlue\\SendinBlueServiceProvider"
+                    ]
+>>>>>>> 22d022789685cb860ff5add2db9ef2cfb5b6fb1f
                 }
             },
             "autoload": {
                 "psr-4": {
+<<<<<<< HEAD
                     "Zend\\Code\\": "src/"
+=======
+                    "Webup\\LaravelSendinBlue\\": "src/"
+>>>>>>> 22d022789685cb860ff5add2db9ef2cfb5b6fb1f
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
+<<<<<<< HEAD
                 "BSD-3-Clause"
             ],
             "description": "Extensions to the PHP Reflection API, static code scanning, and code generation",
@@ -6171,6 +6269,30 @@
             ],
             "abandoned": "laminas/laminas-eventmanager",
             "time": "2018-04-25T15:33:34+00:00"
+=======
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Baptiste Ducatel",
+                    "email": "baptiste@agence-webup.com",
+                    "homepage": "http://agence-webup.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel's mail transport for SendinBlue",
+            "keywords": [
+                "laravel",
+                "laravel5",
+                "laravel7",
+                "laravel8",
+                "lumen",
+                "mailing",
+                "sendinblue",
+                "stmp"
+            ],
+            "time": "2020-10-02T18:21:40+00:00"
+>>>>>>> 22d022789685cb860ff5add2db9ef2cfb5b6fb1f
         }
     ],
     "packages-dev": [
