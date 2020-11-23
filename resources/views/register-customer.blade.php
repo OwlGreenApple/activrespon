@@ -289,7 +289,11 @@
   function saveSubscriber(){
       $("#button_add_appointment").hide();
       $("#addcustomer").submit(function(e){
-          e.preventDefault();
+          <?php if ($listname<>"q6y3juoz"){ ?>
+            e.preventDefault();
+          <?php } else { ?>
+            return "";
+          <?php } ?>
           var code_country = $(".iti__selected-flag").attr('data-code');
           var data_country = $(".iti__selected-flag").attr('data-country');
           var data = $(this).serializeArray();
