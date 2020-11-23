@@ -5,14 +5,14 @@
 <div class="container mb-5 main-cont">
   <div class="row">
     <div class="col-md-12">
-      <h2><b>Orders</b></h2>  
+      <h2><b>WA Chat page</b></h2>  
       <h5>List of your WA chat members.</h5>
       <hr>
     </div>
 
     <div class="col-md-12">
       <div class="error"><!-- error when unable to insert database --></div>
-      <button id="add_member" class="btn btn-primary btn-sm">Add Member</button>
+      <!-- <button id="add_member" class="btn btn-primary btn-sm">Add Member</button> -->
       <div class="card-body table-responsive">
         <div id="chat_members"><!-- data --></div>
       </div>
@@ -20,6 +20,67 @@
         You don't have any order yet, please make order <a href="{{ url('pricing') }}">Here</a>
       </div> -->
     </div>
+
+    @if($error == null)
+
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-4 chat-box px-0">
+            <div id="chat_room_member">
+              <!-- displaying chat members -->
+
+              @if(count($chats) > 0)
+                @foreach($chats AS $key=>$row)
+                  <div class="col-md-12 mb-2 chat_room_box">
+                   <div class="row chat-name">
+                      <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
+                        <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                      </div>
+
+                      <div class="col-lg-10 col-md-10 col-sm-10 col-10 pr-0">
+                        <div id="{{ $row['id'] }}" class="chat-user">{{$row['name']}}</div>
+                        <div class="chat-text-user"><!-- Available --></div>
+                      </div>
+
+                      <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
+                        <div class="chat-time"></div>
+                      </div>
+                      <!-- -->
+                    </div>
+                  </div>
+                @endforeach
+              @endif
+
+            </div>
+
+          </div>
+
+          <div id="content_chat" class="col-lg-8 col-md-8 col-sm-8 chat-box">
+            <!-- displaying chat messages -->
+            <div class="col-md-6"><div class="alert alert-primary chat-text">chats</div></div>
+            <div class="col-md-6 ml-auto text-right"><div class="alert alert-success chat-text">chats2 test test</div></div>
+          </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12 mt-2">
+      <div class="row">
+        <div class="col-lg-4">&nbsp;</div>
+        <div class="col-lg-8">
+          <span class="error_send"></span>
+          
+          <div>
+            <textarea id="divInput-description-post" class="form-control"></textarea>
+            <button type="button" align="right" class="btn btn-success btn-sm mt-2 float-right btn-send">Send</button>
+
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    @else
+      <div class="alert alert-warning col-lg-12">{{ $error }}</div>
+    @endif
 
   </div>
 </div>
@@ -72,40 +133,7 @@
 
       </div>
       <div class="modal-body">
-        <div class="col-md-12">
-          <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-4 chat-box px-0">
-                <div id="chat_room_member" class="col-md-12 mb-2">
-                  <!-- displaying chat members -->
-                </div>
-              </div>
-
-              <div id="content_chat" class="col-lg-8 col-md-8 col-sm-8 chat-box">
-                <!-- displaying chat id -->
-              </div>
-          </div>
-        </div>
-
-        <div class="col-lg-12 mt-2">
-          <div class="row">
-            <div class="col-lg-4">&nbsp;</div>
-            <div class="col-lg-8">
-              <span class="error_send"></span>
-              
-              <div>
-                <textarea id="divInput-description-post" class="form-control"></textarea>
-
-                <button id="close_chat" type="button" align="left" class="btn btn-warning btn-sm mt-2 float-left">Close</button>
-
-                <button id="del_chat" type="button" align="left" class="btn btn-danger ml-2 btn-sm mt-2 float-left">Delete</button>
-
-                <button type="button" align="right" class="btn btn-success btn-sm mt-2 float-right btn-send">Send</button>
-
-                <div class="clearfix"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       <!-- end modal body -->
       </div>
     </div>
@@ -118,7 +146,7 @@
   $(document).ready(function() {
     add_member_form();
     add_member();
-    loadMember();
+    // loadMember();
     delete_member();
     openChatRoom();
     openChatBox();

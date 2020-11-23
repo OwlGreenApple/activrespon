@@ -31,7 +31,7 @@
         </td>
         <td>
           @if($row['member_status'] == 2)
-            <button id="{{ $row['invited_id'] }}" type="button" class="btn btn-primary btn-sm btn-chat">Start Chat</button>
+            <button type="button" class="btn btn-primary btn-sm btn-chat">Start Chat</button>
           @else
             -
           @endif

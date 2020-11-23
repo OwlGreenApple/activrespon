@@ -356,5 +356,58 @@ class WamateHelper
 
 	}
 
+  public static function get_all_chats($device_key)
+  {
+    $ch = curl_init('http://'.self::ip_server().'/chats');
+
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Content-Type: application/json',
+      'device-key: '.$device_key
+    ));
+   
+    $result = curl_exec($ch);
+
+    // Close cURL session handle
+    curl_close($ch);
+
+    return json_decode($result,true);
+
+  }
+
+  public static function get_all_messages($device_key)
+  {
+    $ch = curl_init('http://'.self::ip_server().'/messages');
+
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Content-Type: application/json',
+      'device-key: '.$device_key
+    ));
+   
+    $result = curl_exec($ch);
+
+    // Close cURL session handle
+    curl_close($ch);
+    $msg = json_decode($result,true);
+
+    // dd($msg['data']);
+
+    // return json_decode($result,true);
+
+  }
+
 /* END CLASS */
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\WamateHelper;
 use App\ChatMembers;
 use App\ChatMessages;
 use App\User;
+use App\PhoneNumber;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use DB;
@@ -14,7 +16,23 @@ class ChatsController extends Controller
 {
     public function index()
     {
-        return view('chats.index');
+        $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
+        $data['error'] = null;
+        $data['chats'] = array();
+
+        if(is_null($phone_number))
+        {
+            $data['error'] = 'Our server is too busy, please contact administrator.';
+        }
+        else
+        {
+            $device_key = $phone_number->device_key;
+            $chat_members = WamateHelper::get_all_chats($device_key);
+            $chat_messages = WamateHelper::get_all_messages($device_key);
+            $data['chats'] = $chat_members;
+        }
+        
+        return view('chats.index',$data);
     }
 
     public function add_member(Request $request)
