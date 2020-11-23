@@ -300,6 +300,7 @@
             {name:'data_country',value:data_country},
             {name:'listname',value:'{{ $listname }}'},
             {name:'listid',value:'{{ $id }}'},
+            {name:'country',value:$("#country").val()},
           );
 
           $.ajaxSetup({

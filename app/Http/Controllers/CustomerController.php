@@ -327,7 +327,7 @@ class CustomerController extends Controller
 
                 $data = array(
                   "subscribername" => $request->subscribername.' '.$request->last_name,
-                  "country" => "test",
+                  "country" => $request->country,
                 );
 
                 $data_string = json_encode($data);
