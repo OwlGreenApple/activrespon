@@ -155,6 +155,7 @@ class CampaignController extends Controller
 			$user = Auth::user();
 			$phoneNumber = PhoneNumber::where("user_id",$user->id)->first();
 			$key = $phoneNumber->filename;
+      $device_key = $phoneNumber->device_key;
 
 
 			if ($phoneNumber->mode == 0) {
@@ -179,6 +180,7 @@ class CampaignController extends Controller
 					$folder = $user->id."/send-test-message/";
 					Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($request->file('imageWA')), 'public');
 					sleep(1);
+
 					$url = Storage::disk('s3')->url($folder."temp.jpg");
 					if ($phoneNumber->mode == 0) {
 						ApiHelper::send_image_url_simi($request->phone,curl_file_create(
@@ -187,6 +189,10 @@ class CampaignController extends Controller
 							$_FILES["imageWA"]["name"]
 						),$message,$server->url);
 					}
+          elseif($phoneNumber->mode == 2)
+          {
+            ApiHelper::send_image_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key);
+          }
 					else {
 						ApiHelper::send_image_url($request->phone,$url,$message,$key);
 

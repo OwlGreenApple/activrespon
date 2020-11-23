@@ -29,9 +29,6 @@
     <link href="{{ asset('/assets/css/waku.css') }}" rel="stylesheet"> 
     <link href="{{ asset('/assets/datetimepicker/jquery.datetimepicker.css') }}" rel="stylesheet">
 
-    <!-- Font Awesome 4.7 -->
-    <link href="{{ asset('/assets/Font-Awesome-4.7.0/css/font-awesome.min.css') }}" rel="stylesheet">
-
      <!-- Emoji -->
     <link href="{{ asset('/assets/emoji/css/emojionearea.min.css') }}" rel="stylesheet"> 
     <script type="text/javascript" src="{{ asset('/assets/emoji/js/prettify.js') }}"></script>

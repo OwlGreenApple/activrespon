@@ -60,12 +60,13 @@ class SettingController extends Controller
         $user->email_wamate = $email_wamate;
         $user->save();
       }
-      if (is_null($user->token) ) {
+      
+      /*if (is_null($user->token) ) {
         $result = json_decode(WamateHelper::login($email_wamate));
         $user->token = $result->token;
         $user->refresh_token = $result->refreshToken;
         $user->save();
-      }
+      }*/
       
       
       $day_left = User::find($user->id)->day_left;
