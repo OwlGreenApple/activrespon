@@ -311,6 +311,9 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
 
   /* CHATS */
   Route::get('chats','ChatsController@index');
+  Route::get('get_all_chats','ChatsController@get_all_chats');
+  
+  
   Route::post('member_save','ChatsController@add_member');
   Route::get('get_chat_member','ChatsController@getMembers');
   Route::get('delete-chat-member','ChatsController@deleteMembers');
