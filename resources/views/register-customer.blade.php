@@ -76,7 +76,7 @@
                     <div class="form-group">
                       <label>{{ $label_name }}*</label>
                       <input type="text" name="subscribername" class="form-control" />
-                      <input type="hidden" id="country" name="country" />
+                      <input type="hidden" id="city" name="city" />
                       <span class="error name"></span>
                     </div>
 
@@ -203,7 +203,7 @@
   $(document).ready(function() {
       $.get("https://api.ipdata.co?api-key=test", function(response) {
           // console.log(response.country_name);
-          $("#country").val(response.country_name);
+          $("#city").val(response.city);
       }, "jsonp");    
     
       //choose();
@@ -300,7 +300,7 @@
             {name:'data_country',value:data_country},
             {name:'listname',value:'{{ $listname }}'},
             {name:'listid',value:'{{ $id }}'},
-            {name:'country',value:$("#country").val()},
+            {name:'city',value:$("#city").val()},
           );
 
           $.ajaxSetup({
