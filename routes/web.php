@@ -312,13 +312,14 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   /* CHATS */
   Route::get('chats','ChatsController@index');
   Route::get('get_all_chats','ChatsController@get_all_chats');
+  Route::get('get_chat_messages','ChatsController@getChatMessages');
+  Route::post('send_chat_message','ChatsController@sendMessage');
+  Route::post('send_chat_image','ChatsController@sendImage');
   
   
   Route::post('member_save','ChatsController@add_member');
   Route::get('get_chat_member','ChatsController@getMembers');
   Route::get('delete-chat-member','ChatsController@deleteMembers');
-  Route::post('send_chat_message','ChatsController@sendMessage');
-  Route::get('get_chat_messages','ChatsController@getChatMessages');
   Route::get('response-invitation','ChatsController@member_invitation');
   Route::get('delete_chat','ChatsController@delChat');
 

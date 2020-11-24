@@ -31,14 +31,14 @@
 
               @if(count($chats) > 0)
                 @foreach($chats AS $key=>$row)
-                  <div class="col-md-12 mb-2 chat_room_box">
+                  <div id="{{ $row['id'] }}" class="col-md-12 mb-2 chat_room_box">
                    <div class="row chat-name">
                       <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
                         <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
                       </div>
 
                       <div class="col-lg-10 col-md-10 col-sm-10 col-10 pr-0">
-                        <div id="{{ $row['id'] }}" class="chat-user">{{$row['name']}}</div>
+                        <div class="chat-user">{{$row['name']}}</div>
                         <div class="chat-text-user"><!-- Available --></div>
                       </div>
 
@@ -49,6 +49,8 @@
                     </div>
                   </div>
                 @endforeach
+              @else
+                {{$error}}
               @endif
 
             </div>
@@ -57,8 +59,6 @@
 
           <div id="content_chat" class="col-lg-8 col-md-8 col-sm-8 chat-box">
             <!-- displaying chat messages -->
-            <div class="col-md-6"><div class="alert alert-primary chat-text">chats</div></div>
-            <div class="col-md-6 ml-auto text-right"><div class="alert alert-success chat-text">chats2 test test</div></div>
           </div>
       </div>
     </div>
@@ -71,8 +71,8 @@
           
           <div>
             <textarea id="divInput-description-post" class="form-control"></textarea>
-            <button type="button" align="right" class="btn btn-success btn-sm mt-2 float-right btn-send">Send</button>
-
+            <div class="btn btn-warning btn-image mt-2 float-left">Send Image</div>
+            <button type="button" align="right" class="btn btn-success mt-2 float-right btn-send">Send</button>
             <div class="clearfix"></div>
           </div>
         </div>
@@ -122,19 +122,24 @@
 
 <!-- Modal Chat -->
 <div class="modal fade" id="chat_room" role="dialog">
-  <div class="modal-dialog chat-size">
+  <div class="modal-dialog">
     
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modaltitle">
-          Chat Box
+          Send Image
         </h5>
-
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
-      <div class="modal-body">
-        
-      <!-- end modal body -->
+      <div class="modal-body text-center">
+        <form id="send_image">
+          <img class="image_preview mb-2" />
+          <span class="err_img"><!-- error --></span>
+          <input id="imgInp" type="file" name="imageWA" class="form-control mt-2"/>
+          <input type="text" name="messages" placeholder="Caption" class="form-control mt-2"/>
+          <button type="submit" class="btn btn-success mt-2">Send Image</button>
+        </form>
       </div>
     </div>
       
@@ -143,18 +148,275 @@
 
 <script type="text/javascript">
 
-  $(document).ready(function() {
-    add_member_form();
-    add_member();
-    // loadMember();
-    delete_member();
-    openChatRoom();
-    openChatBox();
+  var chat_err = "Please choose chat";
+  var chat_err_msg = "Message or image shouldn't be empty";
+
+  $(document).ready(function() 
+  {
     emojiOne();
     sending_message();
+    get_messages();
+    getNewMessages();
+    openSendImage();
+    image_preview();
+    sendingImage();
+    /*add_member_form();
+    add_member();
+    loadMember();
+    delete_member();
+    openChatBox();
     responseInvitation();
-    delChat();
+    delChat();*/
   });
+
+  function readURL(input) 
+  {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      
+      reader.onload = function(e) {
+        $('.image_preview').attr('src', e.target.result);
+      }
+      
+      reader.readAsDataURL(input.files[0]); // convert to base64 string
+    }
+  }
+
+  function image_preview()
+  {
+    $("#imgInp").change(function() {
+      readURL(this);
+    });
+  }
+
+  function emojiOne()
+  {
+    $("#divInput-description-post").emojioneArea({
+      placeholder: "Type a message",
+      pickerPosition: "bottom"
+    });
+  }
+
+  function get_messages()
+  {
+    $(".chat_room_box").click(function(){
+        var id = $(this).attr('id');
+        $(".btn-send").attr('id',id);
+        load_messages(id)
+        getNewMessages();
+        chatScroll();
+    });
+  }
+
+  function sending_message()
+  {
+    $(".btn-send").click(function(){
+      var recipient = $(this).attr('id');
+      var messages = $("#divInput-description-post").emojioneArea()[0].emojioneArea.getText();
+
+      if(recipient === undefined)
+      {
+        $(".error_send").html("<div class='alert alert-danger'>"+chat_err+"</div>");
+        return false;
+      }
+
+      if(messages === "")
+      {
+        $(".error_send").html("<div class='alert alert-danger'>"+chat_err_msg+"</div>");
+        return false;
+      }
+      
+      sendMesssage(recipient,messages);
+    });
+  }
+
+  function sendMesssage(recipient,messages)
+  {
+    var data = {
+      "recipient":recipient,
+      "messages":messages,
+      "device_key":"{{ $device_key }}"
+    };
+
+    $.ajaxSetup({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+    $.ajax({
+      type : 'POST',
+      url : "{{ url('send_chat_message') }}",
+      data : data,
+      dataType: 'json',
+      beforeSend: function() {
+        $(".btn-send").prop('disabled',true).text('Sending...');
+      },
+      success: function(result) {
+        $(".btn-send").text('Send').prop('disabled',false);
+
+        if(result.response == true)
+        {
+          $(".error_send").html('');
+          load_messages(result.to);
+          chatScroll();
+          $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText('');
+        }
+        
+        if(result.response == false)
+        {
+          $(".error_send").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
+        }
+      },
+      error: function(xhr)
+      {
+        $(".btn-send").text('Send').prop('disabled',false);
+        console.log(xhr.responseText);
+      }
+    });
+  }
+
+  function chatScroll()
+  {
+    setTimeout(function(){
+       var scrolls = $("#content_chat").prop("scrollHeight");
+      $("#content_chat").scrollTop(scrolls);
+    },1000);
+  }
+
+  function load_messages(id)
+  {
+    var data = {"chat_id" : id,"device_key" : "{{ $device_key }}"};
+    $.ajax({
+      type : 'GET',
+      url : "{{ url('get_chat_messages') }}",
+      data : data,
+      dataType: 'html',
+      success: function(result){
+        $("#content_chat").html(result);
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
+  }
+
+  function getNewMessages()
+  {
+    var get_messages = setInterval(function()
+    {
+       var id = $(".btn-send").attr('id');
+       // console.log(id);
+       if(id == undefined)
+       {
+          clearInterval(get_messages);
+       }
+       else
+       {
+          load_messages(id);
+       }
+       
+    },2750);
+  } 
+
+  function openSendImage()
+  {
+    $( "body" ).on("click", ".btn-image", function() 
+    {
+      var id = $(".btn-send").attr('id',id); //recipient id
+      $("#chat_room").modal({backdrop: 'static', keyboard: false});
+    });
+  }
+
+  function sendingImage()
+  {
+    $("#send_image").submit(function(e){
+      e.preventDefault();
+      var recipient = $(".btn-send").attr('id');
+      var messages = $("input[name='messages']").val();
+      var img = $("input[name='imageWA']").val();
+
+      if(recipient === undefined)
+      {
+        $(".err_img").html('<div class="alert alert-danger">'+chat_err+'</div>');
+        return false;
+      }
+
+      if(messages === "" || img === "")
+      {
+        $(".err_img").html("<div class='alert alert-danger'>"+chat_err_msg+"</div>");
+        return false;
+      }
+
+      var form = $(this)[0];
+      var data = new FormData(form);
+      data.append("recipient",recipient);
+      data.append("device_key","{{ $device_key }}");
+      sendImage(recipient,data);
+      // console.log(data);
+    });
+  }
+
+  function sendImage(recipient,data)
+  {
+    $.ajaxSetup({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+
+    $.ajax({
+      type : 'POST',
+      url : "{{ url('send_chat_image') }}",
+      data : data,
+      processData : false,
+      cache: false,
+      contentType: false,
+      dataType: 'json',
+      beforeSend: function() {
+        $('#loader').show();
+        $('.div-loading').addClass('background-load');
+      },
+      success: function(result) {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
+
+        if(result.response == true)
+        {
+          $(".error_send").html('');
+          load_messages(result.to);
+          $("#chat_room").modal('hide');
+          $(".alert").delay(3000).slideDown(2000);
+          chatScroll();
+        }
+        
+        if(result.response == false)
+        {
+          $(".error_send").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
+        }
+      },
+      error: function(xhr)
+      {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
+        console.log(xhr.responseText);
+      }
+    });
+  }
+
+  /*function getNotification()
+  {
+    var get_messages = setInterval(function(){
+      $(".chat_room_box").each(function(i){
+        var id = $(".chat_room_box").eq(i).attr('id');
+        setTimeout(function(){
+          load_messages(id);
+        },500);
+      });
+    },2500);
+  }*/
+
+  /************/
 
   function delChat()
   {
@@ -249,86 +511,6 @@
           }
         });
      });
-  }
-
-  function emojiOne()
-  {
-    $("#divInput-description-post").emojioneArea({
-      placeholder: "Type a message",
-      pickerPosition: "bottom"
-    });
-  }
-
-  function sending_message()
-  {
-    $(".btn-send").click(function(){
-      var recipient = $(this).attr('id');
-      var messages = $("#divInput-description-post").emojioneArea()[0].emojioneArea.getText();
-      sendMesssage(recipient,messages);
-    });
-  }
-
-  function sendMesssage(recipient,messages)
-  {
-    var data = {
-      "recipient":recipient,
-      "messages":messages,
-    };
-
-    $.ajaxSetup({
-      headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      }
-    });
-    $.ajax({
-      type : 'POST',
-      url : "{{ url('send_chat_message') }}",
-      data : data,
-      dataType: 'json',
-      beforeSend: function() {
-        $(".btn-send").prop('disabled',true).text('Sending...');
-      },
-      success: function(result) {
-        $(".btn-send").text('Send').prop('disabled',false);
-
-        if(result.response == true)
-        {
-          $(".error_send").html('');
-          load_messages(result.recipient);
-          $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText('');
-        }
-        
-        if(result.response == false)
-        {
-          $(".error_send").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
-        }
-      },
-      error: function(xhr)
-      {
-        $(".btn-send").text('Send').prop('disabled',false);
-        console.log(xhr.responseText);
-      }
-    });
-  }
-
-  function load_messages(user_recipient)
-  {
-    var data = {"user_recipient" : user_recipient};
-    $.ajax({
-      type : 'GET',
-      url : "{{ url('get_chat_messages') }}",
-      data : data,
-      dataType: 'html',
-      success: function(result){
-        $("#content_chat").html(result);
-        var scrolls = $("#content_chat").prop("scrollHeight");
-        $("#content_chat").scrollTop(scrolls);
-      },
-      error : function(xhr)
-      {
-        console.log(xhr.responseText);
-      }
-    });
   }
 
   function add_member_form()
@@ -473,23 +655,6 @@
     });
   }
 
-  function openChatRoom()
-  {
-    $( "body" ).on("click", ".btn-chat", function() 
-    {
-      var id = $(this).attr('id'); //recipient id
-      $("#chat_room").modal({backdrop: 'static', keyboard: false});
-      $(".btn-send").attr('id',id);
-      loadMember(1);
-      load_messages(id);
-
-      setTimeout(function(){
-        getNewMessages(id);
-      },300);
-      
-    });
-  }
-
   function openChatBox()
   {
     $( "body" ).on("click", ".chat-user", function() 
@@ -497,18 +662,6 @@
       var id = $(this).attr('id'); //user id
       load_messages(id);
     });
-  }
-
-   function getNewMessages(recipient_id)
-  {
-      var get_messages = setInterval(function(){
-        load_messages(recipient_id);
-      },2500);
-
-      $("#close_chat").click(function(){
-          $("#chat_room").modal('hide');
-          clearInterval(get_messages);
-      });
   }
 
   $( "body" ).on( "click", ".popup-newWindow", function()

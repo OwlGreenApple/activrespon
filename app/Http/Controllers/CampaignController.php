@@ -177,7 +177,15 @@ class CampaignController extends Controller
 			else {*/
 				if($request->hasFile('imageWA')) {
 					//save ke temp local dulu baru di kirim 
-					$folder = $user->id."/send-test-message/";
+					if(env('APP_ENV')=='local')
+          {
+            $folder = $user->id."/send-test-message/";
+          }
+          else
+          {
+            $folder = $user->id."/send-message/";
+          }
+          
 					Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($request->file('imageWA')), 'public');
 					sleep(1);
 

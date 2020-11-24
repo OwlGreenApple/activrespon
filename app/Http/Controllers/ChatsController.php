@@ -4,20 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\WamateHelper;
+use App\Helpers\ApiHelper;
 use App\ChatMembers;
 use App\ChatMessages;
 use App\User;
 use App\PhoneNumber;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
-use DB;
+use DB, Cookie, Storage;
 
 class ChatsController extends Controller
 {
     public function index()
     {
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
-        $data['error'] = null;
+        $data['error'] = $data['device_key'] = null;
         $data['chats'] = array();
 
         if(is_null($phone_number))
@@ -28,12 +29,143 @@ class ChatsController extends Controller
         {
             $device_key = $phone_number->device_key;
             $chat_members = WamateHelper::get_all_chats($device_key);
-            $chat_messages = WamateHelper::get_all_messages($device_key);
+            $data['device_key'] = $device_key;
             $data['chats'] = $chat_members;
+            $data['error'] = null;
+
+            if(count($chat_members) > 0)
+            {
+              if(isset($chat_members['status']))
+              {
+                  $data['error'] = 'Device must be paired, please pair first!';
+                  return view('chats.index',$data);
+              }
+
+              foreach ($chat_members as $row):
+                if($row['id'] <> 'status')
+                {
+                  $chats[] = $row;
+                }
+
+              endforeach;
+            }
         }
-        
+
         return view('chats.index',$data);
     }
+
+    public function getChatMessages(Request $request)
+    {
+        $device_key = $request->device_key;
+        // $device_key = '3de8758e-08b2-47a0-a309-e560c7324f6e';
+        $chat_messages = WamateHelper::get_all_messages($device_key,100);
+        // $to = "628123238793";
+        $data = [];
+        $to = $request->chat_id;
+
+        $res = $this->searchForId($to,$chat_messages['data']);
+
+        if(count($res) > 0):
+          foreach($res as $value)
+          {
+            foreach($value as $key=>$row)
+            {
+              $data[] = array(
+                'key'=>$key,
+                'val'=>$row
+              );
+            }
+          }
+        endif;
+
+        return view('chats.chats',['messages'=>$data]);
+    }
+
+    private function searchForId($to,$messages) 
+    {
+      $data = array();
+
+      if(count($messages) > 0):
+       foreach ($messages as $key =>$row):
+           if ($row['to'] === $to) {
+              $data[]['sender'] = array(
+                'message'=>$row['message'],
+                'media_url'=>$row['media_url'],
+                'timestamp'=>$row['timestamp'],
+              );
+           }
+           if ($row['from'] === $to) {
+              $data[]['reply'] = array(
+                'message'=>$row['message'],
+                'media_url'=>$row['media_url'],
+                'timestamp'=>$row['timestamp'],
+              );
+           }
+       endforeach;
+       return $data;
+      endif;
+      
+      return array();
+    }
+
+    public function getNotification()
+    {
+      Cookie::queue(Cookie::make('email', $email, 1440*7));
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $to = $request->recipient;
+        $message = $request->messages;
+        $device_key = $request->device_key;
+        $data['response'] = false;
+        $data['to'] = $to;
+      
+        $send = WamateHelper::send_message($to,$message,$device_key);
+
+        if(is_array($send))
+        {
+          $data['response'] = true;
+        }
+        
+        return response()->json($data);
+    } 
+
+    public function sendImage(Request $request)
+    {
+        $to = $request->recipient;
+        $message = $request->messages;
+        $device_key = $request->device_key;
+        $data['response'] = false;
+        $data['to'] = $to;
+
+        if(env('APP_ENV')=='local')
+        {
+          $folder = Auth::id()."/send-test-message/";
+        }
+        else
+        {
+          $folder = Auth::id()."/send-message/";
+        }
+
+        Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($request->file('imageWA')), 'public');
+        sleep(1);
+      
+        $send = ApiHelper::send_image_url_wamate($to,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key);
+
+        // dd($send);
+
+        $send = json_decode($send,true);
+
+        if(is_array($send) == true)
+        {
+          $data['response'] = true;
+        }
+        
+        return response()->json($data);
+    }
+
+    /******/
 
     public function add_member(Request $request)
     {
@@ -169,42 +301,6 @@ class ChatsController extends Controller
        }
 
        return $data;
-    }
-
-    public function sendMessage(Request $request)
-    {
-        $chats = new ChatMessages;
-        $chats->to_user_id = $request->recipient;
-        $chats->from_user_id = Auth::id();
-        $chats->chat_message = $request->messages;
-
-        if($request->messages == null)
-        {
-          $data['response'] = "empty";
-          return response()->json($data);
-        }
-
-        try
-        {
-          $chats->save();
-          $data['response'] = true;
-          $data['recipient'] = $request->recipient;
-        }
-        catch(QueryException $e)
-        {
-          $data['response'] = false;
-        }
-
-        return response()->json($data);
-    }
-
-    public function getChatMessages(Request $request)
-    {
-        // dd($request->all());
-        $users = array(Auth::id(),$request->user_recipient);
-        $messages = ChatMessages::whereIn('from_user_id',$users)->whereIn('to_user_id',$users)->get();
-
-        return view('chats.chats',['messages'=>$messages]);
     }
 
     public function delChat(Request $request)

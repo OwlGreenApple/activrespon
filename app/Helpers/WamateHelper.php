@@ -221,7 +221,7 @@ class WamateHelper
       'device-key: '.$device_key
     ));
     $res=curl_exec($ch);
-    return $res;
+    return json_decode($res,true);
   }
 
  	public static function send_image($to,$urls3,$message,$device_key)
@@ -381,9 +381,9 @@ class WamateHelper
 
   }
 
-  public static function get_all_messages($device_key)
+  public static function get_all_messages($device_key,$page)
   {
-    $ch = curl_init('http://'.self::ip_server().'/messages');
+    $ch = curl_init('http://'.self::ip_server().'/messages?limit='.$page.'');
 
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -403,9 +403,7 @@ class WamateHelper
     curl_close($ch);
     $msg = json_decode($result,true);
 
-    // dd($msg['data']);
-
-    // return json_decode($result,true);
+    return $msg;
 
   }
 
