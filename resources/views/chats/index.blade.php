@@ -316,7 +316,7 @@
           load_messages(id);
        }
        
-    },2750);
+    },3500);
   } 
 
   function openSendImage()

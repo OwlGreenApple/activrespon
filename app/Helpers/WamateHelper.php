@@ -13,8 +13,16 @@ class WamateHelper
     return 'qWer123Zxc';
   }
 
-  static function ip_server(){
-    return '188.166.221.181:3333';
+  static function ip_server()
+  {
+    if(env('APP_ENV') == 'local')
+    {
+      return '207.148.117.69:3333';
+    }
+    else
+    {
+      return '188.166.221.181:3333';
+    }
   }
   
   public function go_curl($url,$data,$method)
@@ -383,6 +391,7 @@ class WamateHelper
 
   public static function get_all_messages($device_key,$page)
   {
+    /* menampilkan message sesuai limit (dlm 1 page bisa n message sesuai limit) */
     $ch = curl_init('http://'.self::ip_server().'/messages?limit='.$page.'');
 
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -401,6 +410,7 @@ class WamateHelper
 
     // Close cURL session handle
     curl_close($ch);
+    // make json to array
     $msg = json_decode($result,true);
 
     return $msg;

@@ -35,12 +35,14 @@ class ChatsController extends Controller
 
             if(count($chat_members) > 0)
             {
+              /* error warning kalo device terputus / belum di pair */
               if(isset($chat_members['status']))
               {
                   $data['error'] = 'Device must be paired, please pair first!';
                   return view('chats.index',$data);
               }
 
+              /* menampilkan chat members */
               foreach ($chat_members as $row):
                 if($row['id'] <> 'status')
                 {
@@ -56,12 +58,20 @@ class ChatsController extends Controller
 
     public function getChatMessages(Request $request)
     {
+        /* menampilkan semua messages dari dalam chat */
         $device_key = $request->device_key;
-        // $device_key = '3de8758e-08b2-47a0-a309-e560c7324f6e';
+        // $device_key = '08b30d9d-6fd7-45da-b7d7-a96f35e737d6';
         $chat_messages = WamateHelper::get_all_messages($device_key,100);
         // $to = "628123238793";
         $data = [];
         $to = $request->chat_id;
+
+        //kalo ada error API
+        if(isset($chat_messages['status']))
+        {
+            $data['error'] = $chat_messages['message'];
+            return view('chats.chats',$data);
+        }
 
         $res = $this->searchForId($to,$chat_messages['data']);
 
@@ -78,11 +88,13 @@ class ChatsController extends Controller
           }
         endif;
 
-        return view('chats.chats',['messages'=>$data]);
+        $image_wa = "http://207.148.117.69/wamate-api/public";
+        return view('chats.chats',['messages'=>$data,'error'=>null,'image'=>$image_wa]);
     }
 
     private function searchForId($to,$messages) 
     {
+      /* memfilter messages sesuai dengan chatid (no pengirim dan penerima) */
       $data = array();
 
       if(count($messages) > 0):
@@ -110,11 +122,13 @@ class ChatsController extends Controller
 
     public function getNotification()
     {
+      /* to get new messages and then put into notification */
       Cookie::queue(Cookie::make('email', $email, 1440*7));
     }
 
     public function sendMessage(Request $request)
     {
+        /* mengirim WA text message */
         $to = $request->recipient;
         $message = $request->messages;
         $device_key = $request->device_key;
@@ -122,7 +136,7 @@ class ChatsController extends Controller
         $data['to'] = $to;
       
         $send = WamateHelper::send_message($to,$message,$device_key);
-
+        
         if(is_array($send))
         {
           $data['response'] = true;
@@ -133,6 +147,7 @@ class ChatsController extends Controller
 
     public function sendImage(Request $request)
     {
+        /* mengirim WA image message + caption */
         $to = $request->recipient;
         $message = $request->messages;
         $device_key = $request->device_key;
@@ -165,7 +180,7 @@ class ChatsController extends Controller
         return response()->json($data);
     }
 
-    /******/
+    /*** KODE LAMA DIBAWAH GA KEPAKE ***/
 
     public function add_member(Request $request)
     {

@@ -330,6 +330,7 @@ class CampaignController extends Controller
         }
       } 
       
+      /* campaign auto */
       if($campaign == 'auto')
       {   
         /* Validator */
@@ -417,6 +418,7 @@ class CampaignController extends Controller
 
     public function addMessageAutoResponder($campaign_id)
     {
+      /* campaign auto */
       $user_id = Auth::id();
       $campaign = Campaign::where([['campaigns.id',$campaign_id],['campaigns.user_id',$user_id],['lists.status','>',0]])->join('lists','lists.id','=','campaigns.list_id')->first();
 
@@ -696,6 +698,7 @@ class CampaignController extends Controller
 
     public function listDeleteCampaign(Request $request)
     {
+        /* untuk menghapus campaign */
         $userid = Auth::id();
         $is_broadcast = $request->is_broadcast;
         $is_event = $request->is_event;
@@ -728,7 +731,7 @@ class CampaignController extends Controller
             $customer->save();
             $data['success'] = 1;
         }
-        catch(Exception $e)
+        catch(QueryException $e)
         {
             $data['success'] = 0;
         }
@@ -738,6 +741,7 @@ class CampaignController extends Controller
 
      public function resendMessage(Request $request)
     {
+        /* untuk mengulangi send message auto reply pada halaman list auto reply */
         $campaign_id = $request->campaign_id;
         $reminders = Reminder::where('campaign_id',$campaign_id)->select('id')->get();
         $error = 0;

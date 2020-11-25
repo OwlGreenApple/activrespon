@@ -436,4 +436,10 @@ use Illuminate\Support\Facades\Storage;
     return $data;
   }
 
+  function wa_media_diference($media)
+  {
+    $filter = explode(".",$media);
+    dd($filter);
+  }
+
 ?>

@@ -14,7 +14,14 @@ class ApiHelper
   }
 
   static function simiIP(){
-    return "188.166.221.181:3333";
+    if(env('APP_ENV') == 'local')
+    {
+      return '207.148.117.69:3333';
+    }
+    else
+    {
+      return '188.166.221.181:3333';
+    }
   }
   
   public function go_curl($url,$data,$method)

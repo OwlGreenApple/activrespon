@@ -55,13 +55,13 @@ class SettingController extends Controller
       5. bisa scan 
       */
       $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
-      if (is_null($user->email_wamate) ) {
+      if (is_null($user->email_wamate) ||  $user->email_wamate ==="") {
         $result = WamateHelper::reg($email_wamate);
         $user->email_wamate = $email_wamate;
         $user->save();
       }
       
-      if (is_null($user->token) ) {
+      if (is_null($user->token) || $user->token==="") {
         $result = json_decode(WamateHelper::login($email_wamate));
         $user->token = $result->token;
         $user->refresh_token = $result->refreshToken;
