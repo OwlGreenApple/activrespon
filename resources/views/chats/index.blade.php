@@ -156,7 +156,7 @@
     emojiOne();
     sending_message();
     get_messages();
-    getNewMessages();
+    // getNewMessages();
     openSendImage();
     image_preview();
     sendingImage();
@@ -203,7 +203,7 @@
         var id = $(this).attr('id');
         $(".btn-send").attr('id',id);
         load_messages(id)
-        getNewMessages();
+        // getNewMessages();
         chatScroll();
     });
   }

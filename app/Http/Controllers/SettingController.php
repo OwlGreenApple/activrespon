@@ -542,6 +542,25 @@ class SettingController extends Controller
         }
         else if ($phoneNumber->wamate_id == 0) {
           $result = json_decode(WamateHelper::create_device($user->token,'device-'.$phoneNumber->id));
+          if($result->status == 401)
+          {
+            $arr['status'] = 'error';
+            $arr['message'] = "Please reload your browser";
+            return $arr;
+          }
+
+          /* setup webhook here */
+          if(env('APP_ENV') == 'local')
+          {
+              $url = 'https://192.168.1.103/activrespons/get_webhook/device-'.$result->id.'-'.$user->id;
+          }
+          else
+          {
+              $url = 'https://activrespon.com/dashboard/get_webhook/device-'.$result->id.'-'.$user->id;
+          }
+          
+          WamateHelper::setWebhook($url,$result->id,$user->token);
+
           $phoneNumber->wamate_id = $result->id;
           $phoneNumber->device_key = $result->device_key;
           $phoneNumber->save();

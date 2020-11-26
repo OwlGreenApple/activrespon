@@ -417,5 +417,40 @@ class WamateHelper
 
   }
 
+  public static function setWebhook($url,$device_id,$token)
+  {
+    /* pasang webhook buat notifikasi */
+    $ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id.'/set-webhook');
+
+    $data = array(
+      "url" => $url,
+      "headers" => '{}',
+    );
+
+    $data_string = json_encode($data);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Content-Type: application/json',
+      'authorization: Bearer '.$token
+    ));
+   
+    $result = curl_exec($ch);
+
+    // Close cURL session handle
+    curl_close($ch);
+    // make json to array
+    $msg = json_decode($result,true);
+
+    return $msg;
+  }
+
 /* END CLASS */
 }

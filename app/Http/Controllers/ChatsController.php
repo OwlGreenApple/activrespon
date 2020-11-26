@@ -20,6 +20,7 @@ class ChatsController extends Controller
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
         $data['error'] = $data['device_key'] = null;
         $data['chats'] = array();
+        $data['app'] = new ChatsController;
 
         if(is_null($phone_number))
         {
@@ -32,7 +33,7 @@ class ChatsController extends Controller
             $data['device_key'] = $device_key;
             $data['chats'] = $chat_members;
             $data['error'] = null;
-
+        
             if(count($chat_members) > 0)
             {
               /* error warning kalo device terputus / belum di pair */
@@ -59,21 +60,24 @@ class ChatsController extends Controller
     public function getChatMessages(Request $request)
     {
         /* menampilkan semua messages dari dalam chat */
+        
+        /*$device_key = '701e8cdd-70d6-4af8-a84a-8abb6867fc91';
+        $to = "628123238793";*/
         $device_key = $request->device_key;
-        // $device_key = '08b30d9d-6fd7-45da-b7d7-a96f35e737d6';
-        $chat_messages = WamateHelper::get_all_messages($device_key,100);
-        // $to = "628123238793";
-        $data = [];
         $to = $request->chat_id;
+        $chat_messages = WamateHelper::get_all_messages($device_key,100);
+        $data = [];
 
         //kalo ada error API
-        if(isset($chat_messages['status']))
+       /* if($chat_messages['status'])
         {
-            $data['error'] = $chat_messages['message'];
+            $data['error'] = $chat_messages['message'].", please reload your browser.";
             return view('chats.chats',$data);
-        }
+        }*/
 
         $res = $this->searchForId($to,$chat_messages['data']);
+
+        // dd($res);
 
         if(count($res) > 0):
           foreach($res as $value)
@@ -88,8 +92,8 @@ class ChatsController extends Controller
           }
         endif;
 
-        $image_wa = "http://207.148.117.69/wamate-api/public";
-        return view('chats.chats',['messages'=>$data,'error'=>null,'image'=>$image_wa]);
+        $image_wa = new ChatsController;
+        return view('chats.chats',['messages'=>$data,'error'=>null,'app'=>$image_wa]);
     }
 
     private function searchForId($to,$messages) 
@@ -103,6 +107,7 @@ class ChatsController extends Controller
               $data[]['sender'] = array(
                 'message'=>$row['message'],
                 'media_url'=>$row['media_url'],
+                'type'=>$row['type'],
                 'timestamp'=>$row['timestamp'],
               );
            }
@@ -110,6 +115,7 @@ class ChatsController extends Controller
               $data[]['reply'] = array(
                 'message'=>$row['message'],
                 'media_url'=>$row['media_url'],
+                'type'=>$row['type'],
                 'timestamp'=>$row['timestamp'],
               );
            }
@@ -118,6 +124,43 @@ class ChatsController extends Controller
       endif;
       
       return array();
+    }
+
+    public function getHTTPMedia($media,$type)
+    {
+        // dd($img);
+        // $img = "/media/1/B60066E25420E116D1F04E62ADE30D62.jpeg";
+        $filter = explode("-", $media);
+        $url = "http://207.148.117.69/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, sprintf($url));
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        $return_media = curl_exec($ch);
+        curl_close($ch);
+
+        if($type == 'audio')
+        {
+          header('Content-type: audio/ogg');
+        }
+        else if($type == 'video')
+        {
+          header('Content-type: video/mp4');
+        }
+        else 
+        {
+          header('Content-type: image/jpeg');
+        }
+        
+        return $return_media;
+    }
+
+    public function media_link_parse($media_link)
+    {
+      //$img = "/media/1/B60066E25420E116D1F04E62ADE30D62.jpeg";
+      $arr = wa_media_diference($media_link);
+      return $arr[2].'-'.$arr[3];
     }
 
     public function getNotification()
@@ -178,6 +221,13 @@ class ChatsController extends Controller
         }
         
         return response()->json($data);
+    }
+
+    public function getWebhook(Request $request)
+    {
+      header('Content-Type: application/json');
+      $request = file_get_contents('php://input');
+      dd( $request );
     }
 
     /*** KODE LAMA DIBAWAH GA KEPAKE ***/

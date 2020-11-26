@@ -313,6 +313,8 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('chats','ChatsController@index');
   Route::get('get_all_chats','ChatsController@get_all_chats');
   Route::get('get_chat_messages','ChatsController@getChatMessages');
+  Route::get('get_media/{i}/{type}','ChatsController@getHTTPMedia');
+  Route::get('get_webhook/{deviceid}','ChatsController@getWebhook');
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::post('send_chat_image','ChatsController@sendImage');
   

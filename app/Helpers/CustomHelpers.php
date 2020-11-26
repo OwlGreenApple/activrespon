@@ -438,8 +438,8 @@ use Illuminate\Support\Facades\Storage;
 
   function wa_media_diference($media)
   {
-    $filter = explode(".",$media);
-    dd($filter);
+    $filter = explode("/",$media);
+    return $filter;
   }
 
 ?>
