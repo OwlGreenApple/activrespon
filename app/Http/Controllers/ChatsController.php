@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use DB, Cookie, Storage;
 
+
 class ChatsController extends Controller
 {
     public function index()
@@ -258,8 +259,9 @@ class ChatsController extends Controller
 
     public function getWebhook()
     {
-      // header('Content-Type: application/json');
-      $req = file_get_contents('php://input');
+      header('Content-Type: application/json');
+      $req = file_get_contents('php://input', true);
+       // dd($req);
       // return $req;
 
       // return $req;
