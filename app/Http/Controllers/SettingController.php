@@ -552,11 +552,11 @@ class SettingController extends Controller
           /* setup webhook here */
           if(env('APP_ENV') == 'local')
           {
-              $url = 'https://192.168.1.103/activrespons/get_webhook/device-'.$result->id.'-'.$user->id;
+              $url = 'https://192.168.1.103/activrespons/get-webhook';
           }
           else
           {
-              $url = 'https://activrespon.com/dashboard/get_webhook/device-'.$result->id.'-'.$user->id;
+              $url = 'https://activrespon.com/dashboard/get-webhook';
           }
           
           WamateHelper::setWebhook($url,$result->id,$user->token);

@@ -166,12 +166,6 @@ class ChatsController extends Controller
       return $arr[2].'-'.$arr[3];
     }
 
-    public function getNotification()
-    {
-      /* to get new messages and then put into notification */
-      Cookie::queue(Cookie::make('email', $email, 1440*7));
-    }
-
     public function sendMessage(Request $request)
     {
         /* mengirim WA text message */
@@ -226,15 +220,23 @@ class ChatsController extends Controller
         return response()->json($data);
     }
 
+    //webhook simulation
     public function testWebhook()
     {
+      $url = url('get-webhook');
       // $url="https://192.168.88.159/activrespon/get-webhook";
       // $url="https://192.168.1.103/activrespons/get-webhook";
-      $url="https://192.168.88.160/activrespons/get-webhook";
+      // $url="https://192.168.88.160/activrespons/get-webhook";
 
       $data = array(
-        "test" => "test",
-        "password" => "1234567",
+        "device_id" => 7,
+        "event" => "updated-status::message",
+        "data"=> array(
+          'id'=>50,
+          'to'=>'aaaaa',
+          'from'=>'bbbb',
+          'status'=>'DELIVERED'
+        )
       );
 
       $data_string = json_encode($data);
@@ -257,44 +259,57 @@ class ChatsController extends Controller
       // return $res;
     }
 
-    public function getWebhook()
+    public function getWebhook(Request $request)
     {
       header('Content-Type: application/json');
-      $req = file_get_contents('php://input', true);
+      $req = file_get_contents('php://input');
        // dd($req);
-      // return $req;
-
-      // return $req;
-      // $res = json_decode($req,true);
-
     
-      // $res = json_decode($request,true);
-      // $req = $request->all();
-      // 
+      $res = json_decode($req,true);
 
       $wh = new WebHookWA;
-      $wh->device_id = 6;
-      $wh->event = 'testwebhook';
-      $wh->data = $req;
-
+      $wh->device_id = $res['device_id'];
+      $wh->event = $res['event'];
+      $wh->from_sender = $res['data']['from'];
+    
       try{
          $wh->save();
-         return 'data-inserted';
       }
       catch(QueryException $e)
       {
         return $e->getMessage();
       }
-     
+    }
 
-      // return $req;
+    public function getNotification(Request $request)
+    {
+        // $device_id = 6;
+        $device_id = $request->device_id;
+      
+        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->selectRaw('from_sender,COUNT(*) AS messages')->groupBy('from_sender')->get();
 
-     /* if(count($res) > 0)
-      {
+        if($wb->count() > 0)
+        {
+            foreach($wb as $row):
+              $data[$row->from_sender] = $row->messages;
+            endforeach;
 
-      }*/
+            /*$wbid = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->select('id')->get();
 
-      // return $request;
+            foreach($wbid as $col)
+            {
+              $idwb = WebHookWA::find($col->id);
+              $idwb->status = 1;
+              $idwb->save();
+            }*/
+        }
+        else
+        {
+            $data = 0;
+        }
+
+        // dd($data);
+        return response()->json($data);
     }
 
     /*** KODE LAMA DIBAWAH GA KEPAKE ***/
