@@ -9,6 +9,7 @@ use App\ChatMembers;
 use App\ChatMessages;
 use App\User;
 use App\PhoneNumber;
+use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use DB, Cookie, Storage;
@@ -20,7 +21,7 @@ class ChatsController extends Controller
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
         $data['error'] = $data['device_key'] = null;
         $data['chats'] = array();
-        $data['app'] = new ChatsController;
+        // $data['app'] = new ChatsController;
 
         if(is_null($phone_number))
         {
@@ -31,6 +32,7 @@ class ChatsController extends Controller
             $device_key = $phone_number->device_key;
             $chat_members = WamateHelper::get_all_chats($device_key);
             $data['device_key'] = $device_key;
+            $data['device_id'] = $phone_number->wamate_id;
             $data['chats'] = $chat_members;
             $data['error'] = null;
         
@@ -223,11 +225,60 @@ class ChatsController extends Controller
         return response()->json($data);
     }
 
+    public function testWebhook()
+    {
+      $url=url('get_webhook');
+
+      $data = array(
+        "test" => "test",
+        "password" => "1234567",
+      );
+
+      $data_string = json_encode($data);
+      $ch = curl_init($url);
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_VERBOSE, 0);
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Content-Type: application/json'
+      ));
+      $res=curl_exec($ch);
+
+      dd($res);
+      // return json_encode(['message'=>$res]);
+      // return $res;
+    }
+
     public function getWebhook(Request $request)
     {
       header('Content-Type: application/json');
-      $request = file_get_contents('php://input');
-      dd( $request );
+      $req = file_get_contents('php://input');
+
+      return $req;
+      // $res = json_decode($req,true);
+
+    
+      // $res = json_decode($request,true);
+      // $req = $request->all();
+      // 
+
+    /*  $wh = new WebHookWA;
+      $wh->device_id = 6;
+      $wh->event = 'test';
+      $wh->data = $req;
+      $wh->save();*/
+
+     /* if(count($res) > 0)
+      {
+
+      }*/
+
+      // return $request;
     }
 
     /*** KODE LAMA DIBAWAH GA KEPAKE ***/

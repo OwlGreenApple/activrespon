@@ -146,6 +146,8 @@
   </div>
 </div>
 
+<button class="btn btn-info btn-test">Webhook</button>
+
 <script type="text/javascript">
 
   var chat_err = "Please choose chat";
@@ -153,6 +155,7 @@
 
   $(document).ready(function() 
   {
+    testhook();
     emojiOne();
     sending_message();
     get_messages();
@@ -168,6 +171,31 @@
     responseInvitation();
     delChat();*/
   });
+
+  function testhook()
+  {
+    $(".btn-test").click(function(){
+      $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+      $.ajax({
+        type : 'POST',
+        // url : "https://webhook.site/171386d2-222a-45ce-a0c6-a82a0bac92af",
+        url : "{{url('get_webhook')}}/device-6-1",
+        data : {test:'data'},
+        dataType: 'json',
+        success: function(result) {
+          console.log(result);
+        },
+        error: function(xhr)
+        {
+          console.log(xhr.responseText);
+        }
+      });
+    });
+  }
 
   function readURL(input) 
   {
@@ -301,22 +329,39 @@
     });
   }
 
+  function getNotification()
+  {
+     $.ajax({
+      type : 'GET',
+      url : "{{ url('get_webhook') }}/{{ $device_id }}",
+      dataType: 'json',
+      success: function(result){
+        console.log(result);
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
+  }
+
   function getNewMessages()
   {
     var get_messages = setInterval(function()
     {
-       var id = $(".btn-send").attr('id');
-       // console.log(id);
-       if(id == undefined)
-       {
-          clearInterval(get_messages);
-       }
-       else
-       {
-          load_messages(id);
-       }
+       // var id = $(".btn-send").attr('id');
+       // // console.log(id);
+       // if(id == undefined)
+       // {
+       //    clearInterval(get_messages);
+       // }
+       // else
+       // {
+          getNotification();
+          //load_messages(id);
+       // }
        
-    },3500);
+    },1000);
   } 
 
   function openSendImage()
