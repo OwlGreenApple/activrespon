@@ -227,7 +227,7 @@ class ChatsController extends Controller
     public function testWebhook()
     {
       // $url="https://192.168.88.159/activrespon/get-webhook";
-      $url="http://192.168.1.103/activrespons/get-webhook";
+      $url="https://192.168.1.103/activrespons/get-webhook";
 
       $data = array(
         "test" => "test",

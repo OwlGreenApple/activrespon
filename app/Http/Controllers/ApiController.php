@@ -557,9 +557,8 @@ class ApiController extends Controller
 
     public function getWebhook()
     {
-      header('Content-Type: application/json');
+      // header('Content-Type: application/json');
       $req = file_get_contents('php://input');
-
       return $req;
 
       // return $req;
