@@ -560,6 +560,8 @@ class ApiController extends Controller
       header('Content-Type: application/json');
       $req = file_get_contents('php://input');
 
+      return $req;
+
       // return $req;
       // $res = json_decode($req,true);
 
@@ -568,11 +570,11 @@ class ApiController extends Controller
       // $req = $request->all();
       // 
 
-      $wh = new WebHookWA;
+    /*  $wh = new WebHookWA;
       $wh->device_id = 6;
       $wh->event = 'simiwebhook';
       $wh->data = $req;
-      $wh->save();
+      $wh->save();*/
 
       // return $req;
 
