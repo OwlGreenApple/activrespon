@@ -273,7 +273,16 @@ class ChatsController extends Controller
       $wh->device_id = 6;
       $wh->event = 'testwebhook';
       $wh->data = $req;
-      $wh->save();
+
+      try{
+         $wh->save();
+         return 'data-inserted';
+      }
+      catch(QueryException $e)
+      {
+        return $e->getMessage();
+      }
+     
 
       // return $req;
 
