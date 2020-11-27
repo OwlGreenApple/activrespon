@@ -77,6 +77,7 @@ Route::post('loginajax', 'Auth\LoginController@loginAjax');// user login via aja
 Route::post('updateuser', 'HomeController@updateUser')->name('updateuser');
 
 /* WA webhook */
+Route::get('test_webhook','ChatsController@testWebhook');
 Route::post('get-webhook','ApiController@getWebhook');
 
 /* Admin Woowa*/
@@ -319,8 +320,6 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('get_media/{i}/{type}','ChatsController@getHTTPMedia');
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::post('send_chat_image','ChatsController@sendImage');
-
-  Route::get('test_webhook','ChatsController@testWebhook');
   
   
   Route::post('member_save','ChatsController@add_member');
