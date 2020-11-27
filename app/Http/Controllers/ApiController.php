@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Storage;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
-use App\WebHookWA;
 
 class ApiController extends Controller
 {

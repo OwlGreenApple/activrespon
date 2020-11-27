@@ -9,6 +9,7 @@ use App\ChatMembers;
 use App\ChatMessages;
 use App\User;
 use App\PhoneNumber;
+use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use DB, Cookie, Storage;
@@ -226,8 +227,8 @@ class ChatsController extends Controller
 
     public function testWebhook()
     {
-      $url="https://192.168.88.159/activrespon/get-webhook";
-      // $url="https://192.168.1.103/activrespons/get-webhook";
+      // $url="https://192.168.88.159/activrespon/get-webhook";
+      $url="https://192.168.1.103/activrespons/get-webhook";
 
       $data = array(
         "test" => "test",
@@ -258,7 +259,7 @@ class ChatsController extends Controller
     {
       // header('Content-Type: application/json');
       $req = file_get_contents('php://input');
-      return $req;
+      // return $req;
 
       // return $req;
       // $res = json_decode($req,true);
@@ -268,11 +269,11 @@ class ChatsController extends Controller
       // $req = $request->all();
       // 
 
-    /*  $wh = new WebHookWA;
+      $wh = new WebHookWA;
       $wh->device_id = 6;
-      $wh->event = 'simiwebhook';
+      $wh->event = 'testwebhook';
       $wh->data = $req;
-      $wh->save();*/
+      $wh->save();
 
       // return $req;
 
