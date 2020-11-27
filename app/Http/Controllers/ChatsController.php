@@ -9,7 +9,6 @@ use App\ChatMembers;
 use App\ChatMessages;
 use App\User;
 use App\PhoneNumber;
-use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use DB, Cookie, Storage;
@@ -227,7 +226,8 @@ class ChatsController extends Controller
 
     public function testWebhook()
     {
-      $url=url('get_webhook');
+      // $url="https://192.168.88.159/activrespon/get-webhook";
+      $url="http://192.168.1.103/activrespons/get-webhook";
 
       $data = array(
         "test" => "test",
@@ -252,33 +252,6 @@ class ChatsController extends Controller
       dd($res);
       // return json_encode(['message'=>$res]);
       // return $res;
-    }
-
-    public function getWebhook(Request $request)
-    {
-      header('Content-Type: application/json');
-      $req = file_get_contents('php://input');
-
-      return $req;
-      // $res = json_decode($req,true);
-
-    
-      // $res = json_decode($request,true);
-      // $req = $request->all();
-      // 
-
-    /*  $wh = new WebHookWA;
-      $wh->device_id = 6;
-      $wh->event = 'test';
-      $wh->data = $req;
-      $wh->save();*/
-
-     /* if(count($res) > 0)
-      {
-
-      }*/
-
-      // return $request;
     }
 
     /*** KODE LAMA DIBAWAH GA KEPAKE ***/

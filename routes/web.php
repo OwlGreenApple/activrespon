@@ -76,6 +76,9 @@ Route::get('history-order', 'HomeController@historyOrder');
 Route::post('loginajax', 'Auth\LoginController@loginAjax');// user login via ajax
 Route::post('updateuser', 'HomeController@updateUser')->name('updateuser');
 
+/* WA webhook */
+Route::post('get-webhook','ApiController@getWebhook');
+
 /* Admin Woowa*/
 Route::group(['middleware'=>['auth','web','is_admin_woowa']],function(){
   Route::get('/list-woowa',function(){
@@ -314,7 +317,6 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('get_all_chats','ChatsController@get_all_chats');
   Route::get('get_chat_messages','ChatsController@getChatMessages');
   Route::get('get_media/{i}/{type}','ChatsController@getHTTPMedia');
-  Route::post('get_webhook','ChatsController@getWebhook');
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::post('send_chat_image','ChatsController@sendImage');
 

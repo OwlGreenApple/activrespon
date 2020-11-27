@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
+use App\WebHookWA;
 
 class ApiController extends Controller
 {
@@ -552,6 +553,35 @@ class ApiController extends Controller
 
         $data['msg'] = 'Message sudah dikirim';
         return response()->json($data);
+    }
+
+    public function getWebhook()
+    {
+      header('Content-Type: application/json');
+      $req = file_get_contents('php://input');
+
+      // return $req;
+      // $res = json_decode($req,true);
+
+    
+      // $res = json_decode($request,true);
+      // $req = $request->all();
+      // 
+
+      $wh = new WebHookWA;
+      $wh->device_id = 6;
+      $wh->event = 'simiwebhook';
+      $wh->data = $req;
+      $wh->save();
+
+      // return $req;
+
+     /* if(count($res) > 0)
+      {
+
+      }*/
+
+      // return $request;
     }
 
 /* end class */    
