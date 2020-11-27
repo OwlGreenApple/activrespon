@@ -78,7 +78,7 @@ Route::post('updateuser', 'HomeController@updateUser')->name('updateuser');
 
 /* WA webhook */
 Route::get('test_webhook','ChatsController@testWebhook');
-Route::post('get-webhook','ApiController@getWebhook');
+Route::post('get-webhook','ChatsController@getWebhook');
 
 /* Admin Woowa*/
 Route::group(['middleware'=>['auth','web','is_admin_woowa']],function(){

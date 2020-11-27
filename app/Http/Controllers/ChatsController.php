@@ -226,8 +226,8 @@ class ChatsController extends Controller
 
     public function testWebhook()
     {
-      // $url="https://192.168.88.159/activrespon/get-webhook";
-      $url="https://192.168.1.103/activrespons/get-webhook";
+      $url="https://192.168.88.159/activrespon/get-webhook";
+      // $url="https://192.168.1.103/activrespons/get-webhook";
 
       $data = array(
         "test" => "test",
@@ -252,6 +252,36 @@ class ChatsController extends Controller
       dd($res);
       // return json_encode(['message'=>$res]);
       // return $res;
+    }
+
+    public function getWebhook()
+    {
+      // header('Content-Type: application/json');
+      $req = file_get_contents('php://input');
+      return $req;
+
+      // return $req;
+      // $res = json_decode($req,true);
+
+    
+      // $res = json_decode($request,true);
+      // $req = $request->all();
+      // 
+
+    /*  $wh = new WebHookWA;
+      $wh->device_id = 6;
+      $wh->event = 'simiwebhook';
+      $wh->data = $req;
+      $wh->save();*/
+
+      // return $req;
+
+     /* if(count($res) > 0)
+      {
+
+      }*/
+
+      // return $request;
     }
 
     /*** KODE LAMA DIBAWAH GA KEPAKE ***/
