@@ -187,7 +187,6 @@
     sending_message();
     get_messages();
     getNotification();
-    getNewNotification();
     getNewMessages();
     openSendMedia();
     image_preview();
@@ -343,17 +342,12 @@
        else
        {
           load_messages(id);
+          setTimeout(function(){
+            getNotification();
+          },2000);
        }
     },3500);
   } 
-
-  function getNewNotification()
-  {
-    var get_notification = setInterval(function()
-    {
-      getNotification();
-    },7000);
-  }
 
   function getNotification()
   {
