@@ -320,6 +320,20 @@ class CustomerController extends Controller
                 $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'te7027awnw9f8');
               }
               
+              if ($list->id == 224)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'wx909tbczb069');
+              }
+              
+              if ($list->id == 228)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'of747vmm6q720');
+              }
+              
               
               if ($list->id == 216)
               {
