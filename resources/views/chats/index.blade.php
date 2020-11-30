@@ -155,11 +155,10 @@
 
   $(document).ready(function() 
   {
-    testhook();
     emojiOne();
     sending_message();
     get_messages();
-    // getNewMessages();
+    getNewMessages();
     openSendImage();
     image_preview();
     sendingImage();
@@ -171,31 +170,6 @@
     responseInvitation();
     delChat();*/
   });
-
-  function testhook()
-  {
-    $(".btn-test").click(function(){
-      $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-      });
-      $.ajax({
-        type : 'POST',
-        // url : "https://webhook.site/171386d2-222a-45ce-a0c6-a82a0bac92af",
-        url : "{{url('get_webhook')}}/device-6-1",
-        data : {test:'data'},
-        dataType: 'json',
-        success: function(result) {
-          console.log(result);
-        },
-        error: function(xhr)
-        {
-          console.log(xhr.responseText);
-        }
-      });
-    });
-  }
 
   function readURL(input) 
   {
@@ -329,22 +303,6 @@
     });
   }
 
-  function getNotification()
-  {
-     $.ajax({
-      type : 'GET',
-      url : "{{ url('get_webhook') }}/{{ $device_id }}",
-      dataType: 'json',
-      success: function(result){
-        console.log(result);
-      },
-      error : function(xhr)
-      {
-        console.log(xhr.responseText);
-      }
-    });
-  }
-
   function getNewMessages()
   {
     var get_messages = setInterval(function()
@@ -361,8 +319,31 @@
           //load_messages(id);
        // }
        
-    },1000);
+    },10000);
   } 
+
+  function getNotification()
+  {
+     $.ajax({
+      type : 'GET',
+      url : "{{ url('get-notification') }}",
+      data : {'device_id':7},
+      dataType: 'json',
+      success: function(result){
+        console.log(result);
+        if(result !== 0)
+        {
+          $.each( result, function( key, value ) {
+            $("#"+key).attr('total',value);
+          });
+        }
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
+  }
 
   function openSendImage()
   {
@@ -448,18 +429,6 @@
       }
     });
   }
-
-  /*function getNotification()
-  {
-    var get_messages = setInterval(function(){
-      $(".chat_room_box").each(function(i){
-        var id = $(".chat_room_box").eq(i).attr('id');
-        setTimeout(function(){
-          load_messages(id);
-        },500);
-      });
-    },2500);
-  }*/
 
   /************/
 
