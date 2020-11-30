@@ -673,18 +673,22 @@ class ApiHelper
 	}
 
   
-  public static function send_image_url_wamate($phoneNumber,$image,$message,$device_key)
+  public static function send_media_url_wamate($phoneNumber,$media,$message,$device_key,$type)
   {
     // dd($image);
     $phoneNumber = str_replace("+","",$phoneNumber);
      
     $postfields = array(
         "to" => $phoneNumber,
-        "message" => $message,
-        "media_url"=>$image,
-        "type"=>"image",
+        "media_url"=>$media,
+        "type"=>$type,
         "reply_for"=> 0
     );
+
+    if($message <> null)
+    {
+       $postfields["message"] = $message;
+    }
 
     // Prepare new cURL resource
     $ch = curl_init(self::simiIP().'/messages/send-media');

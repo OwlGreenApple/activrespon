@@ -320,14 +320,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('get_media/{i}/{type}','ChatsController@getHTTPMedia');
   Route::get('get-notification','ChatsController@getNotification');
   Route::post('send_chat_message','ChatsController@sendMessage');
-  Route::post('send_chat_image','ChatsController@sendImage');
-  
-  
-  Route::post('member_save','ChatsController@add_member');
-  Route::get('get_chat_member','ChatsController@getMembers');
-  Route::get('delete-chat-member','ChatsController@deleteMembers');
-  Route::get('response-invitation','ChatsController@member_invitation');
-  Route::get('delete_chat','ChatsController@delChat');
+  Route::post('send_chat_media','ChatsController@sendMedia');
 
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');

@@ -68,7 +68,6 @@ class SettingController extends Controller
         $user->save();
       }
       
-      
       $day_left = User::find($user->id)->day_left;
       $expired = Carbon::now()->addDays($day_left)->toDateString();
       $mod = request()->get('mod');
@@ -960,18 +959,32 @@ class SettingController extends Controller
 
 					$arr['status'] = 'success';
 					$arr['message'] = "The phone number has been deleted";
-				}catch(Exception $e){
+				}catch(QueryException $e){
 					$arr['status'] = 'error';
 					$arr['message'] = "Error! Sorry unable to delete your phone number";
 				} 
 			}
 			else if ($phoneNumber->mode == 2){
         $result = WamateHelper::delete_devices($phoneNumber->wamate_id,$user->token);
+        $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
         
-        $phoneNumber->delete();
-        
-        $arr['status'] = 'success';
-        $arr['message'] = "The phone number has been deleted";
+        try
+        {
+          $phoneNumber->delete();
+          $result = json_decode(WamateHelper::login($email_wamate));
+          $user->token = $result->token;
+          $user->refresh_token = $result->refreshToken;
+          $user->save();
+      
+          $arr['status'] = 'success';
+          $arr['message'] = "The phone number has been deleted";
+        }
+        catch(QueryException $e)
+        {
+          //$e->getMessage();
+          $arr['status'] = 'error';
+          $arr['message'] = "Our server is too busy, please try again later.";
+        }
       }
 
       return $arr;

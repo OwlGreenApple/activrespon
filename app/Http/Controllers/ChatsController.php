@@ -12,7 +12,8 @@ use App\PhoneNumber;
 use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
-use DB, Cookie, Storage;
+use Symfony\Component\ErrorHandler\Error\FatalError;
+use DB, Cookie, Storage, Validator;
 
 
 class ChatsController extends Controller
@@ -34,7 +35,6 @@ class ChatsController extends Controller
             $chat_members = WamateHelper::get_all_chats($device_key);
             $data['device_key'] = $device_key;
             $data['device_id'] = $phone_number->wamate_id;
-            $data['chats'] = $chat_members;
             $data['error'] = null;
         
             if(count($chat_members) > 0)
@@ -48,13 +48,15 @@ class ChatsController extends Controller
 
               /* menampilkan chat members */
               foreach ($chat_members as $row):
-                if($row['id'] <> 'status')
+                if($row['id'] !== 'status')
                 {
                   $chats[] = $row;
                 }
-
               endforeach;
+              $data['chats'] = $chats;
             }
+
+            // dd($chats);
         }
 
         return view('chats.index',$data);
@@ -67,16 +69,27 @@ class ChatsController extends Controller
         /*$device_key = '701e8cdd-70d6-4af8-a84a-8abb6867fc91';
         $to = "628123238793";*/
         $device_key = $request->device_key;
+        $total_message = 0;
         $to = $request->chat_id;
-        $chat_messages = WamateHelper::get_all_messages($device_key,100);
+        $chat_messages = WamateHelper::get_all_messages($device_key,20);
+
+        $total_message = $chat_messages['total'];
+        $page = $chat_messages['per_page'];
+
+        if($total_message > $page)
+        {
+          $total_message += $page;
+          $chat_messages = WamateHelper::get_all_messages($device_key,$total_message);
+        }
+
         $data = [];
 
         //kalo ada error API
-       /* if($chat_messages['status'])
+        if(!isset($chat_messages['total']))
         {
             $data['error'] = $chat_messages['message'].", please reload your browser.";
             return view('chats.chats',$data);
-        }*/
+        }
 
         $res = $this->searchForId($to,$chat_messages['data']);
 
@@ -129,12 +142,17 @@ class ChatsController extends Controller
       return array();
     }
 
+    public static function ip()
+    {
+      return 'http://207.148.117.69';
+    }
+
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
         // $img = "/media/1/B60066E25420E116D1F04E62ADE30D62.jpeg";
         $filter = explode("-", $media);
-        $url = "http://207.148.117.69/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+        $url = self::ip()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -185,13 +203,13 @@ class ChatsController extends Controller
         return response()->json($data);
     } 
 
-    public function sendImage(Request $request)
+    public function sendMedia(Request $request)
     {
-        /* mengirim WA image message + caption */
+        /* mengirim WA image message + caption ,audio / video */
         $to = $request->recipient;
-        $message = $request->messages;
         $device_key = $request->device_key;
-        $data['response'] = false;
+        $type = $request->type;
+        $data['response'] = $data['error'] = false;
         $data['to'] = $to;
 
         if(env('APP_ENV')=='local')
@@ -203,16 +221,74 @@ class ChatsController extends Controller
           $folder = Auth::id()."/send-message/";
         }
 
-        Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($request->file('imageWA')), 'public');
-        sleep(1);
-      
-        $send = ApiHelper::send_image_url_wamate($to,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key);
+        if($type == 'image')
+        {
+          $file = "temp.jpg";
+          $media = $request->file('imageWA');
+          $message = $request->messages;
+          $rules = [
+            'imageWA'=>['required','mimes:jpg,png','max:1024'],
+            'messages'=>['required','string','max:4000']
+          ];
+        }
+        else if($type == 'video')
+        {
+          $file = "temp.mp4";
+          $media = $request->file('videoWA');
+          $message = $request->vimessages;
+          $rules = [
+            'videoWA'=>['required','max:20480','mimes:mp4'],
+            'vimessages'=>['required','string','max:4000']
+          ];
+        }
+        else
+        {
+          $file = "temp.ogg";
+          $media = $request->file('audioWA');
+          $message = $request->audmessages;
+          $rules = [
+            'audioWA'=>['required','max:2048','mimes:ogg'],
+            'audmessages'=>['required','string','max:4000']
+          ];
+        }
 
-        // dd($send);
+        $validator = Validator::make($request->all(),$rules);
+        $err = $validator->errors();
+
+        if($validator->fails() == true && $type == 'video')
+        {
+          $data['error'] = array(
+            'media'=> $err->first('videoWA'),
+            'message'=> $err->first('vimessages')
+          );
+          return response()->json($data);
+        }
+        else if($validator->fails() == true && $type == 'image')
+        {
+          $data['error'] = array(
+            'media'=> $err->first('imageWA'),
+            'message'=> $err->first('messages')
+          );
+          return response()->json($data);
+        }
+        else 
+        {
+          $data['error'] = array(
+            'media'=> $err->first('audioWA'),
+            'message'=> $err->first('audmessages')
+          );
+          return response()->json($data);
+        }
+
+        Storage::disk('s3')->put($folder.$file,file_get_contents($media), 'public');
+        sleep(1);
+        $send = ApiHelper::send_media_url_wamate($to,Storage::disk('s3')->url($folder.$file),$message,$device_key,$type);
+
+        //dd($send);
 
         $send = json_decode($send,true);
 
-        if(is_array($send) == true)
+        if(isset($send['id']))
         {
           $data['response'] = true;
         }
@@ -283,7 +359,8 @@ class ChatsController extends Controller
 
     public function getNotification(Request $request)
     {
-        // $device_id = 6;
+        // $device_id = 7;
+        $id = array();
         $device_id = $request->device_id;
       
         $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->selectRaw('from_sender,COUNT(*) AS messages')->groupBy('from_sender')->get();
@@ -294,175 +371,34 @@ class ChatsController extends Controller
               $data[$row->from_sender] = $row->messages;
             endforeach;
 
-            /*$wbid = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->select('id')->get();
+            $wbid = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->select('id')->get();
 
             foreach($wbid as $col)
             {
-              $idwb = WebHookWA::find($col->id);
-              $idwb->status = 1;
-              $idwb->save();
-            }*/
+              $id[] = $col->id;
+            }
         }
         else
         {
             $data = 0;
         }
 
-        // dd($data);
-        return response()->json($data);
-    }
-
-    /*** KODE LAMA DIBAWAH GA KEPAKE ***/
-
-    public function add_member(Request $request)
-    {
-        $email_member = $request->email;
-
-        if($email_member == null)
-        {
-           $data['response'] = "empty";
-           return $data;
-        }
-
-        $user = User::where([['email',$email_member],['status','>',0]])->first();
-
-        if(is_null($user))
-        {
-            $data['response'] = 0;
-        }
-        else
-        {
-          $check_members = ChatMembers::where([['user_id',Auth::id()],['member_id',$user->id]])->first();
-
-          if(!is_null($check_members) || $user->id == Auth::id())
+        //if id notification available then change status into 1
+        if(count($id) > 0):
+          try{
+            foreach($id as $val):
+              $idwb = WebHookWA::find($val);
+              $idwb->status = 1;
+              $idwb->save();
+            endforeach;
+          }
+          catch(QueryException $e)
           {
-              $data['response'] = "available";
-              return $data;
+            //$e->getMessage();
           }
+        endif;
 
-          $member = new ChatMembers;
-          $member->user_id = Auth::id();
-          $member->member_id = $user->id;
-          $member->member_status = 1;
-
-          try {
-            $member->save();
-            $member = new ChatMembers;
-            $member->user_id = $user->id;
-            $member->member_id = Auth::id();
-          }
-          catch(QueryException $e){
-            $data['response'] = false;
-          }
-
-          try {
-            $member->save();
-            $data['response'] = true;
-          }
-          catch(QueryException $e){
-            $data['response'] = false;
-          }
-        }
-
-        return $data;
-    }
-
-    public function getMembers(Request $request)
-    {
-       /*$members = DB::table('chat_members as A')->join('chat_members as B','A.user_id', '=', 'B.member_id')->join('users','users.id','=','A.member_id')->where('A.user_id','=',Auth::id())->groupBy('A.user_id')->select('A.user_id','A.member_id','A.id','B.id as invited_id','B.member_status','users.name','users.phone_number')->get();*/
-
-       $members = array();
-       $chat_members = DB::select(DB::raw('SELECT distinct A.* FROM chat_members A JOIN chat_members B ON A.user_id = B.member_id WHERE B.member_id = '.Auth::id().' '));
-
-       if(count($chat_members) > 0)
-        {
-          foreach($chat_members as $row):
-            $users = User::where('id',$row->member_id)->first();
-
-            if(!is_null($users))
-            {
-              $members[] = array(
-                  'id'=>$row->id,
-                  'name'=>$users->name,
-                  'phone_number'=>$users->phone_number,
-                  'invitor'=>$row->member_id,
-                  'member_status'=>$row->member_status
-              );
-            }
-          endforeach;
-        }
-
-       if($request->chat_room == null)
-       {
-          return view('chats.content',['members'=>$members]);
-       }
-       else
-       {
-          return view('chats.chat-members',['members'=>$members]);
-       }
-      
-    }
-
-    public function member_invitation(Request $request)
-    {
-        $chat_id = array($request->sender,$request->invitor);
-
-        if($request->response == 1)
-        {
-            try{
-              ChatMembers::whereIn('id',$chat_id)->update(['member_status'=>2]);
-              $data['response'] = true;
-            }
-            catch(QueryException $e)
-            {
-              $data['response'] = false;
-            }
-        }
-        else
-        {
-            try{
-              ChatMembers::whereIn('id',$chat_id)->update(['member_status'=>3]);
-              $data['response'] = true;
-            }
-            catch(QueryException $e)
-            {
-              $data['response'] = false;
-            }
-        }
-
-        return response()->json($data);
-    }
-
-    public function deleteMembers(Request $request)
-    {
-       $id = $request->id;
-       $user_id = Auth::id();
-       try
-       {
-          ChatMembers::where([['id',$id],['user_id',$user_id]])->delete();
-          $data['response'] = true;
-       }
-       catch(QueryException $e)
-       {
-          $data['response'] = false;
-       }
-
-       return $data;
-    }
-
-    public function delChat(Request $request)
-    {
-        $users = array(Auth::id(),$request->recipient_id);
-
-        try{
-          ChatMessages::whereIn('from_user_id',$users)->whereIn('to_user_id',$users)->delete();
-          $data['response'] = 1;
-        }
-        catch(QueryException $e)
-        {
-          $data['response'] = 0;
-        }
-
+        //dd($data);
         return response()->json($data);
     }
 

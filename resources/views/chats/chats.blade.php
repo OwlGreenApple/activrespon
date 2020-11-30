@@ -9,11 +9,11 @@
               </div>
               <div class="chat-caption">{{ $row['val']['message'] }}</div>
             @elseif($row['val']['type'] == 'video')
-                <video autoplay="" controls>
+                <video class="chat-video" autoplay="" controls>
                   <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/video" type="video/mp4">
                 Your browser does not support the video tag.
                 </video>
-            @elseif($row['val']['type'] == 'audio')
+            @elseif($row['val']['type'] == 'document')
                 <audio controls>
                   <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/audio" type="audio/ogg">
                 Your browser does not support the audio element.
@@ -35,11 +35,11 @@
               </div>
               <div class="chat-caption">{{ $row['val']['message'] }}</div>
           @elseif($row['val']['type'] == 'video')
-              <video autoplay="" controls>
+              <video class="chat-video" autoplay="" controls>
                 <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/video" type="video/mp4">
               Your browser does not support the video tag.
               </video>
-          @elseif($row['val']['type'] == 'audio')
+          @elseif($row['val']['type'] == 'document')
               <audio controls>
                 <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/audio" type="audio/ogg">
               Your browser does not support the audio element.
