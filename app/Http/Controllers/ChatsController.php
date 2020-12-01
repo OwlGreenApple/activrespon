@@ -31,7 +31,7 @@ class ChatsController extends Controller
 
     public static function ip()
     {
-      if(env('APP_ENV') == 'local' || Auth::id() == 1)
+      if(env('APP_ENV') == 'local')
       {
         return '207.148.117.69';
       }
@@ -172,35 +172,19 @@ class ChatsController extends Controller
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
-        // $img = "/media/1/B60066E25420E116D1F04E62ADE30D62.jpeg";
+        // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
         $filter = explode("-", $media);
         $url = self::ip()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
-
-
-        if($type == 'image') 
-        {
-          $headers = array(
-            "Content-Type: image/jpg",
-            "Content-Type: image/jpeg",
-            "Content-Type: image/png",
-          );
-        }
-
-        if($type == 'video')
-        {
-          $headers = array('Content-type: video/mp4');
-        }
+        // $url = self::ip()."/wamate-api/public/".$img;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $return_media = curl_exec($ch);
         curl_close($ch);
 
-        
         if($type == 'image') 
         {
           header("Content-Type: image/jpeg");
@@ -210,7 +194,7 @@ class ChatsController extends Controller
         {
           headers('Content-type: video/mp4');
         }
-        
+
         return $return_media;
     }
 
@@ -261,7 +245,6 @@ class ChatsController extends Controller
         if($type == 'image')
         {
           $file = "temp.jpg";
-          $media = $request->file('imageWA');
           $message = $request->messages;
           $rules = [
             'imageWA'=>['required','mimes:jpg,jpeg,png','max:1024'],
@@ -272,7 +255,7 @@ class ChatsController extends Controller
         if($type == 'video')
         {
           $file = "temp.mp4";
-          $media = $request->file('videoWA');
+          $media = file_get_contents($request->file('videoWA'));
           $message = $request->vimessages;
           $rules = [
             'videoWA'=>['required','max:20480','mimes:mp4'],
@@ -310,6 +293,11 @@ class ChatsController extends Controller
           );
           return response()->json($data);
         }
+
+        if($validator->fails() == false && $type =='image')
+        {
+          $media = $this->convert_img_jpg($request->file('imageWA'));
+        }
         
         /*if($validator->fails() == true)
         {
@@ -321,7 +309,8 @@ class ChatsController extends Controller
           return response()->json($data);
         }*/
 
-        Storage::disk('s3')->put($folder.$file,file_get_contents($media), 'public');
+        // Storage::disk('local')->put('test/cvt.jpg',$media);
+        Storage::disk('s3')->put($folder.$file,$media,'public');
         sleep(1);
         $send = ApiHelper::send_media_url_wamate($to,Storage::disk('s3')->url($folder.$file),$message,$device_key,$type);
 
@@ -335,6 +324,40 @@ class ChatsController extends Controller
         }
         
         return response()->json($data);
+    }
+
+    private function convert_img_jpg($filePath)
+    {
+      $check_image_ext = exif_imagetype($filePath);
+      // dd(image_type_to_mime_type($check_image_ext));
+      switch(image_type_to_mime_type($check_image_ext)){
+        case 'image/png':
+          $ext = 'png';
+        break;
+        case 'image/jpeg':
+          $ext = 'jpg';
+        break;
+      }
+
+      if($ext == 'png')
+      {
+        $image = imagecreatefrompng($filePath);
+        $bg = imagecreatetruecolor(imagesx($image), imagesy($image));
+        imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
+        imagealphablending($bg, TRUE);
+        imagecopy($bg, $image, 0, 0, 0, 0, imagesx($image), imagesy($image));
+        imagedestroy($image);
+        $quality = 50; // 0 = worst / smaller file, 100 = better / bigger file 
+        ob_start();
+        imagejpeg($bg,null,$quality);
+        $image_contents = ob_get_clean();
+        return $image_contents;
+      }
+
+      if($ext == 'jpg')
+      {
+         return $filePath;
+      }
     }
 
     //webhook simulation

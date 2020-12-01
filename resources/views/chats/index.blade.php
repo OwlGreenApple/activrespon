@@ -87,7 +87,6 @@
     @else
       <div class="alert alert-warning col-lg-12">{{ $error }}</div>
     @endif
-
   </div>
 </div>
 
@@ -183,15 +182,19 @@
 
   $(document).ready(function() 
   {
+    
     emojiOne();
     sending_message();
+    <?php if($error == null): ?>
     get_messages();
     getNotification();
     getNewMessages();
+    <?php endif; ?>
     openSendMedia();
     image_preview();
     sendingImage();
     sending_video();
+    
     // sending_audio(); cancelled due API not supported
   });
 
@@ -334,7 +337,7 @@
     var get_messages = setInterval(function()
     {
         getNotification();
-    },2500);
+    },3000);
   } 
 
   function getNotification()
