@@ -203,7 +203,7 @@ class ChatsController extends Controller
         
         if($type == 'image') 
         {
-          header("Content-Type: image/jpeg")
+          header("Content-Type: image/jpeg");
         }
 
         if($type == 'video')
