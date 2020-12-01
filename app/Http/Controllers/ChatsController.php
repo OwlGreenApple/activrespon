@@ -33,11 +33,11 @@ class ChatsController extends Controller
     {
       if(env('APP_ENV') == 'local' || Auth::id() == 1)
       {
-        return '207.148.117.69:3333';
+        return '207.148.117.69';
       }
       else
       {
-        return '188.166.221.181:3333';
+        return '188.166.221.181';
       }
     }
 
@@ -199,12 +199,6 @@ class ChatsController extends Controller
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $return_media = curl_exec($ch);
         curl_close($ch);
-
-        /*if($type == 'audio')
-        {
-          header('Content-type: audio/ogg');
-        }
-        else */
         
         return $return_media;
     }

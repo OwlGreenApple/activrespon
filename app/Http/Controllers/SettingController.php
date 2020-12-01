@@ -17,6 +17,7 @@ use App\Server;
 use App\PhoneNumber;
 use App\Config;
 use App\OTP;
+use App\WebHookWA;
 use App\Rules\TelNumber;
 use App\Rules\AvailablePhoneNumber;
 use App\Helpers\ApiHelper;
@@ -969,6 +970,7 @@ class SettingController extends Controller
         
         try
         {
+          WebHookWA::where('device_id',$phoneNumber->wamate_id)->delete();
           $phoneNumber->delete();
           $result = json_decode(WamateHelper::login($email_wamate),true);
           $own = User::find($user->id);
