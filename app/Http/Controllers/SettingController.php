@@ -971,12 +971,13 @@ class SettingController extends Controller
         {
           $phoneNumber->delete();
           $result = json_decode(WamateHelper::login($email_wamate),true);
+          $own = User::find($user->id);
 
           if(isset($result['token']))
           {
-            $user->token = $result->token;
-            $user->refresh_token = $result->refreshToken;
-            $user->save();
+            $own->token = $result['token'];
+            $own->refresh_token = $result['refreshToken'];
+            $own->save();
           }
       
           $arr['status'] = 'success';

@@ -25,7 +25,7 @@ class ChatsController extends Controller
        $device_id = 8;
        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTYwNjc4NjMxMSwiZXhwIjoxNjA3MDQ1NTExfQ.LHDyyB4-5DoBPYpmowBlNFcSVUkDE99F2IyqPpDT4rU';
        $debug = WamateHelper::setWebhook($url,$device_id,$token);*/
-       $debug = json_decode(WamateHelper::login('local-1@y.com'),true);
+       json_decode(WamateHelper::login($email_wamate),true);
        dd($debug);
     }
 
@@ -246,7 +246,8 @@ class ChatsController extends Controller
             'messages'=>['required','string','max:4000']
           ];
         }
-        else if($type == 'video')
+        
+        if($type == 'video')
         {
           $file = "temp.mp4";
           $media = $request->file('videoWA');
@@ -256,18 +257,18 @@ class ChatsController extends Controller
             'vimessages'=>['required','string','max:4000']
           ];
         }
-        else
+       /* else
         {
           $file = "temp.ogg";
-          $media = $_FILES["audioWA"]["tmp_name"];
+          $media = $request->file('audioWA');
           $message = $request->audmessages;
-          /*$rules = [
-            'audioWA'=>['required','max:2048','mimetypes:audio/ogg'],
+          $rules = [
+            'audioWA'=>['required','max:2048'],
             'audmessages'=>['required','string','max:4000']
-          ];*/
-        }
+          ];
+        }*/
 
-       /* $validator = Validator::make($request->all(),$rules);
+        $validator = Validator::make($request->all(),$rules);
         $err = $validator->errors();
 
         if($validator->fails() == true && $type == 'video')
@@ -278,7 +279,8 @@ class ChatsController extends Controller
           );
           return response()->json($data);
         }
-        else if($validator->fails() == true && $type == 'image')
+
+        if($validator->fails() == true && $type == 'image')
         {
           $data['error'] = array(
             'media'=> $err->first('imageWA'),
@@ -286,7 +288,8 @@ class ChatsController extends Controller
           );
           return response()->json($data);
         }
-        else 
+        
+        /*if($validator->fails() == true)
         {
 
           $data['error'] = array(

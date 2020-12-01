@@ -13,11 +13,11 @@
                   <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/video" type="video/mp4">
                 Your browser does not support the video tag.
                 </video>
-            @elseif($row['val']['type'] == 'document')
+           <!--  @elseif($row['val']['type'] == 'document')
                 <audio controls>
                   <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/audio" type="audio/ogg">
                 Your browser does not support the audio element.
-                </audio>
+                </audio> -->
             @elseif($row['val']['type'] == 'text')
                 {{ $row['val']['message'] }}
             @else
@@ -39,11 +39,11 @@
                 <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/video" type="video/mp4">
               Your browser does not support the video tag.
               </video>
-          @elseif($row['val']['type'] == 'document')
+         <!--  @elseif($row['val']['type'] == 'document')
               <audio controls>
                 <source src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/audio" type="audio/ogg">
               Your browser does not support the audio element.
-              </audio>
+              </audio> -->
           @elseif($row['val']['type'] == 'text')
               {{ $row['val']['message'] }}
           @else

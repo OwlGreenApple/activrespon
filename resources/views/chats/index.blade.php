@@ -76,7 +76,7 @@
           <div>
             <textarea id="divInput-description-post" class="form-control"></textarea>
             <div media="video" class="btn btn-warning btn-media mt-2 float-left mr-2">Send Video</div>
-            <div media="audio" class="btn btn-warning btn-media mt-2 float-left mr-2">Send Audio</div>
+            <!-- <div media="audio" class="btn btn-warning btn-media mt-2 float-left mr-2">Send Audio</div> -->
             <div class="btn btn-warning btn-media mt-2 float-left">Send Image</div>
             <button type="button" align="right" class="btn btn-success mt-2 float-right btn-send">Send</button>
             <div class="clearfix"></div>
@@ -191,8 +191,8 @@
     openSendMedia();
     image_preview();
     sendingImage();
-    sending_audio();
     sending_video();
+    // sending_audio(); cancelled due API not supported
   });
 
   function readURL(input) 
@@ -333,17 +333,8 @@
   {
     var get_messages = setInterval(function()
     {
-       var id = $(".btn-send").attr('id');
-       if(id !== undefined)
-       {
-          load_messages(id);
-       }
-
-      setTimeout(function(){
         getNotification();
-      },3000);
-      
-    },5000);
+    },2500);
   } 
 
   function getNotification()
@@ -354,15 +345,24 @@
       data : {'device_id': '{{ $device_id }}'},
       dataType: 'json',
       success: function(result){
+        var id = $(".btn-send").attr('id');
         if(result !== 0)
         {
           $.each( result, function( key, value ) {
             var total_notif = $("#"+key).attr('total');
             total_notif = parseInt(total_notif);
             total_notif += parseInt(value);
-            $(".chat-note-"+key).html(total_notif).show();
-            $("#"+key).attr('total',total_notif);
+            if(id !== key)
+            {
+              $(".chat-note-"+key).html(total_notif).show();
+              $("#"+key).attr('total',total_notif);
+            }
           });
+
+          if(id !== undefined)
+          {
+            load_messages(id);
+          }
         }
       },
       error : function(xhr)
