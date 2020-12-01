@@ -196,7 +196,7 @@ class ChatsController extends Controller
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $images);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $return_media = curl_exec($ch);
         curl_close($ch);
 
