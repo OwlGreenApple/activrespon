@@ -43,7 +43,7 @@ class CheckCallingCode
         }
 
         //TO AVOID IF USER CHANGE THEIR PHONE NUMBER AFTER OTP
-        /* marking OTP 
+         //marking OTP 
         $otp_code = Cookie::get('otp_code');
         $phone_number = $request->code_country.$request->phone_number;
 
@@ -63,11 +63,11 @@ class CheckCallingCode
            {
               $error = array(
               'status'=>'error',
-                'phone_number'=>'Your phone number isn\'t same with your otp',
+                'phone_number'=>'Your phone number isn\'t same with otp',
              );
             return response()->json($error);
            }
-        }*/
+        }
 
         return $next($request);
     }

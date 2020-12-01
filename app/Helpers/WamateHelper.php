@@ -5,6 +5,7 @@ use App\PhoneNumber;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Helpers\WamateHelper;
+use Illuminate\Support\Facades\Auth;
 
 class WamateHelper
 {
@@ -15,7 +16,7 @@ class WamateHelper
 
   static function ip_server()
   {
-    if(env('APP_ENV') == 'local')
+    if(env('APP_ENV') == 'local' || Auth::id() == 1)
     {
       return '207.148.117.69:3333';
     }
@@ -420,7 +421,7 @@ class WamateHelper
   public static function setWebhook($url,$device_id,$token)
   {
     /* pasang webhook buat notifikasi */
-    $ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id.'/set-webhook');
+    $ch = curl_init();
 
     $data = array(
       "url" => $url,
@@ -428,20 +429,22 @@ class WamateHelper
     );
 
     $data_string = json_encode($data);
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_VERBOSE, 0);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 360);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-      'Content-Type: application/json',
-      'authorization: Bearer '.$token
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => 'http://'.self::ip_server().'/devices/'.$device_id.'/set-webhook',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 30,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => $data_string,
+      CURLOPT_HTTPHEADER => array(
+        "content-type: application/json",
+        'authorization: Bearer '.$token
+      ),
     ));
-   
+
+    $err = curl_error($ch);
     $result = curl_exec($ch);
 
     // Close cURL session handle

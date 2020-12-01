@@ -334,19 +334,16 @@
     var get_messages = setInterval(function()
     {
        var id = $(".btn-send").attr('id');
-       // console.log(id);
-       if(id == undefined)
-       {
-          clearInterval(get_messages);
-       }
-       else
+       if(id !== undefined)
        {
           load_messages(id);
-          setTimeout(function(){
-            getNotification();
-          },2000);
        }
-    },3500);
+
+     /* setTimeout(function(){
+        getNotification();
+      },3000);*/
+      
+    },5000);
   } 
 
   function getNotification()
@@ -512,7 +509,7 @@
         {
           $(".error_send").html('');
           load_messages(result.to);
-          $("#chat_room").modal('hide');
+          $("#media_video, #media_audio, #media_image").modal('hide');
           $(".alert").delay(3000).slideDown(2000);
           chatScroll();
         }

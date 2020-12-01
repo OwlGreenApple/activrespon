@@ -18,6 +18,17 @@ use DB, Cookie, Storage, Validator;
 
 class ChatsController extends Controller
 {
+
+    public function setWebhook()
+    {
+       /*$url = 'https://activrespon.com/dashboard/get-webhook';
+       $device_id = 8;
+       $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTYwNjc4NjMxMSwiZXhwIjoxNjA3MDQ1NTExfQ.LHDyyB4-5DoBPYpmowBlNFcSVUkDE99F2IyqPpDT4rU';
+       $debug = WamateHelper::setWebhook($url,$device_id,$token);*/
+       $debug = json_decode(WamateHelper::login('local-1@y.com'),true);
+       dd($debug);
+    }
+
     public function index()
     {
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
@@ -70,12 +81,16 @@ class ChatsController extends Controller
         $to = "628123238793";*/
         $device_key = $request->device_key;
         $total_message = 0;
+        $page = 20;
         $to = $request->chat_id;
         $chat_messages = WamateHelper::get_all_messages($device_key,20);
 
-        $total_message = $chat_messages['total'];
-        $page = $chat_messages['per_page'];
-
+        if(isset($chat_messages['total']))
+        {
+           $total_message = $chat_messages['total'];
+           $page = $chat_messages['per_page'];
+        }
+      
         if($total_message > $page)
         {
           $total_message += $page;
@@ -244,15 +259,17 @@ class ChatsController extends Controller
         else
         {
           $file = "temp.ogg";
-          $media = $request->file('audioWA');
+          $media = $_FILES['tmp_name']['audioWA'];
           $message = $request->audmessages;
-          $rules = [
-            'audioWA'=>['required','max:2048','mimes:ogg'],
+          /*$rules = [
+            'audioWA'=>['required','max:2048','mimetypes:audio/ogg'],
             'audmessages'=>['required','string','max:4000']
-          ];
+          ];*/
         }
 
-        $validator = Validator::make($request->all(),$rules);
+        dd($media);
+
+       /* $validator = Validator::make($request->all(),$rules);
         $err = $validator->errors();
 
         if($validator->fails() == true && $type == 'video')
@@ -273,12 +290,13 @@ class ChatsController extends Controller
         }
         else 
         {
+
           $data['error'] = array(
             'media'=> $err->first('audioWA'),
             'message'=> $err->first('audmessages')
           );
           return response()->json($data);
-        }
+        }*/
 
         Storage::disk('s3')->put($folder.$file,file_get_contents($media), 'public');
         sleep(1);

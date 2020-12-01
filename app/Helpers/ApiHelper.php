@@ -5,6 +5,7 @@ use App\PhoneNumber;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Helpers\ApiHelper;
+use Illuminate\Support\Facades\Auth;
 
 class ApiHelper
 {
@@ -14,7 +15,7 @@ class ApiHelper
   }
 
   static function simiIP(){
-    if(env('APP_ENV') == 'local')
+    if(env('APP_ENV') == 'local' || Auth::id() == 1)
     {
       return '207.148.117.69:3333';
     }
