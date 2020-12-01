@@ -29,6 +29,18 @@ class ChatsController extends Controller
        dd($debug);
     }
 
+    public static function ip()
+    {
+      if(env('APP_ENV') == 'local' || Auth::id() == 1)
+      {
+        return '207.148.117.69:3333';
+      }
+      else
+      {
+        return '188.166.221.181:3333';
+      }
+    }
+
     public function index()
     {
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
@@ -157,37 +169,42 @@ class ChatsController extends Controller
       return array();
     }
 
-    public static function ip()
-    {
-      return 'http://207.148.117.69';
-    }
-
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
         // $img = "/media/1/B60066E25420E116D1F04E62ADE30D62.jpeg";
         $filter = explode("-", $media);
         $url = self::ip()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+
+
+        if($type == 'image') 
+        {
+          $headers = array(
+            "Content-Type: image/jpg",
+            "Content-Type: image/jpeg",
+            "Content-Type: image/png",
+          );
+        }
+
+        if($type == 'video')
+        {
+          $headers = array('Content-type: video/mp4');
+        }
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $images);
         $return_media = curl_exec($ch);
         curl_close($ch);
 
-        if($type == 'audio')
+        /*if($type == 'audio')
         {
           header('Content-type: audio/ogg');
         }
-        else if($type == 'video')
-        {
-          header('Content-type: video/mp4');
-        }
-        else 
-        {
-          header('Content-type: image/jpeg');
-        }
+        else */
         
         return $return_media;
     }
@@ -242,7 +259,7 @@ class ChatsController extends Controller
           $media = $request->file('imageWA');
           $message = $request->messages;
           $rules = [
-            'imageWA'=>['required','mimes:jpg,png','max:1024'],
+            'imageWA'=>['required','mimes:jpg,jpeg,png','max:1024'],
             'messages'=>['required','string','max:4000']
           ];
         }
