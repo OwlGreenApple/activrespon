@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
+use App\Http\Controllers\ApiWPController;
 
 class ApiController extends Controller
 {
@@ -174,6 +175,21 @@ class ApiController extends Controller
         }
 
         $customer_phone = Customer::where([['list_id',$list->id],['telegram_number',$phone_number]])->first();
+        
+        if ($list->id == 224)
+        {
+          //send to celebmail
+          $apiWPController = new ApiWPController;
+          $apiWPController->sendToCelebmail($obj->name,$obj->email,'wx909tbczb069');
+        }
+        
+        if ($list->id == 228)
+        {
+          //send to celebmail
+          $apiWPController = new ApiWPController;
+          $apiWPController->sendToCelebmail($obj->name,$obj->email,'of747vmm6q720');
+        }
+        
 
         if(is_null($customer_phone))
         {
