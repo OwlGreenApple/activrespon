@@ -259,15 +259,13 @@ class ChatsController extends Controller
         else
         {
           $file = "temp.ogg";
-          $media = $_FILES['tmp_name']['audioWA'];
+          $media = $_FILES["audioWA"]["tmp_name"];
           $message = $request->audmessages;
           /*$rules = [
             'audioWA'=>['required','max:2048','mimetypes:audio/ogg'],
             'audmessages'=>['required','string','max:4000']
           ];*/
         }
-
-        dd($media);
 
        /* $validator = Validator::make($request->all(),$rules);
         $err = $validator->errors();

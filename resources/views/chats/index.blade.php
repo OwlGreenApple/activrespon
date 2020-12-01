@@ -339,9 +339,9 @@
           load_messages(id);
        }
 
-     /* setTimeout(function(){
+      setTimeout(function(){
         getNotification();
-      },3000);*/
+      },3000);
       
     },5000);
   } 
