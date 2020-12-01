@@ -967,10 +967,15 @@ class SettingController extends Controller
 			else if ($phoneNumber->mode == 2){
         $result = WamateHelper::delete_devices($phoneNumber->wamate_id,$user->token);
         $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
+        $countwebhook = WebHookWA::where('device_id',$phoneNumber->wamate_id);
         
         try
         {
-          WebHookWA::where('device_id',$phoneNumber->wamate_id)->delete();
+          if($countwebhook->get()->count() > 0)
+          {
+            WebHookWA::where('device_id',$phoneNumber->wamate_id)->delete();
+          }
+
           $phoneNumber->delete();
           $result = json_decode(WamateHelper::login($email_wamate),true);
           $own = User::find($user->id);
