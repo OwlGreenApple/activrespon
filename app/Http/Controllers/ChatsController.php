@@ -87,6 +87,32 @@ class ChatsController extends Controller
         return view('chats.index',$data);
     }
 
+    public function chat_members(Request $request)
+    {
+        $search = $request->member;
+        $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
+
+        if(!is_null($phone_number)):
+          $device_key = $phone_number->device_key;
+          $chat_members = WamateHelper::get_all_chats($device_key);
+
+          if(count($chat_members) > 0)
+          {
+            /* menampilkan chat members */
+            foreach ($chat_members as $row):
+              if($row['id'] !== 'status')
+              {
+                $chats[] = $row;
+              }
+            endforeach;
+
+            //array search here ....
+
+            $data['chats'] = $chats;
+          }
+        endif;
+    }
+
     public function getChatMessages(Request $request)
     {
         /* menampilkan semua messages dari dalam chat */

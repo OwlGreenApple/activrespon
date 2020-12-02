@@ -35,6 +35,8 @@
             <div class="chat-box" id="chat_room_member">
               <!-- displaying chat members -->
 
+              <input placeholder="search name" type="text" class="form-control mb-3" id="search-user" />
+
               @if(count($chats) > 0)
                 @foreach($chats AS $key=>$row)
                   @php $random = rand(1,12); @endphp
