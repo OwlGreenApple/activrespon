@@ -245,6 +245,7 @@ class ChatsController extends Controller
         if($type == 'image')
         {
           $file = "temp.jpg";
+          $media = $request->file('imageWA');
           $message = $request->messages;
           $rules = [
             'imageWA'=>['required','mimes:jpg,jpeg,png','max:1024'],
@@ -255,7 +256,7 @@ class ChatsController extends Controller
         if($type == 'video')
         {
           $file = "temp.mp4";
-          $media = file_get_contents($request->file('videoWA'));
+          $media = $request->file('videoWA');
           $message = $request->vimessages;
           $rules = [
             'videoWA'=>['required','max:20480','mimes:mp4'],
@@ -294,11 +295,6 @@ class ChatsController extends Controller
           return response()->json($data);
         }
 
-        if($validator->fails() == false && $type =='image')
-        {
-          $media = $this->convert_img_jpg($request->file('imageWA'));
-        }
-        
         /*if($validator->fails() == true)
         {
 
@@ -310,7 +306,7 @@ class ChatsController extends Controller
         }*/
 
         // Storage::disk('local')->put('test/cvt.jpg',$media);
-        Storage::disk('s3')->put($folder.$file,$media,'public');
+        Storage::disk('s3')->put($folder.$file,file_get_contents($media),'public');
         sleep(1);
         $send = ApiHelper::send_media_url_wamate($to,Storage::disk('s3')->url($folder.$file),$message,$device_key,$type);
 

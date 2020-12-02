@@ -323,7 +323,9 @@
       dataType: 'html',
       success: function(result)
       {
-        $("#content_chat").html(result);
+        setTimeout(function(){
+          $("#content_chat").html(result);
+        },700);
       },
       error : function(xhr)
       {
@@ -364,7 +366,9 @@
 
           if(id !== undefined)
           {
-            load_messages(id);
+            setTimeout(function(){
+              load_messages(id);
+            },500);
           }
         }
       },
