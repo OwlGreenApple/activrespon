@@ -111,6 +111,10 @@
     <!-- Canvas JS -->
     <script type="text/javascript" src="{{ asset('canvasjs/canvasjs.min.js') }}"></script>
 
+    <!-- custom scroll -->
+    <link href="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css') }}" rel="stylesheet" />
+    
+
 </head>
 <body>
 		<?php 

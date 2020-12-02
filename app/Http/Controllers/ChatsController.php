@@ -59,6 +59,8 @@ class ChatsController extends Controller
             $data['device_key'] = $device_key;
             $data['device_id'] = $phone_number->wamate_id;
             $data['error'] = null;
+            $data['username'] = Auth::user()->name;
+            $data['phone'] = $phone_number->phone_number;
         
             if(count($chat_members) > 0)
             {

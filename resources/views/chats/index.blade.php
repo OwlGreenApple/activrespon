@@ -13,34 +13,39 @@
     <div class="col-md-12">
       <div class="error"><!-- error when unable to insert database --></div>
       <!-- <button id="add_member" class="btn btn-primary btn-sm">Add Member</button> -->
-      <div class="card-body table-responsive">
-        <div id="chat_members"><!-- data --></div>
-      </div>
-      <!-- <div class="alert bg-dashboard cardlist">
-        You don't have any order yet, please make order <a href="{{ url('pricing') }}">Here</a>
-      </div> -->
     </div>
 
     @if($error == null)
 
     <div class="col-md-12">
       <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-4 chat-box px-0">
-            <div id="chat_room_member">
+        <div class="col-lg-4 col-md-4 col-sm-4 px-0">
+
+            <div class="col-lg-12 chat-roof row mx-0">
+              <div class="col-lg-2 px-0"><img class="chat-wa-logo" src="{{ asset('assets/wachat/walogo.png') }}"/></div>
+              <div class="col-lg-8">
+                <h5><b>{{ $username }}</b></h5>
+                <h6>{{ $phone }}</h6>
+              </div>
+              <div class="col-lg-2">
+                <!-- <div class="chat-refresh"><a class="icon-spinner11"></a></div> -->
+              </div>
+            </div>
+
+            <div class="chat-box" id="chat_room_member">
               <!-- displaying chat members -->
 
               @if(count($chats) > 0)
                 @foreach($chats AS $key=>$row)
+                  @php $random = rand(1,12); @endphp
                   <div id="{{ $row['id'] }}" total="0" class="col-md-12 mb-2 chat_room_box">
                    <div class="row chat-name">
                       <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                        <img class="rounded-circle chat-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                        <img class="rounded-circle chat-image" alt="100x100" src="{{ asset('assets/wachat/avatar') }}{{$random}}.png" data-holder-rendered="true"/>
                       </div>
 
                       <div class="col-lg-10 col-md-10 col-sm-10 col-10 pr-0">
-                        <div class="chat-user">
-                          {{$row['name']}}
-                          <span class="chat-note-{{ $row['id'] }} float-right chat-notification"><!-- notification --></span>
+                        <div class="chat-user">{{$row['name']}}<span class="chat-note-{{ $row['id'] }} float-right chat-notification"><!-- notification --></span>
                           <div class="clearfix"></div>
                         </div>
                         <div class="chat-text-user"><!-- Available --></div>
@@ -61,8 +66,28 @@
 
           </div>
 
-          <div id="content_chat" class="col-lg-8 col-md-8 col-sm-8 chat-box">
-            <!-- displaying chat messages -->
+          <div class="col-lg-8 col-md-8 col-sm-8 px-0 chat-bg">
+
+            <div class="col-lg-12 chat-roof-right row mx-0">
+              <div class="col-md-12 mb-2 chat_room_box">
+                 <div class="row chat-name">
+                    
+                    <div class="col-lg-1 col-md-1 col-sm-1 col-1 pad-fix ml-3">
+                      <img class="rounded-circle chat-roof-image" alt="100x100" src="https://placehold.it/100x100" data-holder-rendered="true"/>
+                    </div>
+
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8 pr-0">
+                      <h5 id="chat_user"><!-- Display user name --></h5>
+                    </div>
+
+                    <!-- -->
+                  </div>
+                </div>
+            </div>
+
+            <div id="content_chat" class="chat-box">
+              <div class="alert alert-success col-lg-6 text-center mx-auto">Please choose contact</div>
+            </div>
           </div>
       </div>
     </div>
@@ -70,7 +95,7 @@
     <div class="col-lg-12 mt-2">
       <div class="row">
         <div class="col-lg-4">&nbsp;</div>
-        <div class="col-lg-8">
+        <div class="col-lg-8 px-0">
           <span class="error_send"></span>
           
           <div>
@@ -175,6 +200,7 @@
   </div>
 </div>
 
+ <script type="text/javascript" src="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js') }}"></script>
 <script type="text/javascript">
 
   var chat_err = "Please choose chat";
@@ -182,7 +208,6 @@
 
   $(document).ready(function() 
   {
-    
     emojiOne();
     sending_message();
     <?php if($error == null): ?>
@@ -197,6 +222,18 @@
     
     // sending_audio(); cancelled due API not supported
   });
+
+  /* custom scrollbar */
+  (function($){
+      $(window).on("load",function(){
+        
+        $("#chat_room_member").mCustomScrollbar({
+          autoHideScrollbar:true,
+          theme:"minimal-dark"
+        }); 
+      
+      });
+    })(jQuery);
 
   function readURL(input) 
   {
@@ -233,8 +270,19 @@
         $(".btn-send").attr('id',id);
         $("#"+id).attr('total',0);
         $(".chat-note-"+id).hide();
+
+        $(".chat-roof-image").css('visibility', 'visible');
+        var get_name = $("#"+id+" .chat-user").text();
+        $("#chat_user").html(get_name);
+        var img = $("#"+id+" .chat-image").attr('src');
+        $(".chat-roof-image").attr('src',img);
+
+        $(".chat_room_box").removeClass('waselected');
+        setTimeout(function(){
+          $("#"+id).addClass('waselected');
+        },100);
+
         load_messages(id)
-        chatScroll();
     });
   }
 
@@ -307,10 +355,8 @@
 
   function chatScroll()
   {
-    setTimeout(function(){
-      var scrolls = $("#content_chat").prop("scrollHeight");
-      $("#content_chat").scrollTop(scrolls);
-    },2500);
+    var scrolls = $("#content_chat").prop("scrollHeight");
+    $("#content_chat").scrollTop(scrolls);
   }
 
   function load_messages(id)
@@ -321,11 +367,13 @@
       url : "{{ url('get_chat_messages') }}",
       data : data,
       dataType: 'html',
+      beforeSend: function() {
+        $("#content_chat").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
+      },
       success: function(result)
       {
-        setTimeout(function(){
-          $("#content_chat").html(result);
-        },700);
+        $("#content_chat").html(result);
+        chatScroll();
       },
       error : function(xhr)
       {
@@ -345,6 +393,7 @@
   function getNotification()
   {
      $.ajax({
+      async: false,
       type : 'GET',
       url : "{{ url('get-notification') }}",
       data : {'device_id': '{{ $device_id }}'},
@@ -368,7 +417,7 @@
           {
             setTimeout(function(){
               load_messages(id);
-            },500);
+            },100);
           }
         }
       },

@@ -3,7 +3,7 @@
     @foreach($messages as $row)
         @if($row['key'] == 'reply')
         <div class="col-md-6">
-            <div class="alert alert-primary chat-text">
+            <div class="alert alert-light chat-text">
             @if($row['val']['type'] == 'image')
               <div>
                 <img class="image_preview" src="{{url('get_media')}}/{{ $app->media_link_parse($row['val']['media_url']) }}/image" />
@@ -17,7 +17,7 @@
                 </video>
               </div>
             @elseif($row['val']['type'] == 'text')
-                {{ $row['val']['message'] }}
+              {{ $row['val']['message'] }}
             @else
                 Sorry, media message we only support : mp4(video), ogg(audio)
             @endif
@@ -56,9 +56,3 @@
 @else
   <div class="col-md-12 alert alert-warning">{{ $error }}</div>
 @endif
-
- <!-- if(row['val']['type'] == 'document')
-  <audio controls>
-    <source src="">
-  Your browser does not support the audio element.
-  </audio> -->
