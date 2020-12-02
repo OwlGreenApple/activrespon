@@ -224,6 +224,7 @@ class ChatsController extends Controller
         return response()->json($data);
     } 
 
+    /* off due limited bandwith and storage */
     public function sendMedia(Request $request)
     {
         /* mengirim WA image message + caption ,audio / video */

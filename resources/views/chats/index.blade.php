@@ -75,9 +75,9 @@
           
           <div>
             <textarea id="divInput-description-post" class="form-control"></textarea>
-            <div media="video" class="btn btn-warning btn-media mt-2 float-left mr-2">Send Video</div>
+            <!-- <div media="video" class="btn btn-warning btn-media mt-2 float-left mr-2">Send Video</div> -->
             <!-- <div media="audio" class="btn btn-warning btn-media mt-2 float-left mr-2">Send Audio</div> -->
-            <div class="btn btn-warning btn-media mt-2 float-left">Send Image</div>
+           <!--  <div class="btn btn-warning btn-media mt-2 float-left">Send Image</div> -->
             <button type="button" align="right" class="btn btn-success mt-2 float-right btn-send">Send</button>
             <div class="clearfix"></div>
           </div>
