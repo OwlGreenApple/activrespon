@@ -8,8 +8,10 @@ use App\User;
 use App\PhoneNumber;
 use App\Membership;
 use App\Message;
+use App\WebHookWA;
 use App\Mail\MemberShip as EmailMember;
 use App\Helpers\ApiHelper;
+use App\Helpers\WamateHelper;
 
 use App\Jobs\SendNotif;
 
@@ -48,6 +50,7 @@ class CheckMembership extends Command
     {
         $users = User::where('day_left','>',-2)->get();
         $membership = $remain_day_left = 0;
+        $phone = null;
 
         if($users->count() > 0)
         {
@@ -77,17 +80,43 @@ class CheckMembership extends Command
                  $user->membership = null;
                  $user->status = 0;
                  $user->save();
-
                  $phone = PhoneNumber::where('user_id',$row->id)->first();
-                 if(!is_null($phone))
-                 {
-                    $phone->counter = 0;
-                    $phone->max_counter = 0;
-                    $phone->max_counter_day = 0;
-                    $phone->status = 0;
-                    $phone->save();
-                 }
               }
+
+              $mode = null;
+              if(!is_null($phone)){
+                 $mode = $phone->mode;
+              }
+
+              if($mode == 2):
+                $result = WamateHelper::delete_devices($phone->wamate_id,$user->token);
+                $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
+                $countwebhook = WebHookWA::where('device_id',$phone->wamate_id);
+                
+                if($countwebhook->get()->count() > 0)
+                {
+                  WebHookWA::where('device_id',$phone->wamate_id)->delete();
+                }
+
+                $phone->delete();
+                // $result = json_decode(WamateHelper::login($email_wamate),true);
+                $own = User::find($user->id);
+                $own->token = null;
+                $own->refresh_token = null;
+                $own->save();
+
+                /*if(isset($result['token']))
+                {
+                  
+                }*/
+              
+              elseif($mode <> null):
+                $phone->counter = 0;
+                $phone->max_counter = 0;
+                $phone->max_counter_day = 0;
+                $phone->status = 0;
+                $phone->save();
+              endif;
 
               if ($day_left == 5) {
                 $message = null;
