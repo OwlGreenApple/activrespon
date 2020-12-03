@@ -82,8 +82,6 @@ class SendCampaign implements ShouldQueue
           ->orderBy('broad_casts.user_id')
           ->get();
 
-        print_r($broadcast);
-
         if($broadcast->count() > 0)
         {
             foreach($broadcast as $row)
