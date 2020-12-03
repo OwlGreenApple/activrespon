@@ -435,18 +435,21 @@ class ChatsController extends Controller
     
       $res = json_decode($req,true);
 
-      $wh = new WebHookWA;
-      $wh->device_id = $res['device_id'];
-      $wh->event = $res['event'];
-      $wh->from_sender = $res['data']['from'];
-    
-      try{
+      if(count($res) > 0):
+        $wh = new WebHookWA;
+        $wh->device_id = $res['device_id'];
+        $wh->event = $res['event'];
+        $wh->from_sender = $res['data']['from'];
+
+        try
+        {
          $wh->save();
-      }
-      catch(QueryException $e)
-      {
-        return $e->getMessage();
-      }
+        }
+        catch(QueryException $e)
+        {
+          return $e->getMessage();
+        }
+      endif;
     }
 
     public function getNotification(Request $request)
