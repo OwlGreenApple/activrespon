@@ -171,8 +171,7 @@
                 </tr>
               </thead>
 
-              <tbody id="table-phone">
-              </tbody>
+              <tbody id="table-phone"></tbody>
             </table>
         </div>
 
@@ -780,7 +779,7 @@
 			});
 	}
 	function buttonStartConnect(){
-    $('body').on('click','#button-start-connect',function(){
+    $('#button-start-connect').click(function(){
       var phone_number = $("#phone").val();
       var code_country = $(".iti__selected-flag").attr('data-code');
       var dataphone = $("#form-connect").serializeArray();

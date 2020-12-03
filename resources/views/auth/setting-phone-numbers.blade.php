@@ -1,10 +1,4 @@
-  @if(count($phoneNumbers)==0)
-    <tr>
-      <td colspan="4" class="text-center">
-        No data to display
-      </td>
-    </tr>
-  @endif
+@if($phoneNumbers->count() > 0)
   @foreach($phoneNumbers as $phoneNumber)
     <tr>
       <td class="text-center">1</td>
@@ -23,3 +17,8 @@
       </td>
     </tr>
   @endforeach
+@else
+  <tr>
+    <td colspan="4" class="text-center"> No data to display</td>
+  </tr>
+@endif

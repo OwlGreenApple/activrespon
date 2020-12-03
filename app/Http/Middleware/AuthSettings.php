@@ -36,7 +36,7 @@ class AuthSettings
         $valid_url = true;
       }
       
-      if(is_null($phone) && $valid_url === false)
+      if(is_null($phone) && $valid_url === false && !$request->ajax())
       {
         return redirect('settings');
       }
