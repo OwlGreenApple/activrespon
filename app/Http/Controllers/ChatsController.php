@@ -431,6 +431,7 @@ class ChatsController extends Controller
     {
       header('Content-Type: application/json');
       $req = file_get_contents('php://input');
+      $res['data']['from'] = null;
        // dd($req);
     
       $res = json_decode($req,true);
