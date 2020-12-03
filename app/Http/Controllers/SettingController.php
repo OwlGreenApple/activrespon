@@ -289,16 +289,12 @@ class SettingController extends Controller
         }
       }*/
 
-      $phone_updated = PhoneNumber::
-                        where("user_id",$user->id)
-                        ->where("status",">",0)
-                        ->get();
-      $arr['view'] =(string) view('auth.setting-phone-numbers')
-                      ->with([
-                        "phoneNumbers"=>$phone_updated,
-                      ]);
-
-      return $arr;
+      $phone_updated = PhoneNumber::where("user_id",$user->id)->where("status",">",0)->get();
+               
+      if($phone_updated->count() > 0)
+      {
+         return view('auth.setting-phone-numbers')->with(["phoneNumbers"=>$phone_updated]);
+      } 
     }
 
     public function editPhone(Request $request)

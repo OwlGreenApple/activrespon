@@ -184,7 +184,9 @@ class CheckMembership extends Command
               
               if(($day_left == 5 || $day_left == 1 || $day_left == -1) )
               {
+                if(env('APP_ENV') <> 'local'){
                  Mail::to($row->email)->send(new EmailMember($day_left,$row->id));
+                }
               }
             endforeach;
         }

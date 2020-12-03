@@ -59,7 +59,7 @@
         <br>
         
         <div class="col-12 mb-4" style="margin-top: 30px">
-          <button class="btn btn-secondary btn-block" data-dismiss="modal" id="button-start-connect">
+          <button class="btn btn-secondary btn-block" id="button-start-connect">
             Start
           </button>
         </div>
@@ -420,7 +420,7 @@
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       type: 'GET',
       url: "<?php echo url('/load-phone-number');?>",
-      dataType: 'text',
+      dataType: 'html',
       beforeSend: function()
       {
         $('#loader').show();
@@ -429,9 +429,7 @@
       success: function(result) {
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
-
-        var data = jQuery.parseJSON(result);
-        $('#table-phone').html(data.view);
+        $('#table-phone').html(result);
       },
       error: function(xhr,attr,throwable){
         $('#loader').hide();
@@ -782,7 +780,7 @@
 			});
 	}
 	function buttonStartConnect(){
-    $('#button-start-connect').click(function(){
+    $('body').on('click','#button-start-connect',function(){
       var phone_number = $("#phone").val();
       var code_country = $(".iti__selected-flag").attr('data-code');
       var dataphone = $("#form-connect").serializeArray();
@@ -796,6 +794,7 @@
         dataType: 'text',
         beforeSend: function()
         {
+          $("#modal-start-connect").modal('hide');
           $('#loader').show();
           $('.div-loading').addClass('background-load');
         },

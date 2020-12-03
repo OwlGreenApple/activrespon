@@ -173,9 +173,9 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::post('submit-otp', 'SettingController@submitOTP');
   Route::get('connect-phone', 'SettingController@connect_phone')->middleware('checkcall');
   Route::get('verify-phone', 'SettingController@verify_phone')->middleware('checkphone');
-	
-  Route::get('delete-phone', 'SettingController@delete_phone');
   Route::get('check-qr', 'SettingController@check_connected_phone');
+  Route::get('delete-phone', 'SettingController@delete_phone');
+ 
   Route::get('delete-api/{no}', 'SettingController@delete_api');
   Route::get('status-nomor/{no}', 'SettingController@status_nomor');
   Route::get('get-qr-code/{no}', 'SettingController@get_qr_code');
