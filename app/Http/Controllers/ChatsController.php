@@ -402,7 +402,7 @@ class ChatsController extends Controller
         "data"=> array(
           'id'=>50,
           'to'=>'aaaaa',
-          'from'=>'bbbb',
+          // 'from'=>'bbbb',
           'status'=>'DELIVERED'
         )
       );
@@ -431,7 +431,6 @@ class ChatsController extends Controller
     {
       header('Content-Type: application/json');
       $req = file_get_contents('php://input');
-      $res['data']['from'] = null;
        // dd($req);
     
       $res = json_decode($req,true);
@@ -440,7 +439,10 @@ class ChatsController extends Controller
         $wh = new WebHookWA;
         $wh->device_id = $res['device_id'];
         $wh->event = $res['event'];
-        $wh->from_sender = $res['data']['from'];
+
+        if(isset($res['data']['from'])){
+          $wh->from_sender = $res['data']['from'];
+        }
 
         try
         {
