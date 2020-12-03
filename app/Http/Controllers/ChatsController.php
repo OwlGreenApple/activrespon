@@ -31,7 +31,7 @@ class ChatsController extends Controller
 
     public static function ip()
     {
-      if(env('APP_ENV') == 'local')
+      if(env('APP_ENV') == 'local' || Auth::id() == 1)
       {
         return '207.148.117.69';
       }
@@ -91,6 +91,7 @@ class ChatsController extends Controller
     {
         $search = $request->member;
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
+        $data['chats'] = $chats = array();
 
         if(!is_null($phone_number)):
           $device_key = $phone_number->device_key;
@@ -100,17 +101,19 @@ class ChatsController extends Controller
           {
             /* menampilkan chat members */
             foreach ($chat_members as $row):
-              if($row['id'] !== 'status')
-              {
+              if($row['id'] !== 'status' && $search == null):
                 $chats[] = $row;
-              }
+              else :
+                $pattern = "/$search/i";
+                if(preg_match($pattern,$row['name'])){
+                    $chats[]=$row;
+                }
+              endif;
             endforeach;
-
-            //array search here ....
-
-            $data['chats'] = $chats;
           }
         endif;
+
+        return view('chats.members',['chats'=>$chats,'error'=>null]);
     }
 
     public function getChatMessages(Request $request)

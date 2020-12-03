@@ -33,37 +33,10 @@
             </div>
 
             <div class="chat-box" id="chat_room_member">
-              <!-- displaying chat members -->
-
+              <!-- search chat members -->
               <input placeholder="search name" type="text" class="form-control mb-3" id="search-user" />
-
-              @if(count($chats) > 0)
-                @foreach($chats AS $key=>$row)
-                  @php $random = rand(1,12); @endphp
-                  <div id="{{ $row['id'] }}" total="0" class="col-md-12 mb-2 chat_room_box">
-                   <div class="row chat-name">
-                      <div class="col-lg-2 col-md-2 col-sm-2 col-2 pad-fix">
-                        <img class="rounded-circle chat-image" alt="100x100" src="{{ asset('assets/wachat/avatar') }}{{$random}}.png" data-holder-rendered="true"/>
-                      </div>
-
-                      <div class="col-lg-10 col-md-10 col-sm-10 col-10 pr-0">
-                        <div class="chat-user">{{$row['name']}}<span class="chat-note-{{ $row['id'] }} float-right chat-notification"><!-- notification --></span>
-                          <div class="clearfix"></div>
-                        </div>
-                        <div class="chat-text-user"><!-- Available --></div>
-                      </div>
-
-                      <div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right pl-0">
-                        <div class="chat-time"></div>
-                      </div>
-                      <!-- -->
-                    </div>
-                  </div>
-                @endforeach
-              @else
-                {{$error}}
-              @endif
-
+              <!-- displaying chat members -->
+              <div id="chat-members">@include('chats.members')</div>
             </div>
 
           </div>
@@ -216,6 +189,7 @@
     get_messages();
     getNotification();
     getNewMessages();
+    getChatMembers();
     <?php endif; ?>
     openSendMedia();
     image_preview();
@@ -267,7 +241,7 @@
 
   function get_messages()
   {
-    $(".chat_room_box").click(function(){
+    $("body").on("click",".chat_room_box",function(){
         var id = $(this).attr('id');
         $(".btn-send").attr('id',id);
         $("#"+id).attr('total',0);
@@ -308,6 +282,48 @@
       
       sendMesssage(recipient,messages);
     });
+  }
+
+  function delay(callback, ms) {
+    var timer = 0;
+    return function() {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        callback.apply(context, args);
+      }, ms || 0);
+    };
+  }
+
+  function getChatMembers()
+  {
+    $("#search-user").keyup(delay(function(e)
+    {
+      var name = $(this).val();
+        searchChat(name);
+    },750));
+  }
+
+  function searchChat(name)
+  {
+    $.ajax({
+      type : 'GET',
+      url : "{{ url('chat-members') }}",
+      data : {'member':name},
+      dataType: 'html',
+      beforeSend: function() {
+        $("#chat-members").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
+      },
+      success: function(result) 
+      {
+        $("#chat-members").html(result);
+      },
+      error: function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
+    //end ajax
   }
 
   function sendMesssage(recipient,messages)
