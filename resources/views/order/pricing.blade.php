@@ -81,6 +81,8 @@
           </div>            
         </div>            
         </div>
+        <!-- Chat Feature -->
+         <h5 class="text-left mt-2"><input type="checkbox" class="package-chat" /> Add webchat IDR 100.000 per-month</h5>
       </div>
 			<!--
       <div class="col-1 ">
@@ -159,7 +161,9 @@
     // set_price();
 		check_package();
     slider_init();
+    chatPricing();
   });
+
 	function check_package(){
 		if (modePrice==1) {
 			if (messagePer30day == 10000) {
@@ -276,6 +280,7 @@
 			}
 		}
 	}
+
   function set_price(){
       if (modePrice==1) {
         $("#choose-price").html($("#monthly-price").html());
@@ -301,6 +306,7 @@
   
   function slider_init(){
     var custom_values = [10000, 17500, 27500, 40000, 55000, 72500, 92500, 117500, 147500];
+    var is_checked = $(".package-chat").prop('checked');
     $(".js-range-slider").ionRangeSlider({
         grid: true,
         step:100,
@@ -374,7 +380,16 @@
             $("#message-per-month").html("5.000 Messages / day ");
             $(".description-contact").html("147.500 Messages");
           }
-          set_price();
+
+          if(is_checked == true)
+          {
+            change_chat_pricing();
+          }
+          else
+          {
+            set_price();
+          }
+          
 					check_package();
         }
     });
@@ -389,5 +404,56 @@
 			check_package();
     });
   }
+
+  function chatPricing()
+  {
+    $(".package-chat").click(function(){
+      change_chat_pricing();
+    });
+  }
+
+  function change_chat_pricing()
+  {
+    var is_checked = $(".package-chat").prop('checked');
+    var pricing_chat = 100000;
+    month_price = get_filter_price($("#monthly-price"));
+    month_2_price = get_filter_price($("#2months-price"));
+    month_3_price = get_filter_price($("#3months-price"));
+
+    if(is_checked == true)
+    {
+      month_price += pricing_chat;
+      month_2_price += pricing_chat;
+      month_3_price += pricing_chat;
+    }
+    else
+    {
+      month_price -= pricing_chat;
+      month_2_price -= pricing_chat;
+      month_3_price -= pricing_chat;
+    } 
+
+    $("#monthly-price").html(format2(month_price,'IDR '));
+    $("#2months-price").html(format2(month_2_price,'IDR '));
+    $("#3months-price").html(format2(month_3_price,'IDR '));
+    set_price();
+  }
+
+  //http://jsfiddle.net/hAfMM/9571/
+  /* to format number */
+  function format2(n, currency) {
+    currency = currency + n.toFixed(1).replace(/(\d)(?=(\d{3})+\.)/g, '$1.');
+    var len = currency.length -2;
+    currency = currency.slice(0,len);
+    return currency;
+  }
+
+  function get_filter_price(selector)
+  {
+    selector = selector.text().split(" ")[1]; //remove idr
+    selector = parseInt(selector.replace(/\./g, '')); //convert string to integer
+    return selector;
+  }
+
 </script>
 @endsection
