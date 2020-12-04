@@ -51,6 +51,7 @@ class GetKey extends Command
 												->where("mode",1)
 												->get();
 
+        if($phoneNumber->count() > 0):
         foreach($phoneNumber as $row){
             $ret = json_decode(ApiHelper::get_key($row->phone_number),1);
             if (isset($ret["message"])) {
@@ -60,6 +61,7 @@ class GetKey extends Command
               }
             }
         }
+      endif;
     }    
  
 
