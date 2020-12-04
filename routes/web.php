@@ -55,7 +55,7 @@ Route::post('private-list','ApiController@register_list');
 
 Route::get('pricing','OrderController@pricing')->name('pricing');
 Route::get('summary','OrderController@summary');
-Route::get('checkout/{id}','OrderController@checkout');
+Route::get('checkout/{id}/{chat}','OrderController@checkout');
 Route::get('thankyou','OrderController@thankyou');
 Route::post('/check-coupon','OrderController@check_coupon');
 // Route::post('/submit-checkout-register','OrderController@submit_checkout_register');

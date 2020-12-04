@@ -75,6 +75,12 @@ class CheckMembership extends Command
                  $remain_day_left = $user->day_left;
               }
 
+              if($user->is_chat > 0)
+              {
+                 $user->is_chat--;
+                 $user->save();
+              }
+
               if($membership == 0 && $remain_day_left <= 0)
               {
                  $user->membership = null;

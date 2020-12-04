@@ -19,6 +19,11 @@ use DB, Cookie, Storage, Validator;
 class ChatsController extends Controller
 {
 
+    public function __construct()
+    {
+      $this->middleware('chat_auth');
+    }
+
     public function setWebhook()
     {
        /*$url = 'https://activrespon.com/dashboard/get-webhook';

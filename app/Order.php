@@ -43,10 +43,11 @@ class Order extends Model
 		$user = $data['user'];
     $total = $data['price'] + $unique_code;
     $dt = Carbon::now();
+    $chat_price = 0;
 
     if($data['upgrade'] <> null)
     {
-      $grand_total = $data['upgrade'] + $unique_code;
+      $grand_total = $data['upgrade'] + $chat_price + $unique_code;
     }
     else
     {
@@ -62,12 +63,13 @@ class Order extends Model
     $order->package =$data['namapaket'];
     $order->package_title =$data['namapakettitle'];
     $order->coupon_id = $data['kuponid'];
-    $order->total = $total ;
+    $order->total = $total;
     $order->total_upgrade = $data['priceupgrade'];
     $order->discount = $data['diskon'];
     $order->grand_total = $grand_total;
     // $order->grand_total = $data['price'] + $data['priceupgrade'] - $data['diskon'] + $unique_code;
     $order->status = 0;
+    $order->is_chat = $data['chat'];
     $order->buktibayar = "";
     $order->keterangan = "";
     $order->status_woowa = 0;
@@ -125,7 +127,6 @@ class Order extends Model
         // SendNotif::dispatch($phone,$message,env('REMINDER_PHONE_KEY'));
         $message_send = Message::create_message($phone,$message,env('REMINDER_PHONE_KEY'));
 
-          
         Mail::send('emails.order', $emaildata, function ($message) use ($user,$order_number) {
           $message->from('no-reply@activrespon.com', 'Activrespon');
           $message->to($user->email);

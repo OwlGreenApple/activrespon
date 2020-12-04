@@ -54,6 +54,21 @@ class OrderController extends Controller
       'order_package'=>$order->package,
       'package_day'=>$additional_day,
     ];
+
+    $package_chat = substr($order->package,0,-1);
+
+    if($package_chat == 'basic')
+    {
+      $chat_days = 30;
+    }
+    elseif($package_chat == 'bestseller')
+    {
+      $chat_days = 60;
+    }
+    else
+    {
+      $chat_days = 90;
+    }
     
     //to save order into memberships
     $status_upgrade = $this->orderLater($data);
@@ -96,6 +111,11 @@ class OrderController extends Controller
     if($status_upgrade['status'] == 0)
     {
       $user->membership = $order->package;
+    }
+
+    if($order->is_chat == 1)
+    {
+       $user->is_chat += $chat_days;
     }
 
     $user->status = 1;

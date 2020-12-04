@@ -26,6 +26,7 @@
               <input type="hidden" id="namapaket" name="namapaket">
               <input type="hidden" id="namapakettitle" name="namapakettitle">
 							<input type="hidden" id="priceupgrade" name="priceupgrade">
+              <input type="hidden" value="{{ $chat }}" name="chat">
               <h2 class="Daftar-Disini">Choose your package</h2>
 							
               <div class="form-group">
@@ -278,7 +279,9 @@
         harga : $('#price').val(),
         kupon : $('#kupon').val(),
         idpaket : $( "#select-auto-manage" ).val(),
-        status_upgrade : status_upgrade
+        status_upgrade : status_upgrade,
+        chat : '{{ $chat }}',
+        namapaket :  $("#select-auto-manage").find("option:selected").attr("data-paket")
       },
       dataType: 'text',
       beforeSend: function() {
@@ -384,7 +387,8 @@
 
   function setPricing()
   {
-    var price = $("#select-auto-manage").find("option:selected").attr("data-price");
+    var chat = '{{ $chat }}';
+    var price = parseInt($("#select-auto-manage").find("option:selected").attr("data-price"));
     var namapaket = $("#select-auto-manage").find("option:selected").attr("data-paket");
     var namapakettitle = $("#select-auto-manage").find("option:selected").attr("data-paket-title");
 

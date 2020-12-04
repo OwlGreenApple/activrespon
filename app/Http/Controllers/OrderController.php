@@ -84,7 +84,7 @@ class OrderController extends Controller
     return view('order.pricing');
   }
 
-  public function checkout($id){
+  public function checkout($id,$chat){
     //halaman checkout
 
     if(session('order') <> null)
@@ -104,11 +104,16 @@ class OrderController extends Controller
 				$priceupgrade = $order->total;
 			}
 			$dayleft = $user->day_left;
+
+      if($chat == 1 && !is_null($order)){
+        $priceupgrade+=100000;
+      }
 		}
     return view('order.checkout')->with(array(
               'id'=>$id,
               'priceupgrade'=>$priceupgrade,
               'dayleft'=>$dayleft,
+              'chat'=>$chat
             ));
   }
 
@@ -119,19 +124,39 @@ class OrderController extends Controller
     $status_upgrade = $request->status_upgrade;
     //cek kodekupon
 
-    if($request->harga == null)
+    $package = substr($request->namapaket,0,-1);
+
+    if($package == 'basic')
     {
-       $pricing = $request->price;
+      $chat_price = 100000;
+    }
+    elseif($package == 'bestseller')
+    {
+      $chat_price = 200000;
     }
     else
     {
-       $pricing = $request->harga;
+      $chat_price = 300000;
+    }
+
+    if($request->harga == null)
+    {
+       $pricing = (int)$request->price;
+    }
+    else
+    {
+       $pricing = (int)$request->harga;
+    }
+
+    if($request->chat == 1)
+    {
+      $pricing += $chat_price;
     }
 
     $arr['status'] = 'success';
     $arr['message'] = '';
     $arr['totaltitle'] = number_format($pricing, 0, '', '.');
-    $arr['total'] = (int)$pricing;
+    $arr['total'] = $pricing;
     $arr['diskon'] =  0;
     $arr['dayleft'] =  0;
     $arr['coupon'] = null;
@@ -176,7 +201,7 @@ class OrderController extends Controller
 
       if(is_null($coupon)){
         $arr['status'] = 'error';
-        $arr['message'] = 'Kupon tidak terdaftar';
+        $arr['message'] = 'Invalid coupon.';
         return $arr;
       } 
 			else {
@@ -193,7 +218,7 @@ class OrderController extends Controller
         
         if($date->lt($now)){
           $arr['status'] = 'error';
-          $arr['message'] = 'Kupon sudah tidak berlaku';
+          $arr['message'] = 'Coupon has expired.';
           return $arr;
         } 
         else 
@@ -215,7 +240,7 @@ class OrderController extends Controller
             }
 
             $arr['status'] = 'success';
-            $arr['message'] = 'Kupon berhasil dipakai & berlaku sekarang';
+            $arr['message'] = 'Coupon valid, can be use now';
             $arr['totaltitle'] = number_format($total, 0, '', '.');
             $arr['total'] = $total;
             $arr['diskon'] = $diskon;
@@ -234,7 +259,7 @@ class OrderController extends Controller
             else
             {
               $arr['status'] = 'error';
-              $arr['message'] = 'Package tidak terdaftar';
+              $arr['message'] = 'Invalid package';
               return $arr;
             }
            
@@ -389,11 +414,13 @@ class OrderController extends Controller
     return $upgrade_now;
   }
 	
-	//store to session first
+	//store to session at first
   public function submit_checkout(Request $request) {
 		// ditaruh ke session dulu
     $stat = $this->cekharga($request->namapaket,$request->price);
-    $status_upgrade = 0;
+    $status_upgrade = $chat_price = 0;
+    $base_price = (int)$request->price;
+    $coupon = array();
 
     $pathUrl = str_replace(url('/'), '', url()->previous());
     if($stat==false){
@@ -410,12 +437,15 @@ class OrderController extends Controller
 		$month = 1;
 		if(substr($request->namapaket,0,5) === "basic"){
 			$month = 1;
+      $chat_price = 100000;
     }
 		if(substr($request->namapaket,0,10) === "bestseller"){
 			$month = 2;
+      $chat_price = 200000;
     }
 		if(substr($request->namapaket,0,10) === "supervalue"){
 			$month = 3;
+      $chat_price = 300000;
     }
 
 		
@@ -424,29 +454,44 @@ class OrderController extends Controller
     $kuponid = $upgrade_package = null;
 
     if($request->kupon <> null){
-      $arr = $this->check_coupon($request);
+      $coupon = $this->check_coupon($request);
 
-      if($arr['status']=='error')
+      if($coupon['status']=='error')
       {
-        return redirect($pathUrl)->with("error", $arr['message']);
+        return redirect($pathUrl)->with("error", $coupon['message']);
       } else {
-        $diskon = $arr['diskon'];
+        $diskon = $coupon['diskon'];
         // $total = $arr['total'];
         
-        if($arr['coupon']!=null){
-          $kuponid = $arr['coupon']->id;
+        if($coupon['coupon']!=null){
+          $kuponid = $coupon['coupon']->id;
         }
 
-        if(isset($arr['upgrade']))
+        $total = $coupon['total'];
+
+        /*if(isset($arr['upgrade']))
         {
           $upgrade_package = $arr['total'];
-        }
+        }*/
       /**/
       }
     }
+    else
+    {
+      $total =  $base_price;
+    }
+    
+    if($request->chat == 1)
+    {
+      if($request->kupon == null)
+      {
+         $total += $chat_price;
+      }
+      $base_price += $chat_price;
+    }
 		
     $order = array(
-      "price"=>$request->price,
+      "price"=>$base_price,
       "namapaket"=>$request->namapaket,
       "namapakettitle"=>$request->namapakettitle,
       "coupon_code"=>$request->kupon,
@@ -455,11 +500,16 @@ class OrderController extends Controller
       "kuponid" => $kuponid,
       "priceupgrade" => $request->priceupgrade,
       "diskon" => $diskon,
-      "total"=>$arr['total'],
-      "upgrade"=>$upgrade_package,
+      "total"=> $total,
+      // "upgrade"=>$upgrade_package,
+      "upgrade"=>0,
       "status_upgrade"=>$status_upgrade,
-      "priceupgrade"=>0
+      "priceupgrade"=>0,
+      "chat_price"=> $chat_price,
+      "chat"=> $request->chat,
     );
+
+    // dd($order);
 
     if(session('order') == null)
     {
@@ -499,6 +549,7 @@ class OrderController extends Controller
       "total"=>session('order')['total'],
       "upgrade"=>session('order')['upgrade'],
       "status_upgrade"=>$status_upgrade,
+      "chat"=>session('order')['chat']
     ];
 
     $order = Order::create_order($data);
@@ -655,17 +706,20 @@ class OrderController extends Controller
 		$month = 1;
 		if(substr($request->namapaket,0,5) === "basic"){
 			$month = 1;
+      $chat_price = 100000;
     }
 		if(substr($request->namapaket,0,10) === "bestseller"){
 			$month = 2;
+      $chat_price = 200000;
     }
 		if(substr($request->namapaket,0,10) === "supervalue"){
 			$month = 3;
+      $chat_price = 300000;
     }
 
     $diskon = 0;
     $pricing_upgrade = $upgrade_package = 0;
-    $price = $request->price;
+    $price = (int)$request->price;
     $kuponid = null;
 
     if($request->kupon <> null)
@@ -704,19 +758,27 @@ class OrderController extends Controller
     {
        $status_upgrade = $request->status_upgrade;
     }*/
+
+     //if enable chat feature
+    if($request->chat == 1)
+    {
+      $price += $chat_price;
+    }
    
 		$data = [
 			"user"=> $user,
 			"namapaket"=> $request->namapaket,
 			"kuponid"=> $kuponid,
-			"price"=> (int)$request->price,
-			"priceupgrade"=> $pricing_upgrade,
+			"price"=> $price,
+			// "priceupgrade"=> $pricing_upgrade,
+      "priceupgrade"=> 0,
 			"diskon"=> $diskon,
 			"namapakettitle"=> $request->namapakettitle,
       "phone"=>$user->phone_number,
 			"month"=> $month,
       "upgrade"=>$upgrade_package,
-      "status_upgrade"=>$status_upgrade
+      "status_upgrade"=>$status_upgrade,
+      "chat"=>$request->chat
 		];
 		
 		$order = Order::create_order($data);
