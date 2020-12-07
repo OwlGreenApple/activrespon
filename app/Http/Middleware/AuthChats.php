@@ -16,7 +16,7 @@ class AuthChats
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::user()->is_chat < 1)
+        if(Auth::id() > 0 && Auth::user()->is_chat < 1)
         {
           return redirect('home');
         }

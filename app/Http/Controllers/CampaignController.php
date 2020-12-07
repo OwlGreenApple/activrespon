@@ -199,7 +199,7 @@ class CampaignController extends Controller
 					}
           elseif($phoneNumber->mode == 2)
           {
-            ApiHelper::send_image_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key);
+            ApiHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image');
           }
 					else {
 						ApiHelper::send_image_url($request->phone,$url,$message,$key);
