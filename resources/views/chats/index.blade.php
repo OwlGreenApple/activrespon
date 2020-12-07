@@ -379,7 +379,7 @@
 
   function load_messages(id)
   {
-    var data = {"chat_id" : id,"device_key" : "{{ $device_key }}"};
+    var data = {"chat_id" : id,"device_id":"{{ $device_id }}"};
     $.ajax({
       type : 'GET',
       url : "{{ url('get_chat_messages') }}",
@@ -414,7 +414,7 @@
       async: false,
       type : 'GET',
       url : "{{ url('get-notification') }}",
-      data : {'device_id': '{{ $device_id }}'},
+      data : {'device_id': '{{ $device_id }}',"device_key" : "{{ $device_key }}"},
       dataType: 'json',
       success: function(result){
         var id = $(".btn-send").attr('id');

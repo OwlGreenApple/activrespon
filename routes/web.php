@@ -324,6 +324,8 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::post('send_chat_media','ChatsController@sendMedia');
 
+    Route::get('debug_message','ChatsController@getChatMessages');
+
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');
   Route::get('resend_broadcast','BroadCastController@resendMessage');

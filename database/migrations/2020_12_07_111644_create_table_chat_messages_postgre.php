@@ -17,16 +17,16 @@ class CreateTableChatMessagesPostgre extends Migration
             $table->id();
             $table->BigInteger('device_id');
             $table->BigInteger('message_id');
+            $table->string('to');
             $table->string('sender')->nullable(); //sender as replacement 'from' due 'from' is database keyword
             $table->boolean('from_group')->default(0);
             $table->boolean('from_me')->default(0);
             $table->text('message')->nullable();
             $table->string('media_url')->nullable();
             $table->string('type')->nullable();
-            $table->string('status')->nullable();
             $table->string('status_message')->nullable();
-            $table->BigInteger('reply_for');
-            $table->string('failed_reason');
+            $table->string('reply_for')->nullable();
+            $table->string('failed_reason')->nullable();
             $table->timestamps();
         });
     }

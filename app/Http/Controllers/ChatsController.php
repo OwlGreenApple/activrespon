@@ -121,90 +121,6 @@ class ChatsController extends Controller
         return view('chats.members',['chats'=>$chats,'error'=>null]);
     }
 
-    public function getChatMessages(Request $request)
-    {
-        /* menampilkan semua messages dari dalam chat */
-        
-        /*$device_key = '701e8cdd-70d6-4af8-a84a-8abb6867fc91';
-        $to = "628123238793";*/
-        $device_key = $request->device_key;
-        $total_message = 0;
-        $page = 20;
-        $to = $request->chat_id;
-        $chat_messages = WamateHelper::get_all_messages($device_key,20);
-
-        if(isset($chat_messages['total']))
-        {
-           $total_message = $chat_messages['total'];
-           $page = $chat_messages['per_page'];
-        }
-      
-        if($total_message > $page)
-        {
-          $total_message += $page;
-          $chat_messages = WamateHelper::get_all_messages($device_key,$total_message);
-        }
-
-        $data = [];
-
-        //kalo ada error API
-        if(!isset($chat_messages['total']))
-        {
-            $data['error'] = $chat_messages['message'].", please reload your browser.";
-            return view('chats.chats',$data);
-        }
-
-        $res = $this->searchForId($to,$chat_messages['data']);
-
-        // dd($res);
-
-        if(count($res) > 0):
-          foreach($res as $value)
-          {
-            foreach($value as $key=>$row)
-            {
-              $data[] = array(
-                'key'=>$key,
-                'val'=>$row
-              );
-            }
-          }
-        endif;
-
-        $image_wa = new ChatsController;
-        return view('chats.chats',['messages'=>$data,'error'=>null,'app'=>$image_wa]);
-    }
-
-    private function searchForId($to,$messages) 
-    {
-      /* memfilter messages sesuai dengan chatid (no pengirim dan penerima) */
-      $data = array();
-
-      if(count($messages) > 0):
-       foreach ($messages as $key =>$row):
-           if ($row['to'] === $to) {
-              $data[]['sender'] = array(
-                'message'=>$row['message'],
-                'media_url'=>$row['media_url'],
-                'type'=>$row['type'],
-                'timestamp'=>$row['timestamp'],
-              );
-           }
-           if ($row['from'] === $to) {
-              $data[]['reply'] = array(
-                'message'=>$row['message'],
-                'media_url'=>$row['media_url'],
-                'type'=>$row['type'],
-                'timestamp'=>$row['timestamp'],
-              );
-           }
-       endforeach;
-       return $data;
-      endif;
-      
-      return array();
-    }
-
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
@@ -359,6 +275,249 @@ class ChatsController extends Controller
         return response()->json($data);
     }
 
+    /* WEBHOOK SIMULATION */
+    public function testWebhook()
+    {
+      $url = url('get-webhook');
+      // $url="https://192.168.88.159/activrespon/get-webhook";
+      // $url="https://192.168.1.103/activrespons/get-webhook";
+      // $url="https://192.168.88.160/activrespons/get-webhook";
+
+      $data = array(
+        "device_id" => 25,
+        "event" => "updated-status::message",
+        "data"=> array(
+          'id'=>50,
+          'to'=>'62895342472008',
+          'from'=>'628123238793',
+          'status'=>'DELIVERED'
+        )
+      );
+
+      $data_string = json_encode($data);
+      $ch = curl_init($url);
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_VERBOSE, 0);
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Content-Type: application/json'
+      ));
+      $res=curl_exec($ch);
+
+      dd($res);
+      // return json_encode(['message'=>$res]);
+      // return $res;
+    }
+
+    /* GET NwEBHOOK FROM API THEN PUT ON DB -- ON POSTGRESQL */
+    public function getWebhook(Request $request)
+    {
+      header('Content-Type: application/json');
+      $req = file_get_contents('php://input');
+       // dd($req);
+    
+      $res = json_decode($req,true);
+
+      if(count($res) > 0):
+        $wh = new WebHookWA;
+        $wh->device_id = $res['device_id'];
+        $wh->event = $res['event'];
+
+        if(isset($res['data']['from'])){
+          $wh->from_sender = $res['data']['from'];
+        }
+
+        try
+        {
+         $wh->save();
+        }
+        catch(QueryException $e)
+        {
+          return $e->getMessage();
+        }
+      endif;
+    }
+
+    public function getChatMessages(Request $request)
+    {
+        /* menampilkan semua messages dari dalam chat */
+        // $device_id = 25;
+        // $to = "628123238793";
+
+        $device_id = $request->device_id;
+        $to = $request->chat_id;
+
+        $chats = $data = array();
+        $chat_messages = ChatMessages::where('device_id',$device_id)->orderBy('id')->get();
+
+        if($chat_messages->count() > 0):
+          foreach($chat_messages as $row)
+          {
+            $chats = $this->searchForId($to,$chat_messages);
+          }
+        endif;
+
+        if(count($chats) > 0):
+          foreach($chats as $value):
+            foreach($value as $key=>$row)
+            {
+              $data[] = array(
+                'key'=>$key,
+                'val'=>$row
+              );
+            }
+          endforeach;
+        endif;
+
+        $image_wa = new ChatsController;
+        return view('chats.chats',['messages'=>$data,'error'=>null,'app'=>$image_wa]);
+    }
+
+    private function searchForId($to,$messages) 
+    {
+      /* memfilter messages sesuai dengan chatid (no pengirim dan penerima) */
+      $data = array();
+
+      if($messages->count() > 0):
+       foreach ($messages as $row):
+           if ($row->to === $to) 
+           {
+              $data[]['reply'] = array(
+                'id'=>$row->id,
+                'message'=>$row->message,
+                'media_url'=>$row->media_url,
+                'type'=>$row->type
+              );
+           }
+
+           if ($row->sender === $to) 
+           {
+              $data[]['sender'] = array(
+                'id'=>$row->id,
+                'message'=>$row->message,
+                'media_url'=>$row->media_url,
+                'type'=>$row->type
+              );
+           }
+       endforeach;
+      endif;
+
+      return $data;
+    }
+
+    private function saveMessages($device_key, $device_id)
+    {
+        /* save all messages to database */
+        $total_message = 0;
+        $page = 20;
+        $device_id = 25;
+        // $to = $request->chat_id;
+        $chat_messages = WamateHelper::get_all_messages($device_key,20); //count all page messages
+
+        /*if messages more than 20 page or multiply would add page limit 20 for example if total messages 21 then limit ($total_message) would be 40*/
+        if(isset($chat_messages['total']))
+        {
+           $total_message = $chat_messages['total'];
+           $page = $chat_messages['per_page'];
+        }
+      
+        if($total_message > $page)
+        {
+          $total_message += $page;
+          $chat_messages = WamateHelper::get_all_messages($device_key,$total_message);
+        }
+
+        // dd($chat_messages['data']);
+
+        /*check if message available or not if not will inserted to DB*/
+        if(count($chat_messages['data']) > 0):
+          foreach($chat_messages['data'] as $key=>$row):
+            $current_messages = ChatMessages::where([['device_id',$device_id],['message_id',$row['id']]])->first();
+
+            if(is_null($current_messages))
+            {
+              $msg = new ChatMessages;
+              $msg->device_id = $device_id;
+              $msg->message_id = $row['id'];
+              $msg->to = $row['to'];
+              $msg->sender = $row['from'];
+              $msg->from_group = $row['from_group'];
+              $msg->from_me = $row['from_me'];
+              $msg->message = $row['message'];
+              $msg->media_url = $row['media_url'];
+              $msg->type = $row['type'];
+              $msg->status_message = $row['status'];
+              $msg->reply_for = $row['reply_for'];
+              $msg->failed_reason = $row['failed_reason'];
+              $msg->save();
+            }
+          endforeach;
+        endif;
+
+        //kalo ada error API
+        /*if(!isset($chat_messages['total']))
+        {
+            $data['error'] = $chat_messages['message'].", please reload your browser.";
+            return view('chats.chats',$data);
+        }*/
+    }
+
+    /* GET NOTIFICATION FROM WEBHOOK -- ON POSTGRESQL */
+    public function getNotification(Request $request)
+    {
+        // $device_id = 25;
+        // $device_key = "b1f8f3a6-e46d-4d52-891e-30023693a4f3";
+        $id = array();
+        $device_id = $request->device_id;
+        $device_key = $request->device_key;
+      
+        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',false]])->selectRaw('from_sender,COUNT(*) AS messages')->groupBy('from_sender')->get();
+
+        if($wb->count() > 0)
+        {
+            foreach($wb as $row):
+              $data[$row->from_sender] = $row->messages;
+            endforeach;
+
+            $wbid = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',false]])->select('id')->get();
+
+            foreach($wbid as $col)
+            {
+              $id[] = $col->id;
+            }
+        }
+        else
+        {
+            $data = 0;
+        }
+
+        //if id notification available then change status into 1
+        if(count($id) > 0):
+          try{
+            foreach($id as $val):
+              $idwb = WebHookWA::find($val);
+              $idwb->status = true;
+              $idwb->save();
+              $this->saveMessages($device_key, $device_id);
+            endforeach;
+          }
+          catch(QueryException $e)
+          {
+            //$e->getMessage();
+          }
+        endif;
+
+        //dd($data);
+        return response()->json($data);
+    }
+
+    /*--------- CANCELLED ---------*/
+
     private function convert_img_jpg($filePath)
     {
       $check_image_ext = exif_imagetype($filePath);
@@ -391,118 +550,6 @@ class ChatsController extends Controller
       {
          return $filePath;
       }
-    }
-
-    //webhook simulation
-    public function testWebhook()
-    {
-      $url = url('get-webhook');
-      // $url="https://192.168.88.159/activrespon/get-webhook";
-      // $url="https://192.168.1.103/activrespons/get-webhook";
-      // $url="https://192.168.88.160/activrespons/get-webhook";
-
-      $data = array(
-        "device_id" => 7,
-        "event" => "updated-status::message",
-        "data"=> array(
-          'id'=>50,
-          'to'=>'aaaaa',
-          // 'from'=>'bbbb',
-          'status'=>'DELIVERED'
-        )
-      );
-
-      $data_string = json_encode($data);
-      $ch = curl_init($url);
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_VERBOSE, 0);
-      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-      curl_setopt($ch, CURLOPT_TIMEOUT, 360);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-      'Content-Type: application/json'
-      ));
-      $res=curl_exec($ch);
-
-      dd($res);
-      // return json_encode(['message'=>$res]);
-      // return $res;
-    }
-
-    public function getWebhook(Request $request)
-    {
-      header('Content-Type: application/json');
-      $req = file_get_contents('php://input');
-       // dd($req);
-    
-      $res = json_decode($req,true);
-
-      if(count($res) > 0):
-        $wh = new WebHookWA;
-        $wh->device_id = $res['device_id'];
-        $wh->event = $res['event'];
-
-        if(isset($res['data']['from'])){
-          $wh->from_sender = $res['data']['from'];
-        }
-
-        try
-        {
-         $wh->save();
-        }
-        catch(QueryException $e)
-        {
-          return $e->getMessage();
-        }
-      endif;
-    }
-
-    public function getNotification(Request $request)
-    {
-        // $device_id = 7;
-        $id = array();
-        $device_id = $request->device_id;
-      
-        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->selectRaw('from_sender,COUNT(*) AS messages')->groupBy('from_sender')->get();
-
-        if($wb->count() > 0)
-        {
-            foreach($wb as $row):
-              $data[$row->from_sender] = $row->messages;
-            endforeach;
-
-            $wbid = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->select('id')->get();
-
-            foreach($wbid as $col)
-            {
-              $id[] = $col->id;
-            }
-        }
-        else
-        {
-            $data = 0;
-        }
-
-        //if id notification available then change status into 1
-        if(count($id) > 0):
-          try{
-            foreach($id as $val):
-              $idwb = WebHookWA::find($val);
-              $idwb->status = 1;
-              $idwb->save();
-            endforeach;
-          }
-          catch(QueryException $e)
-          {
-            //$e->getMessage();
-          }
-        endif;
-
-        //dd($data);
-        return response()->json($data);
     }
 
 /* end class */
