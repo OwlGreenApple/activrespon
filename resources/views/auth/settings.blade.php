@@ -143,6 +143,7 @@
                 <div>Server Status : <b>{!! $server_status !!}</b></div>
                 <div>Valid Until : <b>{{ $expired }}</b></div>
                 <div>MESSAGES Quota : <b>{{ $quota }}</b></div>
+                <div>CHATS Quota : <b>{{ $chat_quota }}</b></div>
                 <div><a href="{{ url('pricing') }}"><i>Buy More</i></a></div>
               @endif
             </div>

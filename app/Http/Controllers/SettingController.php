@@ -220,6 +220,7 @@ class SettingController extends Controller
         'quota'=>$max_counter,
         'phone_status'=>$phone_status,
         'server_status'=>$server_status,
+        'chat_quota'=>$user->is_chat
       ]);
     }
 
