@@ -321,6 +321,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('chat-members','ChatsController@chat_members');
   Route::get('get_media/{i}/{type}','ChatsController@getHTTPMedia');
   Route::get('get-notification','ChatsController@getNotification');
+  Route::get('rm-notification','ChatsController@removeNotification');
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::post('send_chat_media','ChatsController@sendMedia');
 

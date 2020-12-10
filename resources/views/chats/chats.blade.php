@@ -1,7 +1,7 @@
 @if($error == null)
   @if(count($messages) > 0)
     @foreach($messages as $row)
-        @if($row['key'] == 'reply')
+        @if($row['key'] == 'sender')
         <div class="col-md-6">
             <div class="alert alert-light chat-text">
             @if($row['val']['type'] == 'image')
@@ -19,7 +19,7 @@
             @elseif($row['val']['type'] == 'text')
               {{ $row['val']['message'] }}
             @else
-                Sorry, media message we only support : mp4(video), ogg(audio)
+                Sorry, currently we do not support media message
             @endif
           </div>
         </div>
@@ -27,7 +27,7 @@
 
         <!-- -->
         
-        @if($row['key'] =='sender')
+        @if($row['key'] =='reply')
         <div class="col-md-6 ml-auto text-right">
             <div class="alert alert-success chat-text">
             @if($row['val']['type'] == 'image')
@@ -45,7 +45,7 @@
             @elseif($row['val']['type'] == 'text')
                 {{ $row['val']['message'] }}
             @else
-                Sorry, media message we only support : mp4(video), ogg(audio)
+                Sorry, currently we do not support media message
             @endif
           </div>
         </div>

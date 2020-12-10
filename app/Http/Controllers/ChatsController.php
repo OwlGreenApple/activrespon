@@ -78,39 +78,54 @@ class ChatsController extends Controller
 
               /* menampilkan chat members */
               foreach ($chat_members as $row):
+                $row['notif'] = 0;
                 if($row['id'] !== 'status')
                 {
                   $chats[] = $row;
                 }
               endforeach;
-              $data['chats'] = $chats;
             }
 
-            // dd($chats);
+            $arr = $this->get_notif($phone_number->wamate_id,$data['phone']);
+            if(count($chats) > 0):
+              foreach($chats as $key=> $row)
+              {
+                if(isset($arr[$row['id']]) && count($arr) > 0)
+                {
+                  $chats[$key]['notif'] = $arr[$row['id']];
+                }
+              }
+
+              $data['chats'] = $chats;
+            endif;
         }
 
         return view('chats.index',$data);
     }
 
+    /* DISPLAY CHAT MEMBERS ACCORDING BY SEARCH */
     public function chat_members(Request $request)
     {
         $search = $request->member;
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
-        $data['chats'] = $chats = array();
+        $data['chats'] = $chats = $id = $arr = array();
 
         if(!is_null($phone_number)):
           $device_key = $phone_number->device_key;
           $chat_members = WamateHelper::get_all_chats($device_key);
+          $device_id = $phone_number->wamate_id;
+          $owner = substr($phone_number->phone_number,1);
 
+          /* menampilkan chat members */
           if(count($chat_members) > 0)
           {
-            /* menampilkan chat members */
             foreach ($chat_members as $row):
+              $row['notif'] = 0;
               if($row['id'] !== 'status' && $search == null):
                 $chats[] = $row;
               else :
                 $pattern = "/$search/i";
-                if(preg_match($pattern,$row['name'])){
+                if(preg_match($pattern,$row['name']) && $row['id'] !== 'status'){
                     $chats[]=$row;
                 }
               endif;
@@ -118,7 +133,82 @@ class ChatsController extends Controller
           }
         endif;
 
+        /*GET TOTAL NOTIFICATION AND THEN DISPLAY IT ON EACH MEMBERS*/
+        $arr = $this->get_notif($device_id,$owner);
+        if(count($chats) > 0):
+            foreach($chats as $key=> $row)
+            {
+              if(isset($arr[$row['id']]) && count($arr) > 0)
+              {
+                $chats[$key]['notif'] = $arr[$row['id']];
+              }
+            }
+        endif;
+
+        // get all webhook id and put into array
+        if(count($chats) > 0)
+        {
+          $wbid = WebHookWA::where([['device_id',$phone_number->wamate_id],['event','=','received::message'],['status',false]])->select('id')->get();
+        
+          if($wbid->count() > 0):
+            foreach($wbid as $col)
+            {
+              $id[] = $col->id;
+            }
+          endif;
+
+          //if id notification available then change status into 1 / true
+          if(count($id) > 0):
+            try{
+              foreach($id as $val):
+                $idwb = WebHookWA::find($val);
+                $idwb->status = true;
+                $idwb->save();
+              endforeach;
+            }
+            catch(QueryException $e)
+            {
+              //$e->getMessage();
+            }
+          endif;
+        }
         return view('chats.members',['chats'=>$chats,'error'=>null]);
+    }
+
+    /*GET TOTAL NOTIFICATION AND THEN DISPLAY IT ON EACH MEMBERS*/
+    private function get_notif($device_id,$owner)
+    {
+      $arr = array();
+      $messages = ChatMessages::where([['device_id',$device_id],['sender','<>',$owner],['msg','=',false]])->selectRaw('sender,COUNT(*) AS total_message')->groupBy('sender')->get();
+
+      if($messages->count() > 0)
+      {
+        foreach($messages as $row):
+          $arr[$row->sender] = $row->total_message;
+        endforeach;
+      }
+       
+      return $arr;
+    }
+
+    public function removeNotification(Request $request)
+    {
+      $device_id = $request->device_id;
+      $sender = $request->sender;
+
+      $chats = ChatMessages::where([['device_id',$device_id],['sender',$sender]]);
+
+      if($chats->get()->count() > 0)
+      {
+        try
+        {
+          $chats->update(['msg'=>true]);
+        }
+        catch(QueryException $e)
+        {
+          //$e->getMessage();
+        }
+      }
     }
 
     public function getHTTPMedia($media,$type)
@@ -334,7 +424,10 @@ class ChatsController extends Controller
 
         try
         {
-         $wh->save();
+          if($res['event'] <> 'battery::device')
+          {
+            $wh->save();
+          }
         }
         catch(QueryException $e)
         {
@@ -415,8 +508,7 @@ class ChatsController extends Controller
         /* save all messages to database */
         $total_message = 0;
         $page = 20;
-        $device_id = 25;
-        // $to = $request->chat_id;
+        // $device_id = 25;
         $chat_messages = WamateHelper::get_all_messages($device_key,20); //count all page messages
 
         /*if messages more than 20 page or multiply would add page limit 20 for example if total messages 21 then limit ($total_message) would be 40*/
@@ -472,48 +564,19 @@ class ChatsController extends Controller
     {
         // $device_id = 25;
         // $device_key = "b1f8f3a6-e46d-4d52-891e-30023693a4f3";
-        $id = array();
+        $id = $data = array();
         $device_id = $request->device_id;
         $device_key = $request->device_key;
       
-        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',false]])->selectRaw('from_sender,COUNT(*) AS messages')->groupBy('from_sender')->get();
+        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',false]])->get();
 
+        //IF WEBHOOK AVAILABLE THEN SAVE ALL MESSAGES TO DATABASE
         if($wb->count() > 0)
         {
-            foreach($wb as $row):
-              $data[$row->from_sender] = $row->messages;
-            endforeach;
-
-            $wbid = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',false]])->select('id')->get();
-
-            foreach($wbid as $col)
-            {
-              $id[] = $col->id;
-            }
+          $this->saveMessages($device_key, $device_id);
         }
-        else
-        {
-            $data = 0;
-        }
-
-        //if id notification available then change status into 1
-        if(count($id) > 0):
-          try{
-            foreach($id as $val):
-              $idwb = WebHookWA::find($val);
-              $idwb->status = true;
-              $idwb->save();
-              $this->saveMessages($device_key, $device_id);
-            endforeach;
-          }
-          catch(QueryException $e)
-          {
-            //$e->getMessage();
-          }
-        endif;
-
-        //dd($data);
-        return response()->json($data);
+        
+        return response()->json(['total_data'=>$wb->count()]);
     }
 
     /*--------- CANCELLED ---------*/

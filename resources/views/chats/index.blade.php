@@ -244,12 +244,13 @@
     $("body").on("click",".chat_room_box",function(){
         var id = $(this).attr('id');
         $(".btn-send").attr('id',id);
-        $("#"+id).attr('total',0);
+        // $("#"+id).attr('total',0);
         $(".chat-note-"+id).hide();
 
         $(".chat-roof-image").css('visibility', 'visible');
         var get_name = $("#"+id+" .chat-user").text();
         $("#chat_user").html(get_name);
+
         var img = $("#"+id+" .chat-image").attr('src');
         $(".chat-roof-image").attr('src',img);
 
@@ -258,7 +259,24 @@
           $("#"+id).addClass('waselected');
         },100);
 
-        load_messages(id)
+        removeNotification(id)
+    });
+  }
+
+  function removeNotification(sender)
+  {
+    $.ajax({
+      async: false,
+      type : 'GET',
+      url : "{{ url('rm-notification') }}",
+      data : {'device_id': '{{ $device_id }}',"sender" : sender},
+      success: function(result){
+        load_messages(sender);
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
     });
   }
 
@@ -312,9 +330,14 @@
       data : {'member':name},
       dataType: 'html',
       beforeSend: function() {
-        $("#chat-members").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
+        if(name !== undefined)
+        {
+          if(name.length > 0){
+            $("#chat-members").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
+          }
+        }
       },
-      success: function(result) 
+      success: function(result, textStatus, xhr) 
       {
         $("#chat-members").html(result);
       },
@@ -377,7 +400,7 @@
     $("#content_chat").scrollTop(scrolls);
   }
 
-  function load_messages(id)
+  function load_messages(id,load)
   {
     var data = {"chat_id" : id,"device_id":"{{ $device_id }}"};
     $.ajax({
@@ -386,7 +409,10 @@
       data : data,
       dataType: 'html',
       beforeSend: function() {
-        $("#content_chat").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
+        if(load === undefined)
+        {
+          $("#content_chat").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
+        }
       },
       success: function(result)
       {
@@ -405,7 +431,7 @@
     var get_messages = setInterval(function()
     {
         getNotification();
-    },3000);
+    },5000);
   } 
 
   function getNotification()
@@ -415,26 +441,15 @@
       type : 'GET',
       url : "{{ url('get-notification') }}",
       data : {'device_id': '{{ $device_id }}',"device_key" : "{{ $device_key }}"},
-      dataType: 'json',
       success: function(result){
         var id = $(".btn-send").attr('id');
-        if(result !== 0)
+        if(result.total_data > 0)
         {
-          $.each( result, function( key, value ) {
-            var total_notif = $("#"+key).attr('total');
-            total_notif = parseInt(total_notif);
-            total_notif += parseInt(value);
-            if(id !== key)
-            {
-              $(".chat-note-"+key).html(total_notif).show();
-              $("#"+key).attr('total',total_notif);
-            }
-          });
-
+          searchChat();
           if(id !== undefined)
           {
             setTimeout(function(){
-              load_messages(id);
+              load_messages(id,null);
             },100);
           }
         }
