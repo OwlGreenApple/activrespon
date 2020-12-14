@@ -20,7 +20,7 @@ Route::get('/','OrderController@pricing')->name('pricing');
 //Route::get('ck','ListController@generateRandomListName');
 Route::get('preg', 'ApiController@test');
 
-Route::get('send','SenderController@getDeviceId');
+// Route::get('test_setting','SenderController@test_settings');
 Route::get('justcarbon','EventController@JUSTCARBON');
 
 /* API accessed from WP */

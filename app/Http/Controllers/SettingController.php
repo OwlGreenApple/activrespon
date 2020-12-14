@@ -800,6 +800,8 @@ class SettingController extends Controller
           }
           else if (strtoupper($result->status) == "PAIRED") {
 						$flag_connect = true;
+            /* TO SET AUTO READ ALWAYS FALSE ON DEVICE SETTINGS */
+            WamateHelper::autoreadsetting($phoneNumber->device_key);
           }
         }
 				if ($flag_connect){

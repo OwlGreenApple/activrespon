@@ -6,9 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Sender;
+use App\Helpers\WamateHelper;
 
 class SenderController extends Controller
 {
+    public function test_settings()
+    {
+      $result = WamateHelper::autoreadsetting('536b9c43-eb60-43a3-8a31-27c34adcf189');
+      dd($result);
+    }
+
     public function addSender(Request $request){
     	$req = $request->all();
     	$wa_number = '+62'.$request->wa_number;
