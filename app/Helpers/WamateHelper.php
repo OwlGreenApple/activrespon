@@ -16,14 +16,14 @@ class WamateHelper
 
   static function ip_server()
   {
-    if(env('APP_ENV') == 'local' || Auth::id() == 1)
+    /*if(env('APP_ENV') == 'local' || Auth::id() == 1)
     {
       return '207.148.117.69:3333';
     }
     else
     {
       return '188.166.221.181:3333';
-    }
+    }*/
     return '207.148.117.69:3333';
   }
   
@@ -50,7 +50,6 @@ class WamateHelper
   public static function reg($email)
   {
     $url='http://'.self::ip_server().'/auth/register';
-    dd($url);
 
     $data = array(
       "email" => $email,
