@@ -423,7 +423,7 @@ class ChatsController extends Controller
 
         try
         {
-          if($res['event'] <> 'battery::device')
+          if($res['event'] == 'received::message')
           {
             $wh->save();
           }
