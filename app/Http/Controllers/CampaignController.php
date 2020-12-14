@@ -25,6 +25,7 @@ use App\Rules\CheckExistIdOnDB;
 use App\Rules\EligibleTime;
 use Carbon\Carbon;
 use App\Helpers\ApiHelper;
+use App\Helpers\WamateHelper;
 use App\PhoneNumber;
 use App\Server;
 use Storage,Session;
@@ -199,7 +200,7 @@ class CampaignController extends Controller
 					}
           elseif($phoneNumber->mode == 2)
           {
-            ApiHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image');
+            WamateHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image');
           }
 					else {
 						ApiHelper::send_image_url($request->phone,$url,$message,$key);

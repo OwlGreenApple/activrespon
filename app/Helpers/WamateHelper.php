@@ -50,6 +50,7 @@ class WamateHelper
   public static function reg($email)
   {
     $url='http://'.self::ip_server().'/auth/register';
+    dd($url);
 
     $data = array(
       "email" => $email,
@@ -72,7 +73,6 @@ class WamateHelper
     );
     $res=curl_exec($ch);
 
-    dd($res);
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
     return $res;
@@ -343,6 +343,46 @@ class WamateHelper
 
 	}
   */
+
+  public static function send_media_url_wamate($phoneNumber,$media,$message,$device_key,$type)
+  {
+    // dd($image);
+    $phoneNumber = str_replace("+","",$phoneNumber);
+     
+    $postfields = array(
+        "to" => $phoneNumber,
+        "media_url"=>$media,
+        "type"=>$type,
+        "reply_for"=> 0
+    );
+
+    if($message <> null)
+    {
+       $postfields["message"] = $message;
+    }
+
+    // Prepare new cURL resource
+    $ch = curl_init(self::ip_server().'/messages/send-media');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+
+    // Set HTTP Header for POST request 
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "Content-Type:multipart/form-data",
+        "device-key:".$device_key.""
+    ));
+
+    // Submit the POST request
+    $result = curl_exec($ch);
+     
+    // Close cURL session handle
+    curl_close($ch);
+
+    // return "success";
+    return $result;
+  }
 
  	public static function delete_devices($device_id,$token)
   {
