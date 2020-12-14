@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class WebHookWA extends Model
 {
-    protected $table = "webhook_wa";
-    protected $connection = 'pgsql';
+    protected $table = "web_hook_wa";
+    protected $connection = 'mysql3';
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\WamateHelper;
 use App\Helpers\ApiHelper;
-use App\ChatMembers;
 use App\ChatMessages;
 use App\User;
 use App\PhoneNumber;
@@ -148,7 +147,7 @@ class ChatsController extends Controller
         // get all webhook id and put into array
         if(count($chats) > 0)
         {
-          $wbid = WebHookWA::where([['device_id',$phone_number->wamate_id],['event','=','received::message'],['status',false]])->select('id')->get();
+          $wbid = WebHookWA::where([['device_id',$phone_number->wamate_id],['event','=','received::message'],['status',0]])->select('id')->get();
         
           if($wbid->count() > 0):
             foreach($wbid as $col)
@@ -179,7 +178,7 @@ class ChatsController extends Controller
     private function get_notif($device_id,$owner)
     {
       $arr = array();
-      $messages = ChatMessages::where([['device_id',$device_id],['sender','<>',$owner],['msg','=',false]])->selectRaw('sender,COUNT(*) AS total_message')->groupBy('sender')->get();
+      $messages = ChatMessages::where([['device_id',$device_id],['sender','<>',$owner],['msg','=',0]])->selectRaw('sender,COUNT(*) AS total_message')->groupBy('sender')->get();
 
       if($messages->count() > 0)
       {

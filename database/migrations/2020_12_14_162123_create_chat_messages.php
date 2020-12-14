@@ -4,16 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableChatMessagesPostgre extends Migration
+class CreateChatMessages extends Migration
 {
     /**
      * Run the migrations.
-     * Table for postgre sql 
+     *
      * @return void
      */
     public function up()
     {
-        Schema::connection('pgsql')->create('chat_messages', function (Blueprint $table) {
+        Schema::connection('mysql3')->create('chat_messages', function (Blueprint $table) {
             $table->id();
             $table->BigInteger('device_id');
             $table->BigInteger('message_id');
@@ -28,6 +28,7 @@ class CreateTableChatMessagesPostgre extends Migration
             $table->string('reply_for')->nullable();
             $table->string('failed_reason')->nullable();
             $table->timestamps();
+            $table->boolean('msg')->default(0);
         });
     }
 
@@ -38,6 +39,6 @@ class CreateTableChatMessagesPostgre extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chat_messages');
+        Schema::dropIfExists('chat_members');
     }
 }

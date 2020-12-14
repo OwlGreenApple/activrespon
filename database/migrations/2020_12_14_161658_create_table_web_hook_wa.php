@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChatMessagesTable extends Migration
+class CreateTableWebHookWa extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateChatMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('chat_messages', function (Blueprint $table) {
+        Schema::connection('mysql3')->create('web_hook_wa', function (Blueprint $table) {
             $table->id();
-            $table->BigInteger('to_user_id');
-            $table->BigInteger('from_user_id');
-            $table->text('chat_message');
-            $table->boolean('status')->default(1);
+            $table->BigInteger('device_id');
+            $table->string('event');
+            $table->string('from_sender')->nullable();
             $table->timestamps();
+            $table->boolean('status')->default(0);
         });
     }
 
@@ -30,6 +30,6 @@ class CreateChatMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chat_messages');
+        Schema::dropIfExists('web_hook_wa');
     }
 }
