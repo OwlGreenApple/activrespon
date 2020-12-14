@@ -71,6 +71,8 @@ class WamateHelper
     'Content-Length: ' . strlen($data_string))
     );
     $res=curl_exec($ch);
+
+    dd($res);
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
     return $res;
