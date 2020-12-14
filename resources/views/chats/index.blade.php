@@ -372,7 +372,7 @@
       },
       success: function(result) {
         $(".btn-send").text('Send').prop('disabled',false);
-
+        //get function get all messages
         if(result.response == true)
         {
           $(".error_send").html('');
