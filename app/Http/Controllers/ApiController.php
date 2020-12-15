@@ -57,6 +57,7 @@ class ApiController extends Controller
       
       $timezone = 'Asia/Jakarta';
       $time = Carbon::now()->timezone($timezone);
+      $time = Carbon::createFromTime(3,0,0,$timezone)->addDays(1);
       $start = Carbon::createFromTime(21,0,0,$timezone);
       $end = Carbon::createFromTime(6,0,0,$timezone)->addDays(1);
       
