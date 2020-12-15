@@ -557,7 +557,7 @@ class ApiController extends Controller
         $string = 'testsendwaactivwa-';
         for ($i = 0; $i < 7 ; $i++) {
           $pos = rand(0, strlen($karakter)-1);
-          $string .= $karakter{$pos};
+          $string .= $karakter[$pos];
         }
         $idmessage = $string;
 

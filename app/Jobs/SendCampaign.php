@@ -897,12 +897,35 @@ class SendCampaign implements ShouldQueue
 
         if($time->gte($start) && $time->lte($end))
         {
-            return false;
+            // return false;
+            $ret = false;
+            $temp_ret = 'false';
         }
         else
         {
-            return true;
+            // return true;
+            $ret = true;
+            $temp_ret = 'true';
         }
+        $timegenerate = Carbon::now();
+        $filename='log/log-'.$timegenerate->format('ymd').'.txt';
+        $logexists = Storage::disk('local')->exists($filename);
+        
+        $format = $temp_ret.' '.$time.' '.$start.' '.$end."\n";
+
+        if($logexists == true)
+        {
+            $log = Storage::get($filename);
+            $string = $log.$format;
+            Storage::put($filename,$string);
+        }
+        else
+        {
+            $string = $format;
+            Storage::put($filename,$string);
+        }
+        
+        return $ret;
     }
 
     // TO PREVENT BROADCAST SEND MESSAGE FOR NEW CUSTOMER WHO JOIN AFTER BROADCAST DATE SEND (TEMP)
