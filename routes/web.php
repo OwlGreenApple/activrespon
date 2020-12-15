@@ -77,6 +77,7 @@ Route::post('loginajax', 'Auth\LoginController@loginAjax');// user login via aja
 Route::post('updateuser', 'HomeController@updateUser')->name('updateuser');
 
 /* WA webhook */
+Route::get('chatwamate','ChatsController@chat_test');
 // Route::get('sethook','ChatsController@setWebhook');
 // Route::get('test_webhook','ChatsController@testWebhook');
 Route::post('get-webhook','ChatsController@getWebhook');

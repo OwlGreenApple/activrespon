@@ -13,6 +13,9 @@ class ChatMessages extends Model
       1 = message has opened by user
     */
 
-    protected $table = "chat_messages";
-    protected $connection = "mysql3";
+   /* protected $table = "chat_messages";
+    protected $connection = "mysql3"; */
+
+    protected $table = "messages";
+    protected $connection = "pgsql";
 }

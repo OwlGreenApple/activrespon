@@ -193,8 +193,8 @@
     <?php endif; ?>
     openSendMedia();
     image_preview();
-    sendingImage();
-    sending_video();
+    // sendingImage();
+    // sending_video();
     
     // sending_audio(); cancelled due API not supported
   });
@@ -244,7 +244,6 @@
     $("body").on("click",".chat_room_box",function(){
         var id = $(this).attr('id');
         $(".btn-send").attr('id',id);
-        // $("#"+id).attr('total',0);
         $(".chat-note-"+id).hide();
 
         $(".chat-roof-image").css('visibility', 'visible');
@@ -259,10 +258,19 @@
           $("#"+id).addClass('waselected');
         },100);
 
-        removeNotification(id)
+        var total_notif = parseInt($("#"+id).attr('total'));
+        if(total_notif > 0)
+        {
+          removeNotification(id);
+        }
+        else
+        {
+          load_messages(id);
+        }
     });
   }
 
+  // TO REMOVE NOTIFICATION WHEN OWNER READ CHAT
   function removeNotification(sender)
   {
     $.ajax({
@@ -271,6 +279,7 @@
       url : "{{ url('rm-notification') }}",
       data : {'device_id': '{{ $device_id }}',"sender" : sender},
       success: function(result){
+        $("#"+sender).attr('total',0);
         load_messages(sender);
       },
       error : function(xhr)
@@ -324,6 +333,7 @@
 
   function searchChat(name)
   {
+    console.log(name);
     $.ajax({
       type : 'GET',
       url : "{{ url('chat-members') }}",
@@ -376,9 +386,13 @@
         if(result.response == true)
         {
           $(".error_send").html('');
-          load_messages(result.to);
+          load_messages(result.to, null);
           $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText('');
           chatScroll();
+          searchChat();
+          /*setTimeout(function(){
+            searchChat();
+          },500);*/
         }
         
         if(result.response == false)
@@ -409,6 +423,7 @@
       data : data,
       dataType: 'html',
       beforeSend: function() {
+        //give loading text if not chatting
         if(load === undefined)
         {
           $("#content_chat").html('<div class="alert alert-warning col-lg-6 mx-auto">Loading...</div>');
