@@ -23,6 +23,26 @@ class ChatsController extends Controller
       $this->middleware('chat_auth');
     }
 
+    public function chat_test()
+    {
+      $chats = ChatMessages::where('device_id',35)->get();
+      // $device_id = 28;
+      // $owner = '6287775000283';
+      //  $chats = ChatMessages::where([['device_id',$device_id],['from','<>',$owner],['msg','=',false]])->selectRaw('"from",COUNT(*) AS total_message')->groupBy('from')->get();
+     /* $req = [
+          'device_id'=>35,
+          'chat_id'=>'6287855743915',
+      ];
+
+      $request = new Request($req);
+      $chats = $this->getChatMessages($request);*/
+      foreach($chats as $row)
+      {
+        $data[] = $row['message'];
+      }
+      dd($chats);
+    }
+
     public function setWebhook()
     {
        /*$url = 'https://activrespon.com/dashboard/get-webhook';
@@ -35,14 +55,7 @@ class ChatsController extends Controller
 
     public static function ip()
     {
-      if(env('APP_ENV') == 'local' || Auth::id() == 1)
-      {
-        return '207.148.117.69';
-      }
-      else
-      {
-        return '188.166.221.181';
-      }
+       return '207.148.117.69';
     }
 
     public function index()
@@ -122,7 +135,7 @@ class ChatsController extends Controller
               $row['notif'] = 0;
               if($row['id'] !== 'status' && $search == null):
                 $chats[] = $row;
-              else :
+              elseif($row['id'] !== 'status' && $search <> null) :
                 $pattern = "/$search/i";
                 if(preg_match($pattern,$row['name']) && $row['id'] !== 'status'){
                     $chats[]=$row;
@@ -178,12 +191,12 @@ class ChatsController extends Controller
     private function get_notif($device_id,$owner)
     {
       $arr = array();
-      $messages = ChatMessages::where([['device_id',$device_id],['sender','<>',$owner],['msg','=',0]])->selectRaw('sender,COUNT(*) AS total_message')->groupBy('sender')->get();
+      $messages = ChatMessages::where([['device_id',$device_id],['from','<>',$owner],['msg','=',false]])->selectRaw('"from",COUNT(*) AS total_message')->groupBy('from')->get();
 
       if($messages->count() > 0)
       {
         foreach($messages as $row):
-          $arr[$row->sender] = $row->total_message;
+          $arr[$row->from] = $row->total_message;
         endforeach;
       }
        
@@ -195,7 +208,7 @@ class ChatsController extends Controller
       $device_id = $request->device_id;
       $sender = $request->sender;
 
-      $chats = ChatMessages::where([['device_id',$device_id],['sender',$sender]]);
+      $chats = ChatMessages::where([['device_id',$device_id],['from',$sender]]);
 
       if($chats->get()->count() > 0)
       {
@@ -466,6 +479,8 @@ class ChatsController extends Controller
           endforeach;
         endif;
 
+
+
         $image_wa = new ChatsController;
         return view('chats.chats',['messages'=>$data,'error'=>null,'app'=>$image_wa]);
     }
@@ -477,7 +492,7 @@ class ChatsController extends Controller
 
       if($messages->count() > 0):
        foreach ($messages as $row):
-           if ($row->to === $to) 
+           if ($row->to == $to) 
            {
               $data[]['reply'] = array(
                 'id'=>$row->id,
@@ -487,7 +502,7 @@ class ChatsController extends Controller
               );
            }
 
-           if ($row->sender === $to) 
+           if ($row->from == $to) 
            {
               $data[]['sender'] = array(
                 'id'=>$row->id,
@@ -502,6 +517,7 @@ class ChatsController extends Controller
       return $data;
     }
 
+    /* UNUSED ------- SINCE WE USE DIRECT WAMATE DB */
     private function saveMessages($device_key, $device_id)
     {
         /* save all messages to database */
@@ -567,13 +583,13 @@ class ChatsController extends Controller
         $device_id = $request->device_id;
         $device_key = $request->device_key;
       
-        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',false]])->get();
+        $wb = WebHookWA::where([['device_id',$device_id],['event','=','received::message'],['status',0]])->get();
 
         //IF WEBHOOK AVAILABLE THEN SAVE ALL MESSAGES TO DATABASE
-        if($wb->count() > 0)
+        /*if($wb->count() > 0)
         {
           $this->saveMessages($device_key, $device_id);
-        }
+        }*/
         
         return response()->json(['total_data'=>$wb->count()]);
     }

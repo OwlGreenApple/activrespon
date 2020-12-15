@@ -298,8 +298,7 @@ class WamateHelper
     $url='http://'.self::ip_server().'/setting';
     
     $data = array(
-      "auto_read" => false,
-      "auto_save_media" => false
+      "auto_read" => false
     );
 
     $data_string = json_encode($data);
