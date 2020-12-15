@@ -25,21 +25,21 @@ class ChatsController extends Controller
 
     public function chat_test()
     {
-      // $chats = ChatMessages::where('device_id',35)->get();
+      $chats = ChatMessages::where('device_id',35)->get();
       // $device_id = 28;
       // $owner = '6287775000283';
       //  $chats = ChatMessages::where([['device_id',$device_id],['from','<>',$owner],['msg','=',false]])->selectRaw('"from",COUNT(*) AS total_message')->groupBy('from')->get();
-      $req = [
+     /* $req = [
           'device_id'=>35,
           'chat_id'=>'6287855743915',
       ];
 
       $request = new Request($req);
-      $chats = $this->getChatMessages($request);
-      // foreach($chats as $row)
-      // {
-      //   $data[] = $row['message'];
-      // }
+      $chats = $this->getChatMessages($request);*/
+      foreach($chats as $row)
+      {
+        $data[] = $row['message'];
+      }
       dd($chats);
     }
 

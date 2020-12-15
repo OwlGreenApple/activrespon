@@ -965,18 +965,12 @@ class SettingController extends Controller
         $result = WamateHelper::delete_devices($phoneNumber->wamate_id,$user->token);
         $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
         $countwebhook = WebHookWA::where('device_id',$phoneNumber->wamate_id);
-        $countchats = ChatMessages::where('device_id',$phoneNumber->wamate_id);
         
         try
         {
           if($countwebhook->get()->count() > 0)
           {
             WebHookWA::where('device_id',$phoneNumber->wamate_id)->delete();
-          }
-
-          if($countchats->get()->count() > 0)
-          {
-            $countchats->delete();
           }
 
           $phoneNumber->delete();
