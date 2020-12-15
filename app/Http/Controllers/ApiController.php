@@ -54,6 +54,21 @@ class ApiController extends Controller
       echo Carbon::now()->timezone('Asia/Jakarta').'<br>';
       echo Carbon::createFromTime(21,0,0,'Asia/Jakarta').'<br>';
       echo Carbon::createFromTime(6,0,0,'Asia/Jakarta')->addDays(1).'<br>';
+      
+      $timezone = 'Asia/Jakarta';
+      $time = Carbon::now()->timezone($timezone);
+      $start = Carbon::createFromTime(21,0,0,$timezone);
+      $end = Carbon::createFromTime(6,0,0,$timezone)->addDays(1);
+      
+      if($time->gte($start) && $time->lte($end))
+      {
+          // return false;
+          echo 'false';
+      }
+      else
+      {
+          echo 'true';
+      }
     }
 
     public function send_message_queue_system(Request $request)
