@@ -892,40 +892,19 @@ class SendCampaign implements ShouldQueue
     public function avoidMidnightTime($timezone)
     {
         $time = Carbon::now()->timezone($timezone);
-        $start = Carbon::createFromTime(21,0,0,$timezone);
-        $end = Carbon::createFromTime(6,0,0,$timezone)->addDays(1);
+        $start1 = Carbon::createFromTime(21,0,0,$timezone);
+        $end1 = Carbon::createFromTime(23,59,59,$timezone);
+        $start2 = Carbon::createFromTime(0,0,0,$timezone);
+        $end2 = Carbon::createFromTime(6,0,0,$timezone);
 
-        if($time->gte($start) && $time->lte($end))
+        if( ($time->gte($start1) && $time->lte($end1)) || ($time->gte($start2) && $time->lte($end2)) )
         {
-            // return false;
-            $ret = false;
-            $temp_ret = 'false';
+            return false;
         }
         else
         {
-            // return true;
-            $ret = true;
-            $temp_ret = 'true';
+            return true;
         }
-        $timegenerate = Carbon::now();
-        $filename='log/log-'.$timegenerate->format('ymd').'.txt';
-        $logexists = Storage::disk('local')->exists($filename);
-        
-        $format = $temp_ret.' '.$time.' '.$start.' '.$end."\n";
-
-        if($logexists == true)
-        {
-            $log = Storage::get($filename);
-            $string = $log.$format;
-            Storage::put($filename,$string);
-        }
-        else
-        {
-            $string = $format;
-            Storage::put($filename,$string);
-        }
-        
-        return $ret;
     }
 
     // TO PREVENT BROADCAST SEND MESSAGE FOR NEW CUSTOMER WHO JOIN AFTER BROADCAST DATE SEND (TEMP)
