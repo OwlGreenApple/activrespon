@@ -458,7 +458,7 @@ class ChatsController extends Controller
         $to = $request->chat_id;
 
         $chats = $data = array();
-        $chat_messages = ChatMessages::where('device_id',$device_id)->select('id,message,media_url,type')->orderBy('id')->get();
+        $chat_messages = ChatMessages::where('device_id',$device_id)->orderBy('id')->get();
 
         if($chat_messages->count() > 0):
           foreach($chat_messages as $row)
