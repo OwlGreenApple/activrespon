@@ -460,9 +460,14 @@ class ChatsController extends Controller
         $to = $request->chat_id;
         $owner_phone = $owner->phone_numbers;
 
+        if($to == null)
+        {
+          return 'Please reload / refresh your browser.';
+        }
+
         $chats = $data = array();
         $chat_messages = ChatMessages::where('device_id',$device_id)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
-    
+
         if($chat_messages->count() > 0):
           foreach($chat_messages as $row)
           {
