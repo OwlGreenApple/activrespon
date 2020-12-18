@@ -16,14 +16,35 @@ class UserTableSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'test',
             'email' => 'gunardi.omnifluencer@gmail.com',
-            'password' => bcrypt('12345678'),
+            'password' => bcrypt('activomni7899112233'),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]); 
         DB::table('users')->insert([
             'name' => 'rizky redjo',
             'email' => 'rizkyredjo@gmail.com',
-            'password' => bcrypt('12345678'),
+            'password' => bcrypt('activomni7899112233'),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('users')->insert([
+            'name' => 'activomni',
+            'email' => 'activomnicom@gmail.com',
+            'password' => bcrypt('activomni7899112233'),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('users')->insert([
+            'name' => 'Digimaru',
+            'email' => 'digimaru@gmail.com',
+            'password' => bcrypt('digimaru99112233'),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('users')->insert([
+            'name' => 'Digimaru',
+            'email' => 'info@teknobie.com',
+            'password' => bcrypt('teknobie99112233'),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]); 
