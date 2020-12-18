@@ -25,22 +25,18 @@ class ChatsController extends Controller
 
     public function chat_test()
     {
-      $chats = ChatMessages::where('device_id',35)->get();
-      // $device_id = 28;
-      // $owner = '6287775000283';
-      //  $chats = ChatMessages::where([['device_id',$device_id],['from','<>',$owner],['msg','=',false]])->selectRaw('"from",COUNT(*) AS total_message')->groupBy('from')->get();
-     /* $req = [
-          'device_id'=>35,
-          'chat_id'=>'6287855743915',
-      ];
+       $to = '628123238793';
+       $owner_phone = '6285967284411';
+       $chats = ChatMessages::where('device_id',1)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
 
-      $request = new Request($req);
+      /*$request = new Request($req);
       $chats = $this->getChatMessages($request);*/
+
       foreach($chats as $row)
       {
-        $data[] = $row['message'];
+        $data[] = $row->message;
       }
-      dd($chats);
+      dd($data);
     }
 
     public function setWebhook()
@@ -453,13 +449,20 @@ class ChatsController extends Controller
         /* menampilkan semua messages dari dalam chat */
         // $device_id = 25;
         // $to = "628123238793";
+        $owner = PhoneNumber::where('user_id',Auth::id())->first();
+
+        if(is_null($owner))
+        {
+          return 'Phone number not registered yet.';
+        }
 
         $device_id = $request->device_id;
         $to = $request->chat_id;
+        $owner_phone = $owner->phone_numbers;
 
         $chats = $data = array();
-        $chat_messages = ChatMessages::where('device_id',$device_id)->orderBy('id')->get();
-
+        $chat_messages = ChatMessages::where('device_id',$device_id)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
+    
         if($chat_messages->count() > 0):
           foreach($chat_messages as $row)
           {
@@ -478,8 +481,6 @@ class ChatsController extends Controller
             }
           endforeach;
         endif;
-
-
 
         $image_wa = new ChatsController;
         return view('chats.chats',['messages'=>$data,'error'=>null,'app'=>$image_wa]);

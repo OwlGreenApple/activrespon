@@ -539,7 +539,8 @@ class SettingController extends Controller
           if($result->status == 401)
           {
             $arr['status'] = 'error';
-            $arr['message'] = "Please reload your browser";
+            $arr['message'] = "Server is too busy, please contact administrator.";
+            //usually wamate email not registered. Change database.
             return $arr;
           }
 
