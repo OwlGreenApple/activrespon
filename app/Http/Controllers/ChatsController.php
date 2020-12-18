@@ -278,7 +278,16 @@ class ChatsController extends Controller
         $device_key = $request->device_key;
         $data['response'] = false;
         $data['to'] = $to;
-      
+
+        /* FILTER FOR SECURITY REPLACEMENT STRIPTAGS */
+        preg_match_all('/<script>|<script.*>|<\/script>/im', $message, $patternopen);
+        $opentag = count($patternopen[0]);
+       
+        if($opentag > 0)
+        {
+           $message = preg_replace("/<script.*>|<script>|<\/script>|\(|\)/im", "-", $message);
+        }
+
         $send = WamateHelper::send_message($to,$message,$device_key);
         
         if(is_array($send))

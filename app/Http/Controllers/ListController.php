@@ -1743,8 +1743,7 @@ class ListController extends Controller
     public function userList()
     {
     	$id_user = Auth::id();
-        $countsubscriber = DB::table('lists')
-                    ->where('lists.user_id','=',$id_user)
+        $countsubscriber = Userlist::where('lists.user_id','=',$id_user)
                     ->join('customers','lists.id','=','customers.list_id')
                     ->select(DB::raw('COUNT(customers.list_id) AS totalsubscriber'))
                     ->groupBy('customers.list_id')
@@ -1755,7 +1754,7 @@ class ListController extends Controller
         if($userlist->count() > 0)
         {
              foreach($userlist as $row){
-                 $total = DB::table('customers')->where('list_id','=',$row->id)->select(DB::raw('COUNT(list_id) AS totalsubscriber'))->groupBy('list_id')->first();
+                 $total = Customer::where('list_id','=',$row->id)->select(DB::raw('COUNT(list_id) AS totalsubscriber'))->groupBy('list_id')->first();
 
                  if(is_null($total)){
                     $total_subs = 0;
@@ -1775,7 +1774,7 @@ class ListController extends Controller
     }
 
     public function total_count($idlist){
-        $cst = DB::table('customers')->where('list_id','=',$idlist)->select(DB::raw('COUNT(list_id) AS totalsubscriber'))->groupBy('list_id')->first();
+        $cst = Customer::where('list_id','=',$idlist)->select(DB::raw('COUNT(list_id) AS totalsubscriber'))->groupBy('list_id')->first();
 
     }
 

@@ -43,6 +43,3 @@ Deny from all
 #Force SSL
 RewriteCond %{HTTPS} off 
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-RewriteCond %{HTTP_HOST} ^activrespon.com/omniactiv88/
-RewriteRule (.*) https://activrespon.com/omniactiv88 [R=301,L]
