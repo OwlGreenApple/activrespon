@@ -73,7 +73,7 @@ class ChatsController extends Controller
     {
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
         $data['error'] = $data['device_key'] = null;
-        $data['chats'] = array();
+        $data['chats'] = $chats = array();
         // $data['app'] = new ChatsController;
 
         if(is_null($phone_number))
