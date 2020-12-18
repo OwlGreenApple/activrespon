@@ -26,16 +26,30 @@ class ChatsController extends Controller
     public function chat_test()
     {
        $to = '628123238793';
-       $owner_phone = '6285967284411';
-       $chats = ChatMessages::where('device_id',1)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
-
+       $owner_phone = '62895342472008';
+       // $owner_phone = '6285967284411';
+       $chat_messages = ChatMessages::where('device_id',5)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
       /*$request = new Request($req);
       $chats = $this->getChatMessages($request);*/
 
-      foreach($chats as $row)
-      {
-        $data[] = $row->message;
-      }
+      if($chat_messages->count() > 0):
+          foreach($chat_messages as $row)
+          {
+            $chats = $this->searchForId($to,$chat_messages);
+          }
+        endif;
+
+        if(count($chats) > 0):
+          foreach($chats as $value):
+            foreach($value as $key=>$row)
+            {
+              $data[] = array(
+                'key'=>$key,
+                'val'=>$row
+              );
+            }
+          endforeach;
+        endif;
       dd($data);
     }
 
@@ -458,7 +472,7 @@ class ChatsController extends Controller
 
         $device_id = $request->device_id;
         $to = $request->chat_id;
-        $owner_phone = $owner->phone_numbers;
+        $owner_phone = substr($owner->phone_numbers,1);
 
         if($to == null)
         {
