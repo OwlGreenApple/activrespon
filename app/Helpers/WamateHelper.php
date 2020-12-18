@@ -74,9 +74,7 @@ class WamateHelper
 
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
-
-    dd($res);
-    // return $res;
+    return $res;
     
     /*
 {
@@ -127,7 +125,8 @@ class WamateHelper
     $res=curl_exec($ch);
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
-    return $res;
+    // return $res;
+    dd($res);
   }
   
   public static function create_device($token,$name)
