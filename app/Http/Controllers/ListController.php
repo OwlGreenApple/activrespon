@@ -532,7 +532,7 @@ class ListController extends Controller
 
     public function searchList(Request $request)
     {
-        $listname = $request->listname;
+        $listname = strip_tags($request->listname);
         $userid = Auth::id();
 
         if($listname == null)
@@ -555,7 +555,7 @@ class ListController extends Controller
             Session::reflash();
         }
 
-        $listid = $request->id;
+        $listid = strip_tags($request->id);
         $additional = Additional::where('list_id',$listid)->get();
         $data['additional'] = $additional;
 

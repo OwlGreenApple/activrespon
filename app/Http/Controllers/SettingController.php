@@ -392,7 +392,6 @@ class SettingController extends Controller
 
         return response()->json($error);
       }
-      
 
        $check_otp = OTP::where([['user_id','=',$user->id],['phone_number','=',$phone_number]])->whereRaw('valid >= NOW()')->first();
        $code_raw = '0123456789';

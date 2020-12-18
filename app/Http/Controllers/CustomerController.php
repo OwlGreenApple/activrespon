@@ -298,19 +298,19 @@ class CustomerController extends Controller
 
               if($list->id == 115)
               {
-                $api->listActivCampaign($request->email,$request->subscribername,$request->last_name,$phone_number,7);
+                $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,7);
               }
 
               if($list->id == 121)
               {
-                $api->listActivCampaign($request->email,$request->subscribername,$request->last_name,$phone_number,8);
+                $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);
               }
               
               if ($list->id == 216)
               {
                 //send to celebmail
                 $apiWPController = new ApiWPController;
-                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'hc716nc2ry622');
+                $apiWPController->sendToCelebmail(strip_tags($request->subscribername).' '.strip_tags($request->last_name),strip_tags($request->email),'hc716nc2ry622');
               }
 
               if ($list->id == 219)
