@@ -74,7 +74,9 @@ class WamateHelper
 
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
-    return $res;
+
+    dd($res);
+    // return $res;
     
     /*
 {

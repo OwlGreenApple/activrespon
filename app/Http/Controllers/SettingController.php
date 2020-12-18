@@ -60,7 +60,6 @@ class SettingController extends Controller
       $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
       if (is_null($user->email_wamate) ||  $user->email_wamate ==="") {
         $result = WamateHelper::reg($email_wamate);
-        dd($result);
         $user->email_wamate = $email_wamate;
         $user->save();
       }
