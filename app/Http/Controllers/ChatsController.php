@@ -26,7 +26,8 @@ class ChatsController extends Controller
     public function chat_test()
     {
        $to = '628123238793';
-       $owner_phone = '62895342472008';
+       $owner_phone = '+62895342472008';
+        $owner_phone = substr($owner_phone,1);
        // $owner_phone = '6285967284411';
        $chat_messages = ChatMessages::where('device_id',5)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
       /*$request = new Request($req);
@@ -464,7 +465,6 @@ class ChatsController extends Controller
         // $device_id = 25;
         // $to = "628123238793";
         $owner = PhoneNumber::where('user_id',Auth::id())->first();
-
         if(is_null($owner))
         {
           return 'Phone number not registered yet.';
@@ -472,7 +472,7 @@ class ChatsController extends Controller
 
         $device_id = $request->device_id;
         $to = $request->chat_id;
-        $owner_phone = substr($owner->phone_numbers,1);
+        $owner_phone = substr($owner->phone_number,1);
 
         if($to == null)
         {
