@@ -16,6 +16,7 @@ use Mail;
 use App\Http\Controllers\CustomerController;
 use App\Helpers\ApiHelper;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 use App\Message;
 
 class ApiWPController extends Controller
@@ -28,8 +29,11 @@ class ApiWPController extends Controller
     public function send_message_queue_system_WP_activtemplate(Request $request)
     {
       if ($request->key == "wpcallbackforwa" ) {
-				$str = $request->phone;
-        $phone_number = $request->phone;
+				$str = strip_tags($request->phone);
+        $phone_number = strip_tags($request->phone);
+        $name = strip_tags($request->name);
+        $email = strip_tags($request->email);
+        $content = strip_tags($request->content);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -55,25 +59,33 @@ class ApiWPController extends Controller
               $customer = new Customer ;
               $customer->user_id = $list->user_id;
               $customer->list_id = $list->id;
-              $customer->name = $request->name;
-              $customer->email = $request->email;
+              $customer->name = $name;
+              $customer->email = $email;
               $customer->telegram_number = $phone_number;
               $customer->is_pay= 0;
               $customer->status = 1;
-              $customer->save();
+
+              try{
+                $customer->save();
+              }
+              catch(QueryException $e)
+              {
+                // $e->getMessage();
+              }
+              
               $customer::create_link_unsubs($customer->id,$list->id);
 
               $customerController = new CustomerController;
               if ($list->is_secure) {
-                $ret = $customerController->sendListSecure($list->id,$customer->id,$request->name,$customer->user_id,$list->name,$phone_number);
+                $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
               }
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
           }
         }
         
-        $message_send = Message::create_message($phone_number,$request->content,env('REMINDER_PHONE_KEY'));
-        $temp = $this->sendToCelebmail($request->name,$request->email,'dp577djr8g890');
+        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
+        $temp = $this->sendToCelebmail($name,$email,'dp577djr8g890');
         
         return "success";
       }
@@ -82,8 +94,11 @@ class ApiWPController extends Controller
     public function send_message_queue_system_WP_celebfans(Request $request)
     {
       if ($request->key == "wpcallbackforwa" ) {
-				$str = $request->phone;
-        $phone_number = $request->phone;
+				$str = strip_tags($request->phone);
+        $phone_number = strip_tags($request->phone);
+        $name = strip_tags($request->name);
+        $email = strip_tags($request->email);
+        $content = strip_tags($request->content);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -109,8 +124,8 @@ class ApiWPController extends Controller
               $customer = new Customer ;
               $customer->user_id = $list->user_id;
               $customer->list_id = $list->id;
-              $customer->name = $request->name;
-              $customer->email = $request->email;
+              $customer->name = $name;
+              $customer->email = $email;
               $customer->telegram_number = $phone_number;
               $customer->is_pay= 0;
               $customer->status = 1;
@@ -119,14 +134,14 @@ class ApiWPController extends Controller
 
               $customerController = new CustomerController;
               if ($list->is_secure) {
-                $ret = $customerController->sendListSecure($list->id,$customer->id,$request->name,$customer->user_id,$list->name,$phone_number);
+                $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
               }
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
           }
         }
         
-        $message_send = Message::create_message($phone_number,$request->content,env('REMINDER_PHONE_KEY'));
+        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
         
         return "success";
       }
@@ -134,9 +149,13 @@ class ApiWPController extends Controller
   
     public function send_message_queue_system_WP_activflash(Request $request)
     {
-      if ($request->key == "wpcallbackforwa" ) {
-				$str = $request->phone;
-        $phone_number = $request->phone;
+      if ($request->key == "wpcallbackforwa" ) 
+      {
+				$str = strip_tags($request->phone);
+        $phone_number = strip_tags($request->phone);
+        $name = strip_tags($request->name);
+        $email = strip_tags($request->email);
+        $content = strip_tags($request->content);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -162,8 +181,8 @@ class ApiWPController extends Controller
               $customer = new Customer ;
               $customer->user_id = $list->user_id;
               $customer->list_id = $list->id;
-              $customer->name = $request->name;
-              $customer->email = $request->email;
+              $customer->name = $name;
+              $customer->email = $email;
               $customer->telegram_number = $phone_number;
               $customer->is_pay= 0;
               $customer->status = 1;
@@ -172,17 +191,16 @@ class ApiWPController extends Controller
 
               $customerController = new CustomerController;
               if ($list->is_secure) {
-                $ret = $customerController->sendListSecure($list->id,$customer->id,$request->name,$customer->user_id,$list->name,$phone_number);
+                $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
               }
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
           }
         // }
         
-        $message_send = Message::create_message($phone_number,$request->content,env('REMINDER_PHONE_KEY'));
+        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
         
-        $temp = $this->sendToCelebmail($request->name,$request->email,'wq528m745k709');
-        
+        $temp = $this->sendToCelebmail($name,$email,'wq528m745k709');
         return "success";
       }
     }
@@ -190,8 +208,11 @@ class ApiWPController extends Controller
     public function send_message_queue_system_WP_digimaru(Request $request)
     {
       if ($request->key == "wpcallbackforwa" ) {
-				$str = $request->phone;
-        $phone_number = $request->phone;
+				$str = strip_tags($request->phone);
+        $phone_number = strip_tags($request->phone);
+        $email = strip_tags($request->email);
+        $name = strip_tags($request->name);
+        $content = strip_tags($request->content);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -217,8 +238,8 @@ class ApiWPController extends Controller
               $customer = new Customer ;
               $customer->user_id = $list->user_id;
               $customer->list_id = $list->id;
-              $customer->name = $request->name;
-              $customer->email = $request->email;
+              $customer->name = $name;
+              $customer->email = $email;
               $customer->telegram_number = $phone_number;
               $customer->is_pay= 0;
               $customer->status = 1;
@@ -227,7 +248,7 @@ class ApiWPController extends Controller
 
               $customerController = new CustomerController;
               if ($list->is_secure) {
-                $ret = $customerController->sendListSecure($list->id,$customer->id,$request->name,$customer->user_id,$list->name,$phone_number);
+                $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
               }
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
@@ -248,7 +269,7 @@ class ApiWPController extends Controller
             $mode = 1;
           }
         }
-        $message_send = Message::create_message($phone_number,$request->content,$key,$mode);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode);
 
         return "success";
       }
@@ -257,8 +278,11 @@ class ApiWPController extends Controller
     public function send_message_queue_system_WP_ms(Request $request)
     {
       if ($request->key == "wpcallbackforwa" ) {
-				$str = $request->phone;
-        $phone_number = $request->phone;
+				$str = strip_tags($request->phone);
+        $phone_number = strip_tags($request->phone);
+        $name = strip_tags($request->name);
+        $email = strip_tags($request->email);
+        $content = strip_tags($request->content);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -284,8 +308,8 @@ class ApiWPController extends Controller
               $customer = new Customer ;
               $customer->user_id = $list->user_id;
               $customer->list_id = $list->id;
-              $customer->name = $request->name;
-              $customer->email = $request->email;
+              $customer->name = $name;
+              $customer->email = $email;
               $customer->telegram_number = $phone_number;
               $customer->is_pay= 0;
               $customer->status = 1;
@@ -294,14 +318,14 @@ class ApiWPController extends Controller
 
               $customerController = new CustomerController;
               if ($list->is_secure) {
-                $ret = $customerController->sendListSecure($list->id,$customer->id,$request->name,$customer->user_id,$list->name,$phone_number);
+                $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
               }
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
           }
         }
         
-        $message_send = Message::create_message($phone_number,$request->content,env('REMINDER_PHONE_KEY'));
+        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
         
         return "success";
       }
@@ -310,8 +334,11 @@ class ApiWPController extends Controller
     public function send_message_queue_system_WP_michaelsugiharto(Request $request)
     {
       if ($request->key == "wpcallbackforwa" ) {
-				$str = $request->phone;
-        $phone_number = $request->phone;
+				$str = strip_tags($request->phone);
+        $phone_number = strip_tags($request->phone);
+        $name = strip_tags($request->name);
+        $email = strip_tags($request->email);
+        $content = strip_tags($request->content);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -337,8 +364,8 @@ class ApiWPController extends Controller
               $customer = new Customer ;
               $customer->user_id = $list->user_id;
               $customer->list_id = $list->id;
-              $customer->name = $request->name;
-              $customer->email = $request->email;
+              $customer->name = $name;
+              $customer->email = $email;
               $customer->telegram_number = $phone_number;
               $customer->is_pay= 0;
               $customer->status = 1;
@@ -347,7 +374,7 @@ class ApiWPController extends Controller
 
               $customerController = new CustomerController;
               if ($list->is_secure) {
-                $ret = $customerController->sendListSecure($list->id,$customer->id,$request->name,$customer->user_id,$list->name,$phone_number);
+                $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
               }
               $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
             }
@@ -368,7 +395,7 @@ class ApiWPController extends Controller
             $mode = 1;
           }
         }
-        $message_send = Message::create_message($phone_number,$request->content,$key,$mode);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode);
 
         return "success";
       }

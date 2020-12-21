@@ -16,6 +16,7 @@ use App\Http\Controllers\CustomerController;
 use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
@@ -105,10 +106,10 @@ class ApiController extends Controller
 
       // here we define the data we are posting in order to perform an update
       $post = array(
-          'email'                    => $email,
-          'first_name'               => $first_name,
-          'last_name'                => $last_name,
-          'phone'                    => $phone,
+          'email'                    => strip_tags($email),
+          'first_name'               => strip_tags($first_name),
+          'last_name'                => strip_tags($last_name),
+          'phone'                    => strip_tags($phone),
           'customer_acct_name'       => 'API',
           'tags'                     => 'api',
           //'ip4'                    => '127.0.0.1',
@@ -177,8 +178,10 @@ class ApiController extends Controller
 			$list = UserList::where('name',$obj->list_name)->first();
 
 			if (!is_null($list)) {
-				$str = $obj->phone_number;
-        $phone_number = $obj->phone_number;
+				$str = strip_tags($obj->phone_number);
+        $phone_number = strip_tags($obj->phone_number);
+        $name = strip_tags($obj->name);
+        $email = strip_tags($obj->email);
         
 				if(preg_match('/^62[0-9]*$/',$str)){
           $phone_number = '+'.$str;
@@ -198,14 +201,14 @@ class ApiController extends Controller
         {
           //send to celebmail
           $apiWPController = new ApiWPController;
-          $apiWPController->sendToCelebmail($obj->name,$obj->email,'wx909tbczb069');
+          $apiWPController->sendToCelebmail($name,$email,'wx909tbczb069');
         }
         
         if ($list->id == 228)
         {
           //send to celebmail
           $apiWPController = new ApiWPController;
-          $apiWPController->sendToCelebmail($obj->name,$obj->email,'of747vmm6q720');
+          $apiWPController->sendToCelebmail($name,$email,'of747vmm6q720');
         }
         
 
@@ -214,8 +217,8 @@ class ApiController extends Controller
           $customer = new Customer ;
           $customer->user_id = $list->user_id;
           $customer->list_id = $list->id;
-          $customer->name = $obj->name;
-          $customer->email = $obj->email;
+          $customer->name = $name;
+          $customer->email = $email;
           $customer->telegram_number = $phone_number;
           $customer->is_pay= 0;
           $customer->status = 1;
@@ -224,7 +227,7 @@ class ApiController extends Controller
 
           $customerController = new CustomerController;
           if ($list->is_secure) {
-            $ret = $customerController->sendListSecure($list->id,$customer->id,$obj->name,$customer->user_id,$list->name,$phone_number);
+            $ret = $customerController->sendListSecure($list->id,$customer->id,$name,$customer->user_id,$list->name,$phone_number);
           }
           $saveSubscriber = $customerController->addSubscriber($list->id,$customer->id,$customer->created_at,$customer->user_id);
         }
@@ -465,8 +468,8 @@ class ApiController extends Controller
         //https://omnifluencer.com/generate-coupon
         $curl = curl_init();
         $data = array(
-            'email'=>$email,
-            'package'=>$package,
+            'email'=>strip_tags($email),
+            'package'=>strip_tags($package),
         );
 
         curl_setopt_array($curl, array(
@@ -497,8 +500,8 @@ class ApiController extends Controller
     {
         $data = json_decode($request->getContent(),true);
         $sql = [
-            ['email','=',$data['email']],
-            ['list_id','=',$data['list_id']],
+            ['email','=',strip_tags($data['email'])],
+            ['list_id','=',strip_tags($data['list_id'])],
         ];
         $check_customer = Customer::where($sql)->first();
 
