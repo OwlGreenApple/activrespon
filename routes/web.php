@@ -161,6 +161,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 
   //List API
   Route::get('generate_api_key','ApiController@generate_api_key');
+  Route::post('get_data_api','ApiController@get_data_from_omnilinkz');
 });
 
 /* SETTING */

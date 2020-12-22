@@ -124,6 +124,8 @@ class ApiController extends Controller
         $customer->status = 1;
         $customer->save();
       }
+
+      return json_encode(['response'=>'Thank you, your data has been submiting to activrespon']);
     }
 
     public function send_message_queue_system(Request $request)
