@@ -290,8 +290,8 @@ class WamateHelper
 
 		// Close cURL session handle
 		curl_close($ch);
-    dd($result);
-    // return $result;
+    // dd($result);
+    return $result;
 
 	}
 
