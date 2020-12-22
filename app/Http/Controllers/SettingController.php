@@ -709,14 +709,14 @@ class SettingController extends Controller
 			}
     
 			if (session('mode')==2) {
-        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
-        if (strtoupper($res->status) == "IDLE") {
+        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id),true);
+        if (strtoupper($res['status']) == "IDLE") {
 					$data = array(
 						'status'=>'error',
 						'phone_number'=>Alert::qrcode(),
 					);
         }
-        else if (strtoupper($res->status) == "PAIRING") {
+        else if (strtoupper($res['status']) == "PAIRING") {
           $data = array(
             'status'=>'success',
             'data'=>'<img src="'.$res->qr_code.'"/>',
@@ -728,6 +728,7 @@ class SettingController extends Controller
 
     /*
     * Confirm QR CODE woowa
+    c48e29a7839d483e1d33b3026e4f66a9Y8vJqmo0I4XlNssjBkFWXl/RX7Jx+E+Gta7e8krlIGD8QYfVRHyE8dJn9Dg8n0P3
     */
     public function check_connected_phone(Request $request)
     {

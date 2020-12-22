@@ -126,7 +126,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::post('sendmessage','SpidermanController@sendMessage');
   /* -- */
 
-  //List User 
+  //List Admin 
   Route::get('/list-user','Admin\UserController@index');
   Route::get('/list-user/load-user','Admin\UserController@load_user');
   Route::get('/list-user/add-user','Admin\UserController@add_user');
@@ -158,6 +158,9 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::get('/list-message-system','Admin\MessageController@index');
   Route::get('/list-message-system/load','Admin\MessageController@load_message_system');
   Route::get('/list-message-system/resend','Admin\MessageController@resend');
+
+  //List API
+  Route::get('generate_api_key','ApiController@generate_api_key');
 });
 
 /* SETTING */

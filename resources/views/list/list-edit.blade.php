@@ -8,6 +8,15 @@
   <div class="left">
      <h3>List Name : <span class="listname">{{$label}}</span></h3>
      <span><a id="edit_list_name" class="btn btn-activ icon-edit"></a></span>
+     <div>
+       <button id="generate_key" type="button" class="btn btn-activ btn-sm mt-2">Generate Key</button>
+        <span style="font-size : 16px" class="tooltipstered text-body" title="<div class='panel-heading'>Generate API key</div><div class='panel-content'>
+          Generate key and put this key into omnilinkz <b>connect activrespon</b> 
+        </div>">
+          <i class="fa fa-question-circle "></i>
+        </span>
+      </div>
+     <div id="api_key" class="mt-2 text-body"><!-- API KEY --></div>
   </div>
   <div class="clearfix"></div>
 </div>
@@ -734,6 +743,30 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 </div>
 <!-- End Modal -->
 
+<!-- Modal Copy Link -->
+<div class="modal fade" id="copy-link" role="dialog">
+  <div class="modal-dialog">
+    
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modaltitle">
+          Copy Link
+        </h5>
+      </div>
+      <div class="modal-body">
+        You have copied the link!
+      </div>
+      <div class="modal-footer" id="foot">
+        <button class="btn btn-primary" data-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
+      
+  </div>
+</div>
+
 <script src="{{ url('assets/intl-tel-input/callbackplugin.js') }}" type="text/javascript"></script>
 <script src="{{ url('assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
 
@@ -808,7 +841,28 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
     addResendBtn('#autoreply_table_length');
     resendBtn();
     triggerButtonMod();
+    generate_key_api();
+    $('[data-toggle="tooltip"]').tooltip()
   });
+
+  function generate_key_api()
+  {
+    $("#generate_key").click(function(){
+      $.ajax({
+        type : 'GET',
+        url : '{{url("generate_api_key")}}',
+        data : {list_id : "{!! $data['listid'] !!}"},
+        dataType : 'text',
+        success : function(result){
+          $("#api_key").html(result+' '+'<a data-link="'+result+'" class="btn-copy icon-copy"></a>');
+        },
+        error: function(xhr)
+        {
+          console.log(xhr.responseText);
+        }
+      });
+    });
+  }
 
   function addResendBtn(elem)
   {
@@ -2196,7 +2250,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
     }  
 
     function copyLink(){
-      $( ".btn-copy" ).click(function(e) 
+      $( "body" ).on("click",".btn-copy",function(e) 
       {
         e.preventDefault();
         e.stopPropagation();

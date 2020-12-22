@@ -17,6 +17,7 @@ use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Hash;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
@@ -52,7 +53,7 @@ class ApiController extends Controller
 
     public function test()
     {
-      echo Carbon::now()->timezone('Asia/Jakarta').'<br>';
+      /*echo Carbon::now()->timezone('Asia/Jakarta').'<br>';
       echo Carbon::createFromTime(21,0,0,'Asia/Jakarta').'<br>';
       echo Carbon::createFromTime(6,0,0,'Asia/Jakarta')->addDays(1).'<br>';
       
@@ -70,6 +71,58 @@ class ApiController extends Controller
       else
       {
           echo 'true';
+      }*/
+      // echo Hash::make('from_omnilinkz');
+    }
+
+    /* GENERATE API KEY INTO ACTIVRESPON */
+    public function generate_api_key(Request $request)
+    {
+      $list_id = strip_tags($request->list_id);
+      $lists = UserList::find($list_id);
+
+      if(!is_null($lists))
+      {
+        $name = $lists->name;
+        $api_key = Hash::make($name);
+        $lists->api_key_connect = $api_key;
+        $lists->save();
+        return $api_key;
+      }
+    }
+
+    //save data from omnilinkz to list
+    public function get_data_from_omnilinkz()
+    {
+      header('Content-Type: application/json');
+      $req = file_get_contents('php://input');
+      $res = json_decode($req,true);
+
+      $from_omnilinkz = strip_tags($req['from_omnilinkz']); //as secure
+
+      if($from_omnilinkz !== '$2y$10$JMoAeSl6aV0JCHmTNNafTOuNlMg/S7Yo8a6LUauEZe4Rcy.YdU37S')
+      {
+        exit();
+      }
+
+      $listname = strip_tags($req['list_name']);
+      $apikey = strip_tags($req['api_key']);
+      $name = strip_tags($req['name']);
+      $email = strip_tags($req['email']);
+      $phone = strip_tags($req['phone']);
+
+      $list_check = UserList::where([['name',$name],['api_key_connect',$apikey]])->first();
+
+      if(!is_null($list_check))
+      {
+        $customer = new Customer;
+        $customer->user_id = $list_check->user_id;
+        $customer->list_id = $list_check->id;
+        $customer->name = $name;
+        $customer->email = $email;
+        $customer->telegram_number = $phone;
+        $customer->status = 1;
+        $customer->save();
       }
     }
 
