@@ -122,7 +122,7 @@ class ApiController extends Controller
       //VALIDATOR
       $list_id = $list_check->id;
       $rules = [
-        'name'=>['required','max:190'],
+        'name'=>['required','min:4','max:50'],
         'email'=>['required','email','max:50'],
         'phone'=>['required','numeric','digits_between:6,18',new CheckPlusCode,new CheckWANumbers($list_id)],
       ];
