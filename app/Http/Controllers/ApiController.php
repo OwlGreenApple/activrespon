@@ -137,7 +137,7 @@ class ApiController extends Controller
               'email'=>$error->first('email'),
               'phone'=>$error->first('phone')
           );
-          return response()->json($err);
+          return json_encode($err);
       }
 
       $customer = new Customer;
