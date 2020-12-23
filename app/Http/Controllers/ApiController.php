@@ -97,9 +97,10 @@ class ApiController extends Controller
     //save data from omnilinkz to list
     public function get_data_from_omnilinkz()
     {
-      header('Content-Type: application/json');
       $req = file_get_contents('php://input');
       $res = json_decode($req,true);
+
+      dd($res);
 
       $from_omnilinkz = $res['from_omnilinkz']; //as secure
 
