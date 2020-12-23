@@ -112,7 +112,7 @@ class ApiController extends Controller
       $email = strip_tags($res['email']);
       $phone = strip_tags($res['phone']);
 
-      print_r($apikey);
+      print_r($name);
       die('');
 
       $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
