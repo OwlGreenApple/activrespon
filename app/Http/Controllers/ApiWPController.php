@@ -49,7 +49,7 @@ class ApiWPController extends Controller
         
         if ($request->event == "checkout-completed"){
           //list khusus activtemplate
-          $list = UserList::where('name',"3ha6ierm")->first();
+          $list = UserList::where('name',"zub9pisy")->first();
 
           if (!is_null($list)) {
             $customer_phone = Customer::where([['list_id',$list->id],['telegram_number',$phone_number]])->first();
@@ -171,7 +171,7 @@ class ApiWPController extends Controller
         
         // if ($request->event == "checkout-completed"){
           //list khusus activtemplate https://activrespon.com/dashboard/a1yqnefs
-          $list = UserList::where('name',"jsavpwkm")->first();
+          $list = UserList::where('name',"5zdfhvwa")->first();
 
           if (!is_null($list)) {
             $customer_phone = Customer::where([['list_id',$list->id],['telegram_number',$phone_number]])->first();
