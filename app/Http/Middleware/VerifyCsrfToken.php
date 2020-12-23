@@ -34,6 +34,7 @@ class VerifyCsrfToken extends Middleware
         'send-wamate',
         'send-image-url-wamate',
         'get-webhook',
+        'get_data_api',
         
         //wp callback
         'send-message-queue-system-wp-activtemplate',

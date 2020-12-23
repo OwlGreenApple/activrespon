@@ -39,6 +39,7 @@ Route::get('testpay','ApiController@testpay');
 Route::get('testdirectsendwa','ApiController@testDirectSendWA')->name('testdirectsendwa');
 Route::get('testdirectsendmail','ApiController@testDirectSendMail')->name('testdirectsendmail');
 Route::post('send-message-queue-system','ApiController@send_message_queue_system');
+Route::post('get_data_api','ApiController@get_data_from_omnilinkz');
 
 /* API accessed from automation*/
 Route::post('send-simi','ApiController@send_simi');
@@ -161,7 +162,6 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 
   //List API
   Route::get('generate_api_key','ApiController@generate_api_key');
-  Route::post('get_data_api','ApiController@get_data_from_omnilinkz');
 });
 
 /* SETTING */

@@ -98,20 +98,19 @@ class ApiController extends Controller
       $req = file_get_contents('php://input');
       $res = json_decode($req,true);
 
-      $from_omnilinkz = strip_tags($req['from_omnilinkz']); //as secure
+      $from_omnilinkz = $res['from_omnilinkz']; //as secure
 
       if($from_omnilinkz !== '$2y$10$JMoAeSl6aV0JCHmTNNafTOuNlMg/S7Yo8a6LUauEZe4Rcy.YdU37S')
       {
         exit();
       }
 
-      $listname = strip_tags($req['list_name']);
-      $apikey = strip_tags($req['api_key']);
-      $name = strip_tags($req['name']);
-      $email = strip_tags($req['email']);
-      $phone = strip_tags($req['phone']);
+      $apikey = strip_tags($res['api_key']);
+      $name = strip_tags($res['name']);
+      $email = strip_tags($res['email']);
+      $phone = strip_tags($res['phone']);
 
-      $list_check = UserList::where([['name',$name],['api_key_connect',$apikey]])->first();
+      $list_check = UserList::where('api_key_connect',$apikey)->first();
 
       if(!is_null($list_check))
       {
