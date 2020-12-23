@@ -14,20 +14,13 @@ use Maatwebsite\Excel\Concerns\WithMapping;*/
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class ListSubscribersExport implements FromView,WithCustomCsvSettings
+class ListSubscribersExport implements FromView
 {
 
   public function __construct(int $listid,int $import)
   {
       $this->idlist = $listid;
       $this->import = $import;
-  }
-
-  public function getCsvSettings(): array
-  {
-      return [
-          'use_bom' => true
-      ];
   }
 
   public function view(): View

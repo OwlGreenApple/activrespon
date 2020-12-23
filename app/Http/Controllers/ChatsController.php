@@ -439,7 +439,7 @@ class ChatsController extends Controller
     /* GET NwEBHOOK FROM API THEN PUT ON DB -- ON POSTGRESQL */
     public function getWebhook(Request $request)
     {
-      header('Content-Type: application/json');
+      // header('Content-Type: application/json');
       $req = file_get_contents('php://input');
        // dd($req);
     
