@@ -118,7 +118,8 @@ class RegisterController extends Controller
 
         if(env('APP_ENV') <> 'local')
         {
-					$list = UserList::find(78);
+					// $list = UserList::find(78);
+					$list = UserList::find(15);
 					if (!is_null($list) ) {
 						$customer = new Customer ;
 						$customer->user_id = $list->user_id;
