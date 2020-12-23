@@ -1377,7 +1377,7 @@ class ListController extends Controller
         $id_user = Auth::id();
         $check = UserList::where('id',$list_id)->first();
         $day = Carbon::now()->toDateString();
-        $label = preg_replace("/\/|\\\\/i","_", $check->label); //prevent error due use / as file name
+        $label = preg_replace("/\/|\\\\/i","_", $check->label); //prevent error filename due use / as file name
 
         if($import == 1)
         {

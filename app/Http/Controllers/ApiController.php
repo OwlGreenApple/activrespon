@@ -123,7 +123,6 @@ class ApiController extends Controller
       //VALIDATOR
       $list_id = $list_check->id;
       $rules = [
-        'api_key'=>['required'],
         'name'=>['required','max:190'],
         'email'=>['required','email','max:50'],
         'phone'=>['required','numeric','digits_between:6,18',new CheckPlusCode,new CheckWANumbers($list_id)],
@@ -133,27 +132,24 @@ class ApiController extends Controller
       if($validator->fails()){
           $error = $validator->errors();
           $err = array(
+              'error'=>1,
               'name'=>$error->first('name'),
               'email'=>$error->first('email'),
-              'phone'=>$error->first('phone'),
-              'api_key'=>$error->first('api_key'),
+              'phone'=>$error->first('phone')
           );
           return response()->json($err);
       }
 
-      if(!is_null($list_check))
-      {
-        $customer = new Customer;
-        $customer->user_id = $list_check->user_id;
-        $customer->list_id = $list_id;
-        $customer->name = $name;
-        $customer->email = $email;
-        $customer->telegram_number = $phone;
-        $customer->status = 1;
-        $customer->save();
-      }
+      $customer = new Customer;
+      $customer->user_id = $list_check->user_id;
+      $customer->list_id = $list_id;
+      $customer->name = $name;
+      $customer->email = $email;
+      $customer->telegram_number = $phone;
+      $customer->status = 1;
+      $customer->save();
 
-      return json_encode(['response'=>'Thank you, your data has been submiting to activrespon']);
+      return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
     }
 
     public function send_message_queue_system(Request $request)
