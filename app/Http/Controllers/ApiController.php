@@ -100,8 +100,6 @@ class ApiController extends Controller
       $req = file_get_contents('php://input');
       $res = json_decode($req,true);
 
-      dd($res);
-
       $from_omnilinkz = $res['from_omnilinkz']; //as secure
 
       if($from_omnilinkz !== '$2y$10$JMoAeSl6aV0JCHmTNNafTOuNlMg/S7Yo8a6LUauEZe4Rcy.YdU37S')
@@ -114,8 +112,10 @@ class ApiController extends Controller
       $email = strip_tags($res['email']);
       $phone = strip_tags($res['phone']);
 
+      print_r($apikey);
+      die('');
 
-     /* $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
+      $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
 
       if(is_null($list_check))
       {
@@ -149,7 +149,7 @@ class ApiController extends Controller
       $customer->email = $email;
       $customer->telegram_number = $phone;
       $customer->status = 1;
-      $customer->save();*/
+      $customer->save();
 
       return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
     }
