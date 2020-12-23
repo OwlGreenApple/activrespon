@@ -8,18 +8,26 @@ use App\Customer;
 use Maatwebsite\Excel\Concerns\Exportable;*/
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 /*use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\WithMapping;*/
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class ListSubscribersExport implements FromView
+class ListSubscribersExport implements FromView,WithCustomCsvSettings
 {
 
   public function __construct(int $listid,int $import)
   {
       $this->idlist = $listid;
       $this->import = $import;
+  }
+
+  public function getCsvSettings(): array
+  {
+      return [
+          'use_bom' => true
+      ];
   }
 
   public function view(): View

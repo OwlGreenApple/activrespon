@@ -19,12 +19,10 @@ class CheckWANumbers implements Rule
      * @return void
      */
 
-    public $call_code;
     public $list_id;
 
-    public function __construct($call_code,$list_id)
+    public function __construct($list_id)
     {
-        $this->call_code = $call_code;
         $this->list_id = $list_id;
     }
 
@@ -37,7 +35,7 @@ class CheckWANumbers implements Rule
      */
     public function passes($attribute, $value)
     {
-        $wa_number = $this->call_code.$value;
+        $wa_number = $value;
         $list_id =  $this->list_id;
 
         $checkwa = Customer::where([

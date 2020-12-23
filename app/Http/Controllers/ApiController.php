@@ -21,7 +21,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
+use App\Rules\CheckWANumbers;
+use App\Rules\CheckPlusCode;
 use App\Http\Controllers\ApiWPController;
+use Validator;
 
 class ApiController extends Controller
 {
@@ -110,13 +113,39 @@ class ApiController extends Controller
       $email = strip_tags($res['email']);
       $phone = strip_tags($res['phone']);
 
-      $list_check = UserList::where('api_key_connect',$apikey)->first();
+      $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
+
+      if(is_null($list_check))
+      {
+        exit();
+      }
+
+      //VALIDATOR
+      $list_id = $list_check->id;
+      $rules = [
+        'api_key'=>['required'],
+        'name'=>['required','max:190'],
+        'email'=>['required','email','max:50'],
+        'phone'=>['required','numeric','digits_between:6,18',new CheckPlusCode,new CheckWANumbers($list_id)],
+      ];
+
+      $validator = Validator::make($res,$rules);
+      if($validator->fails()){
+          $error = $validator->errors();
+          $err = array(
+              'name'=>$error->first('name'),
+              'email'=>$error->first('email'),
+              'phone'=>$error->first('phone'),
+              'api_key'=>$error->first('api_key'),
+          );
+          return response()->json($err);
+      }
 
       if(!is_null($list_check))
       {
         $customer = new Customer;
         $customer->user_id = $list_check->user_id;
-        $customer->list_id = $list_check->id;
+        $customer->list_id = $list_id;
         $customer->name = $name;
         $customer->email = $email;
         $customer->telegram_number = $phone;
