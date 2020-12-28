@@ -41,6 +41,6 @@ class CheckPlusCode implements Rule
      */
     public function message()
     {
-        return 'Phone must be lead by +.';
+        return 'Phone must be lead by + and using number.';
     }
 }
