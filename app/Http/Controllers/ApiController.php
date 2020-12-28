@@ -124,7 +124,7 @@ class ApiController extends Controller
       $rules = [
         'name'=>['required','min:4','max:50'],
         'email'=>['required','email','max:50'],
-        'phone'=>['required','digits_between:6,18',new CheckPlusCode,new CheckWANumbers($list_id)],
+        'phone'=>['required','min:6','max:19',new CheckPlusCode,new CheckWANumbers($list_id)],
       ];
 
       $validator = Validator::make($res,$rules);
