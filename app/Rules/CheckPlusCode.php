@@ -25,7 +25,7 @@ class CheckPlusCode implements Rule
      */
     public function passes($attribute, $value)
     {
-        if(!preg_match("/^\+[0-9]$/i",$value))
+        if(!preg_match("/^\++[0-9]/i",$value))
         {
            return false;
         } 
