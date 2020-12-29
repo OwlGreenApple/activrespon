@@ -18,7 +18,7 @@ Route::get('logs-0312', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index
 Route::get('/','OrderController@pricing')->name('pricing');
 
 //Route::get('ck','ListController@generateRandomListName');
-Route::get('test', 'ApiController@test');
+Route::get('validate-api-key', 'ApiController@validate_api_key');
 
 // Route::get('test_setting','SenderController@test_settings');
 Route::get('justcarbon','EventController@JUSTCARBON');
