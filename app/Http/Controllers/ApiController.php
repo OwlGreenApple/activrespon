@@ -94,14 +94,6 @@ class ApiController extends Controller
       }
     }
 
-    //to validate omnilinkz api key
-    public function validate_api_key(){
-      $req = file_get_contents('php://input');
-      $res = json_decode($req,true);
-
-      return json_encode($res);
-    }
-
     //save data from omnilinkz to list
     public function get_data_from_omnilinkz()
     {
@@ -122,7 +114,17 @@ class ApiController extends Controller
 
       $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
 
-      // if API KEY MISMATCH AND LIST DELETED
+      // VALIDATION FOR OMNILINKZ IF USER PUT THEIR API KEY
+      if(is_null($list_check) && isset($res['check']))
+      {
+        return json_encode(['error'=>1]);
+      }
+      elseif(!is_null($list_check) && isset($res['check']))
+      {
+        return json_encode(['error'=>0]);
+      }
+
+      //IF API KEY FROM USER MISMATCH / STILL NULL
       if(is_null($list_check))
       {
         return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
