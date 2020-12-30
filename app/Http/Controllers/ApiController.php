@@ -108,9 +108,6 @@ class ApiController extends Controller
       }
 
       $apikey = strip_tags($res['api_key']);
-      $name = strip_tags($res['name']);
-      $email = strip_tags($res['email']);
-      $phone = strip_tags($res['phone']);
 
       $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
 
@@ -129,6 +126,10 @@ class ApiController extends Controller
       {
         return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
       }
+
+      $name = strip_tags($res['name']);
+      $email = strip_tags($res['email']);
+      $phone = strip_tags($res['phone']);
 
       //VALIDATOR
       $list_id = $list_check->id;
