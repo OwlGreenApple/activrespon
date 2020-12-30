@@ -22,7 +22,7 @@
                 @endif
               </div>
               <!-- time -->
-              <div align="right"><small></small></div>
+              <div align="right"><small>{{ $row['val']['time'] }}</small></div>
           </div>
         </div>
         @endif
@@ -49,7 +49,7 @@
                 @endif
               </div>
                <!-- time -->
-              <div align="right"><small></small></div>
+              <div align="right"><small>{{ $row['val']['time'] }}</small></div>
           </div>
         </div>
         @endif
