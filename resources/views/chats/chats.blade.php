@@ -31,7 +31,7 @@
         
         @if($row['key'] =='reply')
         <div class="col-md-6 ml-auto text-right">
-            <div class="alert alert-success chat-text">
+            <div class="alert alert-success chat-text text-justify">
               <div>
                 @if($row['val']['type'] == 'image')
                   @if($row['val']['media_url'] !== null)
