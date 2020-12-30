@@ -235,10 +235,25 @@
   {
     $("#divInput-description-post").emojioneArea({
       placeholder: "Type a message",
-      pickerPosition: "bottom"
+      pickerPosition: "bottom",
+      events: {
+        keypress: (editor, event) => {
+          if (event.originalEvent.code === "Enter") {
+            if (event.originalEvent.shiftKey === true) {
+              // do nothing enter already inserts break line in caret position
+            } else {
+              // enter key without ctrl
+              event.preventDefault(); // ignore line break
+              // insert your code here
+              trigger_message();
+            }
+          }
+        },
+      }
     });
   }
 
+  // TO GET MESSAGES ACCORDING ON USER
   function get_messages()
   {
     $("body").on("click",".chat_room_box",function(){
@@ -289,26 +304,33 @@
     });
   }
 
+  // TO SEND MESSAGE
   function sending_message()
   {
     $(".btn-send").click(function(){
-      var recipient = $(this).attr('id');
-      var messages = $("#divInput-description-post").emojioneArea()[0].emojioneArea.getText();
-
-      if(recipient === undefined)
-      {
-        $(".error_send").html("<div class='alert alert-danger'>"+chat_err+"</div>");
-        return false;
-      }
-
-      if(messages === "")
-      {
-        $(".error_send").html("<div class='alert alert-danger'>"+chat_err_msg+"</div>");
-        return false;
-      }
-      
-      sendMesssage(recipient,messages);
+     trigger_message();
     });
+  }
+
+  // TO EXECUTE SEND MESSAGE
+  function trigger_message()
+  {
+    var recipient = $(".btn-send").attr('id');
+    var messages = $("#divInput-description-post").emojioneArea()[0].emojioneArea.getText();
+
+    if(recipient === undefined)
+    {
+      $(".error_send").html("<div class='alert alert-danger'>"+chat_err+"</div>");
+      return false;
+    }
+
+    if(messages === "")
+    {
+      $(".error_send").html("<div class='alert alert-danger'>"+chat_err_msg+"</div>");
+      return false;
+    }
+    
+    sendMesssage(recipient,messages);
   }
 
   function delay(callback, ms) {

@@ -16,7 +16,7 @@
                     Sorry, image not available.
                   @endif
                 @elseif($row['val']['type'] == 'text')
-                  {{ $row['val']['message'] }}
+                  {!! str_replace("\n","<br/>",$row['val']['message']); !!}
                 @else
                     Sorry, currently we do not support media message except image
                 @endif
@@ -43,7 +43,7 @@
                     Sorry, image not available.
                   @endif
                 @elseif($row['val']['type'] == 'text')
-                    {{ $row['val']['message'] }}
+                    {!! str_replace("\n","<br/>",$row['val']['message']); !!}
                 @else
                     Sorry, currently we do not support media message except image
                 @endif

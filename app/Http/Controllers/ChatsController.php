@@ -12,7 +12,7 @@ use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Symfony\Component\ErrorHandler\Error\FatalError;
-use DB, Cookie, Storage, Validator;
+use DB, Cookie, Storage, Validator, DateTime;
 
 
 class ChatsController extends Controller
@@ -523,8 +523,7 @@ class ChatsController extends Controller
        foreach ($messages as $row):
            if ($row->to == $to) 
            {
-              // $convert = DateTime::createFromFormat('YmdHi', $row->timestamp);
-              $time = Date('Y-m-D h:i:s',strtotime($row->timestamp));
+              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
               $data[]['reply'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
@@ -536,8 +535,7 @@ class ChatsController extends Controller
 
            if ($row->from == $to) 
            {
-              // $convert = DateTime::createFromFormat('YmdHi', $row->timestamp);
-              $time = Date('Y-m-D h:i:s',strtotime($row->timestamp));
+              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
               $data[]['sender'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
