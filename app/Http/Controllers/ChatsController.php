@@ -523,8 +523,8 @@ class ChatsController extends Controller
        foreach ($messages as $row):
            if ($row->to == $to) 
            {
-              $convert = DateTime::createFromFormat('YmdHi', $row->timestamp);
-              $time = $convert->format('Y-m-D h:i:s');
+              // $convert = DateTime::createFromFormat('YmdHi', $row->timestamp);
+              $time = Date('Y-m-D h:i:s',strtotime($row->timestamp));
               $data[]['reply'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
@@ -536,8 +536,8 @@ class ChatsController extends Controller
 
            if ($row->from == $to) 
            {
-              $convert = DateTime::createFromFormat('YmdHi', $row->timestamp);
-              $time = $convert->format('Y-m-D h:i:s');
+              // $convert = DateTime::createFromFormat('YmdHi', $row->timestamp);
+              $time = Date('Y-m-D h:i:s',strtotime($row->timestamp));
               $data[]['sender'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
