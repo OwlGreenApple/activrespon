@@ -97,7 +97,6 @@ class ApiController extends Controller
     //save data from omnilinkz to list
     public function get_data_from_omnilinkz()
     {
-      header('Content-Type: application/json');
       $req = file_get_contents('php://input');
       $res = json_decode($req,true);
 
@@ -109,24 +108,35 @@ class ApiController extends Controller
       }
 
       $apikey = strip_tags($res['api_key']);
+
+      $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
+
+      // VALIDATION FOR OMNILINKZ IF USER PUT THEIR API KEY
+      if(is_null($list_check) && isset($res['check']))
+      {
+        return json_encode(['error'=>1]);
+      }
+      elseif(!is_null($list_check) && isset($res['check']))
+      {
+        return json_encode(['error'=>0]);
+      }
+
+      //IF API KEY FROM USER MISMATCH / STILL NULL
+      if(is_null($list_check))
+      {
+        return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
+      }
+
       $name = strip_tags($res['name']);
       $email = strip_tags($res['email']);
       $phone = strip_tags($res['phone']);
 
-
-     /* $list_check = UserList::where([['api_key_connect',$apikey],['status','=',1]])->first();
-
-      if(is_null($list_check))
-      {
-        exit();
-      }
-
       //VALIDATOR
       $list_id = $list_check->id;
       $rules = [
-        'name'=>['required','max:190'],
+        'name'=>['required','min:4','max:50'],
         'email'=>['required','email','max:50'],
-        'phone'=>['required','numeric','digits_between:6,18',new CheckPlusCode,new CheckWANumbers($list_id)],
+        'phone'=>['required','min:6','max:19',new CheckPlusCode,new CheckWANumbers($list_id)],
       ];
 
       $validator = Validator::make($res,$rules);
@@ -148,7 +158,7 @@ class ApiController extends Controller
       $customer->email = $email;
       $customer->telegram_number = $phone;
       $customer->status = 1;
-      $customer->save();*/
+      $customer->save();
 
       return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
     }

@@ -12,7 +12,7 @@ use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Symfony\Component\ErrorHandler\Error\FatalError;
-use DB, Cookie, Storage, Validator;
+use DB, Cookie, Storage, Validator, DateTime;
 
 
 class ChatsController extends Controller
@@ -439,7 +439,7 @@ class ChatsController extends Controller
     /* GET NwEBHOOK FROM API THEN PUT ON DB -- ON POSTGRESQL */
     public function getWebhook(Request $request)
     {
-      header('Content-Type: application/json');
+      // header('Content-Type: application/json');
       $req = file_get_contents('php://input');
        // dd($req);
     
@@ -523,20 +523,24 @@ class ChatsController extends Controller
        foreach ($messages as $row):
            if ($row->to == $to) 
            {
+              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
               $data[]['reply'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
                 'media_url'=>$row->media_url,
+                'time'=>$time,
                 'type'=>$row->type
               );
            }
 
            if ($row->from == $to) 
            {
+              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
               $data[]['sender'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
                 'media_url'=>$row->media_url,
+                'time'=>$time,
                 'type'=>$row->type
               );
            }
