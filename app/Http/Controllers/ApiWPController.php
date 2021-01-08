@@ -198,7 +198,25 @@ class ApiWPController extends Controller
           }
         // }
         
-        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
+        $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
+        $key = env('REMINDER_PHONE_KEY');
+        $mode = 0;
+        if (!is_null($phoneNumber)){
+          if ($phoneNumber->mode == 0){ //simi
+            $server = Server::where('phone_id',$phoneNumber->id)->first();
+            $key = $server->url;
+            $mode = 0;
+          }
+          if ($phoneNumber->mode == 1){ //woowa
+            $key = $phoneNumber->filename;
+            $mode = 1;
+          }
+          if ($phoneNumber->mode == 2){ //wamate
+            $key = $phoneNumber->device_key;
+            $mode = 2;
+          }
+        }
+        $message_send = Message::create_message($phone_number,$content,$key,$mode);
         
         $temp = $this->sendToCelebmail($name,$email,'wq528m745k709');
         return "success";
@@ -394,7 +412,7 @@ class ApiWPController extends Controller
             $key = $phoneNumber->filename;
             $mode = 1;
           }
-          if ($phoneNumber->mode == 2){ //woowa
+          if ($phoneNumber->mode == 2){ //wamate
             $key = $phoneNumber->device_key;
             $mode = 2;
           }
