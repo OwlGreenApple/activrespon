@@ -24,6 +24,9 @@ class Message extends Model
     if ($mode==1) { //mode woowa
       $message_send->status=7;
     }
+    if ($mode==2) { //mode woowa
+      $message_send->status=11;
+    }
     $message_send->customer_id=0;
     $message_send->save();
     return $message_send;
