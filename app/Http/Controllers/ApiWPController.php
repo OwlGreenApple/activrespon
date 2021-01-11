@@ -244,7 +244,7 @@ class ApiWPController extends Controller
           $phone_number = preg_replace("/^[0-9]/", "+62", $str);
         }
         
-        $list = UserList::where('name',"iznq923b")->first();
+        $list = UserList::where('name',"8uvag7zq")->first();
         if ($request->event == "checkout-completed"){
           //list khusus digimaru
 
