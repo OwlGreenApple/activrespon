@@ -286,6 +286,10 @@ class ApiWPController extends Controller
             $key = $phoneNumber->filename;
             $mode = 1;
           }
+          if ($phoneNumber->mode == 2){ //wamate
+            $key = $phoneNumber->device_key;
+            $mode = 2;
+          }
         }
         $message_send = Message::create_message($phone_number,$content,$key,$mode);
 
