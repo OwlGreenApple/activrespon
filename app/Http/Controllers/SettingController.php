@@ -143,8 +143,8 @@ class SettingController extends Controller
       // di fixkan
       //0-> simi 
       //1->woowa
-			// session(['mode'=>1]); //difixkan woowa
-			session(['mode'=>2]); //difixkan Wamate (new simi)
+			session(['mode'=>1]); //difixkan woowa
+			// session(['mode'=>2]); //difixkan Wamate (new simi)
       // $this->check_table_server($user->id); //difixkan simi, cek dulu ada ngga server available, klo ga ada dikasi ke woowa
       
       
