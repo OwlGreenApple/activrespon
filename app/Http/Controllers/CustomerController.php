@@ -296,38 +296,38 @@ class CustomerController extends Controller
               $customer->save();
               $api = new API;
 
-              if($list->id == 115)
+              if($list->id == 42)
               {
                 $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,7);
               }
 
-              if($list->id == 121)
-              {
-                $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);
-              }
+              // if($list->id == 121)
+              // {
+                // $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);
+              // }
               
-              if ($list->id == 216)
+              if ($list->id == 12)
               {
                 //send to celebmail
                 $apiWPController = new ApiWPController;
                 $apiWPController->sendToCelebmail(strip_tags($request->subscribername).' '.strip_tags($request->last_name),strip_tags($request->email),'hc716nc2ry622');
               }
 
-              if ($list->id == 219)
+              if ($list->id == 13)
               {
                 //send to celebmail
                 $apiWPController = new ApiWPController;
                 $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'te7027awnw9f8');
               }
               
-              if ($list->id == 224)
+              if ($list->id == 14)
               {
                 //send to celebmail
                 $apiWPController = new ApiWPController;
                 $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'wx909tbczb069');
               }
               
-              if ($list->id == 228)
+              if ($list->id == 11)
               {
                 //send to celebmail
                 $apiWPController = new ApiWPController;
@@ -335,7 +335,7 @@ class CustomerController extends Controller
               }
               
               
-              if ($list->id == 216)
+              if ($list->id == 10)
               {
                 $url='https://activproof.com/package/pixel-webhook/4372184ccdfa544983dd5c9259808099';
 
