@@ -296,15 +296,15 @@ class CustomerController extends Controller
               $customer->save();
               $api = new API;
 
-              if($list->id == 42)
+              if($list->id == 4)
               {
                 $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,7);
               }
 
-              // if($list->id == 121)
-              // {
-                // $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);
-              // }
+              if($list->id == 5)
+              {
+                $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);
+              }
               
               if ($list->id == 12)
               {
