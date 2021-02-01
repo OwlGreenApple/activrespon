@@ -13,7 +13,7 @@
 
 Auth::routes();
 
-Route::get('logs-0312', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+Route::get('logs-8877', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 Route::get('/','OrderController@pricing')->name('pricing');
 
