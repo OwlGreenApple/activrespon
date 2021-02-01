@@ -24,7 +24,8 @@ class WamateHelper
     {
       return '188.166.221.181:3333';
     }*/
-    return '207.148.117.69:3333';
+    // return '207.148.117.69:3333';
+    return '10.104.0.2:3333';
   }
   
   public function go_curl($url,$data,$method)
