@@ -12,6 +12,7 @@ use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Symfony\Component\ErrorHandler\Error\FatalError;
+use Carbon\Carbon;
 use DB, Cookie, Storage, Validator, DateTime;
 
 
@@ -519,29 +520,39 @@ class ChatsController extends Controller
       /* memfilter messages sesuai dengan chatid (no pengirim dan penerima) */
       $data = array();
 
+      /*
+        status wa messages :
+        - SENT
+        - DELIVERED
+        - READ
+      */
+
       if($messages->count() > 0):
        foreach ($messages as $row):
            if ($row->to == $to) 
            {
-              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
+              // $time = Date('Y-m-D h:i A', strtotime($row->created_at));
+              $time = Carbon::createFromFormat('Y-m-d H:i:s', $row->created_at, 'Asia/Jakarta');
               $data[]['reply'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
                 'media_url'=>$row->media_url,
                 'time'=>$time,
-                'type'=>$row->type
+                'type'=>$row->type,
+                'status'=>$row->status
               );
            }
 
            if ($row->from == $to) 
            {
-              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
+              $time = Carbon::createFromFormat('Y-m-d H:i:s', $row->created_at, 'Asia/Jakarta');
               $data[]['sender'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
                 'media_url'=>$row->media_url,
                 'time'=>$time,
-                'type'=>$row->type
+                'type'=>$row->type,
+                'status'=>$row->status
               );
            }
        endforeach;

@@ -16,16 +16,15 @@ class WamateHelper
 
   static function ip_server()
   {
-    /*if(env('APP_ENV') == 'local' || Auth::id() == 1)
+    if(env('APP_ENV') == 'local')
     {
-      return '207.148.117.69:3333';
+      return '178.128.80.152:3333';
     }
     else
     {
-      return '188.166.221.181:3333';
-    }*/
-    // return '207.148.117.69:3333';
-    return '10.104.0.2:3333';
+      // return '188.166.221.181:3333';
+       return '10.104.0.2:3333';
+    }
   }
   
   public function go_curl($url,$data,$method)
