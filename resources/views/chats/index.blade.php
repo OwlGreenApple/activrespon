@@ -344,6 +344,7 @@
     };
   }
 
+  /* GET CHAT MEMBERS */
   function getChatMembers()
   {
     $("#search-user").keyup(delay(function(e)
@@ -355,7 +356,6 @@
 
   function searchChat(name)
   {
-    console.log(name);
     $.ajax({
       type : 'GET',
       url : "{{ url('chat-members') }}",

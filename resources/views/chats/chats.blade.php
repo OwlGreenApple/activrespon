@@ -17,12 +17,20 @@
                   @endif
                 @elseif($row['val']['type'] == 'text')
                   {!! str_replace("\n","<br/>",$row['val']['message']); !!}
-                @else
+                @else 
                     Sorry, currently we do not support media message except image
                 @endif
               </div>
               <!-- time -->
-              <div align="right"><small>{{ $row['val']['time'] }}</small></div>
+              <div align="right"><small>{{ $row['val']['time'] }} 
+                @if($row['val']['status'] == 'READ')
+                  <span class="text-primary"><i class="fas fa-check-double"></i></span>
+                @elseif($row['val']['status'] == 'DELIVERED')
+                  <span><i class="fas fa-check-double"></i></span>
+                @else
+                  <span><i class="fas fa-check"></i></span>
+                @endif
+                </small></div>
           </div>
         </div>
         @endif
@@ -49,7 +57,15 @@
                 @endif
               </div>
                <!-- time -->
-              <div align="right"><small>{{ $row['val']['time'] }}</small></div>
+              <div align="right"><small>{{ $row['val']['time'] }}
+                @if($row['val']['status'] == 'READ')
+                  <span class="text-primary"><i class="fas fa-check-double"></i></span>
+                @elseif($row['val']['status'] == 'DELIVERED')
+                  <span><i class="fas fa-check-double"></i></span>
+                @else
+                  <span><i class="fas fa-check"></i></span>
+                @endif
+              </small></div>
           </div>
         </div>
         @endif
