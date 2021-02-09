@@ -200,7 +200,7 @@
   });
 
   /* custom scrollbar */
-  (function($){
+ /* (function($){
       $(window).on("load",function(){
         
         $("#chat_room_member").mCustomScrollbar({
@@ -209,7 +209,7 @@
         }); 
       
       });
-    })(jQuery);
+    })(jQuery);*/
 
   function readURL(input) 
   {
