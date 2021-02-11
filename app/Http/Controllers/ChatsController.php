@@ -65,11 +65,6 @@ class ChatsController extends Controller
        dd($debug);
     }
 
-    public static function ip()
-    {
-       return '207.148.117.69';
-    }
-
     public function index()
     {
         $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
@@ -240,7 +235,7 @@ class ChatsController extends Controller
         // dd($img);
         // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
         $filter = explode("-", $media);
-        $url = self::ip()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+        $url = WamateHelper::ip_server()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
         // $url = self::ip()."/wamate-api/public/".$img;
 
         $ch = curl_init();
