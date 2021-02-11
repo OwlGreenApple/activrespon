@@ -14,17 +14,22 @@ class WamateHelper
     return 'qWer123Zxc';
   }
 
-  static function ip_server()
+  public static function get_ip_address()
   {
     if(env('APP_ENV') == 'local')
     {
-      return '178.128.80.152:3333';
+      return '178.128.80.152';
     }
     else
     {
       // return '188.166.221.181:3333';
-       return '10.104.0.2:3333';
+       return '10.104.0.2';
     }
+  }
+
+  static function ip_server()
+  {
+    return self::get_ip_address().':3333';
   }
   
   public function go_curl($url,$data,$method)

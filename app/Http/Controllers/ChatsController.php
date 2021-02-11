@@ -230,18 +230,13 @@ class ChatsController extends Controller
       }
     }
 
-    public function getipimage()
-    {
-       return '10.104.0.2';
-    }
-
     //GET IMAGE FROM WAMATE
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
         // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
         $filter = explode("-", $media);
-        $url = self::getipimage()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+        $url = WamateHelper::get_ip_address()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
