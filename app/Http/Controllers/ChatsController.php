@@ -230,9 +230,9 @@ class ChatsController extends Controller
       }
     }
 
-    public function testgetimage()
+    public function getipimage()
     {
-      file_get_contents('10.104.0.2/wamate-api/public/media/19/3EB0F4DDBD7F07D3E389.jpeg');
+       return '10.104.0.2';
     }
 
     //GET IMAGE FROM WAMATE
@@ -241,7 +241,7 @@ class ChatsController extends Controller
         // dd($img);
         // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
         $filter = explode("-", $media);
-        $url = WamateHelper::ip_server()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+        $url = self::getipimage()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
