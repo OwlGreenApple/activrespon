@@ -230,13 +230,18 @@ class ChatsController extends Controller
       }
     }
 
+    public function testgetimage()
+    {
+      file_get_contents('10.104.0.2/wamate-api/public/media/19/3EB0F4DDBD7F07D3E389.jpeg');
+    }
+
+    //GET IMAGE FROM WAMATE
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
         // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
         $filter = explode("-", $media);
         $url = WamateHelper::ip_server()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
-        // $url = self::ip()."/wamate-api/public/".$img;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
@@ -251,10 +256,10 @@ class ChatsController extends Controller
           header("Content-Type: image/jpeg");
         }
 
-        if($type == 'video')
+       /* if($type == 'video')
         {
           headers('Content-type: video/mp4');
-        }
+        }*/
 
         return $return_media;
     }
