@@ -372,7 +372,7 @@ class CampaignController extends Controller
       }
       else
       {
-        /* Validator */
+        /* Validator Broadcast */
         $rules = array(
           'campaign_name'=>['required','max:50'],
           'list_id'=>['required', new CheckValidListID],
@@ -628,7 +628,8 @@ class CampaignController extends Controller
         $user_id = Auth::id();
         $campaign = Campaign::find($request->id);
         $reminders = Reminder::where([['campaign_id',$campaign->id],['user_id',$user_id]])->get();
-
+        
+        //REMIDER CUSTOMER
         if($reminders->count() > 0)
         {
           foreach($reminders as $reminder) {
@@ -640,9 +641,9 @@ class CampaignController extends Controller
             $campaign->delete();
             return response()->json(['message'=>'Your campaign has been deleted successfully']);
           }
-          catch(Exception $e)
+          catch(QueryException $e)
           {
-             return response()->json(['message'=>'Sorry, unable to delete , contact administrator']);
+             return response()->json(['message'=>'Sorry, unable to delete , contact administrator!']);
           }
         }
     }

@@ -19,7 +19,7 @@ class AuthSettings
     public function handle($request, Closure $next)
     {
       $user = Auth::user();
-      $phone = PhoneNumber::where('user_id',$user->id)->where('status',"<>",0)->first();
+      $phone = PhoneNumber::where('user_id',$user->id)->where('status',"=",2)->first();
       $current_url = Route::current()->uri;
              
       /* redirect ke hlmn pricing jika membership user habis */   

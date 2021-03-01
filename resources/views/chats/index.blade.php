@@ -263,7 +263,7 @@
 
         $(".chat-roof-image").css('visibility', 'visible');
         var get_name = $("#"+id+" .chat-user").text();
-        $("#chat_user").html(get_name);
+        $("#chat_user").html(get_name+'&nbsp;'+'('+id+')');
 
         var img = $("#"+id+" .chat-image").attr('src');
         $(".chat-roof-image").attr('src',img);

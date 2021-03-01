@@ -80,6 +80,12 @@ class ChatsController extends Controller
         {
             $device_key = $phone_number->device_key;
             $chat_members = WamateHelper::get_all_chats($device_key);
+
+            if($chat_members == null)
+            {
+              $chat_members = [];
+            }
+          
             $data['device_key'] = $device_key;
             $data['device_id'] = $phone_number->wamate_id;
             $data['error'] = null;

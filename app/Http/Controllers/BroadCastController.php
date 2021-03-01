@@ -346,7 +346,16 @@ class BroadCastController extends Controller
         $broadcast = BroadCast::where([['id',$id],['user_id',$user_id]])->first();
         $campaign_id = $broadcast->campaign_id;
         $broadcastcustomer = BroadCastCustomers::where('broadcast_id','=',$id);
+        //queuebroadcast customers
+        $queuebroadcast = QueueBroadcastCustomer::where('broadcast_id','=',$id)->first();
 
+        // DELETE QUEUEBROADCAST
+        if(!is_null($queuebroadcast))
+        {
+          $queuebroadcast->delete();
+        }
+
+        // DELETE BROADCAST CUSTOMERS
         if($broadcastcustomer->get()->count() > 0)
         {
           $broadcastcustomer->delete();

@@ -402,6 +402,11 @@ class EventController extends Controller
         {
           foreach($reminder->get() as $row)
           {
+            //QUEUE REMIDER CUSTOMER
+            $queue = QueueReminderCustomer::where('reminder_id','=',$row->id);
+            if(!is_null($queue->first())):
+              $queue->delete();
+            endif;
             ReminderCustomers::where('reminder_id','=',$row->id)->delete();
           }
 
