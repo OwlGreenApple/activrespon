@@ -17,6 +17,8 @@ Route::get('logs-8877', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index
 
 Route::get('/','OrderController@pricing')->name('pricing');
 
+Route::get('testimg','ChatsController@testgetimage');
+
 //Route::get('ck','ListController@generateRandomListName');
 
 // Route::get('test_setting','SenderController@test_settings');

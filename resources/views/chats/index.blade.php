@@ -200,7 +200,7 @@
   });
 
   /* custom scrollbar */
-  (function($){
+ /* (function($){
       $(window).on("load",function(){
         
         $("#chat_room_member").mCustomScrollbar({
@@ -209,7 +209,7 @@
         }); 
       
       });
-    })(jQuery);
+    })(jQuery);*/
 
   function readURL(input) 
   {
@@ -344,6 +344,7 @@
     };
   }
 
+  /* GET CHAT MEMBERS */
   function getChatMembers()
   {
     $("#search-user").keyup(delay(function(e)
@@ -355,7 +356,6 @@
 
   function searchChat(name)
   {
-    console.log(name);
     $.ajax({
       type : 'GET',
       url : "{{ url('chat-members') }}",

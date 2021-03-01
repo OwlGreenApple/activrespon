@@ -12,6 +12,7 @@ use App\WebHookWA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Symfony\Component\ErrorHandler\Error\FatalError;
+use Carbon\Carbon;
 use DB, Cookie, Storage, Validator, DateTime;
 
 
@@ -62,11 +63,6 @@ class ChatsController extends Controller
        $debug = WamateHelper::setWebhook($url,$device_id,$token);*/
        json_decode(WamateHelper::login($email_wamate),true);
        dd($debug);
-    }
-
-    public static function ip()
-    {
-       return '207.148.117.69';
     }
 
     public function index()
@@ -234,13 +230,13 @@ class ChatsController extends Controller
       }
     }
 
+    //GET IMAGE FROM WAMATE
     public function getHTTPMedia($media,$type)
     {
         // dd($img);
         // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
         $filter = explode("-", $media);
-        $url = self::ip()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
-        // $url = self::ip()."/wamate-api/public/".$img;
+        $url = WamateHelper::get_ip_address()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
@@ -255,10 +251,10 @@ class ChatsController extends Controller
           header("Content-Type: image/jpeg");
         }
 
-        if($type == 'video')
+       /* if($type == 'video')
         {
           headers('Content-type: video/mp4');
-        }
+        }*/
 
         return $return_media;
     }
@@ -519,29 +515,39 @@ class ChatsController extends Controller
       /* memfilter messages sesuai dengan chatid (no pengirim dan penerima) */
       $data = array();
 
+      /*
+        status wa messages :
+        - SENT
+        - DELIVERED
+        - READ
+      */
+
       if($messages->count() > 0):
        foreach ($messages as $row):
            if ($row->to == $to) 
            {
-              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
+              // $time = Date('Y-m-D h:i A', strtotime($row->created_at));
+              $time = Carbon::createFromFormat('Y-m-d H:i:s', $row->created_at, 'Asia/Jakarta');
               $data[]['reply'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
                 'media_url'=>$row->media_url,
                 'time'=>$time,
-                'type'=>$row->type
+                'type'=>$row->type,
+                'status'=>$row->status
               );
            }
 
            if ($row->from == $to) 
            {
-              $time = Date('Y-m-D h:i A', strtotime($row->created_at));
+              $time = Carbon::createFromFormat('Y-m-d H:i:s', $row->created_at, 'Asia/Jakarta');
               $data[]['sender'] = array(
                 'id'=>$row->id,
                 'message'=>$row->message,
                 'media_url'=>$row->media_url,
                 'time'=>$time,
-                'type'=>$row->type
+                'type'=>$row->type,
+                'status'=>$row->status
               );
            }
        endforeach;
