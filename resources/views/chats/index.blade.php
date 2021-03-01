@@ -44,7 +44,7 @@
           <div class="col-lg-8 col-md-8 col-sm-8 px-0 chat-bg">
 
             <div class="col-lg-12 chat-roof-right row mx-0">
-              <div class="col-md-12 mb-2 chat_room_box">
+              <div class="col-md-12 mb-2 chat_room_border">
                  <div class="row chat-name">
                     
                     <div class="col-lg-1 col-md-1 col-sm-1 col-1 pad-fix ml-3">
