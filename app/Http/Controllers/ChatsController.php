@@ -197,6 +197,7 @@ class ChatsController extends Controller
             }
           endif;
         }
+
         return view('chats.members',['chats'=>$chats,'error'=>null]);
     }
 

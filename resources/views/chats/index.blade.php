@@ -176,6 +176,15 @@
 </div>
 
  <script type="text/javascript" src="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js') }}"></script>
+ <!-- FOR PHP VARIABLE -->
+ <script type="text/javascript">
+   var notification_page = "{{ url('get-notification') }}";
+   var device_id = "{{ $device_id }}";
+   var device_key = "{{ $device_key }}";
+ </script>
+  <!-- //RUN SCRIPT AFTER PAGE LOADED COMPLETELY -->
+ <script defer type="text/javascript" src="{{ asset('assets/js/chat-load-member.js') }}"></script>
+
 <script type="text/javascript">
 
   var chat_err = "Please choose chat";
@@ -187,20 +196,19 @@
     sending_message();
     <?php if($error == null): ?>
     get_messages();
-    getNotification();
-    getNewMessages();
     getChatMembers();
     <?php endif; ?>
     openSendMedia();
     image_preview();
     // sendingImage();
     // sending_video();
-    
     // sending_audio(); cancelled due API not supported
   });
 
   /* custom scrollbar */
- /* (function($){
+ /* 
+  ---DISABLED DUE CAUSE SCROLL DOWN SLOW---
+ (function($){
       $(window).on("load",function(){
         
         $("#chat_room_member").mCustomScrollbar({
@@ -293,8 +301,12 @@
       type : 'GET',
       url : "{{ url('rm-notification') }}",
       data : {'device_id': '{{ $device_id }}',"sender" : sender},
-      success: function(result){
+      success: function(result)
+      {
         $("#"+sender).attr('total',0);
+      },
+      complete: function()
+      {
         load_messages(sender);
       },
       error : function(xhr)
@@ -442,6 +454,7 @@
     $.ajax({
       type : 'GET',
       url : "{{ url('get_chat_messages') }}",
+      cache: false,
       data : data,
       dataType: 'html',
       beforeSend: function() {
@@ -454,46 +467,15 @@
       success: function(result)
       {
         $("#content_chat").html(result);
+      },
+      complete : function(xhr,status)
+      {
         chatScroll();
       },
       error : function(xhr)
       {
         console.log(xhr.responseText);
-      }
-    });
-  }
-
-  function getNewMessages()
-  {
-    var get_messages = setInterval(function()
-    {
-        getNotification();
-    },5000);
-  } 
-
-  function getNotification()
-  {
-     $.ajax({
-      async: false,
-      type : 'GET',
-      url : "{{ url('get-notification') }}",
-      data : {'device_id': '{{ $device_id }}',"device_key" : "{{ $device_key }}"},
-      success: function(result){
-        var id = $(".btn-send").attr('id');
-        if(result.total_data > 0)
-        {
-          searchChat();
-          if(id !== undefined)
-          {
-            setTimeout(function(){
-              load_messages(id,null);
-            },100);
-          }
-        }
-      },
-      error : function(xhr)
-      {
-        console.log(xhr.responseText);
+        alert('Sorry, our server is too busy, please reload your browser');
       }
     });
   }
