@@ -422,8 +422,6 @@
           $(".error_send").html('');
           load_messages(result.to, null);
           $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText('');
-          chatScroll();
-          searchChat();
           /*setTimeout(function(){
             searchChat();
           },500);*/
@@ -433,6 +431,11 @@
         {
           $(".error_send").html("<div class='alert alert-danger'>Sorry, our server is too busy, please try again later.</div>");
         }
+      },
+      complete: function(xhr, status)
+      {
+        chatScroll();
+        searchChat();
       },
       error: function(xhr)
       {
