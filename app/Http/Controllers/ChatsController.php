@@ -74,7 +74,7 @@ class ChatsController extends Controller
 
         if(is_null($phone_number))
         {
-            $data['error'] = 'Our server is too busy, please contact administrator.';
+            return view('chats.chat-supported');
         }
         else
         {
