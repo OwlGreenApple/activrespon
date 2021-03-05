@@ -41,11 +41,11 @@
 
     <!-- Emoji -->
     <link href="{{ asset('/assets/emoji/css/emojionearea.min.css') }}" rel="stylesheet"> 
-    <script defer type="text/javascript" src="{{ asset('/assets/emoji/js/prettify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/assets/emoji/js/prettify.js') }}"></script>
     @if (env('APP_ENV')=='local')
-    <script defer type="text/javascript" src="{{ asset('/assets/emoji/js/emojionearea.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/assets/emoji/js/emojionearea.js') }}"></script>
     @else
-    <script defer type="text/javascript" src="{{ asset('/assets/emoji/js/emojionearea-production.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/assets/emoji/js/emojionearea-production.js') }}"></script>
     @endif
 
     <!-- Data Table -->
