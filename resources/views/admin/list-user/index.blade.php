@@ -269,15 +269,6 @@
 
           <div class="form-group row">
             <label class="col-md-3 col-12">
-              <b>Username</b> 
-            </label>
-            <div class="col-md-9 col-12">
-              <input type="text" class="form-control" name="username" id="username">
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label class="col-md-3 col-12">
               <b>Status</b> 
             </label>
             <div class="col-md-9 col-12">

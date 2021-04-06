@@ -66,7 +66,6 @@ class UserController extends Controller
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->username = $request->username;
         $user->is_admin = $request->is_admin;
         $user->membership = $request->membership;
 
