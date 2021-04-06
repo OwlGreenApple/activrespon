@@ -16,7 +16,6 @@ class UserController extends Controller
       $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|unique:users|max:255',
-        'username' => 'required|string|max:255',
         'valid_until' => 'date|after:today',
         'password' => 'required|string|min:6|confirmed',
       ];
