@@ -16,7 +16,6 @@ class UserController extends Controller
       $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|unique:users|max:255',
-        'valid_until' => 'date|after:today',
         'password' => 'required|string|min:6|confirmed',
       ];
 
@@ -68,7 +67,7 @@ class UserController extends Controller
         $user->is_admin = $request->is_admin;
         $user->membership = $request->membership;
 
-        $user->valid_until = null;
+        $user->day_left = 30;
         // if(isset($request->unlimited)){
           // $user->valid_until = null;
         // } else {
