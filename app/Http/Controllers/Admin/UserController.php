@@ -67,6 +67,7 @@ class UserController extends Controller
         $user->is_admin = $request->is_admin;
         $user->membership = $request->membership;
 
+        $user->status = 1;
         $user->day_left = 30;
         // if(isset($request->unlimited)){
           // $user->valid_until = null;
