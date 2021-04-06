@@ -70,17 +70,18 @@ class UserController extends Controller
         $user->is_admin = $request->is_admin;
         $user->membership = $request->membership;
 
-        if(isset($request->unlimited)){
-          $user->valid_until = null;
-        } else {
-          if($request->valid_until==''){
-            $arr['status'] = 'error';
-            $arr['message'] = 'The valid until is required (or checked the unlimited instead)';
-            return $arr;
-          } else {
-            $user->valid_until = new DateTime($request->valid_until);
-          }
-        }
+        $user->valid_until = null;
+        // if(isset($request->unlimited)){
+          // $user->valid_until = null;
+        // } else {
+          // if($request->valid_until==''){
+            // $arr['status'] = 'error';
+            // $arr['message'] = 'The valid until is required (or checked the unlimited instead)';
+            // return $arr;
+          // } else {
+            // $user->valid_until = new DateTime($request->valid_until);
+          // }
+        // }
 
         $user->password = Hash::make($request->password);
         $user->save();
