@@ -65,6 +65,11 @@ Route::post('/submit-checkout-login','OrderController@submit_checkout_login'); /
 Route::post('/submit-checkout','OrderController@submit_checkout'); //new system to summary
 Route::post('/submit-summary','OrderController@submit_summary'); //new system to summary
 
+/* RESELLER API */
+Route::post('/api/login','ApiUserController@login_user');
+Route::post('/api/device','ApiUserController@create_device');
+Route::get('/generate/qr','ApiUserController@scan_device');
+
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');
 //Route::get('lists-create', 'HomeController@createList');
