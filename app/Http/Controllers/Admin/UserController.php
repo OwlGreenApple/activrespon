@@ -16,8 +16,6 @@ class UserController extends Controller
       $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|unique:users|max:255',
-        'username' => 'required|string|max:255',
-        'valid_until' => 'date|after:today',
         'password' => 'required|string|min:6|confirmed',
       ];
 
@@ -66,21 +64,22 @@ class UserController extends Controller
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->username = $request->username;
         $user->is_admin = $request->is_admin;
         $user->membership = $request->membership;
 
-        if(isset($request->unlimited)){
-          $user->valid_until = null;
-        } else {
-          if($request->valid_until==''){
-            $arr['status'] = 'error';
-            $arr['message'] = 'The valid until is required (or checked the unlimited instead)';
-            return $arr;
-          } else {
-            $user->valid_until = new DateTime($request->valid_until);
-          }
-        }
+        $user->status = 1;
+        $user->day_left = 30;
+        // if(isset($request->unlimited)){
+          // $user->valid_until = null;
+        // } else {
+          // if($request->valid_until==''){
+            // $arr['status'] = 'error';
+            // $arr['message'] = 'The valid until is required (or checked the unlimited instead)';
+            // return $arr;
+          // } else {
+            // $user->valid_until = new DateTime($request->valid_until);
+          // }
+        // }
 
         $user->password = Hash::make($request->password);
         $user->save();

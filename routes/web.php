@@ -31,6 +31,7 @@ Route::post('send-message-queue-system-wp-activflash','ApiWPController@send_mess
 Route::post('send-message-queue-system-wp-digimaru','ApiWPController@send_message_queue_system_WP_digimaru');
 Route::post('send-message-queue-system-wp-ms','ApiWPController@send_message_queue_system_WP_ms');
 Route::post('send-message-queue-system-wp-michaelsugiharto','ApiWPController@send_message_queue_system_WP_michaelsugiharto');
+Route::post('send-message-queue-system-wp-growingrich','ApiWPController@send_message_queue_system_WP_growingrich');
 
 /* API */
 Route::post('entry-google-form','ApiController@entry_google_form');
