@@ -45,5 +45,11 @@ class VerifyCsrfToken extends Middleware
         'send-message-queue-system-wp-ms',
         'send-message-queue-system-wp-michaelsugiharto',
         'send-message-queue-system-wp-growingrich',
+
+        //reseller
+        'api/login',
+        'api/device',
+        'generate/qr',
+        'api/status'
     ];
 }

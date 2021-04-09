@@ -117,10 +117,12 @@ class ApiUserController extends Controller
 
     public function scan_device()
     {
-        $token = "XA-22110tuV!34xyGv88Ca";
-        $phone_id = 1;
-        /*$token = $request->token;
-        $phone_id = $request->phone_id;*/
+       /* $token = "XA-22110tuV!34xyGv88Ca";
+        $phone_id = 1;*/
+        $req = json_decode(file_get_contents('php://input'),true);
+
+        $token = $req['token'];
+        $phone_id = $req['phone_id'];
         $user = self::check_token($token);
 
         if($user == false)
@@ -142,24 +144,120 @@ class ApiUserController extends Controller
 
         if(isset($pair['qr_code']) && $pair['qr_code'] <> null)
         {
-           $data['qr'] = $pair['qr_code'];
+           $data = '<img src="'.$pair['qr_code'].'" />';
         }
         elseif(isset($pair['qr_code']) && $pair['qr_code'] == null)
         {
            //DEVICE NOT READY
-           $data['qr'] = 'Device is not ready yet, please try again.';
+           $data = 'Device is not ready yet, please try again.';
         } 
         elseif(isset($pair['code']))
         {
            //DEVICE NOT AVAILABLE
-           $data['qr'] = 'Sorry, device is not available.';
+           $data = 'Sorry, device is not available.';
         } 
         else
         {
-           //INVALID TOKEN / WRONG MISMATCH
-           $data['qr'] = '';
+           //INVALID TOKEN / WRONG MISMATCH -- tell to login again
+           $data = 'Sorry our server is too busy,please contact administrator --104';
         }
         
+        // return $data['qr'];
+        return $data;
+    }
+
+    /*TO CHANGE STATUS ON DATABASE PHONE API AFTER PAIRING / SCAN*/
+    public function device_status()
+    {
+        $req = json_decode(file_get_contents('php://input'),true);
+        $token = $req['token'];
+        $phone_id = $req['phone_id'];
+
+        $user = self::check_token($token);
+
+        if($user == false)
+        {
+          $data['response'] = 'Invalid Token';
+          return json_encode($data);
+        }
+
+        $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+
+        if(is_null($phone))
+        {
+          $data['response'] = 'Invalid ID';
+          return json_encode($data);
+        }
+
+        $check_phone = WamateHelper::show_device($user->token,$phone->device_id);
+        $check_phone = json_decode($check_phone,true);
+        $phone_status = $check_phone['status'];
+
+        /*to set settings on wamate */
+        if($phone_status == 'PAIRED')
+        {
+           WamateHelper::autoreadsetting($phone->device_key);
+           $phone->phone = $check_phone['phone'];
+           $phone->device_status = 1;
+        } 
+        else
+        {
+           $phone->device_status = 0;
+        }
+
+        /*UPDATE TABL PHONE API PHONE & DEVICE STATUS*/
+        try
+        {
+          $phone->save();
+          $data['response'] = 'phone_connected';
+        }
+        catch(QueryException $e)
+        {
+         //$e->getMessage();
+         $data['response'] = 'Sorry our server is too busy,please contact administrator --105';
+        }
+
+        return json_encode($data);
+    }
+
+    public function device_info()
+    {
+        $req = json_decode(file_get_contents('php://input'),true);
+        $token = $req['token'];
+        $phone_id = $req['phone_id'];
+
+        $user = self::check_token($token);
+
+        if($user == false)
+        {
+          $data['response'] = 'Invalid Token';
+          return json_encode($data);
+        }
+
+        $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+
+        if(is_null($phone))
+        {
+          $data['response'] = 'Invalid ID';
+          return json_encode($data);
+        }
+
+        $check_phone = WamateHelper::show_device($user->token,$phone->device_id);
+        $check_phone = json_decode($check_phone,true);
+
+        $data = [
+          'id'=>$phone->id,
+          'phone'=>$check_phone['phone'],
+          'name'=>$check_phone['name'],
+          'status'=>$check_phone['status'],
+          'wa_name'=>$check_phone['wa_name'],
+          'wa_version'=>$check_phone['wa_version'],
+          'manufacture'=>$check_phone['manufacture'], 
+          'os_version'=>$check_phone['os_version'],
+          'created_at'=>$check_phone['created_at'],
+          'updated_at'=>$check_phone['updated_at']
+        ];
+
         return json_encode($data);
     }
 
