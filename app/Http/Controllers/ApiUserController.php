@@ -27,10 +27,12 @@ class ApiUserController extends Controller
     // Use this function if phone service stuck
     public function login_user(Request $request) 
     {
-      $token = $request->token;
+      $req = json_decode(file_get_contents('php://input'),true);
+
+      $token = $req['token'];
       $user_token = self::check_token($token);
 
-      if($user == false)
+      if($user_token == false)
       {
         $data['response'] = 'Invalid Token';
         return json_encode($data);
@@ -70,8 +72,10 @@ class ApiUserController extends Controller
     {
       // $token = "XA-22110tuV!34xyGv88Ca";
       // $device_name = "test-api";
-      $token = $request->token;
-      $device_name = $request->device_name;
+      $req = json_decode(file_get_contents('php://input'),true);
+
+      $token = $req['token'];
+      $device_name = $req['device_name'];
       $user = self::check_token($token);
 
       if($user == false)
@@ -101,9 +105,9 @@ class ApiUserController extends Controller
         $phone_api->save();
         $data = [
           'phone_id'=>$phone_api->id,
-          'device_id'=>$device['id'],
+          /*'device_id'=>$device['id'],
           'device_name'=>$device['name'],
-          'device_key'=>$device['device_key']
+          'device_key'=>$device['device_key']*/
         ];
       }
       catch(QueryException $e)
@@ -192,12 +196,14 @@ class ApiUserController extends Controller
         $check_phone = WamateHelper::show_device($user->token,$phone->device_id);
         $check_phone = json_decode($check_phone,true);
         $phone_status = $check_phone['status'];
+        $device_key = $check_phone['device_key'];
 
         /*to set settings on wamate */
         if($phone_status == 'PAIRED')
         {
-           WamateHelper::autoreadsetting($phone->device_key);
+           WamateHelper::autoreadsetting($device_key);
            $phone->phone = $check_phone['phone'];
+           $phone->device_key = $check_phone['device_key'];
            $phone->device_status = 1;
         } 
         else
@@ -259,6 +265,121 @@ class ApiUserController extends Controller
         ];
 
         return json_encode($data);
+    }
+
+    public function send_message()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $phone_id = $req['phone_id'];
+      $to = $req['to'];
+      $message = $req['message'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+
+      if(is_null($phone))
+      {
+        $data['response'] = 'Invalid ID';
+        return json_encode($data);
+      }
+
+      $device_key = $phone->device_key;
+      $check_phone = WamateHelper::send_message($to,$message,$device_key);
+
+      if(isset($check_phone['code']))
+      {
+        // INVALID DEVICE KEY
+          return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --106'));
+      }
+      else
+      {
+          return json_encode(array('response'=>'Your message has been sent'));
+      }
+    }
+
+    public function send_image()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $phone_id = $req['phone_id'];
+      $to = $req['to'];
+      $message = $req['message'];
+      $media = $req['media'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+
+      if(is_null($phone))
+      {
+        $data['response'] = 'Invalid ID';
+        return json_encode($data);
+      }
+
+      $device_key = $phone->device_key;
+      $check_phone = WamateHelper::send_media_url_wamate($to,$media,$message,$device_key,'image');
+
+      if(isset($check_phone['code']))
+      {
+        // INVALID DEVICE KEY
+          return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --107'));
+      }
+      else
+      {
+          return json_encode(array('response'=>'Your image has been sent'));
+      }
+    }
+
+    public function delete_device()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $phone_id = $req['phone_id'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+
+      if(is_null($phone))
+      {
+        $data['response'] = 'Invalid ID';
+        return json_encode($data);
+      }
+
+      $device_id = $phone->device_id;
+      $device_name = $phone->device_name;
+      $check_phone = WamateHelper::delete_devices($device_id,$user->token);
+
+      if(isset($check_phone['code']))
+      {
+        // INVALID DEVICE KEY
+          return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --108'));
+      }
+      else
+      {
+          $phone->delete();
+          return json_encode(array('response'=>'Device '.$device_name.' has been deleted'));
+      }
     }
 
 /* end class */

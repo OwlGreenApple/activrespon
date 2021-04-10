@@ -50,6 +50,9 @@ class VerifyCsrfToken extends Middleware
         'api/login',
         'api/device',
         'generate/qr',
-        'api/status'
+        'api/status',
+        'api/send-message',
+        'api/send-image',
+        'api/delete-device'
     ];
 }

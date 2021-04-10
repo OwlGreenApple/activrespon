@@ -73,6 +73,8 @@ Route::post('/generate/qr','ApiUserController@scan_device');
 Route::post('/api/status','ApiUserController@device_status');
 Route::get('/api/device/info','ApiUserController@device_info');
 Route::post('/api/send-message','ApiUserController@send_message');
+Route::post('/api/send-image','ApiUserController@send_image');
+Route::get('/api/delete-device','ApiUserController@delete_device');
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');
