@@ -49,7 +49,7 @@
               <span><i class="correct"></i> Monthly </span>
               <span>&nbsp</span>
               <span id="monthly-price" class="content-price">IDR 195.000</span>
-              <span id="description-contact-3" class="description-contact">15.000 Messages</span>
+              <span id="description-contact-3" class="description-contact">10.000 Messages</span>
             </div>
           </div>            
         </div>    
@@ -63,7 +63,7 @@
               <span><i class="star"></i> 2 Months </span>
               <span>&nbsp</span>
               <span id="2months-price" class="content-price">IDR 370.500</span>
-              <span id="description-contact-3" class="description-contact">15.000 Messages</span>
+              <span id="description-contact-3" class="description-contact">10.000 Messages</span>
             </div>
           </div>            
         </div>    
@@ -76,7 +76,7 @@
               <span><i class="correct"></i> 3 Months </span>
               <span>&nbsp</span>
               <span id="3months-price" class="content-price">IDR 526.500</span>
-              <span id="description-contact-3" class="description-contact">15.000 Messages</span>
+              <span id="description-contact-3" class="description-contact">10.000 Messages</span>
             </div>
           </div>            
         </div>            
@@ -89,7 +89,7 @@
       </div>
 			-->
       <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12 detail-description">
-        <h3 id="description-contact-header">Best Seller 3 Months<br>15.000 Messages/month</h3>
+        <h3 id="description-contact-header">Best Seller 3 Months<br>10.000 Messages/month</h3>
         <button type="button" class="btn btn-lg btn-success col-12" id="choose-price">IDR 370.500</button>
         <ul>
           <li>
@@ -98,7 +98,7 @@
           </li>
           <li>
             <i class="fa fa-check" aria-hidden="true"></i> 
-            <span id="message-per-month">10.000 messages / month </span>
+            <span id="message-per-month">500 Messages / day</span>
           </li>
           <li>
             <i class="fa fa-check" aria-hidden="true"></i> 
