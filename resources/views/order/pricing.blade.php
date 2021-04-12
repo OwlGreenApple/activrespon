@@ -98,7 +98,7 @@
           </li>
           <li>
             <i class="fa fa-check" aria-hidden="true"></i> 
-            <span id="message-per-month">10.000 messages / month </span>
+            <span id="message-per-month">500 Messages / day</span>
           </li>
           <li>
             <i class="fa fa-check" aria-hidden="true"></i> 
