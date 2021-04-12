@@ -30,6 +30,7 @@ class ApiUserController extends Controller
       $req = json_decode(file_get_contents('php://input'),true);
 
       $token = $req['token'];
+      // $token = "XA-22110tuV!34xyGv88Ca";
       $user_token = self::check_token($token);
 
       if($user_token == false)
@@ -146,27 +147,26 @@ class ApiUserController extends Controller
         $pair = WamateHelper::pair($user->token,$phone->device_id);
         $pair = json_decode($pair,true);
 
-        if(isset($pair['qr_code']) && $pair['qr_code'] <> null)
+        if($pair['status'] == 'PAIRING')
         {
            $data = '<img src="'.$pair['qr_code'].'" />';
         }
-        elseif(isset($pair['qr_code']) && $pair['qr_code'] == null)
+        elseif($pair['status'] == 'IDLE')
         {
            //DEVICE NOT READY
            $data = 'Device is not ready yet, please try again.';
         } 
-        elseif(isset($pair['code']))
+        elseif($pair['status'] == 404 )
         {
            //DEVICE NOT AVAILABLE
            $data = 'Sorry, device is not available.';
         } 
         else
         {
-           //INVALID TOKEN / WRONG MISMATCH -- tell to login again
-           $data = 'Sorry our server is too busy,please contact administrator --104';
+           //401 --INVALID DEVICE TOKEN -- tell to login again
+           $data = 'Sorry our server is too busy, please try to login again --104';
         }
         
-        // return $data['qr'];
         return $data;
     }
 
