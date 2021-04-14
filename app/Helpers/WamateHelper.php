@@ -104,9 +104,16 @@ class WamateHelper
     "refreshToken": "19394344451eac0713587f68ea6495d1h+W+ijpp565EE52OgRD3kl5ZC3islHZxYJ0JxJC5GvkJWzqL8sMM0Vy0i2NE0tqv"
 }
 */
-  public static function login($email)
+  public static function login($email,$reseller_ip = false)
   {
-    $url='http://'.self::ip_server().'/auth/login';
+    if($reseller_ip == false)
+    {
+      $url='http://'.self::ip_server().'/auth/login';
+    }
+    else
+    {
+      $url='http://'.$reseller_ip.':3333/auth/login';
+    }
 
     $data = array(
       "email" => $email,
@@ -134,7 +141,7 @@ class WamateHelper
     // dd($res);
   }
   
-  public static function create_device($token,$name)
+  public static function create_device($token,$name,$reseller_ip = null)
   {
     $url='http://'.self::ip_server().'/devices';
 
@@ -211,10 +218,24 @@ class WamateHelper
     "updated_at": "2020-10-07 08:35:46"
 }
 */
-  public static function send_message($to,$message,$device_key)
+
+  private static function api_ip_server($reseller_ip,$uri)
   {
-    $url='http://'.self::ip_server().'/messages/send-text';
-    
+    if($reseller_ip == null)
+    {
+      $url='http://'.self::ip_server().$uri;
+    }
+    else
+    {
+      $url='http://'.$reseller_ip.':3333'.$uri;
+    }
+
+    return $url;
+  } 
+
+  public static function send_message($to,$message,$device_key,$reseller_ip = null)
+  {
+    $url = self::api_ip_server($reseller_ip,'/messages/send-text');
     $to = str_replace("+","",$to);
     
     $data = array(
@@ -276,10 +297,11 @@ class WamateHelper
 		return $result;
 	}
   
-	public static function pair($token,$device_id)
+	public static function pair($token,$device_id,$reselller_ip = null)
   {
 		// Prepare new cURL resource
-		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id.'/pair');
+    $url = self::api_ip_server($reselller_ip,'/devices/'.$device_id.'/pair');
+		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -300,9 +322,9 @@ class WamateHelper
 
 	}
 
-  public static function autoreadsetting($device_key)
+  public static function autoreadsetting($device_key,$reseller_ip = null)
   {
-    $url='http://'.self::ip_server().'/setting';
+    $url = self::api_ip_server($reseller_ip,'/setting/');
     
     $data = array(
       "auto_read" => false
@@ -327,10 +349,11 @@ class WamateHelper
     return json_decode($res,true);
   }
 
- 	public static function show_device($token,$device_id)
+ 	public static function show_device($token,$device_id,$reseller_ip = null)
   {
 		// Prepare new cURL resource
-		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id);
+    $url = self::api_ip_server($reseller_ip,'/devices/'.$device_id);
+		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -377,7 +400,7 @@ class WamateHelper
 	}
   */
 
-  public static function send_media_url_wamate($phoneNumber,$media,$message,$device_key,$type)
+  public static function send_media_url_wamate($phoneNumber,$media,$message,$device_key,$type,$reseller_ip = null)
   {
     // dd($image);
     $phoneNumber = str_replace("+","",$phoneNumber);
@@ -394,8 +417,10 @@ class WamateHelper
        $postfields["message"] = $message;
     }
 
+    $url = self::api_ip_server($reseller_ip,'/messages/send-media');
+
     // Prepare new cURL resource
-    $ch = curl_init(self::ip_server().'/messages/send-media');
+    $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLINFO_HEADER_OUT, true);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -417,10 +442,11 @@ class WamateHelper
     return $result;
   }
 
- 	public static function delete_devices($device_id,$token)
+ 	public static function delete_devices($device_id,$token,$reseller_ip = null)
   {
 		// Prepare new cURL resource
-		$ch = curl_init('http://'.self::ip_server().'/devices/'.$device_id);
+    $url = self::api_ip_server($reseller_ip,'/devices/'.$device_id);
+		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");

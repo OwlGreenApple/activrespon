@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Phoneapis;
+use App\Order;
 use App\Helpers\WamateHelper;
+use Storage;
 
 class ApiUserController extends Controller
 {
@@ -24,6 +26,22 @@ class ApiUserController extends Controller
       }
     }
 
+    public static function package_list($package)
+    {
+      $data['Paket 1 WA'] = ['price'=>60000,'quota'=>12000];
+      $data['Paket 2 WA'] = ['price'=>100000,'quota'=>25000];
+      $data['Paket 3 WA'] = ['price'=>150000,'quota'=>50000];
+        
+      if(!isset($data[$package]))
+      {
+        return false;
+      }
+      else
+      {
+        return $data[$package];
+      }
+    }
+
     // Use this function if phone service stuck
     public function login_user(Request $request) 
     {
@@ -38,6 +56,7 @@ class ApiUserController extends Controller
         $data['response'] = 'Invalid Token';
         return json_encode($data);
       }
+
 
       $login = WamateHelper::login($user_token->email_wamate);
       $login = json_decode($login,true);
@@ -71,12 +90,19 @@ class ApiUserController extends Controller
 
     public function create_device(Request $request)
     {
-      // $token = "XA-22110tuV!34xyGv88Ca";
-      // $device_name = "test-api";
       $req = json_decode(file_get_contents('php://input'),true);
 
       $token = $req['token'];
       $device_name = $req['device_name'];
+      $package = $req['package'];
+
+      $package_check = self::package_list($package);
+
+      if($package_check == false)
+      {
+        return $data['response'] ='Invalid Package';
+      }
+
       $user = self::check_token($token);
 
       if($user == false)
@@ -100,10 +126,25 @@ class ApiUserController extends Controller
       $phone_api->device_id = $device['id'];
       $phone_api->device_name = $device['name'];
       $phone_api->device_key = $device['device_key'];
+      $phone_api->package = $package;
+      $phone_api->quota = $package_check['quota'];
+      $phone_api->ip_server = env('WAMATE_SERVER');
 
       try
       {
         $phone_api->save();
+        $pckg = [
+          'namapaket'=>$package,
+          'namapakettitle'=>$package,
+          'user'=>$user,
+          'price'=>$package_check['price'],
+          'priceupgrade'=>0,
+          'diskon'=>0,
+          'upgrade'=>null,
+          'api'=>true
+        ];
+
+        Order::create_order($pckg);
         $data = [
           'phone_id'=>$phone_api->id,
           /*'device_id'=>$device['id'],
@@ -144,7 +185,8 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $pair = WamateHelper::pair($user->token,$phone->device_id);
+        $ip_server = $phone->ip_server;
+        $pair = WamateHelper::pair($user->token,$phone->device_id,$ip_server);
         $pair = json_decode($pair,true);
 
         if($pair['status'] == 'PAIRING')
@@ -193,7 +235,8 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $check_phone = WamateHelper::show_device($user->token,$phone->device_id);
+        $ip_server = $phone->ip_server;
+        $check_phone = WamateHelper::show_device($user->token,$phone->device_id,$ip_server);
         $check_phone = json_decode($check_phone,true);
         $phone_status = $check_phone['status'];
         $device_key = $check_phone['device_key'];
@@ -201,21 +244,22 @@ class ApiUserController extends Controller
         /*to set settings on wamate */
         if($phone_status == 'PAIRED')
         {
-           WamateHelper::autoreadsetting($device_key);
+           WamateHelper::autoreadsetting($device_key,$ip_server);
            $phone->phone = $check_phone['phone'];
            $phone->device_key = $check_phone['device_key'];
            $phone->device_status = 1;
+           $data['response'] = 'phone_connected';
         } 
         else
         {
            $phone->device_status = 0;
+           $data['response'] = 'phone_disconnected';
         }
 
         /*UPDATE TABL PHONE API PHONE & DEVICE STATUS*/
         try
         {
           $phone->save();
-          $data['response'] = 'phone_connected';
         }
         catch(QueryException $e)
         {
@@ -292,12 +336,22 @@ class ApiUserController extends Controller
       }
 
       $device_key = $phone->device_key;
-      $check_phone = WamateHelper::send_message($to,$message,$device_key);
+      $ipserver = $phone->ip_server;
+      $check_phone = WamateHelper::send_message($to,$message,$device_key,$ipserver);
 
       if(isset($check_phone['code']))
       {
         // INVALID DEVICE KEY
           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --106'));
+      }
+      elseif(isset($check_phone['validation']))
+      {
+          return json_encode(array('response'=>$check_phone['message']));
+      }
+      elseif($check_phone == null)
+      {
+          // WRONG / INVALID IP ADDRESS
+           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --106-A'));
       }
       else
       {
@@ -330,13 +384,29 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
+      /*$folder = $user->id."/api/";
+      Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($media), 'public');
+      Storage::disk('s3')->url($folder."temp.jpg")
+      */
+  
       $device_key = $phone->device_key;
-      $check_phone = WamateHelper::send_media_url_wamate($to,$media,$message,$device_key,'image');
+      $ip_server = $phone->ip_server;
+      $check_phone = WamateHelper::send_media_url_wamate($to,$media,$message,$device_key,'image',$ip_server);
+      $check_phone = json_decode($check_phone,true);
 
       if(isset($check_phone['code']))
       {
         // INVALID DEVICE KEY
           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --107'));
+      }
+      elseif(isset($check_phone['validation']))
+      {
+          return json_encode(array('response'=>$check_phone['message']));
+      }
+      elseif($check_phone == null)
+      {
+          // WRONG / INVALID IP ADDRESS
+           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --107-A'));
       }
       else
       {
@@ -368,7 +438,8 @@ class ApiUserController extends Controller
 
       $device_id = $phone->device_id;
       $device_name = $phone->device_name;
-      $check_phone = WamateHelper::delete_devices($device_id,$user->token);
+      $ip_server = $phone->ip_server;
+      $check_phone = WamateHelper::delete_devices($device_id,$user->token,$ip_server);
 
       if(isset($check_phone['code']))
       {
