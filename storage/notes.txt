@@ -1,0 +1,10 @@
+
+1. ada table phone_apis yang menyimpan : ip_server, email_wamate, token, refresh_token
+2. create device, mencreate device diactivrespon 
+3. delete device, akan mendelete device diactivrespon(klo sudah tidak memperpanjang didelete saja
+4. tagihan akan ditagihkan pada akhir bulan berdasarkan jumlah device dan package yang ada di phone_apis
+5. pengaturan menggunakan IP menggunakan .env 
+6. di users ditambahkan field IP USER
+7. saat generate pertama kali menggunakan env... untuk seterusnya menggunakan table users 
+
+
