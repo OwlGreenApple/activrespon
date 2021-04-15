@@ -90,18 +90,21 @@ class ApiUserController extends Controller
 
     public function create_device(Request $request)
     {
-      $req = json_decode(file_get_contents('php://input'),true);
+      /*$req = json_decode(file_get_contents('php://input'),true);
 
       $token = $req['token'];
       $device_name = $req['device_name'];
-      $package = $req['package'];
+      $package = $req['package'];*/
 
-      $package_check = self::package_list($package);
+      $token = 'XA-22110tuV!34xyGv88Ca';
+      $device_name = 'test-207';
+
+    /*  $package_check = self::package_list($package);
 
       if($package_check == false)
       {
         return $data['response'] ='Invalid Package';
-      }
+      }*/
 
       $user = self::check_token($token);
 
@@ -111,8 +114,10 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $device = WamateHelper::create_device($user->token,$device_name);
+      $device = WamateHelper::create_device($user->token,$device_name,$user->ip_server);
       $device = json_decode($device,true);
+
+      dd($device);
 
       if(isset($device['code']))
       {
@@ -297,6 +302,7 @@ class ApiUserController extends Controller
 
         $data = [
           'id'=>$phone->id,
+          'quota'=>$phone->quota,
           'phone'=>$check_phone['phone'],
           'name'=>$check_phone['name'],
           'status'=>$check_phone['status'],
@@ -335,9 +341,16 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
+      if($phone->quota < 1)
+      {
+         return json_encode(array('response'=>'Sorry, your quota has runs out'));
+      }
+
       $device_key = $phone->device_key;
       $ipserver = $phone->ip_server;
       $check_phone = WamateHelper::send_message($to,$message,$device_key,$ipserver);
+     
+      // dd($check_phone);
 
       if(isset($check_phone['code']))
       {
@@ -353,8 +366,14 @@ class ApiUserController extends Controller
           // WRONG / INVALID IP ADDRESS
            return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --106-A'));
       }
+      elseif(isset($check_phone['status']) && $check_phone['status'] == 'FAILED')
+      {
+          return json_encode(array('response'=>$check_phone['failed_reason']));
+      }
       else
       {
+          $phone->quota--;
+          $phone->save();
           return json_encode(array('response'=>'Your message has been sent'));
       }
     }
@@ -388,11 +407,18 @@ class ApiUserController extends Controller
       Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($media), 'public');
       Storage::disk('s3')->url($folder."temp.jpg")
       */
+
+      if($phone->quota < 1)
+      {
+          return json_encode(array('response'=>'Sorry, your quota has runs out'));
+      }
   
       $device_key = $phone->device_key;
       $ip_server = $phone->ip_server;
       $check_phone = WamateHelper::send_media_url_wamate($to,$media,$message,$device_key,'image',$ip_server);
       $check_phone = json_decode($check_phone,true);
+
+      // dd($check_phone);
 
       if(isset($check_phone['code']))
       {
@@ -408,8 +434,14 @@ class ApiUserController extends Controller
           // WRONG / INVALID IP ADDRESS
            return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --107-A'));
       }
+      elseif(isset($check_phone['status']) && $check_phone['status'] == 'FAILED')
+      {
+          return json_encode(array('response'=>$check_phone['failed_reason']));
+      }
       else
       {
+          $phone->quota--;
+          $phone->save();
           return json_encode(array('response'=>'Your image has been sent'));
       }
     }

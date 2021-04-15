@@ -31,6 +31,20 @@ class WamateHelper
   {
     return self::get_ip_address().':3333';
   }
+
+  private static function api_ip_server($reseller_ip,$uri)
+  {
+    if($reseller_ip == null)
+    {
+      $url='http://'.self::ip_server().$uri;
+    }
+    else
+    {
+      $url='http://'.$reseller_ip.':3333'.$uri;
+    }
+
+    return $url;
+  } 
   
   public function go_curl($url,$data,$method)
   {
@@ -143,7 +157,8 @@ class WamateHelper
   
   public static function create_device($token,$name,$reseller_ip = null)
   {
-    $url='http://'.self::ip_server().'/devices';
+    // $url='http://'.self::ip_server().'/devices';
+    $url= self::api_ip_server($reseller_ip,'/devices');
 
     $data = array(
       "name" => $name,
@@ -218,20 +233,6 @@ class WamateHelper
     "updated_at": "2020-10-07 08:35:46"
 }
 */
-
-  private static function api_ip_server($reseller_ip,$uri)
-  {
-    if($reseller_ip == null)
-    {
-      $url='http://'.self::ip_server().$uri;
-    }
-    else
-    {
-      $url='http://'.$reseller_ip.':3333'.$uri;
-    }
-
-    return $url;
-  } 
 
   public static function send_message($to,$message,$device_key,$reseller_ip = null)
   {
