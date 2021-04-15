@@ -20,6 +20,8 @@ class Order extends Model
 	* 0 => created
 	* 1 => confirmed bukti transfer, waiting admin response
 	* 2 => paid
+  * 3 => API order , user not paid yet
+  * 4 => API order, paid
 	*
 	*	Mode 
 	* 0 => simi
@@ -62,6 +64,17 @@ class Order extends Model
     $order->user_id = $user->id;
     $order->package =$data['namapaket'];
     $order->package_title =$data['namapakettitle'];
+
+    if(isset($data['api']))
+    {
+      $order->total = $total;
+      $order->grand_total = $grand_total;
+      $order->status = 3;
+      $order->is_chat = 0;
+      $order->save();
+      return;
+    }
+
     $order->coupon_id = $data['kuponid'];
     $order->total = $total;
     $order->total_upgrade = $data['priceupgrade'];
@@ -134,7 +147,11 @@ class Order extends Model
         });
       }
       //delete session order
-      session::forget('order');
+      if(session::has('order'))
+      {
+        session::forget('order');
+      }
+      
     } 
     else {
 			// for freemium case
