@@ -117,8 +117,6 @@ class ApiUserController extends Controller
       $device = WamateHelper::create_device($user->token,$device_name,$user->ip_server);
       $device = json_decode($device,true);
 
-      dd($device);
-
       if(isset($device['code']))
       {
         /*IF TOKEN NOT MISTMATCH / INVALID TOKEN*/
