@@ -4,7 +4,7 @@
 3. delete device, akan mendelete device diactivrespon(klo sudah tidak memperpanjang didelete saja
 4. tagihan akan ditagihkan pada akhir bulan berdasarkan jumlah device dan package yang ada di phone_apis
 5. pengaturan menggunakan IP menggunakan .env 
-6. di users ditambahkan field IP USER
-7. saat generate pertama kali menggunakan env... untuk seterusnya menggunakan table users 
+6. saat generate pertama kali(create device) menggunakan env... untuk seterusnya menggunakan table phone_apis 
+7. saat create device -> dicek apakah email di ip_server di env sudah tercreate, klo blm dicreatekan 
 
 
