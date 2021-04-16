@@ -57,7 +57,6 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-
       $login = WamateHelper::login($user_token->email_wamate);
       $login = json_decode($login,true);
 
@@ -97,7 +96,8 @@ class ApiUserController extends Controller
       $package = $req['package'];*/
 
       $token = 'XA-22110tuV!34xyGv88Ca';
-      $device_name = 'test-207';
+      $device_name = 'test-create-reg';
+      $email_wamate = 'local-test-only@y.com';
 
     /*  $package_check = self::package_list($package);
 
@@ -114,8 +114,10 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $device = WamateHelper::create_device($user->token,$device_name,$user->ip_server);
+      $device = WamateHelper::create_device($user->token,$device_name,$email_wamate,$user->ip_server);
       $device = json_decode($device,true);
+
+      dd($device);
 
       if(isset($device['code']))
       {
@@ -132,6 +134,17 @@ class ApiUserController extends Controller
       $phone_api->package = $package;
       $phone_api->quota = $package_check['quota'];
       $phone_api->ip_server = env('WAMATE_SERVER');
+
+      if(isset($device['token']))
+      {
+        $user->token = $device['token'];
+        $user->refresh_token = $device['refresh_token'];
+        $user->save();
+
+        $phone_api->email_wamate = $email_wamate;
+        $phone_api->token = $device['token'];
+        $phone_api->refresh_token = $device['refresh_token'];
+      }
 
       try
       {

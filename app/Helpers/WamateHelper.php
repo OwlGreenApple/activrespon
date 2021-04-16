@@ -1,11 +1,13 @@
 <?php
 namespace App\Helpers;
 use App\PhoneNumber;
+use App\Phoneapis;
 
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Auth;
+
 
 class WamateHelper
 {
@@ -155,8 +157,19 @@ class WamateHelper
     // dd($res);
   }
   
-  public static function create_device($token,$name,$reseller_ip = null)
+  public static function create_device($token,$name,$email_wamate,$reseller_ip = null)
   {
+
+    // TO CHECK IF EMAIL IS AVAILABLE OR NOT, IF NOT
+    $login = null;
+    $check_email = self::reg($email_wamate);
+    $check_email = json_decode($check_email,true);
+
+    if(isset($check_email['email']))
+    {
+      $login = self::login($check_email['email']);
+    }
+
     // $url='http://'.self::ip_server().'/devices';
     $url= self::api_ip_server($reseller_ip,'/devices');
 
@@ -182,9 +195,16 @@ class WamateHelper
     $res=curl_exec($ch);
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
+
+    if($login <> null){
+      $res = json_decode($res,true);
+      $res['token'] = $login['token'];
+      $res['refresh_token'] = $login['refreshToken'];
+      $res = json_encode($res);
+    }
+
     return $res;
   }
-
 
   /*
   buat chat app
