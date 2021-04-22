@@ -44,6 +44,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:connection')->everyFifteenMinutes();
         // $schedule->command('check:wa')->hourly();
         $schedule->command('reset:serversimi')->everyFifteenMinutes();
+        $schedule->command('reseller:invoice')->monthly();
       }
       if (env("APP_ENV")=="automation") {
         $schedule->command('queue:campaign')->everyMinute();

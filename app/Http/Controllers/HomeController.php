@@ -19,6 +19,8 @@ use App\Reminder;
 use App\ReminderCustomers;
 use App\BroadCast;
 use App\BroadCastCustomers;
+use App\Order;
+use App\Reseller;
 use DB;
 use Carbon\Carbon;
 
@@ -302,5 +304,16 @@ class HomeController extends Controller
         $arr['status'] = "success";
         return $arr;
     }    
+
+    public function invoice()
+    {
+      $id = Auth::id();
+      $current_month = Carbon::now()->format('m-Y');
+      $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.is_delete','=',0]])
+              ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
+              ->select('resellers.*','pa.phone_number')
+              ->get();
+      return view('reseller',['data'=>$order]);
+    }
 /* end class HomeController */
 }

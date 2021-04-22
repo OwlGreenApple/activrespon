@@ -67,8 +67,8 @@ Route::post('/submit-checkout','OrderController@submit_checkout'); //new system 
 Route::post('/submit-summary','OrderController@submit_summary'); //new system to summary
 
 /* RESELLER API */
-Route::post('/api/login','ApiUserController@login_user');
-Route::get('/api/device','ApiUserController@create_device');
+// Route::post('/api/login','ApiUserController@login_user');
+Route::post('/api/device','ApiUserController@create_device');
 Route::get('/generate/qr','ApiUserController@scan_device');
 Route::post('/api/status','ApiUserController@device_status');
 Route::get('/api/device/info','ApiUserController@device_info');
@@ -211,6 +211,8 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::get('get-status-upgrade','OrderController@getStatusUpgrade');
 	Route::post('order-confirm-payment','OrderController@confirm_payment_order');
 
+  // Reseller
+  Route::get('reseller-invoice','HomeController@invoice');
 });
  
 /*** USER ***/

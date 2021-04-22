@@ -219,7 +219,9 @@
                            <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="cogDropdown">
                                     <a href="{{url('settings')}}" class="nav-link {{ (request()->is('settings')) ? 'active' : '' }}">Settings</a>
 
-                                    <a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Buy More</a>
+                                    <a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Buy More</a> 
+
+                                    <a href="{{url('reseller-invoice')}}" class="nav-link {{ (request()->is('reseller-invoice')) ? 'active' : '' }}">Reseller Invoice</a>
                                     
                                     <!--<a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Upgrade</a> 
                                     -->

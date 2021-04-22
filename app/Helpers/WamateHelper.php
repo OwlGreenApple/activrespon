@@ -2,6 +2,7 @@
 namespace App\Helpers;
 use App\PhoneNumber;
 use App\Phoneapis;
+use App\User;
 
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -68,8 +69,9 @@ class WamateHelper
     return $res;
   }
 
-  public static function reg($email)
+  public static function reg($email,$userid = null)
   {
+    $login = null;
     $url='http://'.self::ip_server().'/auth/register';
 
     $data = array(
@@ -94,7 +96,34 @@ class WamateHelper
     $res=curl_exec($ch);
 
     //echo $res."\n";
-    // return json_encode(['message'=>$res]);
+    $res = json_decode($res,true);
+
+    if(isset($res['email']))
+    {
+      $login = self::login($res['email'],env('WAMATE_SERVER'));
+      $login = json_decode($login,true);
+    }
+    else
+    {
+      return json_encode($res);
+    }
+
+    if($login <> null)
+    {
+      $res['token'] = $login['token'];
+      $res['refresh_token'] = $login['refreshToken'];
+      $res = json_encode($res);
+
+      $user = User::find($userid);
+      if(!is_null($user))
+      {
+         $user->token = $login['token'];
+         $user->refresh_token = $login['refreshToken'];
+         $user->save();
+      }
+     
+    }
+
     return $res;
     
     /*
@@ -157,17 +186,15 @@ class WamateHelper
     // dd($res);
   }
   
-  public static function create_device($token,$name,$email_wamate,$reseller_ip = null)
+  public static function create_device($token,$userid,$name,$email_wamate,$reseller_ip = null)
   {
-
-    // TO CHECK IF EMAIL IS AVAILABLE OR NOT, IF NOT
-    $login = null;
-    $check_email = self::reg($email_wamate);
+    // TO CHECK IF EMAIL IS AVAILABLE OR NOT, IF NOT WILL CREATE NEW WAMATE_EMAIL ACCOUNT FOR NEW SERVER
+    $check_email = self::reg($email_wamate,$userid);
     $check_email = json_decode($check_email,true);
 
     if(isset($check_email['email']))
     {
-      $login = self::login($check_email['email']);
+      $token = $check_email['token'];
     }
 
     // $url='http://'.self::ip_server().'/devices';
@@ -195,15 +222,15 @@ class WamateHelper
     $res=curl_exec($ch);
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
+    $res = json_decode($res,true);
 
-    if($login <> null){
-      $res = json_decode($res,true);
-      $res['token'] = $login['token'];
-      $res['refresh_token'] = $login['refreshToken'];
-      $res = json_encode($res);
+    if(isset($check_email['token']))
+    {
+      $res['token'] = $check_email['token'];
+      $res['refresh_token'] = $check_email['refresh_token'];
     }
 
-    return $res;
+    return json_encode($res);
   }
 
   /*
