@@ -69,7 +69,7 @@ class Order extends Model
     {
       $order->total = $total;
       $order->grand_total = $grand_total;
-      $order->status = 3;
+      $order->status = 0;
       $order->is_chat = 0;
       $order->save();
       return;

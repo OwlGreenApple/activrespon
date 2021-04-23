@@ -13,6 +13,7 @@ use App\Order;
 use App\PhoneNumber;
 use App\Membership;
 use App\Message;
+use App\Reseller;
 use App\Helpers\Helper;
 use Crypt;
 use Carbon\Carbon;
@@ -44,6 +45,25 @@ class OrderController extends Controller
 		$phoneNumber = PhoneNumber::where("user_id",$order->user_id)->first();					
 		$user = User::find($order->user_id);
     $user_day_left = $user->day_left;
+
+    // RESELLER
+    $order_package = $order->package_title;
+    if($order_package == 'WA Reseller')
+    {
+      $order->status = 2;
+      $order->save();
+
+      $email_data = [
+        'order' => $order,
+        'user' => $user,
+      ];
+
+      $this->email_messages($user,$email_data,$order);
+
+      $arr['status'] = 'success';
+      $arr['message'] = 'Order berhasil dikonfirmasi';
+      return $arr;
+    }
 
 		$additional_day = getAdditionalDay($order->package);
 		$type_package =0;
@@ -128,30 +148,35 @@ class OrderController extends Controller
 
     if(env('APP_ENV') <> 'local')
     {
-      $message = null;
-      $message .= "*Selamat ".$user->name.",* \n\n";
-      $message .= "Pembelianmu sudah *berhasil di proses*, _kamu bisa langsung gunakan akun *Activrespon*-mu sekarang juga._ \n \n";
-
-      $message .= "Jika ada yang perlu ditanyakan seputar *Activrespon*, jangan ragu menghubungi support kami di \n";
-      $message .= "*WA 0817-318-368* \n\n";
-
-      $message .= 'Terima Kasih,'."\n\n";
-      $message .= 'Team Activrespon'."\n";
-      $message .= '_*Activrespon is part of Activomni.com_';
-
-      // SendNotif::dispatch($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
-      $message_send = Message::create_message($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
-      
-      Mail::send('emails.confirm-order', $emaildata, function ($message) use ($user,$order) {
-        $message->from('no-reply@activrespon.com', 'Activrespon');
-        $message->to($user->email);
-        $message->subject('[Activrespon] Konfirmasi Order'.$order->no_order);
-      });
+      $this->email_messages($user,$emaildata,$order);
     }
 
     $arr['status'] = 'success';
     $arr['message'] = 'Order berhasil dikonfirmasi';
     return $arr;
+  }
+
+  private function email_messages($user,$emaildata,$order)
+  {
+    $message = null;
+    $message .= "*Selamat ".$user->name.",* \n\n";
+    $message .= "Pembelianmu sudah *berhasil di proses*, _kamu bisa langsung gunakan akun *Activrespon*-mu sekarang juga._ \n \n";
+
+    $message .= "Jika ada yang perlu ditanyakan seputar *Activrespon*, jangan ragu menghubungi support kami di \n";
+    $message .= "*WA 0817-318-368* \n\n";
+
+    $message .= 'Terima Kasih,'."\n\n";
+    $message .= 'Team Activrespon'."\n";
+    $message .= '_*Activrespon is part of Activomni.com_';
+
+    // SendNotif::dispatch($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
+    $message_send = Message::create_message($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
+    
+    Mail::send('emails.confirm-order', $emaildata, function ($message) use ($user,$order) {
+      $message->from('no-reply@activrespon.com', 'Activrespon');
+      $message->to($user->email);
+      $message->subject('[Activrespon] Konfirmasi Order'.$order->no_order);
+    });
   }
 
   private function orderLater(array $data)

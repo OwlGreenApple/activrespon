@@ -8,8 +8,8 @@
       <th>No</th>
       <th>Phone Number</th>
       <th>Package</th>
-      <th>Total</th>
       <th>Pembayaran Bulan</th>
+      <th>Total</th>
     </thead>
 
     @if($data->count() > 0)
@@ -20,11 +20,16 @@
             <td>{{ $no }}</td>
             <td>{{ $row->phone_number }}</td>
             <td>{{ $row->package }}</td>
-            <td>{{ str_replace(",",".",number_format($row->total)) }}</td>
             <td>{{ $row->period }}</td>
+            <td>{{ str_replace(",",".",number_format($row->total)) }}</td>
           </tr>
           @php $no++; @endphp
         @endforeach
+        <tr>
+            <td colspan="3"></td>
+            <td class="text-right">Total :</td>
+            <td><b>Rp {{ str_replace(",",".",number_format($total->gt)) }}</b></td>
+        </tr>
       </tbody>
     @endif
 

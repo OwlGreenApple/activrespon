@@ -221,7 +221,9 @@
 
                                     <a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Buy More</a> 
 
-                                    <a href="{{url('reseller-invoice')}}" class="nav-link {{ (request()->is('reseller-invoice')) ? 'active' : '' }}">Reseller Invoice</a>
+                                    @if(Auth()->user()->reseller_token !== null)
+                                      <a href="{{url('reseller-invoice')}}" class="nav-link {{ (request()->is('reseller-invoice')) ? 'active' : '' }}">Reseller Invoice</a>
+                                    @endif
                                     
                                     <!--<a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Upgrade</a> 
                                     -->

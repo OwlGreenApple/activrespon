@@ -161,18 +161,6 @@ class ApiUserController extends Controller
         $inv->period = $period;
         $inv->save();
 
-       /* $pckg = [
-          'namapaket'=>$package,
-          'namapakettitle'=>$package,
-          'user'=>$user,
-          'price'=>$package_check['price'],
-          'priceupgrade'=>0,
-          'diskon'=>0,
-          'upgrade'=>null,
-          'api'=>true
-        ];*/
-
-        // Order::create_order($pckg);
         $data = [
           'phone_id'=>$phone_api->id,
           /*'device_id'=>$device['id'],

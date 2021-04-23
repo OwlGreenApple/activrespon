@@ -309,11 +309,13 @@ class HomeController extends Controller
     {
       $id = Auth::id();
       $current_month = Carbon::now()->format('m-Y');
-      $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.is_delete','=',0]])
+      $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month]])
               ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
               ->select('resellers.*','pa.phone_number')
               ->get();
-      return view('reseller',['data'=>$order]);
+
+      $total = Reseller::where([['user_id','=',$id],['period','=',$current_month]])->selectRaw('SUM(total) AS gt')->first();
+      return view('reseller',['data'=>$order,'total'=>$total]);
     }
 /* end class HomeController */
 }
