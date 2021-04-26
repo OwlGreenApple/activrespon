@@ -43,33 +43,38 @@ class ApiUserController extends Controller
       }
     }
 
-    // Use this function if phone service stuck
-    public function login_user(Request $request) 
+    //Use this function if phone service stuck
+    public static function login_user($email_wamate,$user_id,$old_token,$callback_token,$callback_phone_id,$callback_device_name = null,$callback_package = null) 
     {
-      $req = json_decode(file_get_contents('php://input'),true);
-      $token = $req['token'];
 
-      // $token = "XA-22110tuV!34xyGv88Ca";
-      $user_token = self::check_token($token);
-
-      if($user_token == false)
-      {
-        $data['response'] = 'Invalid Token';
-        return json_encode($data);
-      }
-
-      $login = WamateHelper::login($user_token->email_wamate,env('WAMATE_SERVER'));
+      /* $callback_token = reseller_token NOT wamate token*/
+     
+      $login = WamateHelper::login($email_wamate,env('WAMATE_SERVER'));
       $login = json_decode($login,true);
 
       if(isset($login['type']))
       {
-        $user = User::find($user_token->id);
+        $user = User::find($user_id);
         $user->token = $login['token'];
         $user->refresh_token = $login['refreshToken'];
 
         try{
            $user->save();
-           $data['response'] = 'Login successful';
+           
+           $check_old_token = Phoneapis::where([['token',$old_token],['is_delete',0]]);
+           if($check_old_token->get()->count() > 0)
+           {
+              $check_old_token->update(['token' => $login['token'],'refresh_token'=> $login['refreshToken']]);
+           }
+
+           $cls = new ApiUserController;
+           if($callback_phone_id == null)
+           {
+             return $cls->createdevice($callback_token,$callback_device_name,$callback_package);
+           } 
+           else {
+             return $cls->qrcode($callback_token,$callback_phone_id);
+           }
         }
         catch(QueryException $e)
         {
@@ -80,7 +85,7 @@ class ApiUserController extends Controller
       }
       else
       {
-        /* if password or email mismatch */
+        /* if password or email mismatch / email not available */
         $data['response'] = 'Sorry our server is too busy,please contact administrator --101';
       }
 
@@ -88,17 +93,25 @@ class ApiUserController extends Controller
       /**/
     }
 
-    public function create_device(Request $request)
+    public function createdevice($callback_user_token = null,$callback_device_name = null,$callback_package = null)
     {
+
+      /*
+          $callback_user_token exp = XA-22110tuV!34xyGv88Ca 
+          -- reseller_token NOT wamate token --
+      */
+
       $req = json_decode(file_get_contents('php://input'),true);
 
-      $token = $req['token'];
-      $device_name = $req['device_name'];
-      $package = $req['package'];
-
-      /*$token = 'XA-22110tuV!34xyGv88Ca';
-      $device_name = 'test-create-reg';
-      $package = 'Paket 1 WA';*/
+      if($callback_user_token == null && $callback_device_name == null && $callback_package == null):
+          $token = $req['token'];
+          $device_name = $req['device_name'];
+          $package = $req['package'];
+      else:
+          $token = $callback_user_token;
+          $device_name = $callback_device_name;
+          $package = $callback_package;
+      endif;
 
       $package_check = self::package_list($package);
 
@@ -116,14 +129,15 @@ class ApiUserController extends Controller
       }
 
       $email_wamate = $user->email_wamate;
+
       $device = WamateHelper::create_device($user->token,$user->id,$device_name,$email_wamate,env('WAMATE_SERVER'));
       $device = json_decode($device,true);
+      $old_token = $user->token;
 
       if(isset($device['code']))
       {
         /*IF TOKEN NOT MISTMATCH / INVALID TOKEN*/
-        $data['response'] = 'Sorry our server is too busy,please contact administrator --102';
-        return json_encode($data);
+        return $this->login_user($email_wamate,$user->id,$old_token,$token,null,$device_name,$package);
       }
 
       $phone_api = new Phoneapis;
@@ -177,14 +191,21 @@ class ApiUserController extends Controller
       return json_encode($data);
     }
 
-    public function scan_device()
+    public function qrcode($callback_token = null,$callback_phone_id = null)
     {
-       /* $token = "XA-22110tuV!34xyGv88Ca";
-        $phone_id = 1;*/
+       /* $callback_token = "XA-22110tuV!34xyGv88Ca";
+          -- reseller_token --
+        */
         $req = json_decode(file_get_contents('php://input'),true);
 
-        $token = $req['token'];
-        $phone_id = $req['phone_id'];
+        if($callback_token == null && $callback_phone_id == null):
+           $token = $req['token'];
+           $phone_id = $req['phone_id'];
+        else:
+           $token = $callback_token;
+           $phone_id = $callback_phone_id;
+        endif;
+
         $user = self::check_token($token);
 
         if($user == false)
@@ -202,7 +223,7 @@ class ApiUserController extends Controller
         }
 
         $ip_server = $phone->ip_server;
-        $pair = WamateHelper::pair($user->token,$phone->device_id,$ip_server);
+        $pair = WamateHelper::pair($phone->token,$phone->device_id,$ip_server);
         $pair = json_decode($pair,true);
 
         if($pair['status'] == 'PAIRING')
@@ -218,6 +239,11 @@ class ApiUserController extends Controller
         {
            //DEVICE NOT AVAILABLE
            $data = 'Sorry, device is not available.';
+        }  
+        elseif($pair['status'] == 401 )
+        {
+           //EXPIRED TOKEN
+           return self::login_user($phone->email_wamate,$phone->user_id,$phone->token,$token,$phone_id);
         } 
         else
         {
@@ -252,7 +278,7 @@ class ApiUserController extends Controller
         }
 
         $ip_server = $phone->ip_server;
-        $check_phone = WamateHelper::show_device($user->token,$phone->device_id,$ip_server);
+        $check_phone = WamateHelper::show_device($phone->token,$phone->device_id,$ip_server);
         $check_phone = json_decode($check_phone,true);
         $phone_status = $check_phone['status'];
         $device_key = $check_phone['device_key'];
@@ -309,8 +335,15 @@ class ApiUserController extends Controller
         }
 
         $phone_ip = $phone->ip_server;
-        $check_phone = WamateHelper::show_device($user->token,$phone->device_id,$phone_ip);
+        $check_phone = WamateHelper::show_device($phone->token,$phone->device_id,$phone_ip);
         $check_phone = json_decode($check_phone,true);
+
+        if(isset($check_phone['code']))
+        {
+          //EXPIRED TOKEN
+          $data['response'] = 'Please scan your device';
+          return json_encode($data);
+        }
 
         $data = [
           'id'=>$phone->id,
@@ -486,7 +519,8 @@ class ApiUserController extends Controller
       $device_id = $phone->device_id;
       $device_name = $phone->device_name;
       $ip_server = $phone->ip_server;
-      $check_phone = WamateHelper::delete_devices($device_id,$user->token,$ip_server);
+      $check_phone = WamateHelper::delete_devices($device_id,$phone
+        ->token,$ip_server);
 
       if(isset($check_phone['code']))
       {

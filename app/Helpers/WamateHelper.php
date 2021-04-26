@@ -39,7 +39,7 @@ class WamateHelper
   {
     if($reseller_ip == null)
     {
-      $url='http://'.self::ip_server().$uri;
+      $url='http://'.env('WAMATE_SERVER').':3333'.$uri;
     }
     else
     {
@@ -72,7 +72,7 @@ class WamateHelper
   public static function reg($email,$userid = null)
   {
     $login = null;
-    $url='http://'.self::ip_server().'/auth/register';
+    $url= self::api_ip_server(null,'/auth/register');
 
     $data = array(
       "email" => $email,
@@ -151,14 +151,16 @@ class WamateHelper
 */
   public static function login($email,$reseller_ip = false)
   {
-    if($reseller_ip == false)
+    /*if($reseller_ip == false)
     {
       $url='http://'.self::ip_server().'/auth/login';
     }
     else
     {
       $url='http://'.$reseller_ip.':3333/auth/login';
-    }
+    }*/
+
+    $url = self::api_ip_server($reseller_ip,'/auth/login');
 
     $data = array(
       "email" => $email,
