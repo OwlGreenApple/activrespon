@@ -305,17 +305,33 @@ class HomeController extends Controller
         return $arr;
     }    
 
-    public function invoice()
+    /* RESELLER */
+
+    public function invoice(Request $request)
+    {
+      $orders = Order::where([['user_id',Auth::user()->id],['package','LIKE',"%WA Reseller%"]])
+                ->orderBy('created_at','desc')
+                ->paginate(15);
+
+       if($request->ajax())
+       {
+          return view('reseller.content',['orders'=>$orders,'pager'=>$orders]);
+       }
+
+       return view('reseller.index',['orders'=>$orders,'pager'=>$orders]);
+    }
+
+    public function monthly_report($current_month)
     {
       $id = Auth::id();
-      $current_month = Carbon::now()->format('m-Y');
+      // $current_month = Carbon::now()->format('m-Y');
       $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month]])
               ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
               ->select('resellers.*','pa.phone_number')
               ->get();
 
       $total = Reseller::where([['user_id','=',$id],['period','=',$current_month]])->selectRaw('SUM(total) AS gt')->first();
-      return view('reseller',['data'=>$order,'total'=>$total]);
+      return view('reseller.reseller',['data'=>$order,'total'=>$total]);
     }
 /* end class HomeController */
 }

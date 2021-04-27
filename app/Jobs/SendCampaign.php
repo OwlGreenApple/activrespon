@@ -127,6 +127,7 @@ class SendCampaign implements ShouldQueue
                 $max_counter = $phoneNumber->max_counter;
                 $max_counter_day = $phoneNumber->max_counter_day;
                 $key = $phoneNumber->filename;
+                $ip_server = $phoneNumber->ip_server;
                 $now = Carbon::parse(Carbon::now())->timezone($row->timezone);
 
                 $time_sending = $date->toDateString().' '.$hour;
@@ -195,7 +196,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_message($customer_phone,$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key,$ip_server,$ip_server);
                   }
                 }
                 else {
@@ -217,7 +218,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
+                    $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$ip_server);
                   }
                 }
 
@@ -276,7 +277,7 @@ class SendCampaign implements ShouldQueue
             ->rightJoin('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
             ->join('customers','customers.id','=','reminder_customers.customer_id')
 						->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
-            ->select('reminder_customers.id AS rcs_id','reminder_customers.status AS rc_st','reminders.*','customers.created_at AS cstreg','customers.telegram_number','customers.name','customers.email','reminders.id AS rid','reminders.user_id AS userid','users.timezone','users.email as useremail','reminder_customers.customer_id',"customers.link_unsubs")
+            ->select('reminder_customers.id AS rcs_id','reminder_customers.status AS rc_st','reminders.*','customers.created_at AS cstreg','customers.telegram_number','customers.name','customers.email','reminders.id AS rid','reminders.user_id AS userid','users.timezone','users.email as useremail','phone_numbers.ip_server','reminder_customers.customer_id',"customers.link_unsubs")
             ->get();
 
         $counter = $max_counter = 0;
@@ -291,6 +292,7 @@ class SendCampaign implements ShouldQueue
                   $counter2 = $phoneNumber->counter2;
                   $max_counter = $phoneNumber->max_counter;
                   $max_counter_day = $phoneNumber->max_counter_day;
+                  $ip_server = $phoneNumber->ip_server;
                 }
                 else
                 {
@@ -359,7 +361,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_message($customer_phone,$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key,$ip_server);
                   }
                 }
                 else {
@@ -381,7 +383,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
+                    $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$row->ip_server);
                   }
                 }
 
@@ -459,6 +461,7 @@ class SendCampaign implements ShouldQueue
                   $counter2 = $phoneNumber->counter2;
                   $max_counter = $phoneNumber->max_counter;
                   $max_counter_day = $phoneNumber->max_counter_day;
+                  $ip_server = $phoneNumber->ip_server;
                 }
                 else
                 {
@@ -547,7 +550,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_message($customer_phone,$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key,$ip_server);
                   }
                 }
                 else {
@@ -569,7 +572,7 @@ class SendCampaign implements ShouldQueue
                       $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                     }
                     if ($phoneNumber->mode == 2) {
-                      $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
+                      $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$ip_server);
                     }
                 }
                   
@@ -645,6 +648,7 @@ class SendCampaign implements ShouldQueue
                 $customer_phone = $row->telegram_number;
                 $customer_message = $row->message;
                 $key = $phoneNumber->filename;
+                $ip_server = $phoneNumber->ip_server;
                 $membership = $row->membership;
 
                 $date_appt = $event_date->toFormattedDateString();
@@ -730,7 +734,7 @@ class SendCampaign implements ShouldQueue
                     $send_message = $this->send_message($customer_phone,$message,$key);
                   }
                   if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
+                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key,$ip_server);
                   }
                 }
                 else {
@@ -752,7 +756,7 @@ class SendCampaign implements ShouldQueue
                       $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
                     }
                     if ($phoneNumber->mode == 2) {
-                      $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key);
+                      $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$ip_server);
                     }
                 }
 
@@ -989,13 +993,14 @@ class SendCampaign implements ShouldQueue
       return $response;
     }
     
-    public function send_wamate($customer_phone,$message,$device_key){
+    public function send_wamate($customer_phone,$message,$device_key,$ip_server){
       $curl = curl_init();
 
       $data = array(
           'customer_phone'=>$customer_phone,
           'message'=>$message,
           'device_key'=>$device_key,
+          'user_ip_server'=>$ip_server
       );
 
 		  $url = "https://activrespon.com/dashboard/send-wamate";
@@ -1018,7 +1023,7 @@ class SendCampaign implements ShouldQueue
       return $response;
     }
     
-    public function send_image_url_wamate($customer_phone,$urls3,$message,$device_key){
+    public function send_image_url_wamate($customer_phone,$urls3,$message,$device_key,$ip_server){
       $curl = curl_init();
 
       $data = array(
@@ -1026,6 +1031,7 @@ class SendCampaign implements ShouldQueue
           'urls3'=>$urls3,
           'message'=>$message,
           'device_key'=>$device_key,
+          'user_ip_server'=>$ip_server
       );
 
 		  $url = "https://activrespon.com/dashboard/send-image-url-wamate";

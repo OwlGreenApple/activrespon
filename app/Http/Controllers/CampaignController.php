@@ -157,7 +157,7 @@ class CampaignController extends Controller
 			$phoneNumber = PhoneNumber::where("user_id",$user->id)->first();
 			$key = $phoneNumber->filename;
       $device_key = $phoneNumber->device_key;
-
+      $ip_server = $phoneNumber->ip_server;
 
 			if ($phoneNumber->mode == 0) {
 				$server = Server::where('phone_id',$phoneNumber->id)->first();
@@ -200,7 +200,8 @@ class CampaignController extends Controller
 					}
           elseif($phoneNumber->mode == 2)
           {
-            WamateHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image');
+            // WAMATE
+            WamateHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image',$ip_server);
           }
 					else {
 						ApiHelper::send_image_url($request->phone,$url,$message,$key);

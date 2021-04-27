@@ -114,6 +114,9 @@
     <!-- custom scroll -->
     <link href="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css') }}" rel="stylesheet" />
     
+    @if(Request::is('reseller-invoice')) 
+    <link href="{{ asset('/assets/css/order.css') }}" rel="stylesheet" />
+    @endif
 
 </head>
 <body>

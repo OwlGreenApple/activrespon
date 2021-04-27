@@ -95,7 +95,7 @@ class CheckMembership extends Command
               }
 
               if($mode == 2):
-                $result = WamateHelper::delete_devices($phone->wamate_id,$user->token);
+                $result = WamateHelper::delete_devices($phone->wamate_id,$user->token,$phone->ip_server);
                 $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
                 $countwebhook = WebHookWA::where('device_id',$phone->wamate_id);
                 

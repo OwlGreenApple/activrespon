@@ -488,7 +488,6 @@ class SettingController extends Controller
         Cookie::queue(Cookie::forget('otp_code'));
       }
 
-
       $is_registered = false;
       $phoneNumber = PhoneNumber::
                       where("phone_number",$phone_number)
@@ -505,6 +504,7 @@ class SettingController extends Controller
         $phoneNumber->status = 0;
         $phoneNumber->mode = session('mode');
         $phoneNumber->filename = "";
+        $phoneNumber->ip_server = env('WAMATE_SERVER');
         $phoneNumber->save();
       }
       
@@ -534,7 +534,8 @@ class SettingController extends Controller
         if ($phoneNumber->wamate_id != 0) {
         }
         else if ($phoneNumber->wamate_id == 0) {
-          $result = json_decode(WamateHelper::create_device($user->token,'device-'.$phoneNumber->id));
+          $result = json_decode(WamateHelper::create_device($user->token,null,'device-'.$phoneNumber->id,null));
+
           if($result->status == 401)
           {
             $arr['status'] = 'error';
@@ -565,7 +566,7 @@ class SettingController extends Controller
                       where("user_id",$user->id)
                       ->first();
       if(is_null($phoneNumber)){
-//
+        //
       }
       else {
         if (session('mode')==1) {

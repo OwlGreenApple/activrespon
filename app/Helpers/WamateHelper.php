@@ -191,8 +191,18 @@ class WamateHelper
   public static function create_device($token,$userid,$name,$email_wamate,$reseller_ip = null)
   {
     // TO CHECK IF EMAIL IS AVAILABLE OR NOT, IF NOT WILL CREATE NEW WAMATE_EMAIL ACCOUNT FOR NEW SERVER
-    $check_email = self::reg($email_wamate,$userid);
-    $check_email = json_decode($check_email,true);
+
+    if($email_wamate == null && $userid == null)
+    {
+      //NON RESELLER
+      $check_email = null;
+    }
+    else
+    {
+      //RESELLER
+      $check_email = self::reg($email_wamate,$userid);
+      $check_email = json_decode($check_email,true);
+    }
 
     if(isset($check_email['email']))
     {
@@ -312,9 +322,9 @@ class WamateHelper
     return json_decode($res,true);
   }
 
- 	public static function send_image($to,$urls3,$message,$device_key)
+ 	public static function send_image($to,$urls3,$message,$device_key,$reseller_ip = null)
   {
-    $url='http://'.self::ip_server().'/messages/send-media';
+    $url= self::api_ip_server($reseller_ip,'/messages/send-media');
 		$to = str_replace("+","",$to);
 
 		$postfields = array(

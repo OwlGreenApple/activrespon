@@ -795,7 +795,7 @@ class OrderController extends Controller
 
   public function index_order(Request $request){
     //halaman order user
-     $orders = Order::where('user_id',Auth::user()->id)
+     $orders = Order::where([['user_id',Auth::user()->id],['package','NOT LIKE',"%WA Reseller%"]])
                 ->orderBy('created_at','desc')
                 ->paginate(15);
 

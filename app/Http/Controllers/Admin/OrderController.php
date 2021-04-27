@@ -47,7 +47,7 @@ class OrderController extends Controller
     $user_day_left = $user->day_left;
 
     // RESELLER
-    $order_package = $order->package_title;
+    $order_package = substr($order->package,0,11);
     if($order_package == 'WA Reseller')
     {
       $order->status = 2;

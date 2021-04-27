@@ -82,7 +82,7 @@ class CheckConnection extends Command
 						}
             
             if ($row->mode == 2 ) {
-              $result = json_decode(WamateHelper::show_device($user->token,$phone->wamate_id));
+              $result = json_decode(WamateHelper::show_device($user->token,$phone->wamate_id,$phone->ip_server));
               if (strtoupper($result->status)=="PAIRED"){
                 $status = true;
               }

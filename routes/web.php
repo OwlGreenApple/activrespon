@@ -213,6 +213,7 @@ Route::group(['middleware'=>['auth','web']],function(){
 
   // Reseller
   Route::get('reseller-invoice','HomeController@invoice');
+  Route::get('detail-invoice/{period}','HomeController@monthly_report');
 });
  
 /*** USER ***/
