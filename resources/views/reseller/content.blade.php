@@ -7,23 +7,20 @@
       <th class="menu-mobile">
         Details
       </th>
+      <th class="menu-nomobile" action="created_at">
+        Invoice Date
+      </th>
       <th class="menu-nomobile" action="no_order">
-        No Order
+        No Invoice
       </th>
       <th class="menu-nomobile" action="package">
-        Package
+        Description
       </th>
       <th class="menu-nomobile" action="harga">
-        Price
-      </th>
-      <th class="menu-nomobile" action="created_at">
-        Date Order
-      </th>
-      <th class="menu-nomobile" action="Confirm">
-        Date Confirmation
+        Total
       </th>
       <th class="menu-nomobile">
-        Upload Image
+        Payment Proof
       </th>
       <th class="menu-nomobile" action="keterangan">
         Notes
@@ -31,14 +28,20 @@
       <th class="menu-nomobile">
         Details
       </th>
+      <th class="menu-nomobile" action="Confirm">
+        Confirmed On
+      </th>
       <th class="header" action="status" style="width:145px">
-        Status
+        Action
       </th>
     </thead>
 
     <tbody>
       @foreach($orders as $order)
         <tr>
+          <td class="menu-nomobile" data-label="Date">
+            {{$order->created_at}}
+          </td>
           <td data-label="No Order">
             <div class="menu-mobile">
               <div class="view-details" data-id="{{$order->id}}">
@@ -58,12 +61,6 @@
           </td> 
           <td class="menu-nomobile text-right" data-label="Harga">
             Rp. <?php echo number_format($order->total) ?>
-          </td>
-          <td class="menu-nomobile" data-label="Date">
-            {{$order->created_at}}
-          </td>
-           <td class="menu-nomobile" data-label="Confirm">
-             @if($order->created_at == $order->updated_at) - @else {{$order->updated_at}} @endif
           </td>
           <td class="menu-nomobile" data-label="Bukti Bayar" align="center">
             @if($order->buktibayar=='' or $order->buktibayar==null)
@@ -85,10 +82,13 @@
             @endif
           </td>
           <td><a target="_blank" href="{{ url('detail-invoice') }}/{{$order->package_title}}">Detail</a></td>
+          <td class="menu-nomobile" data-label="Confirm">
+             @if($order->date_confirm == null) - @else {{$order->date_confirm}} @endif
+          </td>
           <td data-label="Status" class="text-center">
             @if($order->status==0)
               <button type="button" class="btn btn-primary btn-confirm" data-toggle="modal" data-target="#confirm-payment" data-id="{{$order->id}}" data-no-order="{{$order->no_order}}" data-package="{{$order->package}}" data-total="{{$order->grand_total}}" data-date="{{$order->created_at}}" data-keterangan="{{$order->keterangan}}" style="font-size: 13px; padding: 5px 8px;">
-                Confirm Payment
+                Pay Now
               </button>
             @elseif($order->status==1)
               <span style="color: orange">

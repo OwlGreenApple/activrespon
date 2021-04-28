@@ -58,7 +58,13 @@ class OrderController extends Controller
         'user' => $user,
       ];
 
-      $this->email_messages($user,$email_data,$order);
+      $order->date_confirm = Carbon::now();
+      $order->save();
+
+      if(env('APP_ENV') <> 'local')
+      {
+        $this->email_messages($user,$email_data,$order);
+      }
 
       $arr['status'] = 'success';
       $arr['message'] = 'Order berhasil dikonfirmasi';
@@ -150,6 +156,9 @@ class OrderController extends Controller
     {
       $this->email_messages($user,$emaildata,$order);
     }
+
+    $order->date_confirm = Carbon::now();
+    $order->save();
 
     $arr['status'] = 'success';
     $arr['message'] = 'Order berhasil dikonfirmasi';
