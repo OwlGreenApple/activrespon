@@ -28,6 +28,9 @@
       <th class="menu-nomobile" action="keterangan">
         Notes
       </th>
+      <th class="menu-nomobile">
+        Details
+      </th>
       <th class="header" action="status" style="width:145px">
         Status
       </th>
@@ -81,7 +84,8 @@
               {{$order->keterangan}}
             @endif
           </td>
-          <td data-label="Status">
+          <td><a target="_blank" href="{{ url('detail-invoice') }}/{{$order->package_title}}">Detail</a></td>
+          <td data-label="Status" class="text-center">
             @if($order->status==0)
               <button type="button" class="btn btn-primary btn-confirm" data-toggle="modal" data-target="#confirm-payment" data-id="{{$order->id}}" data-no-order="{{$order->no_order}}" data-package="{{$order->package}}" data-total="{{$order->grand_total}}" data-date="{{$order->created_at}}" data-keterangan="{{$order->keterangan}}" style="font-size: 13px; padding: 5px 8px;">
                 Confirm Payment
@@ -92,7 +96,7 @@
               </span>
             @else 
               <span style="color: green">
-                <b><a href="{{ url('detail-invoice') }}/{{$order->package_title}}">Confirmed</a></b>
+                <b>Confirmed</b>
               </span>
             @endif
           </td>

@@ -79,7 +79,7 @@ class ChatsController extends Controller
         else
         {
             $device_key = $phone_number->device_key;
-            $chat_members = WamateHelper::get_all_chats($device_key);
+            $chat_members = WamateHelper::get_all_chats($device_key,$phone_number->ip_server);
 
             if($chat_members == null)
             {
@@ -137,7 +137,8 @@ class ChatsController extends Controller
 
         if(!is_null($phone_number)):
           $device_key = $phone_number->device_key;
-          $chat_members = WamateHelper::get_all_chats($device_key);
+          $ip_server = $phone_number->ip_server;
+          $chat_members = WamateHelper::get_all_chats($device_key,$ip_server);
           $device_id = $phone_number->wamate_id;
           $owner = substr($phone_number->phone_number,1);
 
@@ -242,8 +243,9 @@ class ChatsController extends Controller
     {
         // dd($img);
         // $img = "/media/13/2D84851D7661B1DEF181442B070EBE75.jpeg";
+        $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
         $filter = explode("-", $media);
-        $url = WamateHelper::get_ip_address()."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
+        $url = $phone_number->ip_server."/wamate-api/public/media/".$filter[0].'/'.$filter[1];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, sprintf($url));
@@ -291,7 +293,8 @@ class ChatsController extends Controller
            $message = preg_replace("/<script.*>|<script>|<\/script>|\(|\)/im", "-", $message);
         }
 
-        $send = WamateHelper::send_message($to,$message,$device_key);
+        $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
+        $send = WamateHelper::send_message($to,$message,$device_key,$phone_number->ip_server);
         
         if(is_array($send))
         {
@@ -386,7 +389,8 @@ class ChatsController extends Controller
         // Storage::disk('local')->put('test/cvt.jpg',$media);
         Storage::disk('s3')->put($folder.$file,file_get_contents($media),'public');
         sleep(1);
-        $send = ApiHelper::send_media_url_wamate($to,Storage::disk('s3')->url($folder.$file),$message,$device_key,$type);
+        $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
+        $send = WamateHelper::send_media_url_wamate($to,Storage::disk('s3')->url($folder.$file),$message,$device_key,$type,$phone_number->ip_server);
 
         //dd($send);
 
@@ -566,11 +570,13 @@ class ChatsController extends Controller
     /* UNUSED ------- SINCE WE USE DIRECT WAMATE DB */
     private function saveMessages($device_key, $device_id)
     {
+        $phone_number = PhoneNumber::where([['user_id',Auth::id()],['mode',2]])->first();
+        $ip_server = $phone_number->ip_server;
         /* save all messages to database */
         $total_message = 0;
         $page = 20;
         // $device_id = 25;
-        $chat_messages = WamateHelper::get_all_messages($device_key,20); //count all page messages
+        $chat_messages = WamateHelper::get_all_messages($device_key,20,$ip_server); //count all page messages
 
         /*if messages more than 20 page or multiply would add page limit 20 for example if total messages 21 then limit ($total_message) would be 40*/
         if(isset($chat_messages['total']))
@@ -582,7 +588,7 @@ class ChatsController extends Controller
         if($total_message > $page)
         {
           $total_message += $page;
-          $chat_messages = WamateHelper::get_all_messages($device_key,$total_message);
+          $chat_messages = WamateHelper::get_all_messages($device_key,$total_message,$ip_server);
         }
 
         // dd($chat_messages['data']);

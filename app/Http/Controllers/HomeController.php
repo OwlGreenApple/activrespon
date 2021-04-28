@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\ApiUserController;
 use App\Imports\UsersImport;
 use App\User;
 use App\PhoneNumber;
@@ -327,11 +328,43 @@ class HomeController extends Controller
       // $current_month = Carbon::now()->format('m-Y');
       $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month]])
               ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
-              ->select('resellers.*','pa.phone_number')
+              ->select('resellers.*','pa.phone_number','pa.quota')
               ->get();
 
+      //total invoice
       $total = Reseller::where([['user_id','=',$id],['period','=',$current_month]])->selectRaw('SUM(total) AS gt')->first();
-      return view('reseller.reseller',['data'=>$order,'total'=>$total]);
+
+      // total phone numbers
+      $total_phone = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.phone_number','<>',null]])
+              ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
+              ->selectRaw('COUNT(*) AS gt')->first();
+
+      // total NO phone numbers
+      $total_no_phone = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.phone_number','=',null]])
+              ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
+              ->selectRaw('COUNT(*) AS gt')->first();
+
+      // total packages 1
+      $total_package_1 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 1 WA']])->selectRaw('COUNT(*) AS gt')->first();
+
+      // total packages 2
+      $total_package_2 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 2 WA']])->selectRaw('COUNT(*) AS gt')->first();
+
+      // total packages 3
+      $total_package_3 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 3 WA']])->selectRaw('COUNT(*) AS gt')->first();
+
+      $data = [
+        'data'=>$order,
+        'total'=>$total,
+        'total_phone'=>$total_phone,
+        'total_no_phone'=>$total_no_phone,
+        'total_package_1' =>$total_package_1,
+        'total_package_2' =>$total_package_2,
+        'total_package_3' =>$total_package_3,
+        'package'=> new ApiUserController
+      ];
+
+      return view('reseller.reseller',$data);
     }
 /* end class HomeController */
 }

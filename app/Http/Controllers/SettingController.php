@@ -59,13 +59,13 @@ class SettingController extends Controller
       */
       $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
       if (is_null($user->email_wamate) ||  $user->email_wamate ==="") {
-        $result = WamateHelper::reg($email_wamate);
+        $result = WamateHelper::reg($email_wamate,env('WAMATE_SERVER'));
         $user->email_wamate = $email_wamate;
         $user->save();
       }
       
       if (is_null($user->token) || $user->token==="") {
-        $result = json_decode(WamateHelper::login($email_wamate));
+        $result = json_decode(WamateHelper::login($email_wamate,env('WAMATE_SERVER')));
         $user->token = $result->token;
         $user->refresh_token = $result->refreshToken;
         $user->save();
@@ -534,7 +534,7 @@ class SettingController extends Controller
         if ($phoneNumber->wamate_id != 0) {
         }
         else if ($phoneNumber->wamate_id == 0) {
-          $result = json_decode(WamateHelper::create_device($user->token,null,'device-'.$phoneNumber->id,null));
+          $result = json_decode(WamateHelper::create_device($user->token,null,'device-'.$phoneNumber->id,null,$phoneNumber->ip_server));
 
           if($result->status == 401)
           {
@@ -554,7 +554,7 @@ class SettingController extends Controller
               $url = 'https://activrespon.com/dashboard/get-webhook';
           }
           
-          WamateHelper::setWebhook($url,$result->id,$user->token);
+          WamateHelper::setWebhook($url,$result->id,$user->token,$phoneNumber->ip_server);
 
           $phoneNumber->wamate_id = $result->id;
           $phoneNumber->device_key = $result->device_key;
@@ -710,7 +710,7 @@ class SettingController extends Controller
 			}
     
 			if (session('mode')==2) {
-        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id),true);
+        $res = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id,$phoneNumber->ip_server),true);
         if (strtoupper($res['status']) == "IDLE") {
 					$data = array(
 						'status'=>'error',
@@ -787,7 +787,7 @@ class SettingController extends Controller
 				if (session('mode')==2) {
           // $result = json_decode(WamateHelper::show_device($user->token,$phoneNumber->wamate_id));
           // if (strtoupper($result->status)=="PAIRED"){
-          $result = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id));
+          $result = json_decode(WamateHelper::pair($user->token,$phoneNumber->wamate_id,$phoneNumber->ip_server));
           if (strtoupper($result->status) == "IDLE") {
             $response = array(
               'status'=>'error',
@@ -803,7 +803,7 @@ class SettingController extends Controller
           else if (strtoupper($result->status) == "PAIRED") {
 						$flag_connect = true;
             /* TO SET AUTO READ ALWAYS FALSE ON DEVICE SETTINGS */
-            WamateHelper::autoreadsetting($phoneNumber->device_key);
+            WamateHelper::autoreadsetting($phoneNumber->device_key,$phoneNumber->ip_server);
           }
         }
 				if ($flag_connect){
@@ -964,7 +964,7 @@ class SettingController extends Controller
 				} 
 			}
 			else if ($phoneNumber->mode == 2){
-        $result = WamateHelper::delete_devices($phoneNumber->wamate_id,$user->token);
+        $result = WamateHelper::delete_devices($phoneNumber->wamate_id,$user->token,$phoneNumber->ip_server);
         $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
         $countwebhook = WebHookWA::where('device_id',$phoneNumber->wamate_id);
         
@@ -976,7 +976,7 @@ class SettingController extends Controller
           }
 
           $phoneNumber->delete();
-          $result = json_decode(WamateHelper::login($email_wamate),true);
+          $result = json_decode(WamateHelper::login($email_wamate,$phoneNumber->ip_server),true);
           $own = User::find($user->id);
 
           if(isset($result['token']))

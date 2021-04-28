@@ -79,7 +79,7 @@ class ResellerInvoice extends Command
             $user = User::find($row->user_id);
             $pckg = [
               'namapaket'=>'WA Reseller - '.$invoice_period,
-              'namapakettitle'=>'WA Reseller',
+              'namapakettitle'=>$invoice_period,
               'user'=>$user,
               'price'=>$row->gt,
               'priceupgrade'=>0,

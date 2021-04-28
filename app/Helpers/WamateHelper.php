@@ -69,10 +69,10 @@ class WamateHelper
     return $res;
   }
 
-  public static function reg($email,$userid = null)
+  public static function reg($email,$userid = null,$ip_server)
   {
     $login = null;
-    $url= self::api_ip_server(null,'/auth/register');
+    $url= self::api_ip_server($ip_server,'/auth/register');
 
     $data = array(
       "email" => $email,
@@ -248,10 +248,11 @@ class WamateHelper
   /*
   buat chat app
   */
- 	public static function get_message($device_key)
+ 	public static function get_message($device_key,$ip_server = null)
   {
 		// Prepare new cURL resource
-		$ch = curl_init('http://'.self::ip_server().'/messages/');
+		// $ch = curl_init('http://'.self::ip_server().'/messages/');
+    $ch = curl_init(self::api_ip_server($ip_server,'/messages/'));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -527,9 +528,10 @@ class WamateHelper
 
 	}
 
-  public static function get_all_chats($device_key)
+  public static function get_all_chats($device_key,$ip_server = null)
   {
-    $ch = curl_init('http://'.self::ip_server().'/chats');
+    // $ch = curl_init('http://'.self::ip_server().'/chats');
+    $ch = curl_init(self::api_ip_server($ip_server,'/chats'));
 
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -552,10 +554,11 @@ class WamateHelper
 
   }
 
-  public static function get_all_messages($device_key,$page)
+  public static function get_all_messages($device_key,$page,$ip_server = null)
   {
     /* menampilkan message sesuai limit (dlm 1 page bisa n message sesuai limit) */
-    $ch = curl_init('http://'.self::ip_server().'/messages?limit='.$page.'');
+    // $ch = curl_init('http://'.self::ip_server().'/messages?limit='.$page.'');
+    $ch = curl_init(self::api_ip_server($ip_server,'/messages?limit='.$page.''));
 
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -580,7 +583,7 @@ class WamateHelper
 
   }
 
-  public static function setWebhook($url,$device_id,$token)
+  public static function setWebhook($url,$device_id,$token,$ip_server = null)
   {
     /* pasang webhook buat notifikasi */
     $ch = curl_init();
@@ -592,7 +595,8 @@ class WamateHelper
 
     $data_string = json_encode($data);
     curl_setopt_array($ch, array(
-      CURLOPT_URL => 'http://'.self::ip_server().'/devices/'.$device_id.'/set-webhook',
+      // CURLOPT_URL => 'http://'.self::ip_server().'/devices/'.$device_id.'/set-webhook',
+      CURLOPT_URL => self::api_ip_server($ip_server,'/devices/'.$device_id.'/set-webhook'),
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
