@@ -44,6 +44,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:connection')->everyFifteenMinutes();
         // $schedule->command('check:wa')->hourly();
         $schedule->command('reset:serversimi')->everyFifteenMinutes();
+        $schedule->command('check:deviceapi')->everyTenMinutes();
         $schedule->command('reseller:invoice')->monthly();
         $schedule->command('check:quota')->dailyAt('00:05');
       }

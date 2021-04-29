@@ -156,7 +156,7 @@
                         @guest
 
                         @else
-                          @if($is_nav_show)
+                          @if($is_nav_show && Auth()->user()->reseller_token == null)
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link {{ (request()->is('home') || request()->is('list-form') || request()->is('list-create') || request()->is('create-campaign') || request()->is('create-apt')) ? 'active' : '' }} dropdown-toggle" href="{{ route('home') }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     Create<span class="caret"></span>
@@ -206,7 +206,19 @@
                                 <a class="nav-link {{ (request()->is('chats')) ? 'active' : '' }}" href="{{ url('chats') }}">Chats</a>
                             </li>
                             @endif
-                        @endif 
+                        @else
+                            <li class="nav-item">
+                             <a href="{{url('reseller-home')}}" class="nav-link {{ (request()->is('reseller-home')) ? 'active' : '' }}">Home</a>
+                            </li>
+
+                            <li class="nav-item">
+                             <a href="{{url('reseller-invoice')}}" class="nav-link {{ (request()->is('reseller-invoice')) ? 'active' : '' }}">Reseller Invoice</a>
+                            </li>
+
+                            <li class="nav-item">
+                             <a target="_blank" href="https://docs.google.com/document/d/1b4OwN-_V2q2deV-KMk9WHHqFOMLaZV2HLvOMD2SKxfU/edit?usp=sharing" class="nav-link">Tutorial API</a>
+                            </li>
+                        @endif <!-- end non reseller -->
                     </ul>
                     <ul class="navbar-nav mr-auto"><!-- separator --></ul>
                     @if($is_nav_show)
@@ -220,20 +232,19 @@
                         <li class="nav-item cog-pos dropdown">
                            <a id="cogDropdown" class="icon-cog" data-toggle="dropdown"></a>
                            <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="cogDropdown">
+
+                            @if(Auth()->user()->reseller_token == null)
                                     <a href="{{url('settings')}}" class="nav-link {{ (request()->is('settings')) ? 'active' : '' }}">Settings</a>
 
                                     <a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Buy More</a> 
 
-                                    @if(Auth()->user()->reseller_token !== null)
-                                      <a href="{{url('reseller-invoice')}}" class="nav-link {{ (request()->is('reseller-invoice')) ? 'active' : '' }}">Reseller Invoice</a>
-                                    @endif
-                                    
                                     <!--<a href="{{url('pricing')}}" class="nav-link {{ (request()->is('pricing')) ? 'active' : '' }}">Upgrade</a> 
                                     -->
 																		<a href="{{url('order')}}" class="nav-link {{ (request()->is('order')) ? 'active' : '' }}">Order & Confirm</a>
                                     
 																		<a href="https://docs.google.com/document/d/1Z29tFyZuWr0nw0uQ0gETlzvRS-T2Nn4ccuNMU5C_5sI/edit" class="nav-link" target="_blank">Tutorial</a>
-																		
+															@endif <!-- END NON RESELLER TOKEN -->
+
                                     <a class="nav-link" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

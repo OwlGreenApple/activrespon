@@ -28,6 +28,12 @@ class AuthSettings
         return redirect('pricing');
       }
 
+      /*RESELLER PAGE / RESELLER USER*/
+      if($user->reseller_token <> null)
+      {
+        return self::reseller_page($current_url);
+      }
+
       $valid_url = false;
 
       /* daftar url yg tidak akan di redirect jika user phone_number kosong */
@@ -42,5 +48,14 @@ class AuthSettings
       }
 
       return $next($request);
+    }
+
+    private static function reseller_page($current_url)
+    {
+      $url = ['reseller-invoice','reseller-home','tutorial-api'];
+      if (in_array($current_url, $url) == false) 
+      {
+          return redirect('reseller-invoice');
+      }
     }
 }

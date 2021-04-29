@@ -200,7 +200,7 @@ class WamateHelper
     else
     {
       //RESELLER
-      $check_email = self::reg($email_wamate,$userid);
+      $check_email = self::reg($email_wamate,$userid,$reseller_ip);
       $check_email = json_decode($check_email,true);
     }
 
@@ -235,6 +235,7 @@ class WamateHelper
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
     $res = json_decode($res,true);
+
 
     if(isset($check_email['token']))
     {

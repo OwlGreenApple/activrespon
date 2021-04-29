@@ -9,6 +9,8 @@ use App\Reseller;
 use App\Helpers\WamateHelper;
 use Carbon\Carbon;
 use Storage;
+use Auth;
+use DB;
 
 class ApiUserController extends Controller
 {
@@ -95,17 +97,20 @@ class ApiUserController extends Controller
 
     public function createdevice($callback_user_token = null,$callback_device_name = null,$callback_package = null)
     {
-
       /*
           $callback_user_token exp = XA-22110tuV!34xyGv88Ca 
           -- reseller_token NOT wamate token --
       */
 
+      // GET AUTO INCREMENT FROM PHONE_APIS
       $req = json_decode(file_get_contents('php://input'),true);
-
+      
       if($callback_user_token == null && $callback_device_name == null && $callback_package == null):
+          $id=DB::select("SHOW TABLE STATUS LIKE 'phone_apis'");
+          $next_id=$id[0]->Auto_increment;
+   
           $token = $req['token'];
-          $device_name = $req['device_name'];
+          $device_name = 'Device-'.$next_id.'-'.Carbon::now();
           $package = $req['package'];
       else:
           $token = $callback_user_token;
@@ -132,6 +137,7 @@ class ApiUserController extends Controller
 
       $device = WamateHelper::create_device($user->token,$user->id,$device_name,$email_wamate,env('WAMATE_SERVER'));
       $device = json_decode($device,true);
+      dd($device);
       $old_token = $user->token;
 
       if(isset($device['code']))
@@ -491,14 +497,21 @@ class ApiUserController extends Controller
       }
     }
 
-    public function delete_device()
+    public function delete_device(Request $request)
     {
-      $req = json_decode(file_get_contents('php://input'),true);
-      $token = $req['token'];
-      $phone_id = $req['phone_id']; 
-
-      // $token = 'XA-22110tuV!34xyGv88Ca';
-      // $phone_id = 6;
+      if($request->phone_id == null)
+      {
+        // DELETE FROM API
+        $req = json_decode(file_get_contents('php://input'),true);
+        $token = $req['token'];
+        $phone_id = $req['phone_id']; 
+      }
+      else
+      {
+        // DELETE FROM ACCOUNTS
+        $token = Auth::user()->reseller_token;
+        $phone_id = $request->phone_id;
+      }
 
       $user = self::check_token($token);
 
@@ -530,6 +543,7 @@ class ApiUserController extends Controller
       else
       {
           $phone->is_delete = 1;
+          $phone->device_status = 0;
           $phone->save();
           return json_encode(array('response'=>'Device '.$device_name.' has been deleted'));
       }

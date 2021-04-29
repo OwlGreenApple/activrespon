@@ -212,6 +212,8 @@ Route::group(['middleware'=>['auth','web']],function(){
 	Route::post('order-confirm-payment','OrderController@confirm_payment_order');
 
   // Reseller
+  Route::get('reseller-home','HomeController@reseller_home');
+  Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-invoice','HomeController@invoice');
   Route::get('detail-invoice/{period}','HomeController@monthly_report');
 });

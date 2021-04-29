@@ -22,6 +22,7 @@ use App\BroadCast;
 use App\BroadCastCustomers;
 use App\Order;
 use App\Reseller;
+use App\Phoneapis;
 use DB;
 use Carbon\Carbon;
 
@@ -308,6 +309,20 @@ class HomeController extends Controller
 
     /* RESELLER */
 
+    public function reseller_home()
+    {
+       return view('reseller.home');
+    }
+
+    /* DISPLAY AVAILABLE / DELETED USER DATA */
+    public function reseller_user_data(Request $request)
+    {
+      $is_delete = $request->is_del;
+      $data = Phoneapis::where([['user_id',Auth::id()],['is_delete','=',$is_delete]])->orderBy('id','desc')->get();
+      return view('reseller.home-data',['data'=>$data]);
+    }
+
+    /* DISPLAY INVOICE */
     public function invoice(Request $request)
     {
       $orders = Order::where([['user_id',Auth::user()->id],['package','LIKE',"%WA Reseller%"]])
@@ -322,6 +337,7 @@ class HomeController extends Controller
        return view('reseller.index',['orders'=>$orders,'pager'=>$orders]);
     }
 
+    /* DISPLAY DETAIL INVOICE */
     public function monthly_report($current_month)
     {
       $id = Auth::id();
@@ -334,7 +350,7 @@ class HomeController extends Controller
       //total invoice
       $total = Reseller::where([['user_id','=',$id],['period','=',$current_month]])->selectRaw('SUM(total) AS gt')->first();
 
-      // total phone numbers
+    /*  // total phone numbers
       $total_phone = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.phone_number','<>',null]])
               ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
               ->selectRaw('COUNT(*) AS gt')->first();
@@ -342,7 +358,7 @@ class HomeController extends Controller
       // total NO phone numbers
       $total_no_phone = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.phone_number','=',null]])
               ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
-              ->selectRaw('COUNT(*) AS gt')->first();
+              ->selectRaw('COUNT(*) AS gt')->first();*/
 
       // total packages 1
       $total_package_1 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 1 WA']])->selectRaw('COUNT(*) AS gt')->first();
@@ -356,8 +372,6 @@ class HomeController extends Controller
       $data = [
         'data'=>$order,
         'total'=>$total,
-        'total_phone'=>$total_phone,
-        'total_no_phone'=>$total_no_phone,
         'total_package_1' =>$total_package_1,
         'total_package_2' =>$total_package_2,
         'total_package_3' =>$total_package_3,
@@ -366,5 +380,6 @@ class HomeController extends Controller
 
       return view('reseller.reseller',$data);
     }
+
 /* end class HomeController */
 }
