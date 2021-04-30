@@ -31,12 +31,12 @@ class AuthSettings
       /*RESELLER PAGE / RESELLER USER*/
       if($user->reseller_token <> null)
       {
-        return self::reseller_page($current_url);
+        return self::reseller_page($current_url,$next,$request);
       }
 
       // PREVENT NON RESELLER USER OPEN RESELLER PAGE
       $url = ['reseller-invoice','reseller-home','tutorial-api'];
-      if (in_array($current_url, $url) == true) 
+      if (in_array($current_url, $url) == true && $user->reseller_token == null) 
       {
           return redirect('settings');
       }
@@ -57,12 +57,16 @@ class AuthSettings
       return $next($request);
     }
 
-    public static function reseller_page($current_url)
+    public static function reseller_page($current_url,$next,$request)
     {
       $url = ['reseller-invoice','reseller-home','tutorial-api'];
       if (in_array($current_url, $url) == false) 
       {
           return redirect('reseller-invoice');
+      }
+      else
+      {
+        return $next($request);
       }
     }
 }

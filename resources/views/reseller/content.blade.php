@@ -4,9 +4,9 @@
 
 <table class="table responsive" id="myTable">
     <thead align="center">
-      <th class="menu-mobile">
+      <!-- <th class="menu-mobile">
         Details
-      </th>
+      </th> -->
       <th class="menu-nomobile" action="created_at">
         Invoice Date
       </th>
@@ -42,19 +42,8 @@
           <td class="menu-nomobile" data-label="Date">
             {{$order->created_at}}
           </td>
-          <td data-label="No Order">
-            <div class="menu-mobile">
-              <div class="view-details" data-id="{{$order->id}}">
-                <span class="menu-mobile icon-dropdown">
-                  <i class="fas fa-sort-down"></i>
-                </span>  
-                {{$order->no_order}}
-              </div>
-            </div>
-
-            <div class="menu-nomobile">
-              {{$order->no_order}}  
-            </div>
+          <td class="menu-nomobile" data-label="No Order">
+            {{$order->no_order}}  
           </td>
           <td class="menu-nomobile" data-label="Package">
             {{$order->package}}
