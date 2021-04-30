@@ -29,10 +29,10 @@
       <form class="responsive" id="content">
         @if($orders->count() > 0)
           @include('reseller.content')
-        @else
-          <div class="alert bg-dashboard cardlist">
+       <!--  else -->
+          <!-- <div class="alert bg-dashboard cardlist">
             You don't have any order yet, please make order <a href="{{ url('pricing') }}">Here</a>
-          </div>
+          </div> -->
         @endif
       </form>
     </div>
