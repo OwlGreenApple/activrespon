@@ -33,6 +33,9 @@
   function display_data_user(is_del)
   {
     $.ajax({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
       type : 'GET',
       url : '{{ url("reseller-data") }}',
       data : {"is_del":is_del},
