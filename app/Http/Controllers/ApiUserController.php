@@ -46,12 +46,21 @@ class ApiUserController extends Controller
     }
 
     //Use this function if phone service stuck
-    public static function login_user($email_wamate,$user_id,$old_token,$callback_token,$callback_phone_id,$callback_device_name = null,$callback_package = null) 
+    public static function login_user($email_wamate,$user_id,$old_token,$callback_token =null,$callback_phone_id =null,$callback_device_name = null,$callback_package = null, $callback_ip = null) 
     {
 
       /* $callback_token = reseller_token NOT wamate token*/
-     
-      $login = WamateHelper::login($email_wamate,env('WAMATE_SERVER'));
+      if($callback_ip == null)
+      {
+        // NEW USER
+        $login = WamateHelper::login($email_wamate,env('WAMATE_SERVER'));
+      }
+      else
+      {
+        // LOGIN
+        $login = WamateHelper::login($email_wamate,$callback_ip);
+      }
+
       $login = json_decode($login,true);
 
       if(isset($login['type']))
@@ -248,7 +257,7 @@ class ApiUserController extends Controller
         elseif($pair['status'] == 401 )
         {
            //EXPIRED TOKEN
-           return self::login_user($phone->email_wamate,$phone->user_id,$phone->token,$token,$phone_id);
+           return self::login_user($phone->email_wamate,$phone->user_id,$phone->token,$token,$phone_id,null,null,$ip_server);
         } 
         else
         {
