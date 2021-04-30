@@ -249,6 +249,11 @@ class ApiUserController extends Controller
            //DEVICE NOT READY
            $data = 'Device is not ready yet, please try again.';
         } 
+        elseif($pair['status'] == 'PAIRED' )
+        {
+           //DEVICE HAS PAIRED
+           $data = "Device has paired already";
+        }  
         elseif($pair['status'] == 404 )
         {
            //DEVICE NOT AVAILABLE

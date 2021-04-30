@@ -210,12 +210,6 @@ Route::group(['middleware'=>['auth','web']],function(){
 	Route::get('/order/load-order','OrderController@load_order');
   Route::get('get-status-upgrade','OrderController@getStatusUpgrade');
 	Route::post('order-confirm-payment','OrderController@confirm_payment_order');
-
-  // Reseller
-  Route::get('reseller-home','HomeController@reseller_home');
-  Route::get('reseller-data','HomeController@reseller_user_data');
-  Route::get('reseller-invoice','HomeController@invoice');
-  Route::get('detail-invoice/{period}','HomeController@monthly_report');
 });
  
 /*** USER ***/
@@ -346,8 +340,13 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('rm-notification','ChatsController@removeNotification');
   Route::post('send_chat_message','ChatsController@sendMessage');
   Route::post('send_chat_media','ChatsController@sendMedia');
+  Route::get('debug_message','ChatsController@getChatMessages');
 
-    Route::get('debug_message','ChatsController@getChatMessages');
+   // RESELLER
+  Route::get('reseller-home','HomeController@reseller_home');
+  Route::get('reseller-data','HomeController@reseller_user_data');
+  Route::get('reseller-invoice','HomeController@invoice');
+  Route::get('detail-invoice/{period}','HomeController@monthly_report');
 
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');

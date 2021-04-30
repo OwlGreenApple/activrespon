@@ -34,6 +34,13 @@ class AuthSettings
         return self::reseller_page($current_url);
       }
 
+      // PREVENT NON RESELLER USER OPEN RESELLER PAGE
+      $url = ['reseller-invoice','reseller-home','tutorial-api'];
+      if (in_array($current_url, $url) == true) 
+      {
+          return redirect('settings');
+      }
+
       $valid_url = false;
 
       /* daftar url yg tidak akan di redirect jika user phone_number kosong */
@@ -50,7 +57,7 @@ class AuthSettings
       return $next($request);
     }
 
-    private static function reseller_page($current_url)
+    public static function reseller_page($current_url)
     {
       $url = ['reseller-invoice','reseller-home','tutorial-api'];
       if (in_array($current_url, $url) == false) 
