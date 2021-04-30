@@ -235,8 +235,7 @@ class WamateHelper
     //echo $res."\n";
     // return json_encode(['message'=>$res]);
     $res = json_decode($res,true);
-
-
+    
     if(isset($check_email['token']))
     {
       $res['token'] = $check_email['token'];

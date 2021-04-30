@@ -110,7 +110,7 @@ class ApiUserController extends Controller
           $next_id=$id[0]->Auto_increment;
    
           $token = $req['token'];
-          $device_name = 'Device-'.$next_id.'-'.Carbon::now();
+          $device_name = 'api-'.$next_id;
           $package = $req['package'];
       else:
           $token = $callback_user_token;
@@ -137,7 +137,6 @@ class ApiUserController extends Controller
 
       $device = WamateHelper::create_device($user->token,$user->id,$device_name,$email_wamate,env('WAMATE_SERVER'));
       $device = json_decode($device,true);
-      dd($device);
       $old_token = $user->token;
 
       if(isset($device['code']))
