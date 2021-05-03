@@ -12,4 +12,5 @@ class Phoneapis extends Model
       1 = paired
     */
     protected $table = "phone_apis";
+    protected $connection = 'mysql2';
 }
