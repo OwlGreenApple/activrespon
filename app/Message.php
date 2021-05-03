@@ -13,7 +13,7 @@ class Message extends Model
   */
   protected $table = 'messages';
 	// public static function create_message($phone_number,$message,$key,$mode=0){
-	public static function create_message($phone_number,$message,$key,$mode=1){
+	public static function create_message($phone_number,$message,$key,$mode=2){
     $message_send = new Message;
     $message_send->phone_number=$phone_number;
     $message_send->message= $message;
@@ -24,7 +24,7 @@ class Message extends Model
     if ($mode==1) { //mode woowa
       $message_send->status=7;
     }
-    if ($mode==2) { //mode woowa
+    if ($mode==2) { //mode wamate
       $message_send->status=11;
     }
     $message_send->customer_id=0;
