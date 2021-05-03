@@ -192,6 +192,7 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::get('verify-phone', 'SettingController@verify_phone')->middleware('checkphone');
   Route::get('check-qr', 'SettingController@check_connected_phone');
   Route::get('delete-phone', 'SettingController@delete_phone');
+  Route::get('refresh-token', 'SettingController@refresh_token');
  
   Route::get('delete-api/{no}', 'SettingController@delete_api');
   Route::get('status-nomor/{no}', 'SettingController@status_nomor');
