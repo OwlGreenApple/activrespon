@@ -206,7 +206,9 @@
                                 <a class="nav-link {{ (request()->is('chats')) ? 'active' : '' }}" href="{{ url('chats') }}">Chats</a>
                             </li>
                             @endif
+                            <!-- end non reseller -->
                         @else
+                            <!-- RESELLER -->
                             <li class="nav-item">
                              <a href="{{url('reseller-home')}}" class="nav-link {{ (request()->is('reseller-home')) ? 'active' : '' }}">Home</a>
                             </li>
@@ -218,7 +220,7 @@
                             <li class="nav-item">
                              <a target="_blank" href="https://docs.google.com/document/d/1b4OwN-_V2q2deV-KMk9WHHqFOMLaZV2HLvOMD2SKxfU/edit?usp=sharing" class="nav-link">Tutorial API</a>
                             </li>
-                        @endif <!-- end non reseller -->
+                        @endif <!-- end reseller -->
                     </ul>
                     <ul class="navbar-nav mr-auto"><!-- separator --></ul>
                     @if($is_nav_show)
@@ -229,6 +231,7 @@
 														 Hi, {{Auth()->user()->name}}
 													</li>
 												@endif 
+
                         <li class="nav-item cog-pos dropdown">
                            <a id="cogDropdown" class="icon-cog" data-toggle="dropdown"></a>
                            <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="cogDropdown">
@@ -243,6 +246,7 @@
 																		<a href="{{url('order')}}" class="nav-link {{ (request()->is('order')) ? 'active' : '' }}">Order & Confirm</a>
                                     
 																		<a href="https://docs.google.com/document/d/1Z29tFyZuWr0nw0uQ0gETlzvRS-T2Nn4ccuNMU5C_5sI/edit" class="nav-link" target="_blank">Tutorial</a>
+
 															@endif <!-- END NON RESELLER TOKEN -->
 
                                     <a class="nav-link" href="{{ route('logout') }}"

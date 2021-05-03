@@ -59,12 +59,17 @@ class AuthSettings
 
     public static function reseller_page($current_url,$next,$request)
     {
-      $url = ['reseller-invoice','reseller-home','tutorial-api'];
+      $temp_url = explode("/",$current_url);
+      if($temp_url[0] == 'detail-invoice'){
+        $current_url = $temp_url[0];
+      }
+
+      $url = ['reseller-invoice','reseller-home','tutorial-api','detail-invoice'];
       if (in_array($current_url, $url) == true && $request->ajax()) 
       {
         return $next($request);
       }
-      elseif(in_array($current_url, $url) == false && !$request->ajax())
+      elseif(in_array($current_url, $url) == false)
       {
         return redirect('reseller-invoice');
       }
