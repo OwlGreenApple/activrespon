@@ -216,7 +216,7 @@ class ApiWPController extends Controller
             $mode = 2;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
         
         $temp = $this->sendToCelebmail($name,$email,'wq528m745k709');
         return "success";
@@ -291,7 +291,7 @@ class ApiWPController extends Controller
             $mode = 2;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
 
         return "success";
       }
@@ -421,7 +421,7 @@ class ApiWPController extends Controller
             $mode = 2;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
 
         return "success";
       }
@@ -495,7 +495,7 @@ class ApiWPController extends Controller
             $mode = 2;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
 
         return "success";
       }

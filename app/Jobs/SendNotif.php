@@ -272,13 +272,14 @@ class SendNotif implements ShouldQueue
       return $response;
     }
     
-    public function send_wamate($customer_phone,$message,$device_key){
+    public function send_wamate($customer_phone,$message,$device_key,$user_ip_server){
       $curl = curl_init();
 
       $data = array(
           'customer_phone'=>$customer_phone,
           'message'=>$message,
           'device_key'=>$device_key,
+          'user_ip_server'=>$user_ip_server,
       ); 
 
 		  $url = "https://activrespon.com/dashboard/send-wamate";
