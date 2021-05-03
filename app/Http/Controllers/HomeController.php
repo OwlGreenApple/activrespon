@@ -340,10 +340,19 @@ class HomeController extends Controller
     /* DISPLAY DETAIL INVOICE */
     public function monthly_report($current_month)
     {
+      if(env('APP_ENV') == 'local')
+      {
+        $connection = 'activrespons.phone_apis AS pa';
+      }
+      else
+      {
+        $connection = 'activres_project.phone_apis AS pa';
+      }
+
       $id = Auth::id();
       // $current_month = Carbon::now()->format('m-Y');
       $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month]])
-              ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
+              ->join($connection,'resellers.phone_api_id','=','pa.id')
               ->select('resellers.*','pa.phone_number','pa.quota')
               ->get();
 
