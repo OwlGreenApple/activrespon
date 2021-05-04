@@ -130,8 +130,6 @@
                 <div id="display_button_after_delete_phone" class="text-right">
                   @if(!$is_registered)
                     <button id="btn-check" type="button" class="btn btn-custom">Check Phone Number</button>
-                  @else
-                    <a id="refresh_token" class="btn btn-warning ml-1" data="{{ auth()->user()->refresh_token }}">Refresh</a>
                   @endif
                  <!--  <button type="button" id="button-connect-old" class="btn btn-custom" <php if ($is_registered) { echo "disabled"; } ?> data-attr="<php if (session('mode')==0) { echo session("server_id"); }?>">Connect</button> -->
                 </div>
@@ -670,35 +668,7 @@
 		// End Display Country
 		
 		initButton();
-    refresh_token();
   });
-
-  function refresh_token()
-  {
-    $("#refresh_token").click(function(){
-      var refresh_token = $(this).attr('data');
-      $.ajax({
-        type :'GET',
-        url:'{{ url("refresh-token") }}',
-        data : {'token':refresh_token},
-        dataType: 'json',
-        success : function(result){
-          if(result.err == 0)
-          {
-            $('.message').html('Device reloaded!');
-          }
-          else
-          {
-            $('.message').html('Unable to reload device, Sorry our server is too busy, please try again later.');
-          }
-        },
-        error : function(xhr)
-        {
-          console.log(xhr.responseText);
-        }
-      });
-    });
-  }
 
   function settingUser(){
     $(".message-settings").hide();
