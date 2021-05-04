@@ -540,7 +540,7 @@ class SettingController extends Controller
           {
             $arr['status'] = 'error';
             $arr['message'] = "Server is too busy, please contact administrator.";
-            //usually wamate email not registered. Change database.
+            //expired token
             return $arr;
           }
 
@@ -584,6 +584,31 @@ class SettingController extends Controller
       $arr['status'] = 'success';
       $arr['message'] = Alert::connect_success();
       return $arr;
+    }
+
+    /*REFRESH TOKEN*/
+    public function refresh_token(Request $request)
+    {
+      $token = $request->token;
+      $phone = PhoneNumber::where('user_id','=',Auth::id())->first();
+      if(!is_null($phone))
+      {
+        $new_token = WamateHelper::refresh_token($token,$phone->ip_server);
+      }
+      else
+      {
+        return json_encode(['err'=>1]);
+      }
+
+      if(isset($new_token['token']) && isset($new_token['refreshToken']))
+      {
+        $user = User::find(Auth::id());
+        $user->token = $new_token['token'];
+        $user->refresh_token = $new_token['refreshToken'];
+        $user->save();
+
+        return json_encode(['err'=>0]);
+      }
     }
 
     /*

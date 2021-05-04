@@ -11,10 +11,9 @@
         echo "<span class='span-connected'>Server Connected</span>";
       }
       ?></td>
-      <!-- <td class="text-center"><a class="icon icon-edit btn-edit" data-number="{{$phoneNumber->phone_number}}"></a></td> -->
       <td class="text-center">
         <a class="icon icon-delete" data-id="{{$phoneNumber->id}}"></a>
-      </td>
+      </td> 
     </tr>
   @endforeach
 @else
