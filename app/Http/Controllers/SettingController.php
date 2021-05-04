@@ -70,6 +70,11 @@ class SettingController extends Controller
         $user->refresh_token = $result->refreshToken;
         $user->save();
       }
+
+      if(!is_null($user->token))
+      {
+        $this->refresh_token($email_wamate);
+      }
       
       $day_left = User::find($user->id)->day_left;
       $expired = Carbon::now()->addDays($day_left)->toDateString();
@@ -587,18 +592,20 @@ class SettingController extends Controller
     }
 
     /*REFRESH TOKEN*/
-    public function refresh_token(Request $request)
+    public function refresh_token($email)
     {
-      $token = $request->token;
       $phone = PhoneNumber::where('user_id','=',Auth::id())->first();
+
       if(!is_null($phone))
       {
-        $new_token = WamateHelper::refresh_token($token,$phone->ip_server);
+        $new_token = WamateHelper::login($email,$phone->ip_server);
       }
       else
       {
-        return json_encode(['err'=>1]);
+        return;
       }
+
+      $new_token = json_decode($new_token,true);
 
       if(isset($new_token['token']) && isset($new_token['refreshToken']))
       {
@@ -607,7 +614,7 @@ class SettingController extends Controller
         $user->refresh_token = $new_token['refreshToken'];
         $user->save();
 
-        return json_encode(['err'=>0]);
+        return;
       }
     }
 
