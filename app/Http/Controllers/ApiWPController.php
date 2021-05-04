@@ -201,6 +201,7 @@ class ApiWPController extends Controller
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
         $key = env('REMINDER_PHONE_KEY');
         $mode = 0;
+        $ip_server = "";
         if (!is_null($phoneNumber)){
           if ($phoneNumber->mode == 0){ //simi
             $server = Server::where('phone_id',$phoneNumber->id)->first();
@@ -214,9 +215,10 @@ class ApiWPController extends Controller
           if ($phoneNumber->mode == 2){ //wamate
             $key = $phoneNumber->device_key;
             $mode = 2;
+            $ip_server = $phoneNumber->ip_server;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$ip_server);
         
         $temp = $this->sendToCelebmail($name,$email,'wq528m745k709');
         return "success";
@@ -276,6 +278,7 @@ class ApiWPController extends Controller
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
         $key = env('REMINDER_PHONE_KEY');
         $mode = 0;
+        $ip_server = "";
         if (!is_null($phoneNumber)){
           if ($phoneNumber->mode == 0){ //simi
             $server = Server::where('phone_id',$phoneNumber->id)->first();
@@ -289,9 +292,10 @@ class ApiWPController extends Controller
           if ($phoneNumber->mode == 2){ //wamate
             $key = $phoneNumber->device_key;
             $mode = 2;
+            $ip_server = $phoneNumber->ip_server;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$ip_server);
 
         return "success";
       }
@@ -406,6 +410,7 @@ class ApiWPController extends Controller
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
         $key = env('REMINDER_PHONE_KEY');
         $mode = 0;
+        $ip_server = "";
         if (!is_null($phoneNumber)){
           if ($phoneNumber->mode == 0){ //simi
             $server = Server::where('phone_id',$phoneNumber->id)->first();
@@ -419,9 +424,10 @@ class ApiWPController extends Controller
           if ($phoneNumber->mode == 2){ //wamate
             $key = $phoneNumber->device_key;
             $mode = 2;
+            $ip_server = $phoneNumber->ip_server;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$ip_server);
 
         return "success";
       }
@@ -480,6 +486,7 @@ class ApiWPController extends Controller
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
         $key = env('REMINDER_PHONE_KEY');
         $mode = 0;
+        $ip_server = "";
         if (!is_null($phoneNumber)){
           if ($phoneNumber->mode == 0){ //simi
             $server = Server::where('phone_id',$phoneNumber->id)->first();
@@ -493,9 +500,10 @@ class ApiWPController extends Controller
           if ($phoneNumber->mode == 2){ //wamate
             $key = $phoneNumber->device_key;
             $mode = 2;
+            $ip_server = $phoneNumber->ip_server;
           }
         }
-        $message_send = Message::create_message($phone_number,$content,$key,$mode,$phoneNumber->ip_server);
+        $message_send = Message::create_message($phone_number,$content,$key,$mode,$ip_server);
 
         return "success";
       }
