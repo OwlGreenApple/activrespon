@@ -64,7 +64,7 @@ class AuthSettings
         $current_url = $temp_url[0];
       }
 
-      $url = ['reseller-invoice','reseller-home','tutorial-api','detail-invoice'];
+      $url = ['reseller-invoice','reseller-home','tutorial-api','detail-invoice','reseller-data'];
       if (in_array($current_url, $url) == true && $request->ajax()) 
       {
         return $next($request);
