@@ -131,7 +131,8 @@ class ApiUserController extends Controller
 
       if($package_check == false)
       {
-        return $data['response'] ='Invalid Package';
+        $data['response'] ='Invalid Package';
+        return json_encode($data);
       }
 
       $user = self::check_token($token);
@@ -179,7 +180,6 @@ class ApiUserController extends Controller
       try
       {
         $phone_api->save();
-
         $period = Carbon::now()->format('m-Y');
         $inv = new Reseller;
         $inv->user_id = $user->id;
@@ -264,6 +264,11 @@ class ApiUserController extends Controller
            //EXPIRED TOKEN
            return self::login_user($phone->email_wamate,$phone->user_id,$phone->token,$token,$phone_id,null,null,$ip_server);
         } 
+        elseif($pair == null)
+        {
+           //DELETED SERVER
+           $data = 'Invalid ID';
+        }
         else
         {
            //401 --INVALID DEVICE TOKEN -- tell to login again
@@ -357,6 +362,13 @@ class ApiUserController extends Controller
         $check_phone = WamateHelper::show_device($phone->token,$phone->device_id,$phone_ip);
         $check_phone = json_decode($check_phone,true);
 
+        if($check_phone == null)
+        {
+            //DELETED SERVER
+          $data['response'] = 'Invalid ID';
+          return json_encode($data);
+        }
+
         if(isset($check_phone['code']))
         {
           //EXPIRED TOKEN
@@ -427,8 +439,8 @@ class ApiUserController extends Controller
       }
       elseif($check_phone == null)
       {
-          // WRONG / INVALID IP ADDRESS
-           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --106-A'));
+          // WRONG / INVALID IP ADDRESS / DELETED IP ADDRESS
+           return json_encode(array('response'=>'Invalid ID'));
       }
       elseif(isset($check_phone['status']) && $check_phone['status'] == 'FAILED')
       {
@@ -495,8 +507,8 @@ class ApiUserController extends Controller
       }
       elseif($check_phone == null)
       {
-          // WRONG / INVALID IP ADDRESS
-           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --107-A'));
+          // WRONG / INVALID IP ADDRESS / DELETED SERVER
+           return json_encode(array('response'=>'Invalid ID'));
       }
       elseif(isset($check_phone['status']) && $check_phone['status'] == 'FAILED')
       {
