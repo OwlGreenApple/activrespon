@@ -32,7 +32,7 @@
           <tr>
             <td>{{ $no }}</td>
             <td>{{ $row->phone_number }}</td>
-            <td>{{ $package->package_list($row->package)['quota'] - $row->quota }}</td>
+            <td>{{ str_replace(",",".",number_format($package->package_list($row->package)['quota'] - $row->quota)) }}</td>
             <td>{{ $row->package }}</td>
             <td>{{ $row->created_at }}</td>
             <td>{{ $row->period }}</td>

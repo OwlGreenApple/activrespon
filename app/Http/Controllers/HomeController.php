@@ -338,7 +338,7 @@ class HomeController extends Controller
     }
 
     /* DISPLAY DETAIL INVOICE */
-    public function monthly_report($current_month)
+    public function monthly_report($current_month,$userid)
     {
       if(env('APP_ENV') == 'local')
       {
@@ -349,7 +349,20 @@ class HomeController extends Controller
         $connection = 'activres_project.phone_apis AS pa';
       }
 
-      $id = Auth::id();
+      // DETERMINE DATA TAKE BY ADMIN OR BY RESELLER USER
+      if($userid == 0)
+      {
+        $id = Auth::id();
+      }
+      elseif(Auth::user()->is_admin == 1 && $userid <> 0)
+      {
+        $id = $userid;
+      }
+      else
+      {
+        return 'Invalid Page';
+      }
+      
       // $current_month = Carbon::now()->format('m-Y');
       $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month]])
               ->join($connection,'resellers.phone_api_id','=','pa.id')

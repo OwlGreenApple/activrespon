@@ -21,6 +21,11 @@
     <td data-label="Date">
       {{$order->created_at}}
     </td>
+    @if($reseller == 1)
+    <td class="text-center" data-label="detail">
+       <a class="btn btn-warning btn-sm" href="{{ url('detail-invoice') }}/{{ $order->package_title }}/{{ $order->user_id }}" target="_blank">View</a>
+    </td>
+    @endif
     <td data-label="Bukti Bayar" align="center">
       @if($order->buktibayar=='' or $order->buktibayar==null)
         -

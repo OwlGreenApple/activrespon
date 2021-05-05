@@ -70,7 +70,7 @@
               {{$order->keterangan}}
             @endif
           </td>
-          <td><a target="_blank" href="{{ url('detail-invoice') }}/{{$order->package_title}}">Detail</a></td>
+          <td><a target="_blank" href="{{ url('detail-invoice') }}/{{$order->package_title}}/0">Detail</a></td>
           <td class="menu-nomobile" data-label="Confirm">
              @if($order->date_confirm == null) - @else {{$order->date_confirm}} @endif
           </td>

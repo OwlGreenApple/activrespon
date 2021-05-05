@@ -25,13 +25,26 @@ class OrderController extends Controller
 {   
   public function load_list_order(Request $request){
     //halaman list order admin
+    $reseller = $request->reseller;
+
+    if($reseller == 0)
+    {
+      $logic = 'NOT LIKE';
+    }
+    else
+    {
+      $logic = 'LIKE';
+    }
+
     $orders = Order::join(env('DB_DATABASE').'.users','orders.user_id','users.id')  
                 ->select('orders.*','users.email')
                 ->orderBy('created_at','desc')
+                ->where('package',$logic,"%WA Reseller%")
                 ->get();
 		// dd($orders);
     $arr['view'] = (string) view('admin.list-order.content')
-                      ->with('orders',$orders);
+                      ->with('orders',$orders)
+                      ->with('reseller',$reseller);
     /*$arr['pager'] = (string) view('admin.list-order.pagination')
                       ->with('orders',$orders); */
     return $arr;

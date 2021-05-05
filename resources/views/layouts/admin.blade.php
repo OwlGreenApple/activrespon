@@ -102,9 +102,18 @@
                             <li class="nav-item">
                               <a class="nav-link {{ (request()->is('list-user')) ? 'active' : '' }}" href="{{ url('list-user') }}">User</a>
                             </li> 
-                            <li class="nav-item">
-                              <a class="nav-link {{ (request()->is('list-order')) ? 'active' : '' }}" href="{{ url('list-order') }}">Order</a>
-                            </li> 
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    Order <span class="caret"></span>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item {{ (request()->is('list-order')) ? 'active' : '' }}" href="{{ url('list-order') }}">Order Member</a>
+
+                                    <a class="dropdown-item {{ (request()->is('list-order-reseller')) ? 'active' : '' }}" href="{{ url('list-order-reseller') }}">Order Reseller</a>
+                                </div>
+                            </li>
+
                             <li class="nav-item">
                               <a class="nav-link {{ (request()->is('list-coupon')) ? 'active' : '' }}" href="{{ url('list-coupon') }}">Coupon</a>
                             </li> 

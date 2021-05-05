@@ -156,7 +156,10 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 
 	//admin order
   Route::get('/list-order',function(){
-    return view('admin.list-order.index');
+    return view('admin.list-order.index',['reseller'=>0]);
+  });
+  Route::get('/list-order-reseller',function(){
+    return view('admin.list-order.index',['reseller'=>1]);
   });
   Route::get('/list-order/load-order','Admin\OrderController@load_list_order');
   Route::get('/list-order/confirm','Admin\OrderController@confirm_order');
@@ -346,7 +349,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('reseller-home','HomeController@reseller_home');
   Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-invoice','HomeController@invoice');
-  Route::get('detail-invoice/{period}','HomeController@monthly_report');
+  Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
 
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');

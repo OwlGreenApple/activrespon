@@ -3,12 +3,14 @@
 @section('content')
 <script type="text/javascript">
   var table;
+  var reseller = "{{ $reseller }}";
 
   function refresh_page(){
     table.destroy();
     $.ajax({
       type : 'GET',
       url : "<?php echo url('/list-order/load-order') ?>",
+      data : {'reseller' : reseller},
       dataType: 'text',
     //   beforeSend: function()
     //   {
@@ -103,7 +105,11 @@
     <div class="row">
     <div class="col-md-11">
 
-      <h2><b>Orders</b></h2>  
+      @if($reseller == 1)
+        <h2><b>Order Resellers</b></h2> 
+      @else
+        <h2><b>Orders</b></h2> 
+      @endif 
       
       <h5>
         Show you previous history orders
@@ -139,6 +145,11 @@
             <th action="created_at none">
               Date
             </th>
+            @if($reseller == 1)
+            <th action="detail none">
+              Detail
+            </th>
+            @endif
             <th class="all">
               Bukti Bayar
             </th>
