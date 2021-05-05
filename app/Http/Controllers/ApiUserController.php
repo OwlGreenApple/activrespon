@@ -554,6 +554,11 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
+      // DELETE DEVICE ON DATABASE
+      $phone->is_delete = 1;
+      $phone->device_status = 0;
+      $phone->save();
+
       $device_id = $phone->device_id;
       $device_name = $phone->device_name;
       $ip_server = $phone->ip_server;
@@ -565,11 +570,13 @@ class ApiUserController extends Controller
         // INVALID DEVICE KEY
           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --108'));
       }
+      elseif($check_phone == null)
+      {
+          // IF SERVER DELETED / NOT AVAILABLE
+          return json_encode(array('response'=>'Invalid ID'));
+      }
       else
       {
-          $phone->is_delete = 1;
-          $phone->device_status = 0;
-          $phone->save();
           return json_encode(array('response'=>'Device '.$device_name.' has been deleted'));
       }
     }
