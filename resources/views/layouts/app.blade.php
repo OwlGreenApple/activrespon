@@ -196,11 +196,6 @@
                                 <a class="nav-link {{ (request()->is('google-form')) ? 'active' : '' }}" href="{{ url('google-form') }}">Google Form</a>
                             </li>
 														-->
-														@if(Auth()->user()->is_admin)
-															<li class="nav-item">
-                                <a class="nav-link {{ (request()->is('list-user')) ? 'active' : '' }}" href="{{ url('list-user') }}">Admin Page</a>
-															</li>
-														@endif
                             @if(Auth()->user()->is_chat > 0)
                              <li class="nav-item">
                                 <a class="nav-link {{ (request()->is('chats')) ? 'active' : '' }}" href="{{ url('chats') }}">Chats</a>
@@ -221,6 +216,11 @@
                              <a target="_blank" href="https://docs.google.com/document/d/1b4OwN-_V2q2deV-KMk9WHHqFOMLaZV2HLvOMD2SKxfU/edit?usp=sharing" class="nav-link">Tutorial API</a>
                             </li>
                         @endif <!-- end reseller -->
+                        @if(Auth()->user()->is_admin)
+                          <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('list-user')) ? 'active' : '' }}" href="{{ url('list-user') }}">Admin Page</a>
+                          </li>
+                        @endif
                     </ul>
                     <ul class="navbar-nav mr-auto"><!-- separator --></ul>
                     @if($is_nav_show)

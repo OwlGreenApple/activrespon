@@ -29,14 +29,18 @@ class AuthSettings
       }
 
       /*RESELLER PAGE / RESELLER USER*/
-      if($user->reseller_token <> null)
+      if($user->reseller_token <> null && Auth::user()->is_admin == 0)
       {
         return self::reseller_page($current_url,$next,$request);
+      }
+      else
+      {
+        return $next($request);
       }
 
       // PREVENT NON RESELLER USER OPEN RESELLER PAGE
       $url = ['reseller-invoice','reseller-home','tutorial-api'];
-      if (in_array($current_url, $url) == true && $user->reseller_token == null) 
+      if (in_array($current_url, $url) == true && $user->reseller_token == null ) 
       {
           return redirect('settings');
       }
