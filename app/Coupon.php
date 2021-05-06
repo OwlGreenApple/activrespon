@@ -15,4 +15,9 @@ class Coupon extends Model
       2 = kupon upgrade
     */
 
+    /*
+      used = if coupon used by reseller's customer
+      0 = new
+      1 = used
+    */
 }

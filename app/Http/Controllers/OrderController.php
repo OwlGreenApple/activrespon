@@ -84,7 +84,7 @@ class OrderController extends Controller
     return view('order.pricing');
   }
 
-  public function checkout($id,$chat){
+  public function checkout($id,$chat,$coupon_reseller){
     //halaman checkout
 
     if(session('order') <> null)
@@ -109,11 +109,21 @@ class OrderController extends Controller
         $priceupgrade+=100000;
       }
 		}
+
+    $is_coupon = false;
+    $coupon = Coupon::where([['kodekupon',$coupon_reseller],['used','=',0]])->first();
+
+    if(!is_null($coupon))
+    {
+      $is_coupon = true;
+    }
+
     return view('order.checkout')->with(array(
               'id'=>$id,
               'priceupgrade'=>$priceupgrade,
               'dayleft'=>$dayleft,
-              'chat'=>$chat
+              'chat'=>$chat,
+              'is_coupon'=>$is_coupon
             ));
   }
 
@@ -122,6 +132,13 @@ class OrderController extends Controller
     // dd($request->all());
     $user = Auth::user(); 
     $status_upgrade = $request->status_upgrade;
+    $reseller_coupon = $request->reseller_coupon;
+
+    if($reseller_coupon == "0")
+    {
+      $reseller_coupon = null;
+    }
+
     //cek kodekupon
 
     $package = substr($request->namapaket,0,-1);
@@ -183,7 +200,27 @@ class OrderController extends Controller
       $arr['total'] = $pricing;
     }
 
-    if($request->kupon <> null){
+    /*RESELLER COUPON*/
+    if($reseller_coupon !== null):
+      $coupon = Coupon::where([['kodekupon',$reseller_coupon],['used',0]])->first();
+
+      if(is_null($coupon))
+      {
+        $arr['status'] = 'error';
+        $arr['message'] = 'Kupon tidak valid.';
+      }
+      else
+      {
+        $diskon = $pricing * ($coupon->diskon_percent/100);
+        $total = $pricing - round($diskon);
+        $arr = self::box($total,$diskon,$coupon,$pricing);
+      }
+
+      return $arr;
+    endif; /*END RESELLER COUPON */
+
+    if($request->kupon <> null)
+    {
       $user_id = 0;
       if (!is_null($user)) {
         $user_id = $user->id;
@@ -239,13 +276,14 @@ class OrderController extends Controller
               $total = $pricing - $coupon->diskon_value;
             }
 
-            $arr['status'] = 'success';
+           /* $arr['status'] = 'success';
             $arr['message'] = 'Coupon valid, can be use now';
             $arr['totaltitle'] = number_format($total, 0, '', '.');
             $arr['total'] = $total;
             $arr['diskon'] = $diskon;
             $arr['coupon'] = $coupon;
-            $arr['price'] = (int)$pricing;
+            $arr['price'] = (int)$pricing;*/
+            $arr = self::box($total,$diskon,$coupon,$pricing);
             return $arr;
           }
           elseif($coupon->coupon_type == 2)
@@ -268,8 +306,20 @@ class OrderController extends Controller
         }
 
       }
-    }
+    } /*end request->coupon logic*/
 
+    return $arr;
+  }
+
+  private static function box($total,$diskon,$coupon,$pricing)
+  {
+    $arr['status'] = 'success';
+    $arr['message'] = 'Kupon valid dan bisa dipakai';
+    $arr['totaltitle'] = number_format($total, 0, '', '.');
+    $arr['total'] = $total;
+    $arr['diskon'] = $diskon;
+    $arr['coupon'] = $coupon;
+    $arr['price'] = (int)$pricing;
     return $arr;
   }
 

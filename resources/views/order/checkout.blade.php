@@ -158,6 +158,8 @@
                   </select>
                 </div>
               </div>
+
+              @if($is_coupon == false)
               <div class="form-group">
                 <div class="col-md-12 col-12">
                   <label class="label-title-test" for="formGroupExampleInput">
@@ -170,13 +172,15 @@
                   </button>  
                 </div>
               </div>
+              @endif;
 
+              <!-- coupon messages / notification -->
               <div class="form-group mb-1">
                 <div class="col-md-12 col-12">
                   <div id="pesan" class="alert"></div>
                 </div>
               </div>
-
+             
               <div class="form-group">
                 <script>
                   dayleft = 0;priceupgrade=0;totalPriceUpgrade=0;
@@ -278,6 +282,7 @@
       data: {
         harga : $('#price').val(),
         kupon : $('#kupon').val(),
+        reseller_coupon : "{{ Request::segment(4) }}",
         idpaket : $( "#select-auto-manage" ).val(),
         status_upgrade : status_upgrade,
         chat : '{{ $chat }}',

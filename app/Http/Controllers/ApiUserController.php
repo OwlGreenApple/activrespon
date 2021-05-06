@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Phoneapis;
 use App\Reseller;
+use App\Coupon;
 use App\Helpers\WamateHelper;
+use App\Http\Controllers\ListController as Lists;
 use Carbon\Carbon;
 use Storage;
 use Auth;
@@ -572,6 +574,59 @@ class ApiUserController extends Controller
           $phone->save();
           return json_encode(array('response'=>'Device '.$device_name.' has been deleted.'));
       }
+    }
+
+    // GENERATE LINK API
+    public function generate_link()
+    {
+       /* $req = json_decode(file_get_contents('php://input'),true);
+        $token = $req['token'];*/
+        $token = 'XA-22110tuV!34xyGv88Ca';
+        $user = self::check_token($token);
+
+        if($user == false)
+        {
+          $data['response'] = 'Invalid Token';
+          return json_encode($data);
+        }
+
+        $link_coupon = self::createRandomUrlName();
+        $coupon = new Coupon;
+        $coupon->package_id = 0;
+        $coupon->user_id = 0;
+        $coupon->reseller_id = $user->id;
+        $coupon->kodekupon = $link_coupon;
+        $coupon->diskon_value = 0;
+        $coupon->diskon_percent = 10;
+        $coupon->valid_until = null;
+        $coupon->valid_to = "";
+        $coupon->keterangan = "Generated coupon from reseller id : ".$user->id;
+
+        try
+        {
+          $coupon->save();
+          $data['response'] = url('checkout')."/1/0/".$link_coupon;
+        }
+        catch(QueryException $e)
+        {
+          // $e->getMessage()
+          $data['response'] = "Sorry our server is too busy, Please try again later -- 109";
+        }
+
+        return json_encode($data);
+    }
+
+   private static function createRandomUrlName(){
+
+        $list = new Lists;
+        $generate = $list->generateRandomListName();
+        $coupon = Coupon::where([['kodekupon','=',$generate],['used',1]])->first();
+
+        if(is_null($coupon)){
+            return $generate;
+        } else {
+            return self::createRandomUrlName();
+        }
     }
 
 /* end class */

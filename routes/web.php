@@ -58,7 +58,7 @@ Route::post('private-list','ApiController@register_list');
 
 Route::get('pricing','OrderController@pricing')->name('pricing');
 Route::get('summary','OrderController@summary');
-Route::get('checkout/{id}/{chat}','OrderController@checkout');
+Route::get('checkout/{id}/{chat}/{coupon_reseller}','OrderController@checkout');
 Route::get('thankyou','OrderController@thankyou');
 Route::post('/check-coupon','OrderController@check_coupon');
 // Route::post('/submit-checkout-register','OrderController@submit_checkout_register');
@@ -75,6 +75,7 @@ Route::get('/api/device/info','ApiUserController@device_info');
 Route::post('/api/send-message','ApiUserController@send_message');
 Route::post('/api/send-image','ApiUserController@send_image');
 Route::get('/api/delete-device','ApiUserController@delete_device');
+Route::get('/api/generate-link','ApiUserController@generate_link');
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');
