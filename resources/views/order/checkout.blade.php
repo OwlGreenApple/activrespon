@@ -443,10 +443,10 @@
       check_kupon();
     });
 
-		<?php if (Auth::check()) {?>
-			dayleft = <?php echo $dayleft;?>;
-			priceupgrade = <?php echo $priceupgrade;?>;
-		<?php }?>
+		<php if (Auth::check()) {?>
+			dayleft = <php echo $dayleft;?>;
+			priceupgrade = <php echo $priceupgrade;?>;
+		<php }?>
 		$("#priceupgrade").val(0);
 
 		$( "#select-auto-manage" ).change(function() {
@@ -455,7 +455,7 @@
 			var namapakettitle = $(this).find("option:selected").attr("data-paket-title");
       var wd;
 
-			<?php if (Auth::check()) {?>
+			<php if (Auth::check()) {?>
 				totalPriceUpgrade = dayleft * ((price-priceupgrade)/30);
         totalPriceUpgrade = parseInt(totalPriceUpgrade);
         totalPriceUpgrade = Math.round(totalPriceUpgrade);
@@ -485,7 +485,7 @@
           $("#label-priceupgrade").html("IDR "+formatNumber(totalPriceUpgrade));
 				}
 				$("#priceupgrade").val(totalPriceUpgrade);
-			<?php }?>
+			<php }?>
 			
 			$("#price").val(price);
 			$("#namapaket").val(namapaket);

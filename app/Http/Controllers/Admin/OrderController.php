@@ -58,6 +58,7 @@ class OrderController extends Controller
 		$phoneNumber = PhoneNumber::where("user_id",$order->user_id)->first();					
 		$user = User::find($order->user_id);
     $user_day_left = $user->day_left;
+    $coupon_id = $order->coupon_id;
 
     // RESELLER
     $order_package = substr($order->package,0,11);
@@ -159,6 +160,14 @@ class OrderController extends Controller
 
     $user->status = 1;
     $user->save();
+
+    $coupon = Coupon::find($coupon_id);
+
+    if($coupon->reseller_id > 0)
+    {
+      $coupon->used = 2;
+      $coupon->save();
+    }
 
     $emaildata = [
       'order' => $order,

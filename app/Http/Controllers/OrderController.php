@@ -92,6 +92,12 @@ class OrderController extends Controller
       session::forget('order');
     }
 
+    // DELETE SESSION RESELLER PRICE
+    if(session('reseller_coupon_price') <> null)
+    {
+      session::forget('reseller_coupon_price');
+    }
+
 		$priceupgrade = 0;
 		$dayleft = 0;
 		if (Auth::check()) {
@@ -214,6 +220,13 @@ class OrderController extends Controller
         $diskon = $pricing * ($coupon->diskon_percent/100);
         $total = $pricing - round($diskon);
         $arr = self::box($total,$diskon,$coupon,$pricing);
+        $id_coupon = $coupon->id;
+
+        $reseller = [
+          'price'=>$total,
+          'kuponid'=>$id_coupon,
+        ];
+        session(['reseller_coupon_price'=>$reseller]);
       }
 
       return $arr;
@@ -498,11 +511,22 @@ class OrderController extends Controller
       $chat_price = 300000;
     }
 
-		
+		$total =  $base_price;
     $diskon = 0;
     // $total = $request->price;
     $kuponid = $upgrade_package = null;
 
+    /*CHAT ENABLE*/
+    if($request->chat == 1)
+    {
+      if($request->kupon == null)
+      {
+         $total += $chat_price;
+      }
+      $base_price += $chat_price;
+    }
+
+    // USE NORMAL COUPON
     if($request->kupon <> null){
       $coupon = $this->check_coupon($request);
 
@@ -526,18 +550,15 @@ class OrderController extends Controller
       /**/
       }
     }
-    else
-    {
-      $total =  $base_price;
-    }
     
-    if($request->chat == 1)
+    /*RESELLER COUPON*/
+    $reseller = false;
+    if(session('reseller_coupon_price') <> null)
     {
-      if($request->kupon == null)
-      {
-         $total += $chat_price;
-      }
-      $base_price += $chat_price;
+      $total = session('reseller_coupon_price')['price'];
+      $diskon = (int)$base_price - (int)$total;
+      $kuponid = session('reseller_coupon_price')['kuponid'];
+      $reseller = true;
     }
 		
     $order = array(
@@ -557,6 +578,7 @@ class OrderController extends Controller
       "priceupgrade"=>0,
       "chat_price"=> $chat_price,
       "chat"=> $request->chat,
+      "reseller"=>$reseller
     );
 
     // dd($order);
@@ -599,7 +621,8 @@ class OrderController extends Controller
       "total"=>session('order')['total'],
       "upgrade"=>session('order')['upgrade'],
       "status_upgrade"=>$status_upgrade,
-      "chat"=>session('order')['chat']
+      "chat"=>session('order')['chat'],
+      "reseller"=>session('order')['reseller']
     ];
 
     $order = Order::create_order($data);
@@ -772,6 +795,12 @@ class OrderController extends Controller
     $price = (int)$request->price;
     $kuponid = null;
 
+    //if enable chat feature
+    if($request->chat == 1)
+    {
+      $price += $chat_price;
+    }
+
     if($request->kupon <> null)
     {
       $kpn = $this->check_coupon($request);
@@ -796,7 +825,7 @@ class OrderController extends Controller
         /**/
       }
     }
-	
+
     $user = Auth::user();
     $membership = $this->check_upgrade($request);
     $status_upgrade = $membership['membership'];
@@ -809,10 +838,14 @@ class OrderController extends Controller
        $status_upgrade = $request->status_upgrade;
     }*/
 
-     //if enable chat feature
-    if($request->chat == 1)
+    // KUPON RESELLER
+    $reseller = false;
+    if(session('reseller_coupon_price') <> null)
     {
-      $price += $chat_price;
+      $total = session('reseller_coupon_price')['price'];
+      $diskon = (int)$price - (int)$total;
+      $kuponid = session('reseller_coupon_price')['kuponid'];
+      $reseller = true;
     }
    
 		$data = [
@@ -828,9 +861,12 @@ class OrderController extends Controller
 			"month"=> $month,
       "upgrade"=>$upgrade_package,
       "status_upgrade"=>$status_upgrade,
-      "chat"=>$request->chat
+      "chat"=>$request->chat,
+      "reseller"=>$reseller
 		];
-		
+
+    // dd($data);
+
 		$order = Order::create_order($data);
     return view('order.thankyou')->with(array(
               'order'=>$order,    

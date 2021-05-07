@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Message;
 use App\Order;
 use App\PhoneNumber;
+use App\Coupon;
 use App\Helpers\ApiHelper;
 
 use Carbon\Carbon;
-use Mail, DB, Session;
+use Mail, DB, Session, Auth;
 
 use App\Jobs\SendNotif;
 
@@ -97,6 +98,19 @@ class Order extends Model
     $order->month = $data['month'];
     $order->save();
 
+    /*UPDATE COUPON STATUS*/
+    if($data['reseller'] == true)
+    {
+      $coupon = Coupon::find($data['kuponid']);
+      $coupon->user_id = Auth::id();
+      $coupon->used = 1;
+      $coupon->save();
+
+      // UPDATE USER'S RESELLER ID IF SIGNUP VIA RESELLER'S LINK
+      $user->reseller_id = $coupon->reseller_id;
+      $user->save();
+    }
+
     if($order->grand_total!=0){
       //mail order to user 
       $emaildata = [
@@ -146,13 +160,20 @@ class Order extends Model
           $message->subject('[Activrespon] Order Nomor '.$order_number);
         });
       }
+
       //delete session order
       if(session::has('order'))
       {
         session::forget('order');
       }
-      
-    } 
+
+      // delete session reseller_coupon_price
+      if(session('reseller_coupon_price') <> null)
+      {
+        session::forget('reseller_coupon_price');
+      } 
+
+    }
     else {
 			// for freemium case
     }

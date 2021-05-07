@@ -56,6 +56,38 @@
   </div>
 </div>
 
+<!-- FORM TOKEN -->
+<div class="container act-tel-dashboard">
+  <div class="act-tel-list-board">
+    <div class="act-tel-list-left">Generate Token</div>
+    <div class="act-tel-list-right"><span class="icon-carret-down-circle"></span></div>
+    <div class="clearfix"></div>
+  </div>
+
+  <div class="act-tel-list bg-dashboard row col-fix">
+   
+      <!-- <div class="col-lg-12 act-tel-list-left-col">
+         <div class="form-inline">
+            <input type="text" class="form-control form-control-sm mr-1" readonly="readonly" id="token" />
+            <button type="button" class="btn btn-success btn-sm mr-1">Generate Token</button>
+            <button type="button" class="btn btn-primary btn-sm">Copy</button>
+          </div>
+      </div> -->
+
+      <div class="row">
+         <div class="col-lg-12">
+          <div class="input-group input-group-lg">
+            <input type="text" class="form-control input-lg" id="search-church" placeholder="Your location (City, State, ZIP)">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-lg" type="submit">Search</button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+</div>
+
 <!-- LIST -->
 <div class="container act-tel-dashboard">
   <div class="act-tel-list-board">
@@ -85,7 +117,6 @@
         <div id="user-charts" style="height: 300px; width: 100%;"></div>
       </div>
     </div>
-
 </div>
 
 <!-- CAMPAIGNS -->
@@ -120,7 +151,6 @@
         <div id="message-charts" style="height: 200px; width: 100%;"></div>
       </div>
     </div>
-
 </div>
 
 <!-- Modal Import Contact -->

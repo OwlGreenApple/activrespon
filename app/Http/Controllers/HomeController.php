@@ -218,6 +218,25 @@ class HomeController extends Controller
         return view('home',$data);
     }
 
+    public function createRandomToken(){
+
+        $generate = self::generateToken();
+        $list = User::where([['reseller_token','=',$generate],['status',1]])->first();
+
+        if(is_null($list)){
+            return $generate."-".Auth::id();
+        } else {
+            return $this->createRandomToken();
+        }
+    }
+
+    /* create random TOKEN */
+    private static function generateToken(){
+        //return strtolower(Str::random(8));
+        $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyz!-$#ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        return substr(str_shuffle($permitted_chars), 0, 15);
+    }
+
     public function jsonEncode(Request $req)
     {
       return json_encode($req->data);

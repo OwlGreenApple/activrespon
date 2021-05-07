@@ -30,7 +30,7 @@ class CouponController extends Controller
 
     public function load_coupon(Request $request){
       //halaman list kupon admin
-      $coupons = Coupon::where("user_id",0)->get();
+      $coupons = Coupon::where([["user_id",0],['reseller_id',0]])->get();
 
       $arr['view'] = (string) view('admin.list-coupon.content')
               ->with('coupons',$coupons);  

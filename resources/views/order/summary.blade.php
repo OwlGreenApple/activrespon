@@ -321,7 +321,7 @@
         <strong class="as-checkout-total">Total : </strong>
         <strong class="as-checkout-total-price total_price" id="totalprice_sidebar totalprice_mobile">
         Rp. 
-        @if(session('order')['diskon'] > 0 || session('order')['upgrade'] <> null)
+        @if(session('order')['diskon'] > 0 || session('order')['upgrade'] <> null || session('reseller_coupon_price'))
           <strike>{!! number_format(session('order')['price'], 0, '', '.') !!}</strike>
         @endif
   			<?php echo number_format(session('order')['total'], 0, '', '.'); ?>

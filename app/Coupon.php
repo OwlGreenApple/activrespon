@@ -19,5 +19,6 @@ class Coupon extends Model
       used = if coupon used by reseller's customer
       0 = new
       1 = used
+      2 = Confirmed by admin
     */
 }
