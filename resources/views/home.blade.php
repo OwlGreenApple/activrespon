@@ -64,22 +64,19 @@
     <div class="clearfix"></div>
   </div>
 
-  <div class="act-tel-list bg-dashboard row col-fix">
+  <div class="act-tel-list bg-dashboard">
    
-      <!-- <div class="col-lg-12 act-tel-list-left-col">
-         <div class="form-inline">
-            <input type="text" class="form-control form-control-sm mr-1" readonly="readonly" id="token" />
-            <button type="button" class="btn btn-success btn-sm mr-1">Generate Token</button>
-            <button type="button" class="btn btn-primary btn-sm">Copy</button>
-          </div>
+     <!--  <div class="col-lg-12 act-tel-list-left-col">
+        
       </div> -->
 
       <div class="row">
          <div class="col-lg-12">
           <div class="input-group input-group-lg">
-            <input type="text" class="form-control input-lg" id="search-church" placeholder="Your location (City, State, ZIP)">
+            <input type="text" class="form-control input-lg mr-1" readonly="readonly" id="token" />
             <span class="input-group-btn">
-              <button class="btn btn-default btn-lg" type="submit">Search</button>
+              <button type="button" class="btn btn-success btn-lg mr-1">Generate Token</button>
+            <button type="button" class="btn btn-primary btn-lg">Copy</button>
             </span>
           </div>
         </div>
