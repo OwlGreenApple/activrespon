@@ -196,11 +196,13 @@
                                 <a class="nav-link {{ (request()->is('google-form')) ? 'active' : '' }}" href="{{ url('google-form') }}">Google Form</a>
                             </li>
 														-->
+														<!-- dihilangkan request ko mike 13/05/2021
                             @if(Auth()->user()->is_chat > 0)
                              <li class="nav-item">
                                 <a class="nav-link {{ (request()->is('chats')) ? 'active' : '' }}" href="{{ url('chats') }}">Chats</a>
                             </li>
                             @endif
+														-->
                             <!-- end non reseller -->
                        
                             <!-- RESELLER -->
