@@ -221,10 +221,15 @@ class HomeController extends Controller
     public function createRandomToken(){
 
         $generate = self::generateToken();
+        $reseller_id = Auth::user()->reseller_id;
         $list = User::where([['reseller_token','=',$generate],['status',1]])->first();
 
         if(is_null($list)){
-            return $generate."-".Auth::id();
+            $token = $generate."-".Auth::id();
+            $user = User::find(Auth::id());
+            $user->reseller_token = $token;
+            $user->save();
+            return $token;
         } else {
             return $this->createRandomToken();
         }

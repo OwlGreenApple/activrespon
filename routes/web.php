@@ -351,6 +351,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-invoice','HomeController@invoice');
   Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
+  Route::get('reseller-token','HomeController@createRandomToken');
 
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');

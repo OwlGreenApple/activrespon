@@ -29,23 +29,23 @@ class AuthSettings
       }
 
       /*Admin*/
-      if(Auth::user()->is_admin == 1)
+     /* if(Auth::user()->is_admin == 1)
       {
         return $next($request);
-      }
+      }*/
 
       /*RESELLER PAGE / RESELLER USER*/
-      if($user->reseller_token <> null)
+    /*  if($user->reseller_token <> null)
       {
         return self::reseller_page($current_url,$next,$request);
-      }
+      }*/
 
       // PREVENT NON RESELLER USER OPEN RESELLER PAGE
-      $url = ['reseller-invoice','reseller-home','tutorial-api'];
+    /*  $url = ['reseller-invoice','reseller-home','tutorial-api'];
       if (in_array($current_url, $url) == true && $user->reseller_token == null) 
       {
           return redirect('settings');
-      }
+      }*/
 
       $valid_url = false;
 
