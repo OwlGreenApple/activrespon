@@ -491,13 +491,24 @@ class ListController extends Controller
     //DELETE LIST
     public function delListContent(Request $request)
     {
-        $id = $request->id;
-        $userid = Auth::id();
+        // IF DELETE COMMAND FROM API
+        if($request->del == true)
+        {
+          $id = $request->list_id;
+          $userid = $request->user_id;
+        }
+        else
+        {
+          $id = $request->id;
+          $userid = Auth::id();
+        }
+       
         $check_userlist = UserList::where([['id',$id],['user_id',$userid]])->first();
 
         if(is_null($check_userlist))
         {
             $data['message'] = 'Cannot delete list, because list not available';
+            $data['success'] = 0;
             return response()->json($data);
         }
 
@@ -505,12 +516,23 @@ class ListController extends Controller
         $delete_userlist->status = 0;
         $delete_userlist->save();
 
+        // CHECK IF CUSTOMER IF AVAILABLE
+        $customers = Customer::where('list_id','=',$id);
+        if($customers->get()->count() < 1)
+        {
+           $data['message'] = 'List deleted successfully';
+           $data['success'] = 1;
+           return response()->json($data);
+        }
+
         //if success delete list then delete customer / subscriber
         try{
-            $delete = Customer::where('list_id','=',$id)->update(['status'=>0]);
-        } catch(Exception $e) {
+            $delete =  $customers->update(['status'=>0]);
+            $data['message'] = 'List deleted successfully';
+            $data['success'] = 1;
+        } catch(QueryException $e) {
             $data['message'] = 'Error, Sorry, cannot delete list';
-            return response()->json($data);
+            $data['success'] = 0;
         }
 
         //if success delete customer / subscriber
@@ -522,11 +544,12 @@ class ListController extends Controller
         } */
 
         //if success delete list additional
-        if($delete){
+        /*if($delete){
             $data['message'] = 'List deleted successfully';
         } else {
             $data['message'] = 'Error, Sorry, cannot delete list addtional';
-        }
+        }*/
+
         return response()->json($data);
     }
 
@@ -1051,23 +1074,35 @@ class ListController extends Controller
 
     public function deleteSubscriber(Request $request)
     {
-        $userid = Auth::id();
-        $id_customer = $request->id_customer;
-        $list_id = $request->list_id;
-
-        if($id_customer == null)
+        if($request->api == true)
         {
-            return redirect('lists');
+           $userid = $request->user_id;
+           $id_customer = $request->id_customer;
+        }
+        else
+        {
+           $userid = Auth::id();
+           $id_customer = $request->id_customer;
+        }
+       
+        $list_id = $request->list_id;
+        $customer = Customer::where([['id',$id_customer],['user_id',$userid]]);
+
+        if(is_null($customer->first()))
+        {
+            $data['success'] = 0;
+            $data['message'] = 'Invalid Subscriber';
+            return response()->json($data);
         }
 
         try
         {
-          Customer::where([['id',$id_customer],['user_id',$userid]])->update(['status'=>0]);
+          $customer->update(['status'=>0]);
         }
-        catch(Exception $e)
+        catch(QueryException $e)
         {
           $data['success'] = 0;
-          $data['message'] = 'Failed to delete your customer, please try again later';
+          $data['message'] = 'Maaf server kami terlalu sibuk, silahkan coba lagi.';
           return response()->json($data);
         }
 
@@ -1078,12 +1113,12 @@ class ListController extends Controller
           BroadCast::where([['broad_casts.list_id',$list_id],['broad_cast_customers.status','=',0],['broad_cast_customers.customer_id',$id_customer]])->join('broad_cast_customers','broad_cast_customers.id','=','broad_casts.id')->update(['broad_cast_customers.status'=>4]);
 
           $data['success'] = 1;
-          $data['message'] = 'Your customer deleted successfully';
+          $data['message'] = 'Subscriber berhasil dihapus';
         }
-        catch(Exception $e)
+        catch(QueryException $e)
         {
           $data['success'] = 0;
-          $data['message'] = 'Failed to delete your customer, please try again later';
+          $data['message'] = 'Maaf server kami terlalu sibuk, silahkan coba lagi.-';
         }
 
         return response()->json($data);

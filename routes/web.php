@@ -76,6 +76,12 @@ Route::post('/api/send-message','ApiUserController@send_message');
 Route::post('/api/send-image','ApiUserController@send_image');
 Route::get('/api/delete-device','ApiUserController@delete_device');
 Route::get('/api/generate-link','ApiUserController@generate_link');
+Route::post('/api/list','ApiUserController@create_list');
+Route::post('/api/update-list','ApiUserController@update_list');
+Route::get('/api/delete-list','ApiUserController@delete_list');
+Route::post('/api/subscriber','ApiUserController@add_subscriber');
+Route::post('/api/update-subscriber','ApiUserController@update_subscriber');
+Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');

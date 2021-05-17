@@ -53,6 +53,10 @@ class VerifyCsrfToken extends Middleware
         'api/status',
         'api/send-message',
         'api/send-image',
-        'api/delete-device'
+        'api/delete-device',
+        'api/list',
+        'api/update-list',
+        'api/subscriber',
+        'api/update-subscriber'
     ];
 }

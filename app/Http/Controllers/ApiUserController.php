@@ -4,15 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
-use App\Phoneapis;
+use App\UserList;
+// use App\Phoneapis;
 use App\Reseller;
 use App\Coupon;
+use App\PhoneNumber;
+use App\Customer;
+use App\Message;
 use App\Helpers\WamateHelper;
 use App\Http\Controllers\ListController as Lists;
+use App\Http\Controllers\CustomerController as Subscriber;
+use App\Rules\CheckApiListID;
 use Carbon\Carbon;
 use Storage;
 use Auth;
 use DB;
+use Validator;
 
 class ApiUserController extends Controller
 {
@@ -74,7 +81,7 @@ class ApiUserController extends Controller
         try{
            $user->save();
            
-           $check_old_token = Phoneapis::where([['token',$old_token],['is_delete',0]]);
+           $check_old_token = PhoneNumber::where([['token',$old_token],['is_delete',0]]);
            if($check_old_token->get()->count() > 0)
            {
               $check_old_token->update(['token' => $login['token'],'refresh_token'=> $login['refreshToken']]);
@@ -157,7 +164,7 @@ class ApiUserController extends Controller
         return $this->login_user($email_wamate,$user->id,$old_token,$token,null,$device_name,$package);
       }
 
-      $phone_api = new Phoneapis;
+      $phone_api = new PhoneNumber;
       $phone_api->user_id = $user->id;
       $phone_api->device_id = $device['id'];
       $phone_api->device_name = $device['name'];
@@ -230,7 +237,7 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
 
         if(is_null($phone))
         {
@@ -295,7 +302,7 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
 
         if(is_null($phone))
         {
@@ -352,7 +359,7 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
 
         if(is_null($phone))
         {
@@ -411,7 +418,7 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
 
       if(is_null($phone))
       {
@@ -419,18 +426,28 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      if($phone->quota < 1)
+      $msg = new Message;
+      $msg->user_id = $user->id;
+      $msg->phone_number = $to;
+      $msg->key = $phone->device_key;
+      $msg->message = $message;
+      $msg->status = 11;
+      $msg->customer_id = 0;
+      $msg->ip_server = $phone->ip_server;
+      $msg->save();
+
+     /* if($phone->quota < 1)
       {
          return json_encode(array('response'=>'Sorry, your quota has runs out'));
       }
 
       $device_key = $phone->device_key;
-      $ipserver = $phone->ip_server;
-      $check_phone = WamateHelper::send_message($to,$message,$device_key,$ipserver);
+      $ipserver = $phone->ip_server;*/
+      // $check_phone = WamateHelper::send_message($to,$message,$device_key,$ipserver);
      
       // dd($check_phone);
 
-      if(isset($check_phone['code']))
+     /* if(isset($check_phone['code']))
       {
         // INVALID DEVICE KEY
           return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --106'));
@@ -450,10 +467,8 @@ class ApiUserController extends Controller
       }
       else
       {
-          $phone->quota--;
-          $phone->save();
-          return json_encode(array('response'=>'Your message has been sent'));
-      }
+          
+      }*/
     }
 
     public function send_image()
@@ -473,7 +488,7 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
 
       if(is_null($phone))
       {
@@ -548,7 +563,7 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $phone = Phoneapis::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
 
       if(is_null($phone))
       {
@@ -579,9 +594,9 @@ class ApiUserController extends Controller
     // GENERATE LINK API
     public function generate_link()
     {
-       /* $req = json_decode(file_get_contents('php://input'),true);
-        $token = $req['token'];*/
-        $token = 'XA-22110tuV!34xyGv88Ca';
+        $req = json_decode(file_get_contents('php://input'),true);
+        $token = $req['token'];
+        // $token = 'XA-22110tuV!34xyGv88Ca';
         $user = self::check_token($token);
 
         if($user == false)
@@ -627,6 +642,262 @@ class ApiUserController extends Controller
         } else {
             return self::createRandomUrlName();
         }
+    }
+
+    /*LIST API*/
+
+    private static function validation_list(array $req)
+    {
+      // if delete, label will not validate
+      if(!isset($req['del']))
+      {
+        $rules['label'] = ['required','max:191'];
+      }
+      
+      if(isset($req['list_id']))
+      {
+        $rules['list_id'] = ['required',new CheckApiListID];
+      }
+
+      $messages = [
+        'required'=>'Kolom label tidak boleh kosong',
+        'max'=>'Maksimal karakter adalah 191'
+      ];
+
+      $validator = Validator::make($req,$rules,$messages);
+      if ($validator->fails()) {
+          $err = $validator->errors();
+          $error['label'] = $err->first('label');
+          $error['list_id'] = $err->first('list_id');
+          return $error;               
+      }
+      else
+      {
+          return true;
+      }
+    }
+
+    public function create_list()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $label = $req['label'];
+   
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      //CHECK VALIDATION List
+      $validation = self::validation_list($req);
+      if($validation !== true)
+      {
+        return json_encode(['response'=>$validation['label']]);
+      }
+
+      //CHECK PHONE NUMBER
+      $phone = PhoneNumber::where('user_id',$user->id)->first();
+      if(is_null($phone))
+      {
+        $data['response'] = 'Mohon create device terlebih dahulu.';
+        return json_encode($data);
+      }
+
+      $listclass = new Lists;
+      $list_name = $listclass->createRandomListName();
+
+      $list = new UserList;
+      $list->user_id = $user->id;
+      $list->name = $list_name;
+      $list->label = $label;
+      $list->phone_number_id = $phone->id;
+      $list->is_secure = 0;
+      $list->save();
+      $list_id = $list->id;
+
+      $data['response'] = 'List created successfuly';
+      $data['list_id'] = $list_id;
+      $data['list_name'] = $list_name;
+      return json_encode($data);
+    }
+
+    public function update_list()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $label = $req['label'];
+      $list_id = $req['list_id'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      //CHECK VALIDATION List
+      $validation = self::validation_list($req);
+      if($validation !== true)
+      {
+        return json_encode(['response'=>$validation]);
+      }
+
+      $list = UserList::find($list_id);
+      $list->label = $label;
+      $list->save();
+
+      $data['response'] = 'List berhasil di update';
+      return json_encode($data);
+    }
+
+    public function delete_list()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $list_id = $req['list_id'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      //CHECK VALIDATION List
+      $validation = self::validation_list($req);
+      if($validation !== true)
+      {
+        return json_encode(['response'=>$validation]);
+      }
+
+      $list = new Lists;
+      $req['user_id'] = $user->id;
+      $request = new Request($req);
+      $del = $list->delListContent($request);
+  
+      if($del->getData()->success == 1)
+      {
+         $data['response'] = 'List telah di hapus';
+      }
+      else
+      {
+         $data['response'] = 'Maaf server kami terlalu sibuk, silahkan coba lagi.';
+      }
+     
+      return json_encode($data);
+    }
+
+    /*SUBSCRIBER*/
+    public function add_subscriber()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+  
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $customer = new Subscriber;
+      $request = new Request($req);
+      $subscriber = $customer->saveSubscriber($request);
+
+      if($subscriber->getData()->success == true)
+      {
+        $data['response'] = 'Subscriber berhasil ditambahkan';
+      }
+      else
+      {
+        $data['response'] = $subscriber->getData()->message;
+      }
+
+      return json_encode($data);
+    }
+
+    public function update_subscriber()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $customer_id = $req['customer_id'];
+      $phone_number = $req['phone_number'];
+      $email = $req['email'];
+      $subscribername = $req['subscribername'];
+      $last_name = $req['last_name'];
+      $list_id = $req['list_id'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $edit_customer = Customer::where([['id',$customer_id],['list_id',$list_id],['user_id',$user->id]]);
+
+      if(is_null($edit_customer->first()))
+      {
+        $data['response'] = 'Invalid Subscriber';
+        return json_encode($data);
+      }
+
+      $update = [
+        'name'=>$subscribername,
+        'last_name'=>$last_name,
+        'email'=>$email,
+        'telegram_number'=>$phone_number,
+        'status'=>1
+      ];
+
+      try
+      {
+        $edit_customer->update($update);
+        $data['response'] = 'Subscriber berhasil di update';
+      }
+      catch(QueryException $e)
+      {
+        $data['response'] = 'Maaf server kami terlalu sibuk, silahkan coba lagi.';
+      }
+
+      return json_encode($data);
+    }
+
+    public function delete_subscriber()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $req['user_id'] = $user->id;
+      $list = new Lists;
+      $request = new Request($req);
+      $del = $list->deleteSubscriber($request);
+
+      if($del->getData()->success == 1)
+      {
+        $data['response'] = 'Subscriber telah di hapus';
+      }
+      else
+      {
+        $data['response'] = $del->getData()->message;
+      }
+
+      return json_encode($data);
     }
 
 /* end class */

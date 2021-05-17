@@ -81,6 +81,10 @@ class CustomerController extends Controller
 
             }
 
+        // check if user status is 0
+        $user = User::find($list->user_id);
+        $status = $user->status;
+
         $data = [
           'id'=>encrypt($list->id),
           'label_name'=>$list->label_name,
@@ -94,7 +98,8 @@ class CustomerController extends Controller
           'pixel'=>$list->pixel_text,
           'additional'=>$arr,
           'btn_message'=>$list->button_subscriber,
-          'link_add_customer'=>url($link_list)
+          'link_add_customer'=>url($link_list),
+          'status'=>$status
         ];
 
         return view('register-customer',$data);
@@ -103,6 +108,7 @@ class CustomerController extends Controller
 
     public function saveSubscriber(Request $request)
     {
+        // dd($request->all());
         $arr_data = [
            // Do not allow any shady characters
            'subscribername' => 'max:255|regex:/^[\s\w-]*$/', // alpha num with white space
@@ -123,9 +129,18 @@ class CustomerController extends Controller
         }
 
         $listname = $request->listname;
-        $phone_number = $request->code_country.$request->phone_number;
-        $req = $request->all();
 
+        // if add subscriber from API
+        if($request->api == true)
+        {
+          $phone_number = $request->code_country.$request->phone_number;
+        }
+        else
+        {
+          $phone_number = $request->phone_number;
+        }
+
+        $req = $request->all();
         $list = UserList::where('name','=',$listname)->first();
         $today = Carbon::now();
         $valid_customer = false;
@@ -181,7 +196,7 @@ class CustomerController extends Controller
               $customer->code_country = strip_tags($request->data_country);
               $customer->status = 1;
               $customer->telegram_number = "";
-              if($request->phone_number != null)
+              if($request->phone_number !== null)
               {
                 $customer->telegram_number = strip_tags($phone_number);
               }
@@ -196,7 +211,7 @@ class CustomerController extends Controller
               catch(QueryException $e)
               {
                   $data['update'] = false;
-                  $data['message'] = 'Sorry, our system is too busy';
+                  $data['message'] = 'Sorry, our system is too busy-';
               }
               return response()->json($data);
             }
@@ -222,7 +237,7 @@ class CustomerController extends Controller
               catch(QueryException $e)
               {
                 $data['success'] = false;
-                $data['message'] = 'Sorry, our system is too busy';
+                $data['message'] = 'Sorry, our system is too busy--';
               } 
               return response()->json($data);
             } 
@@ -232,6 +247,7 @@ class CustomerController extends Controller
               $reg = array(
                 'name' => $request->subscribername,
                 'last_name' => $request->last_name,
+                'telegram_number' => $phone_number,
                 'status' => 1,
               );
     
@@ -253,7 +269,7 @@ class CustomerController extends Controller
               catch(QueryException $e)
               {
                 $data['success'] = false;
-                $data['message'] = 'Sorry, our system is too busy';
+                $data['message'] = 'Sorry, our system is too busy---';
               }
 
               return response()->json($data);
@@ -280,7 +296,7 @@ class CustomerController extends Controller
             */
             if ($list->is_secure) 
             {
-							$ret = $this->sendListSecure($list->id,$customer_id,$request->subscribername,$list->user_id,$list->name,$phone_number);
+							$ret= $this->sendListSecure($list->id,$customer_id,$request->subscribername,$list->user_id,$list->name,$phone_number);
 
 							if($ret->getData()->success == false)
               {
@@ -370,7 +386,7 @@ class CustomerController extends Controller
             catch(QueryException $e)
             {
                $data['success'] = false;
-               $data['message'] = 'Sorry, our system is too busy';
+               $data['message'] = 'Sorry, our system is too busy-.';
             }
           
             return response()->json($data);
@@ -390,7 +406,7 @@ class CustomerController extends Controller
 					$server = Server::where('phone_id',$phoneNumber->id)->first();
 					if(is_null($server)){
 						$data['success'] = false;
-						$data['message'] = 'Sorry, our system is too busy';
+						$data['message'] = 'Sorry, our system is too busy.-';
 						return response()->json($data);
 					}
 				}

@@ -85,6 +85,7 @@ class CheckMembership extends Command
               {
                  $user->membership = null;
                  $user->status = 0;
+                 $user->reseller_token = null;
                  $user->save();
                  $phone = PhoneNumber::where('user_id',$row->id)->first();
               }

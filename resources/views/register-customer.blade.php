@@ -60,6 +60,7 @@
 
   <main class="p-5">
 
+    @if($status > 0)
     <div class="container">
         <div class="row justify-content-center">
           
@@ -177,6 +178,11 @@
 
         </div>
     </div>
+    @else
+       <div class="container">
+        <div class="row justify-content-center">Please contact at : <a href="mailto:activrespon@gmail.com">activrespon@gmail.com</a></div>
+       </div>
+    @endif
 
     <!-- Modal -->
     <div id="myModal" class="modal fade" role="dialog">
