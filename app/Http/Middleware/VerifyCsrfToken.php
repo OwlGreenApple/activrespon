@@ -47,7 +47,7 @@ class VerifyCsrfToken extends Middleware
         'send-message-queue-system-wp-growingrich',
 
         //reseller
-        'api/login',
+        'api/account',
         'api/device',
         'generate/qr',
         'api/status',

@@ -43,30 +43,7 @@ class ResellerInvoice extends Command
      */
     public function handle()
     {
-        // $invoice_period = Carbon::now()->subMonth(0)->format('m-Y'); //demo only
-        $invoice_period = Carbon::now()->subMonth(1)->format('m-Y');
-        $phone_api = Phoneapis::where('is_delete',0)->get();
-        
-        if($phone_api->count() > 0)
-        {
-          foreach($phone_api as $row):
-            $id = $row->id;
-            $reseller = Reseller::where([['period',$invoice_period],['phone_api_id',$id]])->first();
-            $package_check = apiuser::package_list($row->package); //get package
-
-            if(is_null($reseller))
-            {
-              $inv = new Reseller;
-              $inv->user_id = $row->user_id;
-              $inv->phone_api_id = $id;
-              $inv->package = $row->package;
-              $inv->total = $package_check['price'];
-              $inv->period = $invoice_period;
-              $inv->save();
-            }
-          endforeach;
-        }
-
+        $invoice_period = Carbon::now()->subMonth(0)->format('m-Y'); //demo only set to 0
         //GENERATE INVOICE ON ORDER
         $invoice = Reseller::where([['period',$invoice_period]])
                     ->selectRaw('SUM(total) AS gt, user_id')
@@ -78,7 +55,7 @@ class ResellerInvoice extends Command
           foreach($invoice as $row):
             $user = User::find($row->user_id);
             $pckg = [
-              'namapaket'=>'WA Reseller - '.$invoice_period,
+              'namapaket'=>'WA Reseller - '.$invoice_period.'-'.$user->reseller_id,
               'namapakettitle'=>$invoice_period,
               'user'=>$user,
               'price'=>$row->gt,
@@ -91,7 +68,7 @@ class ResellerInvoice extends Command
             Order::create_order($pckg);
           endforeach;
         }
-
-        
     }
+
+/*end class*/
 }

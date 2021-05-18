@@ -108,7 +108,7 @@ class WamateHelper
       return json_encode($res);
     }
 
-    if($login <> null)
+    if($login !== null)
     {
       $res['token'] = $login['token'];
       $res['refresh_token'] = $login['refreshToken'];

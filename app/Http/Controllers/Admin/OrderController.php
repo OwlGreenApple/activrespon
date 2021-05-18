@@ -59,6 +59,7 @@ class OrderController extends Controller
 		$user = User::find($order->user_id);
     $user_day_left = $user->day_left;
     $coupon_id = $order->coupon_id;
+    $reseller_id = $user->reseller_id;
 
     // RESELLER
     $order_package = substr($order->package,0,11);
@@ -163,7 +164,7 @@ class OrderController extends Controller
 
     $coupon = Coupon::find($coupon_id);
 
-    if($coupon->reseller_id > 0)
+    if(!is_null($coupon))
     {
       $coupon->used = 2;
       $coupon->save();
@@ -181,6 +182,20 @@ class OrderController extends Controller
 
     $order->date_confirm = Carbon::now();
     $order->save();
+    $id_order = $order->id;
+
+    //SAVE RESELLER FOR DETAILS
+    if($reseller_id > 0)
+    {
+      $res = [
+        'reseller_id'=>$reseller_id,
+        'package'=>$order->package,
+        'total'=>$order->grand_total,
+        'order_id'=>$id_order
+      ];
+
+      self::reseller_order($res);
+    }
 
     $arr['status'] = 'success';
     $arr['message'] = 'Order berhasil dikonfirmasi';
@@ -208,6 +223,27 @@ class OrderController extends Controller
       $message->to($user->email);
       $message->subject('[Activrespon] Konfirmasi Order'.$order->no_order);
     });
+  }
+
+  private static function reseller_order(array $data)
+  {
+    $invoice_period = Carbon::now()->format('m-Y'); 
+    $total = $data['total'] * 0.3;
+
+    $inv = new Reseller;
+    $inv->reseller_id = $data['reseller_id'];
+    $inv->order_id = $data['order_id'];
+    $inv->package = $data['package'];
+    $inv->total = $total;
+    $inv->period = $invoice_period;
+
+    try{
+      $inv->save();
+    }
+    catch(QueryException $e)
+    {
+      $e->getMessage;
+    }
   }
 
   private function orderLater(array $data)

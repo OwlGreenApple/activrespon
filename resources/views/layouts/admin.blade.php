@@ -110,7 +110,7 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item {{ (request()->is('list-order')) ? 'active' : '' }}" href="{{ url('list-order') }}">Order Member</a>
 
-                                    <a class="dropdown-item {{ (request()->is('list-order-reseller')) ? 'active' : '' }}" href="{{ url('list-order-reseller') }}">Order Reseller</a>
+                                    <a class="dropdown-item {{ (request()->is('reseller-invoice')) ? 'active' : '' }}" href="{{ url('reseller-invoice') }}">Pay Reseller</a>
                                 </div>
                             </li>
 

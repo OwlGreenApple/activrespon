@@ -46,9 +46,16 @@ class SettingController extends Controller
         $this->middleware('authsettings');
     }
   
-    public function index()
+    public function index($api = null)
     {
-      $user = Auth::user();
+      if($api == null)
+      {
+        $user = Auth::user();
+      }
+      else
+      {
+        $user = $api;
+      }
 
       /*
       1. klo blm daftar direg
@@ -59,7 +66,7 @@ class SettingController extends Controller
       */
       $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
       if (is_null($user->email_wamate) ||  $user->email_wamate ==="") {
-        $result = WamateHelper::reg($email_wamate,$user->id,env('WAMATE_SERVER'));
+        $result = WamateHelper::reg($email_wamate,null,env('WAMATE_SERVER'));
         $user->email_wamate = $email_wamate;
         $user->save();
       }
@@ -71,9 +78,15 @@ class SettingController extends Controller
         $user->save();
       }
 
-      if(!is_null($user->token))
+      /*if(!is_null($user->token))
       {
         $this->refresh_token($email_wamate);
+      }*/
+
+      // RESPONSE IF THIS FUNCTION CALL VIA API
+      if($api !== null)
+      {
+        return;
       }
       
       $day_left = User::find($user->id)->day_left;
@@ -488,7 +501,7 @@ class SettingController extends Controller
 
       // OPT code
       $otp_code = Cookie::get('otp_code');
-      if($otp_code <> null)
+      if($otp_code !== null)
       {
         Cookie::queue(Cookie::forget('otp_code'));
       }
@@ -525,6 +538,7 @@ class SettingController extends Controller
 				
 				ApiHelper::start_simi($server->url);
 			}
+
 			if (session('mode')==1) {
 				$qr_status = ApiHelper::qr_status($phone_number);
 
@@ -628,6 +642,7 @@ class SettingController extends Controller
                       where("phone_number",$request->phone_number)
                       ->where("user_id",$user->id)
                       ->first();
+
 			if (session('mode')==0) {
 				$server = Server::find(session("server_id"));
 				if (is_null($server)){
@@ -948,7 +963,15 @@ class SettingController extends Controller
 
     public function delete_phone(Request $request)
     {
-      $user = Auth::user();
+      if($request->api !== null)
+      {
+        $user = $request->api;
+      }
+      else
+      {
+        $user = Auth::user();
+      }
+      
       $phoneNumber = PhoneNumber::find($request->id);
       $wa_number = $phoneNumber->phone_number;
       $arr['check_button'] = '<button id="btn-check" type="button" class="btn btn-custom">Check Phone Number</button>';

@@ -14,6 +14,7 @@ use App\Message;
 use App\Helpers\WamateHelper;
 use App\Http\Controllers\ListController as Lists;
 use App\Http\Controllers\CustomerController as Subscriber;
+use App\Http\Controllers\SettingController as Settings;
 use App\Rules\CheckApiListID;
 use Carbon\Carbon;
 use Storage;
@@ -38,7 +39,7 @@ class ApiUserController extends Controller
       }
     }
 
-    public static function package_list($package)
+    /*public static function package_list($package)
     {
       $data['Paket 1 WA'] = ['price'=>60000,'quota'=>12000];
       $data['Paket 2 WA'] = ['price'=>100000,'quota'=>25000];
@@ -52,13 +53,13 @@ class ApiUserController extends Controller
       {
         return $data[$package];
       }
-    }
+    }*/
 
     //Use this function if phone service stuck
-    public static function login_user($email_wamate,$user_id,$old_token,$callback_token =null,$callback_phone_id =null,$callback_device_name = null,$callback_package = null, $callback_ip = null) 
+    /*public static function login_user($email_wamate,$user_id,$old_token,$callback_token =null,$callback_phone_id =null,$callback_device_name = null,$callback_package = null, $callback_ip = null) 
     {
 
-      /* $callback_token = reseller_token NOT wamate token*/
+       // $callback_token = reseller_token NOT wamate token
       if($callback_ip == null)
       {
         // NEW USER
@@ -105,20 +106,103 @@ class ApiUserController extends Controller
       }
       else
       {
-        /* if password or email mismatch / email not available */
+        if password or email mismatch / email not available 
         $data['response'] = 'Sorry our server is too busy,please contact administrator --101';
       }
 
       return json_encode($data);
-      /**/
+    }*/
+
+    // REGISTER/ LOGIN WAMATE ON TABLE USER
+    public function account()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $account = $user->email_wamate;
+
+      if(!is_null($account))
+      {
+        $data['response'] = 2;
+        return json_encode($data);
+      }
+
+      $settings = new Settings;
+      $settings->index($user);
+
+      $data['response'] = 1;
+      return json_encode($data);
     }
 
+    // CREATE DEVICE
+    public function createdevice()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $phone = PhoneNumber::where('user_id',$user->id)->first();
+
+      if(is_null($phone)):
+        $id=DB::select("SHOW TABLE STATUS LIKE 'phone_apis'");
+        $next_id=$id[0]->Auto_increment;
+        $device_name = 'api-'.$next_id;
+        $email_wamate = $user->email_wamate;
+
+        $device = WamateHelper::create_device($user->token,$user->id,$device_name,$email_wamate,env('WAMATE_SERVER'));
+        $device = json_decode($device,true);
+    
+        if(isset($device['code']))
+        {
+          //IF TOKEN NOT MISTMATCH / INVALID TOKEN
+          $settings = new Settings;
+          $settings->refresh_token($email_wamate);
+        }
+
+        $phoneNumber = new PhoneNumber();
+        $phoneNumber->user_id = $user->id;
+        $phoneNumber->phone_number = 0;
+        $phoneNumber->counter = 0;
+        $phoneNumber->status = 0;
+        $phoneNumber->mode = 2;
+        $phoneNumber->filename = null; 
+        $phoneNumber->ip_server = env('WAMATE_SERVER');
+        $phoneNumber->wamate_id = $device['id'];
+        $phoneNumber->device_key = $device['device_key'];
+        $phoneNumber->save();
+
+        $phone_id = $phoneNumber->id;
+        $data['response'] = $phone_id;
+      else:
+          // if device available
+        $data['response'] = 'device_available'; 
+      endif;
+
+      return json_encode($data);
+    }
+
+    /*
     public function createdevice($callback_user_token = null,$callback_device_name = null,$callback_package = null)
     {
-      /*
-          $callback_user_token exp = XA-22110tuV!34xyGv88Ca 
-          -- reseller_token NOT wamate token --
-      */
+      
+          // $callback_user_token exp = XA-22110tuV!34xyGv88Ca 
+          // -- reseller_token NOT wamate token --
+      
 
       // GET AUTO INCREMENT FROM PHONE_APIS
       $req = json_decode(file_get_contents('php://input'),true);
@@ -160,7 +244,7 @@ class ApiUserController extends Controller
 
       if(isset($device['code']))
       {
-        /*IF TOKEN NOT MISTMATCH / INVALID TOKEN*/
+        //IF TOKEN NOT MISTMATCH / INVALID TOKEN
         return $this->login_user($email_wamate,$user->id,$old_token,$token,null,$device_name,$package);
       }
 
@@ -200,9 +284,9 @@ class ApiUserController extends Controller
 
         $data = [
           'phone_id'=>$phone_api->id,
-          /*'device_id'=>$device['id'],
-          'device_name'=>$device['name'],
-          'device_key'=>$device['device_key']*/
+          // 'device_id'=>$device['id'],
+          // 'device_name'=>$device['name'],
+          // 'device_key'=>$device['device_key']
         ];
       }
       catch(QueryException $e)
@@ -212,13 +296,77 @@ class ApiUserController extends Controller
       }
 
       return json_encode($data);
+    }*/
+
+    public function qrcode()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $phone_id = $req['phone_id'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $phone = PhoneNumber::find($phone_id);
+
+      if(is_null($phone))
+      {
+        $data['response'] = 'Invalid Phone';
+        return json_encode($data);
+      }
+
+      $email_wamate = $user->email_wamate;
+      $ip_server = $phone->ip_server;
+      $pair = WamateHelper::pair($user->token,$phone->wamate_id,$ip_server);
+      $pair = json_decode($pair,true);
+
+      if($pair['status'] == 'PAIRING')
+      {
+         $data = '<img src="'.$pair['qr_code'].'" />';
+      }
+      elseif($pair['status'] == 'IDLE')
+      {
+         //DEVICE NOT READY
+         $data = 'Device is not ready yet, please try again.';
+      } 
+      elseif($pair['status'] == 'PAIRED' )
+      {
+         //DEVICE HAS PAIRED
+         $data = "Device has paired already";
+      }  
+      elseif($pair['status'] == 404 )
+      {
+         //DEVICE NOT AVAILABLE
+         $data = 'Sorry, device is not available.';
+      }  
+      elseif($pair['status'] == 401 )
+      {
+         //EXPIRED TOKEN
+          $settings = new Settings;
+          $settings->refresh_token($email_wamate);
+          $data = 'Please re-scan your device';
+      } 
+      elseif($pair == null)
+      {
+         //DELETED SERVER
+         $data = 'Invalid ID';
+      }
+      else
+      {
+         //401 --INVALID DEVICE TOKEN -- tell to login again
+         $data = 'Sorry our server is too busy, please try to login again --104';
+      }
+
+      return $data;
     }
 
-    public function qrcode($callback_token = null,$callback_phone_id = null)
+    /*public function qrcode($callback_token = null,$callback_phone_id = null)
     {
-       /* $callback_token = "XA-22110tuV!34xyGv88Ca";
-          -- reseller_token --
-        */
         $req = json_decode(file_get_contents('php://input'),true);
 
         if($callback_token == null && $callback_phone_id == null):
@@ -285,7 +433,7 @@ class ApiUserController extends Controller
         }
         
         return $data;
-    }
+    }*/
 
     /*TO CHANGE STATUS ON DATABASE PHONE API AFTER PAIRING / SCAN*/
     public function device_status()
@@ -302,7 +450,7 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
 
         if(is_null($phone))
         {
@@ -311,7 +459,7 @@ class ApiUserController extends Controller
         }
 
         $ip_server = $phone->ip_server;
-        $check_phone = WamateHelper::show_device($phone->token,$phone->device_id,$ip_server);
+        $check_phone = WamateHelper::show_device($user->token,$phone->wamate_id,$ip_server);
         $check_phone = json_decode($check_phone,true);
         $phone_status = $check_phone['status'];
         $device_key = $check_phone['device_key'];
@@ -320,14 +468,13 @@ class ApiUserController extends Controller
         if($phone_status == 'PAIRED')
         {
            WamateHelper::autoreadsetting($device_key,$ip_server);
-           $phone->phone_number = $check_phone['phone'];
-           $phone->device_key = $check_phone['device_key'];
-           $phone->device_status = 1;
+           $phone->phone_number = '+'.$check_phone['phone'];
+           $phone->status = 2;
            $data['response'] = 'phone_connected';
         } 
         else
         {
-           $phone->device_status = 0;
+           $phone->status = 0;
            $data['response'] = 'phone_disconnected';
         }
 
@@ -359,7 +506,7 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
 
         if(is_null($phone))
         {
@@ -368,7 +515,7 @@ class ApiUserController extends Controller
         }
 
         $phone_ip = $phone->ip_server;
-        $check_phone = WamateHelper::show_device($phone->token,$phone->device_id,$phone_ip);
+        $check_phone = WamateHelper::show_device($user->token,$phone->wamate_id,$phone_ip);
         $check_phone = json_decode($check_phone,true);
 
         if($check_phone == null)
@@ -387,7 +534,7 @@ class ApiUserController extends Controller
 
         $data = [
           'id'=>$phone->id,
-          'quota'=>$phone->quota,
+          'quota'=>$phone->max_counter,
           'phone'=>$check_phone['phone'],
           'name'=>$check_phone['name'],
           'status'=>$check_phone['status'],
@@ -409,6 +556,7 @@ class ApiUserController extends Controller
       $phone_id = $req['phone_id'];
       $to = $req['to'];
       $message = $req['message'];
+      $media = $req['media'];
 
       $user = self::check_token($token);
 
@@ -418,7 +566,8 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+      // PHONE NUMBER VALIDATION
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
 
       if(is_null($phone))
       {
@@ -426,15 +575,54 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
+      $phone_status = $phone->status;
+      if($phone_status < 2)
+      {
+        $data['response'] = 'Mohon untuk scan ulang';
+        return json_encode($data);
+      }
+
+      $phone_counter = $phone->max_counter;
+      if($phone_counter < 1)
+      {
+        $data['response'] = 'Kuota anda habis silahkan topup lagi.';
+        return json_encode($data);
+      }
+
+      // TO & MESSAGE VALIDATION
+      if(empty($to) || $to == null)
+      {
+        $data['response'] = 'No tujuan tidak boleh kosong';
+        return json_encode($data);
+      }
+
+      if(empty($message) || $message == null)
+      {
+        $data['response'] = 'Message tidak boleh kosong';
+        return json_encode($data);
+      }
+
       $msg = new Message;
       $msg->user_id = $user->id;
+      $msg->sender = $phone->phone_number;
       $msg->phone_number = $to;
       $msg->key = $phone->device_key;
       $msg->message = $message;
+      $msg->img_url = $media;
       $msg->status = 11;
       $msg->customer_id = 0;
       $msg->ip_server = $phone->ip_server;
-      $msg->save();
+
+      try{
+        $msg->save();
+        $data['response'] = 1;
+      }
+      catch(Queryexception $e)
+      {
+        $data['response'] = 0;
+      }
+      
+      return json_encode($data);
 
      /* if($phone->quota < 1)
       {
@@ -471,7 +659,7 @@ class ApiUserController extends Controller
       }*/
     }
 
-    public function send_image()
+   /* public function send_image()
     {
       $req = json_decode(file_get_contents('php://input'),true);
       $token = $req['token'];
@@ -488,18 +676,13 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
 
       if(is_null($phone))
       {
         $data['response'] = 'Invalid ID';
         return json_encode($data);
       }
-
-      /*$folder = $user->id."/api/";
-      Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($media), 'public');
-      Storage::disk('s3')->url($folder."temp.jpg")
-      */
 
       if($phone->quota < 1)
       {
@@ -537,24 +720,14 @@ class ApiUserController extends Controller
           $phone->save();
           return json_encode(array('response'=>'Your image has been sent'));
       }
-    }
+    }*/
 
     public function delete_device(Request $request)
     {
-      if($request->phone_id == null)
-      {
-        // DELETE FROM API
-        $req = json_decode(file_get_contents('php://input'),true);
-        $token = $req['token'];
-        $phone_id = $req['phone_id']; 
-      }
-      else
-      {
-        // DELETE FROM ACCOUNTS
-        $token = Auth::user()->reseller_token;
-        $phone_id = $request->phone_id;
-      }
-
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $phone_id = $req['phone_id']; 
+  
       $user = self::check_token($token);
 
       if($user == false)
@@ -563,7 +736,7 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
 
       if(is_null($phone))
       {
@@ -571,10 +744,27 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $device_id = $phone->device_id;
-      $device_name = $phone->device_name;
+      $device_id = $phone->wamate_id;
       $ip_server = $phone->ip_server;
-      $check_phone = WamateHelper::delete_devices($device_id,$phone
+
+      $set = new Settings;
+      $tel['id'] = $phone_id;
+      $tel['api'] = $user;
+      $request = new Request($tel);
+      $del = $set->delete_phone($request);
+
+      if($del['status'] == 'success')
+      {
+        $data['response'] = 'device_deleted';
+      }
+      else
+      {
+        $data['response'] = 0;
+      }
+
+      return json_encode($data);
+
+      /*$check_phone = WamateHelper::delete_devices($device_id,$phone
         ->token,$ip_server);
 
       if(isset($check_phone['code']))
@@ -588,7 +778,7 @@ class ApiUserController extends Controller
           $phone->device_status = 0;
           $phone->save();
           return json_encode(array('response'=>'Device '.$device_name.' has been deleted.'));
-      }
+      }*/
     }
 
     // GENERATE LINK API
@@ -895,6 +1085,49 @@ class ApiUserController extends Controller
       else
       {
         $data['response'] = $del->getData()->message;
+      }
+
+      return json_encode($data);
+    }
+
+    // HISTORY LOG
+    public function history()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $history = Message::where('user_id',$user->id)->get();
+
+      if($history->count() > 0)
+      {
+        foreach ($history as $row) {
+          if($row->status == 1)
+          {
+            $status = 'Delivered';
+          }
+          else
+          {
+            $status = 'Pending';
+          }
+
+          $data['response'][] = array(
+            'phone'=>$row->phone_number,
+            'message'=>$row->message,
+            'status'=>$status
+          );
+        }
+      }
+      else
+      {
+        $data['response'] = 0;
       }
 
       return json_encode($data);

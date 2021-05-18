@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 
@@ -6,13 +6,10 @@
   <div class="row">
     <div class="col-md-12">
 
-      <h2><b>Invoice Reseller</b></h2>  
+      <h2><b>Pay Reseller</b></h2>  
       
       <h5>
-        Show you previous history orders
-        <button type="button" class="btn btn-primary btn-confirm" data-toggle="modal" data-target="#transfer-information" style="font-size: 13px; padding: 5px 8px;">
-          Payment / Transfer information
-        </button>        
+        Show total commission for reseller
       </h5>
       
       <hr>
@@ -40,42 +37,6 @@
   </div>
 </div>
 
-<!-- Modal Transfer Information -->
-<div class="modal fade" id="transfer-information" role="dialog">
-  <div class="modal-dialog">
-    
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modaltitle">
-          Transfer Information
-        </h5>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-
-          <p class="card-text">
-            Silahkan melakukan Transfer Bank ke
-          </p> 
-          <h2>8290-336-261</h2>
-          <p class="card-text">
-            BCA <b>Sugiarto Lasjim</b>
-          </p>
-          <p class="card-text">
-            Setelah Transfer, silahkan Klik tombol confirm payment di bawah ini <br> atau Email bukti Transfer anda ke <b>activrespon@gmail.com</b> <br>
-            Admin kami akan membantu anda max 1x24 jam
-          </p>
-
-      </div>
-      <div class="modal-footer" id="foot">
-        <button class="btn" data-dismiss="modal">
-          Ok
-        </button>
-      </div>
-    </div>
-      
-  </div>
-</div>
 
 <!-- Modal Confirm Delete -->
 <div class="modal fade" id="confirm-delete" role="dialog">

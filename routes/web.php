@@ -67,7 +67,7 @@ Route::post('/submit-checkout','OrderController@submit_checkout'); //new system 
 Route::post('/submit-summary','OrderController@submit_summary'); //new system to summary
 
 /* RESELLER API */
-// Route::post('/api/login','ApiUserController@login_user');
+Route::post('/api/account','ApiUserController@account');
 Route::post('/api/device','ApiUserController@createdevice');
 Route::get('/generate/qr','ApiUserController@qrcode');
 Route::post('/api/status','ApiUserController@device_status');
@@ -82,6 +82,7 @@ Route::get('/api/delete-list','ApiUserController@delete_list');
 Route::post('/api/subscriber','ApiUserController@add_subscriber');
 Route::post('/api/update-subscriber','ApiUserController@update_subscriber');
 Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
+Route::get('/api/history','ApiUserController@history');
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');
@@ -165,9 +166,9 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::get('/list-order',function(){
     return view('admin.list-order.index',['reseller'=>0]);
   });
-  Route::get('/list-order-reseller',function(){
+  /*Route::get('/list-order-reseller',function(){
     return view('admin.list-order.index',['reseller'=>1]);
-  });
+  });*/
   Route::get('/list-order/load-order','Admin\OrderController@load_list_order');
   Route::get('/list-order/confirm','Admin\OrderController@confirm_order');
   
@@ -184,6 +185,10 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 
   //List API
   Route::get('generate_api_key','ApiController@generate_api_key');
+
+  //RESELLER
+  Route::get('reseller-invoice','HomeController@invoice');
+  Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
 });
 
 /* SETTING */
@@ -353,10 +358,8 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('debug_message','ChatsController@getChatMessages');
 
    // RESELLER
-  Route::get('reseller-home','HomeController@reseller_home');
-  Route::get('reseller-data','HomeController@reseller_user_data');
-  Route::get('reseller-invoice','HomeController@invoice');
-  Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
+  // Route::get('reseller-home','HomeController@reseller_home');
+  // Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-token','HomeController@createRandomToken');
 
   /* RESEND */
