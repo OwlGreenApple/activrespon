@@ -73,7 +73,8 @@ Route::get('/generate/qr','ApiUserController@qrcode');
 Route::post('/api/status','ApiUserController@device_status');
 Route::get('/api/device/info','ApiUserController@device_info');
 Route::post('/api/send-message','ApiUserController@send_message');
-Route::post('/api/send-image','ApiUserController@send_image');
+Route::post('/api/resend','ApiUserController@resend');
+// Route::post('/api/send-image','ApiUserController@send_image');
 Route::get('/api/delete-device','ApiUserController@delete_device');
 Route::get('/api/generate-link','ApiUserController@generate_link');
 Route::post('/api/list','ApiUserController@create_list');
@@ -189,6 +190,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   //RESELLER
   Route::get('reseller-invoice','HomeController@invoice');
   Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
+  Route::post('pay-reseller','HomeController@pay_reseller');
 });
 
 /* SETTING */
@@ -358,9 +360,10 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('debug_message','ChatsController@getChatMessages');
 
    // RESELLER
-  // Route::get('reseller-home','HomeController@reseller_home');
-  // Route::get('reseller-data','HomeController@reseller_user_data');
+  Route::get('reseller-home','HomeController@reseller_home');
+  Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-token','HomeController@createRandomToken');
+  Route::get('reseller-detail/{period}','HomeController@monthly_report');
 
   /* RESEND */
   Route::get('resend_auto_eply','ListController@resendAutoReply');

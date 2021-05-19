@@ -75,7 +75,7 @@
 
                 <form class="add-contact" id="addcustomer">
                     <div class="form-group">
-                      <label>{{ $label_name }}*</label>
+                      <label>Name*</label>
                       <input type="text" name="subscribername" class="form-control" />
                       <input type="hidden" id="city" name="city" />
                       <span class="error name"></span>
@@ -117,13 +117,27 @@
                       </div> -->
                     </div>
 
-                    @if($checkbox_email > 0)
                     <div class="form-group">
-                      <label>{{ $label_email }}*</label>
+                      <label>Email*</label>
                       <input type="email" name="email" class="form-control" />
                       <span class="error email"></span>
                     </div> 
-                    @endif
+
+                    <div class="form-group">
+                      <label>Birthday*</label>
+                      <input type="email" name="email" class="form-control" />
+                      <span class="error email"></span>
+                    </div> 
+
+                    <div class="form-group">
+                      <label>Sex*</label>
+                      <select name="sex" class="form-control">
+                        <option value="male" selected>Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                      <span class="error email"></span>
+                    </div> 
+
 
                     @if(count($additional) > 0)
                       @foreach($additional as $is_optional=>$row)

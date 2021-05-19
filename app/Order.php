@@ -66,11 +66,12 @@ class Order extends Model
     $order->package =$data['namapaket'];
     $order->package_title =$data['namapakettitle'];
 
+    //GENERATE INVOICE FROM COMMAND RESELLER:INVOICE, UNIQUE CODE NOT ADDING TO AVOID MISSVALUE
     if(isset($data['api']))
     {
-      $order->total = $total;
-      $order->grand_total = $grand_total;
-      $order->status = 0;
+      $order->total = $data['price'];
+      $order->grand_total = $data['price'];
+      $order->status = 1;
       $order->is_chat = 0;
       $order->save();
       return;

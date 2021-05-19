@@ -1,11 +1,6 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('content')
-
-<div class="container h6">
-  <div>Total Komisi : <b>Rp {{ str_replace(",",".",number_format($total->gt)) }},00</b></div>
-  <div>Total Accounts : <b>{{ str_replace(",",".",number_format($data->count())) }}</b></div>
-</div>
 
 <div class="table-responsive container">
   <table class="table table-striped">

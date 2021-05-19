@@ -46,16 +46,16 @@ class ResellerInvoice extends Command
         $invoice_period = Carbon::now()->subMonth(0)->format('m-Y'); //demo only set to 0
         //GENERATE INVOICE ON ORDER
         $invoice = Reseller::where([['period',$invoice_period]])
-                    ->selectRaw('SUM(total) AS gt, user_id')
-                    ->groupBy('user_id')
+                    ->selectRaw('SUM(total) AS gt, reseller_id')
+                    ->groupBy('reseller_id')
                     ->get();
 
         if($invoice->count() > 0)
         {
           foreach($invoice as $row):
-            $user = User::find($row->user_id);
+            $user = User::find($row->reseller_id);
             $pckg = [
-              'namapaket'=>'WA Reseller - '.$invoice_period.'-'.$user->reseller_id,
+              'namapaket'=>'WA Reseller - '.$invoice_period.'-'.$row->reseller_id,
               'namapakettitle'=>$invoice_period,
               'user'=>$user,
               'price'=>$row->gt,

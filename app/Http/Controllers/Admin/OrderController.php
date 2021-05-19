@@ -323,6 +323,5 @@ class OrderController extends Controller
       return $status_upgrade;
     }
 
-  
 /* end class */
 }

@@ -70,13 +70,13 @@
               {{$order->keterangan}}
             @endif
           </td>
-          <td><a target="_blank" href="{{ url('detail-invoice') }}/{{$order->package_title}}/0">Detail</a></td>
+          <td><a target="_blank" href="{{ url('detail-invoice') }}/{{$order->package_title}}/{{$order->user_id}}">Detail</a></td>
           <td class="menu-nomobile" data-label="Confirm">
              @if($order->date_confirm == null) - @else {{$order->date_confirm}} @endif
           </td>
           <td data-label="Status" class="text-center">
-            @if($order->status==2)
-              <button type="button" class="btn btn-primary btn-confirm" data-toggle="modal" data-target="#confirm-payment" data-id="{{$order->id}}" data-no-order="{{$order->no_order}}" data-package="{{$order->package}}" data-total="{{$order->grand_total}}" data-date="{{$order->created_at}}" data-keterangan="{{$order->keterangan}}" style="font-size: 13px; padding: 5px 8px;">
+            @if($order->status==1)
+              <button type="button" class="btn btn-primary btn-confirm" data-toggle="modal" data-target="#confirm-payment" data-id="{{$order->id}}" data-user="{{$order->user_id}}" data-no-order="{{$order->no_order}}" data-package="{{$order->package}}" data-total="{{$order->grand_total}}" data-date="{{$order->created_at}}" data-keterangan="{{$order->keterangan}}" style="font-size: 13px; padding: 5px 8px;">
                 Pay Now
               </button>
             @else 

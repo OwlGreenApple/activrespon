@@ -22,6 +22,11 @@ class User extends Authenticatable
 		* 1 -> normal
 		* 2 -> fast
 		*
+    * status :
+    * 0 -> inactiv user
+    * 1 -> activ user
+    * 2 -> reseller user
+    * 
 		*/
     use Notifiable;
 

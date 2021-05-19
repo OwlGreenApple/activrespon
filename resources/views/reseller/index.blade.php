@@ -14,14 +14,11 @@
       
       <hr>
     </div>
-      @if (session('error') )
+    
     <div class="col-md-12 ">
-      <div id="pesan" class="alert alert-danger">
-          {{session('error')}}
-        </div>
+      <div id="pesan"><!-- message notification here --></div>
     </div>
-      @endif
-
+    
     <div class="col-md-12">
       <form class="responsive" id="content">
         @if($orders->count() > 0)
@@ -80,11 +77,9 @@
         </h5>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
-      <form id="formUpload" enctype="multipart/form-data" method="POST" action="{{ url('order-confirm-payment') }}">
-        <div class="modal-body">
-          @csrf
-          <input type="hidden" name="id_confirm" id="id_confirm">
 
+      <form id="formUpload">
+        <div class="modal-body">
           <div class="form-group">
             <label class="col-md-3 col-12">
               <b>Order No</b>
@@ -145,16 +140,17 @@
           </button>
         </div>
       </form>
+
     </div>
       
   </div>
 </div>
 
-
 <script type="text/javascript">
 
   $(document).ready(function() {
     pagination();
+    upload_bukti_bayar();
   });
   //ajax pagination
   function pagination()
@@ -216,6 +212,48 @@
   }
   //end ajax pagination
 
+  function upload_bukti_bayar()
+  {
+    $("#formUpload").submit(function(e){
+      e.preventDefault();
+      var data = new FormData($(this)[0]);
+      var user_id = $("#btn-confirm-ok").attr('data-user-id');
+      var confirm_id = $("#btn-confirm-ok").attr('data-confirm-id');
+   
+      data.append('user_id',user_id);
+      data.append('id_confirm',confirm_id);
+
+      $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        type : 'POST',
+        url : '{{ url("pay-reseller") }}',
+        cache : false,
+        processData : false,
+        contentType : false,
+        data : data,
+        dataType : 'json',
+        success : function(result)
+        {
+          if(result.status == 'success')
+          {
+            $("#pesan").html('<div class="alert alert-success">'+result.message+'</div>');
+            $("#confirm-payment").modal('hide');
+            location.href="{{url('reseller-invoice')}}";
+          }
+          else
+          {
+            $("#pesan").html('<div class="alert alert-danger">'+result.message+'</div>')
+          }
+        },
+        error : function(xhr)
+        {
+          alert('Error, tidak bisa untuk upload bukti bayar');
+          console.log(xhr.responseText);
+        }
+      });
+    });
+  }
+
   $( "body" ).on( "click", ".view-details", function() {
     var id = $(this).attr('data-id');
 
@@ -243,6 +281,8 @@
     }
 
     $('#mod-keterangan').html(keterangan);
+    $("#btn-confirm-ok").attr('data-user-id',$(this).attr('data-user'));
+    $("#btn-confirm-ok").attr('data-confirm-id',$(this).attr('data-id'));
   });
 
   // $( "body" ).on( "click", "#btn-confirm-ok", function() 

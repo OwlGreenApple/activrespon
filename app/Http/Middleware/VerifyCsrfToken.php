@@ -52,7 +52,7 @@ class VerifyCsrfToken extends Middleware
         'generate/qr',
         'api/status',
         'api/send-message',
-        'api/send-image',
+        'api/resend',
         'api/delete-device',
         'api/list',
         'api/update-list',

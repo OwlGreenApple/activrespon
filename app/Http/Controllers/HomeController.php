@@ -24,6 +24,7 @@ use App\Order;
 use App\Reseller;
 use App\Phoneapis;
 use DB;
+use Storage;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -341,16 +342,17 @@ class HomeController extends Controller
     /* DISPLAY AVAILABLE / DELETED USER DATA */
     public function reseller_user_data(Request $request)
     {
-      $is_delete = $request->is_del;
-      $data = Phoneapis::where([['user_id',Auth::id()],['is_delete','=',$is_delete]])->orderBy('id','desc')->get();
+      $data = Order::where([['user_id',Auth::id()],['package','LIKE',"%WA Reseller%"]])
+                ->orderBy('id','desc')->get();
+
       return view('reseller.home-data',['data'=>$data]);
     }
 
-    /* DISPLAY INVOICE */
+    /* DISPLAY PAY RESELLER ON ADMIN PAGE */
     public function invoice(Request $request)
     {
-      $orders = Order::where([['user_id',Auth::user()->id],['package','LIKE',"%WA Reseller%"]])
-                ->orderBy('created_at','desc')
+      $orders = Order::where('package','LIKE',"%WA Reseller%")
+                ->orderBy('id','desc')
                 ->paginate(15);
 
        if($request->ajax())
@@ -361,71 +363,90 @@ class HomeController extends Controller
        return view('reseller.index',['orders'=>$orders,'pager'=>$orders]);
     }
 
-    /* DISPLAY DETAIL INVOICE */
-    public function monthly_report($current_month,$userid)
+    /* DISPLAY DETAIL PAY RESELLER */
+    public function monthly_report($current_month,$reseller_id = null)
     {
-      if(env('APP_ENV') == 'local')
+      $user = Auth::user();
+
+      if($user->is_admin > 0)
       {
-        $connection = 'activrespons.phone_apis AS pa';
+        $page = 'reseller.reseller';
       }
       else
       {
-        $connection = 'activres_project.phone_apis AS pa';
+        $reseller_id = $user->id;
+        $page = 'reseller.reseller-detail';
       }
 
-      // DETERMINE DATA TAKE BY ADMIN OR BY RESELLER USER
-      if($userid == 0)
+      if(env('APP_ENV') == 'local')
       {
-        $id = Auth::id();
-      }
-      elseif(Auth::user()->is_admin == 1 && $userid <> 0)
-      {
-        $id = $userid;
+        $connection = 'activrespons.users AS us';
+        $connection2 = 'activrespons.users AS us2';
       }
       else
       {
-        return 'Invalid Page';
+        $connection = 'activres_project.users AS us';
+        $connection2 = 'activres_project.users AS us2';
       }
       
       // $current_month = Carbon::now()->format('m-Y');
-      $order = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month]])
-              ->join($connection,'resellers.phone_api_id','=','pa.id')
-              ->select('resellers.*','pa.phone_number','pa.quota')
+      $order = Reseller::where([['resellers.reseller_id','=',$reseller_id],['resellers.period','=',$current_month]])
+              ->join('orders','resellers.order_id','=','orders.id')
+              ->join($connection,'orders.user_id','=','us.id')
+              ->join($connection2,'resellers.reseller_id','=','us2.id')
+              ->select('resellers.*','orders.grand_total','us.name','us2.name as reseller_name')
               ->get();
 
       //total invoice
-      $total = Reseller::where([['user_id','=',$id],['period','=',$current_month]])->selectRaw('SUM(total) AS gt')->first();
-
-    /*  // total phone numbers
-      $total_phone = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.phone_number','<>',null]])
-              ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
-              ->selectRaw('COUNT(*) AS gt')->first();
-
-      // total NO phone numbers
-      $total_no_phone = Reseller::where([['resellers.user_id','=',$id],['resellers.period','=',$current_month],['pa.phone_number','=',null]])
-              ->join('activrespons.phone_apis AS pa','resellers.phone_api_id','=','pa.id')
-              ->selectRaw('COUNT(*) AS gt')->first();*/
-
-      // total packages 1
-      $total_package_1 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 1 WA']])->selectRaw('COUNT(*) AS gt')->first();
-
-      // total packages 2
-      $total_package_2 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 2 WA']])->selectRaw('COUNT(*) AS gt')->first();
-
-      // total packages 3
-      $total_package_3 = Reseller::where([['user_id','=',$id],['period','=',$current_month],['package','=','Paket 3 WA']])->selectRaw('COUNT(*) AS gt')->first();
+      $total = Reseller::where([['reseller_id','=',$reseller_id],['period','=',$current_month]])->selectRaw('SUM(total) AS gt')->first();
 
       $data = [
         'data'=>$order,
         'total'=>$total,
-        'total_package_1' =>$total_package_1,
-        'total_package_2' =>$total_package_2,
-        'total_package_3' =>$total_package_3,
-        'package'=> new ApiUserController
       ];
 
-      return view('reseller.reseller',$data);
+      return view($page,$data);
     }
+
+  // UPLOAD BUKTIBAYAR RESELLER
+  public function pay_reseller(Request $request)
+  {
+    // dd($request->all());
+    $userid = $request->user_id;
+    $user = User::find($userid);
+    $order = Order::find($request->id_confirm);
+    $folder = $user->email.'/buktibayar';
+
+    if($order->status==1)
+    {
+      if($request->hasFile('buktibayar'))
+      {
+        // $path = Storage::putFile('bukti',$request->file('buktibayar'));
+        $dir = 'bukti_bayar/'.explode(' ',trim($user->name))[0].'-'.$user->id;
+        $filename = $order->no_order.'.jpg';
+        Storage::disk('s3')->put($dir."/".$filename, file_get_contents($request->file('buktibayar')), 'public');
+        $order->buktibayar = $dir."/".$filename;
+        
+      } else {
+        $arr['status'] = 'error';
+        $arr['message'] = 'Upload file buktibayar terlebih dahulu';
+        return response()->json($arr);
+      }  
+
+      $order->status = 2;
+      $order->date_confirm = Carbon::now();
+      $order->keterangan = $request->keterangan;
+      $order->save();
+
+      $arr['status'] = 'success';
+      $arr['message'] = 'Konfirmasi pembayaran berhasil';
+    } else {
+      $arr['status'] = 'error';
+      $arr['message'] = 'Order telah atau sedang dikonfirmasi oleh admin';
+    }
+
+    return response()->json($arr);
+  }
 
 /* end class HomeController */
 }

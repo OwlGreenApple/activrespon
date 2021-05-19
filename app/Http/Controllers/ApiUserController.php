@@ -496,7 +496,7 @@ class ApiUserController extends Controller
     {
         $req = json_decode(file_get_contents('php://input'),true);
         $token = $req['token'];
-        $phone_id = $req['phone_id'];
+        // $phone_id = $req['phone_id'];
 
         $user = self::check_token($token);
 
@@ -506,15 +506,15 @@ class ApiUserController extends Controller
           return json_encode($data);
         }
 
-        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+        $phone = PhoneNumber::where('user_id',$user->id)->first();
 
         if(is_null($phone))
         {
-          $data['response'] = 'Invalid ID';
+          $data['response'] = 'Please create device first.';
           return json_encode($data);
         }
 
-        $phone_ip = $phone->ip_server;
+        /*$phone_ip = $phone->ip_server;
         $check_phone = WamateHelper::show_device($user->token,$phone->wamate_id,$phone_ip);
         $check_phone = json_decode($check_phone,true);
 
@@ -530,12 +530,12 @@ class ApiUserController extends Controller
           //EXPIRED TOKEN
           $data['response'] = 'Please scan your device';
           return json_encode($data);
-        }
+        }*/
 
         $data = [
           'id'=>$phone->id,
           'quota'=>$phone->max_counter,
-          'phone'=>$check_phone['phone'],
+         /* 'phone'=>$check_phone['phone'],
           'name'=>$check_phone['name'],
           'status'=>$check_phone['status'],
           'wa_name'=>$check_phone['wa_name'],
@@ -543,7 +543,7 @@ class ApiUserController extends Controller
           'manufacture'=>$check_phone['manufacture'], 
           'os_version'=>$check_phone['os_version'],
           'created_at'=>$check_phone['created_at'],
-          'updated_at'=>$check_phone['updated_at']
+          'updated_at'=>$check_phone['updated_at']*/
         ];
 
         return json_encode($data);
@@ -572,6 +572,12 @@ class ApiUserController extends Controller
       if(is_null($phone))
       {
         $data['response'] = 'Invalid ID';
+        return json_encode($data);
+      }
+
+      if($phone->device_key == null || empty($phone->device_key))
+      {
+        $data['response'] = 'Silahkan scan terlebih dahulu';
         return json_encode($data);
       }
 
@@ -615,11 +621,12 @@ class ApiUserController extends Controller
 
       try{
         $msg->save();
-        $data['response'] = 1;
+        $id_msg = $msg->id;
+        $data['response'] = $id_msg;
       }
       catch(Queryexception $e)
       {
-        $data['response'] = 0;
+        $data['response'] = "error";
       }
       
       return json_encode($data);
@@ -657,6 +664,41 @@ class ApiUserController extends Controller
       {
           
       }*/
+    }
+
+    public function resend()
+    {
+       $req = json_decode(file_get_contents('php://input'),true);
+       $token = $req['token'];
+       $message_id = $req['message_id'];
+
+       $user = self::check_token($token);
+
+       if($user == false)
+       {
+         $data['response'] = 'Invalid Token';
+         return json_encode($data);
+       }
+
+       $msg = Message::where([['id',$message_id],['user_id',$user->id]])->first();
+
+       if(is_null($msg))
+       {
+          return json_encode(['response'=>'Invalid ID']);
+       }
+
+       try
+       {
+          $msg->status = 11;
+          $msg->save();
+          $data['response'] = 1;
+       }
+       catch(QueryException $e)
+       {
+          $data['response'] = "error";
+       }
+
+       return json_encode($data);
     }
 
    /* public function send_image()
@@ -1119,6 +1161,7 @@ class ApiUserController extends Controller
           }
 
           $data['response'][] = array(
+            'id'=>$row->id,
             'phone'=>$row->phone_number,
             'message'=>$row->message,
             'status'=>$status
