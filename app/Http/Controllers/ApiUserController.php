@@ -1009,7 +1009,7 @@ class ApiUserController extends Controller
         return json_encode(['response'=>$validation]);
       }
 
-      $list = UserList::find($list_id);
+      $list = UserList::where([['id',$list_id],['user_id',$user->id]]);
 
       if(is_null($list))
       {
