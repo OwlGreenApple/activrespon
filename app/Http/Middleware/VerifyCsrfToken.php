@@ -55,6 +55,7 @@ class VerifyCsrfToken extends Middleware
         'api/resend',
         'api/delete-device',
         'api/list',
+        'api/lists',
         'api/update-list',
         'api/subscriber',
         'api/update-subscriber'

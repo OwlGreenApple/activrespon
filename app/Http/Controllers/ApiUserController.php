@@ -956,6 +956,36 @@ class ApiUserController extends Controller
       return json_encode($data);
     }
 
+    public function get_lists()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $list = array();
+      $lists = UserList::where('user_id',$user->id)->get();
+
+      if($lists->count() > 0):
+        foreach($lists as $row){
+          $list[] = array(
+            'id'=>$row->id,
+            'link'=>$row->name,
+            'status'=>$row->status,
+          );
+        }
+      endif;
+
+      $data['response'] = $list;
+      return json_encode($data);
+    }
+
     public function update_list()
     {
       $req = json_decode(file_get_contents('php://input'),true);

@@ -78,6 +78,7 @@ Route::post('/api/resend','ApiUserController@resend');
 Route::get('/api/delete-device','ApiUserController@delete_device');
 Route::get('/api/generate-link','ApiUserController@generate_link');
 Route::post('/api/list','ApiUserController@create_list');
+Route::post('/api/lists','ApiUserController@get_lists');
 Route::post('/api/update-list','ApiUserController@update_list');
 Route::get('/api/delete-list','ApiUserController@delete_list');
 Route::post('/api/subscriber','ApiUserController@add_subscriber');
