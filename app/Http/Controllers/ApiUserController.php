@@ -16,6 +16,7 @@ use App\Http\Controllers\ListController as Lists;
 use App\Http\Controllers\CustomerController as Subscriber;
 use App\Http\Controllers\SettingController as Settings;
 use App\Rules\CheckApiListID;
+use App\Rules\InternationalTel;
 use Carbon\Carbon;
 use Storage;
 use Auth;
@@ -1041,7 +1042,7 @@ class ApiUserController extends Controller
       $list = new Lists;
       $req['user_id'] = $user->id;
       $req['del'] = true;
-      
+
       $request = new Request($req);
       $del = $list->delListContent($request);
   
@@ -1099,9 +1100,7 @@ class ApiUserController extends Controller
       $phone_number = $req['phone_number'];
       $email = $req['email'];
       $subscribername = $req['subscribername'];
-      $last_name = $req['last_name'];
-      $list_id = $req['list_id'];
-
+  
       $user = self::check_token($token);
 
       if($user == false)
@@ -1110,7 +1109,7 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      $edit_customer = Customer::where([['id',$customer_id],['list_id',$list_id],['user_id',$user->id]]);
+      $edit_customer = Customer::where([['id',$customer_id],['user_id',$user->id]]);
 
       if(is_null($edit_customer->first()))
       {
@@ -1118,9 +1117,27 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
+      $rules = [
+        'phone_number'=>['required','numeric','digits_between:6,18',new InternationalTel],
+        'email'=>['required','email','max:50'],
+        'subscribername'=>['required','min:4','max:50'],
+      ];
+
+      $validator = Validator::make($req,$rules);
+      if($validator->fails())
+      {
+        $err = $validator->errors();
+        $data['response'] = [
+          'status'=>'error',
+          'phone_number'=>$err->first('phone_number'),
+          'email'=>$err->first('email'),
+          'subscribername'=>$err->first('subscribername'),
+        ];
+        return json_encode($data);
+      }
+
       $update = [
         'name'=>$subscribername,
-        'last_name'=>$last_name,
         'email'=>$email,
         'telegram_number'=>$phone_number,
         'status'=>1

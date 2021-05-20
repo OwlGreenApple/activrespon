@@ -153,6 +153,13 @@ class CustomerController extends Controller
             $addt = null;
         }
 
+        // CASE IN API
+        if(is_null($list) && $request->api == true){
+           $data['success'] = false;
+           $data['message'] = 'Invalid Link';
+           return response()->json($data);
+        } 
+
         // Filter to avoid unavailable link 
         if(is_null($list)){
             return redirect('/');
