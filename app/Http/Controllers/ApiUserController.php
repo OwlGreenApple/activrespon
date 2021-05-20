@@ -1029,20 +1029,13 @@ class ApiUserController extends Controller
       $req = json_decode(file_get_contents('php://input'),true);
       $token = $req['token'];
       $list_id = $req['list_id'];
-
+     
       $user = self::check_token($token);
 
       if($user == false)
       {
         $data['response'] = 'Invalid Token';
         return json_encode($data);
-      }
-
-      //CHECK VALIDATION List
-      $validation = self::validation_list($req);
-      if($validation !== true)
-      {
-        return json_encode(['response'=>$validation]);
       }
 
       $list = new Lists;
