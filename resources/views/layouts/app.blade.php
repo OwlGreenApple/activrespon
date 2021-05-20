@@ -112,8 +112,8 @@
     <script type="text/javascript" src="{{ asset('canvasjs/canvasjs.min.js') }}"></script>
 
     <!-- custom scroll -->
-    <link href="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css') }}" rel="stylesheet" />
-    
+   <!--  <link href="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css') }}" rel="stylesheet" /> -->
+
     @if(Request::is('reseller-invoice')) 
     <link href="{{ asset('/assets/css/order.css') }}" rel="stylesheet" />
     @endif

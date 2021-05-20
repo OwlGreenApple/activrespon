@@ -61,9 +61,17 @@ class SendNotif implements ShouldQueue
                     ->where('key',$this->key)
                     ->get();
         foreach($messages as $message) {
-          $send_message = $this->send_wamate($message->phone_number,$message->message,$message->key,$message->ip_server);
+
+          if($message->img_url == null)
+          {
+            $send_message = $this->send_wamate($message->phone_number,$message->message,$message->key,$message->ip_server);
+          }
+          else
+          {
+            $send_message = self::send_wamate_image($message->phone_number,$message->message,$$message->img_url,$message->key,$message->ip_server);
+          }
+
           $status = $this->getStatus($send_message,2);
-          
           $message->status = $status;
           $message->save();
 
@@ -283,6 +291,38 @@ class SendNotif implements ShouldQueue
       ); 
 
 		  $url = "https://activrespon.com/dashboard/send-wamate";
+
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+      ));
+
+      $response = curl_exec($curl);
+      $err = curl_error($curl);
+
+      curl_close($curl);
+      return $response;
+    }
+
+    public static function send_wamate_image($customer_phone,$message,$urls3,$device_key,$user_ip_server)
+    {
+      $curl = curl_init();
+
+      $data = array(
+          'customer_phone'=>$customer_phone,
+          'message'=>$message,
+          'device_key'=>$device_key,
+          'user_ip_server'=>$user_ip_server,
+          'urls3'=>$urls3,
+      ); 
+
+      $url = "https://activrespon.com/dashboard/send-image-url-wamate";
 
       curl_setopt_array($curl, array(
         CURLOPT_URL => $url,

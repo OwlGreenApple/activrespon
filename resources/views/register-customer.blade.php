@@ -39,6 +39,9 @@
       <script async src="https://activproof.com/package/pixel/9jq97p9rzcukhh6z3p5cf7ro1kewcz9s"></script>
       <!-- END Pixel Code -->
     <?php } ?>    
+
+    <!-- DOB -->
+    <script type="text/javascript" src="{{ asset('assets/DOB-Picker/dobpicker.min.js') }}"></script>
     
 </head>
 
@@ -125,7 +128,11 @@
 
                     <div class="form-group">
                       <label>Birthday*</label>
-                      <input type="email" name="email" class="form-control" />
+                      <div class="form-inline">
+                          <select name="day" class="form-control mr-2" id="dobday"></select>
+                          <select name="month" class="form-control mr-2" id="dobmonth"></select>
+                          <select name="year" class="form-control" id="dobyear"></select>
+                      </div>
                       <span class="error email"></span>
                     </div> 
 
@@ -135,7 +142,56 @@
                         <option value="male" selected>Male</option>
                         <option value="female">Female</option>
                       </select>
+                      <span class="error sex"></span>
+                    </div> 
+
+                    <div class="form-group">
+                      <label>City*</label>
+                      <select name="city" class="form-control">
+                        <option value="surabaya" selected>Surabaya</option>
+                        <option value="jakarta">Jakarta</option>
+                      </select>
+                      <span class="error city"></span>
+                    </div> 
+
+                    <div class="form-group">
+                      <label>Status*</label>
+                      <select name="marriage_status" class="form-control">
+                        <option value="married" selected>Married</option>
+                        <option value="single">Single</option>
+                      </select>
                       <span class="error email"></span>
+                    </div> 
+
+                    <div class="form-group">
+                      <label>Hobby*</label><br/>
+                      <input type="checkbox" name="Sport" value="sport">
+                      <label>Sport</label><br>
+                      <input type="checkbox" name="Cook" value="cook">
+                      <label>Cook</label><br>
+                    </div> 
+
+                    <div class="form-group">
+                      <label>Occupation*</label>
+                      <select name="occupation" class="form-control">
+                        <option value="all" selected>All</option>
+                        <option value="sales">Sales</option>
+                        <option value="doctor">Doctor</option>
+                      </select>
+                      <span class="error occupation"></span>
+                    </div> 
+
+                    <div class="form-group">
+                      <label>Religion*</label>
+                      <select name="religion" class="form-control">
+                        <option value="all" selected>All</option>
+                        <option value="islam">Islam</option>
+                        <option value="christian">Christian</option>
+                        <option value="catholic">Catholic</option>
+                        <option value="budhist">Budhist</option>
+                        <option value="hindu">Hindu</option>
+                      </select>
+                      <span class="error religion"></span>
                     </div> 
 
 
@@ -219,6 +275,7 @@
  </div>
 
 <script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
+
 <script type="text/javascript">
   $(document).ready(function() {
       $.get("https://api.ipdata.co?api-key=test", function(response) {
@@ -240,11 +297,26 @@
 			<?php if(session('message')) { ?>
 			alert("<?php echo session('message'); ?>");
 			<?php }?>
+      dob_picker();
   });
 
   function fixWidthPhoneInput()
   {
     $(".iti").addClass('w-100');
+  }
+
+  function dob_picker()
+  {
+    $.dobPicker({
+      daySelector: '#dobday', /* Required */
+      monthSelector: '#dobmonth', /* Required */
+      yearSelector: '#dobyear', /* Required */
+      dayDefault: 'Day', /* Optional */
+      monthDefault: 'Month', /* Optional */
+      yearDefault: 'Year', /* Optional */
+      minimumAge: 12, /* Optional */
+      maximumAge: 65 /* Optional */
+    });
   }
 
     // Display Country
