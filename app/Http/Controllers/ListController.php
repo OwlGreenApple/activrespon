@@ -512,9 +512,9 @@ class ListController extends Controller
             return response()->json($data);
         }
 
-        $delete_userlist = UserList::find($id);
-        $delete_userlist->status = 0;
-        $delete_userlist->save();
+        // $delete_userlist = UserList::find($id);
+        $check_userlist->status = 0;
+        $check_userlist->save();
 
         // CHECK IF CUSTOMER IF AVAILABLE
         $customers = Customer::where('list_id','=',$id);
@@ -532,7 +532,7 @@ class ListController extends Controller
             $data['success'] = 1;
         } catch(QueryException $e) {
             $data['message'] = 'Error, Sorry, cannot delete list';
-            $data['success'] = 0;
+            $data['success'] = "error";
         }
 
         //if success delete customer / subscriber

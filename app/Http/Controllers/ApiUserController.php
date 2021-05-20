@@ -1054,6 +1054,10 @@ class ApiUserController extends Controller
       {
          $data['response'] = 'List telah di hapus';
       }
+      elseif($del->getData()->success == 0)
+      {
+         $data['response'] = 'Invalid List ID';
+      }
       else
       {
          $data['response'] = 'Maaf server kami terlalu sibuk, silahkan coba lagi.';
