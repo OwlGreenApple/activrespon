@@ -1040,6 +1040,8 @@ class ApiUserController extends Controller
 
       $list = new Lists;
       $req['user_id'] = $user->id;
+      $req['del'] = true;
+      
       $request = new Request($req);
       $del = $list->delListContent($request);
   
