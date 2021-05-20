@@ -68,7 +68,7 @@ class SendNotif implements ShouldQueue
           }
           else
           {
-            $send_message = self::send_wamate_image($message->phone_number,$message->message,$$message->img_url,$message->key,$message->ip_server);
+            $send_message = self::send_wamate_image($message->phone_number,$message->message,$message->img_url,$message->key,$message->ip_server);
           }
 
           $status = $this->getStatus($send_message,2);
