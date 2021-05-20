@@ -952,7 +952,7 @@ class ApiUserController extends Controller
 
       $data['response'] = 'List created successfuly';
       $data['list_id'] = $list_id;
-      $data['list_name'] = $list_name;
+      $data['link'] = $list_name;
       return json_encode($data);
     }
 
