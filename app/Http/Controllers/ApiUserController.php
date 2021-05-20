@@ -1009,6 +1009,12 @@ class ApiUserController extends Controller
       }
 
       $list = UserList::find($list_id);
+
+      if(is_null($list))
+      {
+        return json_encode(['response'=>'Invalid ID']);
+      }
+
       $list->label = $label;
       $list->save();
 
