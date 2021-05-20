@@ -976,6 +976,7 @@ class ApiUserController extends Controller
         foreach($lists as $row){
           $list[] = array(
             'id'=>$row->id,
+            'title'=>$row->label,
             'link'=>$row->name,
             'status'=>$row->status,
           );
@@ -1012,7 +1013,8 @@ class ApiUserController extends Controller
 
       if(is_null($list))
       {
-        return json_encode(['response'=>'Invalid ID']);
+        $data['response'] = 'Invalid ID';
+        return json_encode($data);
       }
 
       $list->label = $label;
