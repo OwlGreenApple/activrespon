@@ -67,24 +67,30 @@ Route::post('/submit-checkout','OrderController@submit_checkout'); //new system 
 Route::post('/submit-summary','OrderController@submit_summary'); //new system to summary
 
 /* RESELLER API */
-Route::post('/api/account','ApiUserController@account');
-Route::post('/api/device','ApiUserController@createdevice');
-Route::get('/generate/qr','ApiUserController@qrcode');
-Route::post('/api/status','ApiUserController@device_status');
+// Route::post('/api/account','ApiUserController@account');
+// Route::post('/api/device','ApiUserController@createdevice');
+// Route::get('/generate/qr','ApiUserController@qrcode');
+// Route::post('/api/status','ApiUserController@device_status');
+// Route::get('/api/delete-device','ApiUserController@delete_device');
+// Route::post('/api/send-image','ApiUserController@send_image');
+
+Route::get('/api/generate-link','ApiUserController@generate_link');
+
 Route::get('/api/device/info','ApiUserController@device_info');
 Route::post('/api/send-message','ApiUserController@send_message');
 Route::post('/api/resend','ApiUserController@resend');
-// Route::post('/api/send-image','ApiUserController@send_image');
-Route::get('/api/delete-device','ApiUserController@delete_device');
-Route::get('/api/generate-link','ApiUserController@generate_link');
+Route::get('/api/history','ApiUserController@history');
+
 Route::post('/api/list','ApiUserController@create_list');
 Route::post('/api/lists','ApiUserController@get_lists');
 Route::post('/api/update-list','ApiUserController@update_list');
 Route::get('/api/delete-list','ApiUserController@delete_list');
+
 Route::post('/api/subscriber','ApiUserController@add_subscriber');
+Route::post('/api/subscribers','ApiUserController@get_subscriber');
 Route::post('/api/update-subscriber','ApiUserController@update_subscriber');
 Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
-Route::get('/api/history','ApiUserController@history');
+
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');

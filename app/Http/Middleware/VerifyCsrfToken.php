@@ -58,6 +58,7 @@ class VerifyCsrfToken extends Middleware
         'api/lists',
         'api/update-list',
         'api/subscriber',
+        'api/subscribers',
         'api/update-subscriber'
     ];
 }

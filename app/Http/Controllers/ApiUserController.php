@@ -829,12 +829,19 @@ class ApiUserController extends Controller
     {
         $req = json_decode(file_get_contents('php://input'),true);
         $token = $req['token'];
-        // $token = 'XA-22110tuV!34xyGv88Ca';
+     
         $user = self::check_token($token);
 
         if($user == false)
         {
           $data['response'] = 'Invalid Token';
+          return json_encode($data);
+        }
+
+        // CHECK WHETHER USER IS RESELLER
+        if($user->status !== 2)
+        {
+          $data['response'] = 'Invalid Account';
           return json_encode($data);
         }
 
@@ -1063,6 +1070,7 @@ class ApiUserController extends Controller
     }
 
     /*SUBSCRIBER*/
+
     public function add_subscriber()
     {
       $req = json_decode(file_get_contents('php://input'),true);
@@ -1087,6 +1095,51 @@ class ApiUserController extends Controller
       else
       {
         $data['response'] = $subscriber->getData()->message;
+      }
+
+      return json_encode($data);
+    }
+
+    public function get_subscriber()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $list_id = $req['list_id'];
+
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      //DISPLAY ALL CUSTOMER FROM USER ID IF LIST ID NOT AVAILABLE
+      if($list_id == null || empty($list_id))
+      {
+        $lists = Customer::where('user_id',$user->id)->get();
+      }
+      else
+      {
+        $lists = Customer::where([['user_id',$user->id],['list_id',$list_id]])->get();
+      }
+
+      if($lists->count() > 0)
+      {
+        foreach($lists as $row):
+          $data['response'][] = array(
+            'id'=>$row->id,
+            'name'=>$row->name,
+            'list_id'=>$row->list_id,
+            'email'=>$row->email,
+            'phone'=>$row->telegram_number,
+            'status'=>$row->status,
+          );
+        endforeach;
+      }
+      else
+      {
+          $data['response'] = 0;
       }
 
       return json_encode($data);
