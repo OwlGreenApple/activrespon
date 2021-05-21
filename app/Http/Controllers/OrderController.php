@@ -100,6 +100,8 @@ class OrderController extends Controller
 
 		$priceupgrade = 0;
 		$dayleft = 0;
+    $auth_reseller = FALSE;
+
 		if (Auth::check()) {
 			$user = Auth::user();
 			$order = Order::where('user_id',$user->id)
@@ -111,15 +113,23 @@ class OrderController extends Controller
 			}
 			$dayleft = $user->day_left;
 
+      // TO CHECK WHEN LOGGED IN USER ARE RESELLER MEBER
+      if($user->reseller_id > 0)
+      {
+        $auth_reseller = TRUE;
+      }
       /*if($chat == 1 && !is_null($order)){
         $priceupgrade+=100000;
       }*/
 		}
 
+
+
+    // coupon reseller
     $is_coupon = false;
     $coupon = Coupon::where([['kodekupon',$coupon_reseller],['used','=',0]])->first();
 
-    if(!is_null($coupon))
+    if(!is_null($coupon) || $auth_reseller == TRUE)
     {
       $is_coupon = true;
     }
@@ -136,7 +146,11 @@ class OrderController extends Controller
   public function check_coupon(Request $request)
   {
     // dd($request->all());
-    $user = Auth::user(); 
+    $user = NULL;
+    if (Auth::check()) {
+      $user = Auth::user(); 
+    }
+
     $status_upgrade = $request->status_upgrade;
     $reseller_coupon = $request->reseller_coupon;
 
@@ -232,6 +246,20 @@ class OrderController extends Controller
       return $arr;
     endif; /*END RESELLER COUPON */
 
+    /*REGISTERED RESELLER*/
+    if($user !== null)
+    {
+      $percent = 10;
+      $reseller_id = $user->reseller_id;
+      if($reseller_id > 0)
+      {
+        $diskon = $pricing * ($percent/100);
+        $total = $pricing - round($diskon);
+        $arr = self::box($total,$diskon,null,$pricing,'reg');
+        return $arr;
+      }
+    }
+
     if($request->kupon <> null)
     {
       $user_id = 0;
@@ -324,10 +352,19 @@ class OrderController extends Controller
     return $arr;
   }
 
-  private static function box($total,$diskon,$coupon,$pricing)
+  private static function box($total,$diskon,$coupon,$pricing,$reg_user = null)
   {
+    if($reg_user == null)
+    {
+      $message = 'Kupon valid dan bisa dipakai';
+    }
+    else
+    {
+      $message = '';
+    }
+
     $arr['status'] = 'success';
-    $arr['message'] = 'Kupon valid dan bisa dipakai';
+    $arr['message'] = $message;
     $arr['totaltitle'] = number_format($total, 0, '', '.');
     $arr['total'] = $total;
     $arr['diskon'] = $diskon;
@@ -553,14 +590,14 @@ class OrderController extends Controller
     
     /*RESELLER COUPON*/
     $reseller = false;
-    if(session('reseller_coupon_price') <> null)
+    if(session('reseller_coupon_price') !== null)
     {
       $total = session('reseller_coupon_price')['price'];
       $diskon = (int)$base_price - (int)$total;
       $kuponid = session('reseller_coupon_price')['kuponid'];
       $reseller = true;
     }
-		
+
     $order = array(
       "price"=>$base_price,
       "namapaket"=>$request->namapaket,
@@ -608,13 +645,22 @@ class OrderController extends Controller
         $status_upgrade = session('order')['status_upgrade'];
     }
 
+    $diskon = session('order')['diskon'];
+     // in case if user have reseller_id
+    $disc_reseller = 10; //change this variable if discount change
+    if($user->reseller_id > 0)
+    {
+      $total = session('order')['price'];
+      $diskon = ($total * $disc_reseller)/100;
+    }
+
     $data = [
       "user"=> $user,
       "namapaket"=> session('order')['namapaket'],
       "kuponid"=> session('order')['kuponid'],
       "price"=> session('order')['price'],
       "priceupgrade"=> session('order')['priceupgrade'],
-      "diskon"=> session('order')['diskon'],
+      "diskon"=> $diskon,
       "namapakettitle"=> session('order')['namapakettitle'],
       "phone"=>$user->phone_number,
       "month"=> session('order')['month'],
@@ -843,9 +889,17 @@ class OrderController extends Controller
     if(session('reseller_coupon_price') <> null)
     {
       $total = session('reseller_coupon_price')['price'];
-      $diskon = (int)$price - (int)$total;
+      $diskon = $price - (int)$total;
       $kuponid = session('reseller_coupon_price')['kuponid'];
       $reseller = true;
+    }
+
+    // in case if user have reseller_id
+    $disc_reseller = 10; //change this variable if discount change
+    if($user->reseller_id > 0)
+    {
+      $total = $price;
+      $diskon = ($total * $disc_reseller)/100;
     }
    
 		$data = [

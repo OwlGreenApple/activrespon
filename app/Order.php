@@ -107,7 +107,9 @@ class Order extends Model
       $coupon->used = 1;
       $coupon->save();
 
-      // UPDATE USER'S RESELLER ID IF SIGNUP VIA RESELLER'S LINK
+      // SAVE USER RESELLER ID ACCORDING ON LINK COUPON
+      // Note : if user register / login using coupon from another resller, then user will move into new reseller. ex : old reseller id = 1 then new reseller id = 2
+
       $user->reseller_id = $coupon->reseller_id;
       $user->save();
     }

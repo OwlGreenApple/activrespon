@@ -162,8 +162,8 @@ class OrderController extends Controller
     $user->status = 1;
     $user->save();
 
+    // UPGRADE COUPON FROM RESELLER
     $coupon = Coupon::find($coupon_id);
-
     if(!is_null($coupon))
     {
       $coupon->used = 2;

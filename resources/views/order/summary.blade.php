@@ -215,7 +215,7 @@
 <div>
     <div class="as-checkout-entry" id="checkout-total" data-total="79.00">
       <strong class="as-checkout-total">Total</strong>
-      <strong class="as-checkout-total-price" id="totalprice_sidebar totalprice_mobile">
+      <strong class="as-checkout-total-price total_price_default" id="totalprice_sidebar totalprice_mobile">
 				Rp. <?php echo number_format(session('order')['price'], 0, '', '.'); ?>
 			</strong>
     </div>
@@ -472,6 +472,7 @@
 	function loginAjax(){
     $(".upgrade").hide();
     $("body").on("click", "#button-login", function() {
+     
 			$.ajax({
 				type: 'POST',
 				url: "{{ url('loginajax') }}",
@@ -479,21 +480,24 @@
 					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 				},
 				data: $("#form-login").serializeArray(),
-				dataType: 'text',
+				dataType: 'json',
 				beforeSend: function() {
 					$('#loader').show();
 					$('.div-loading').addClass('background-load');
 				},
-				success: function(result) {
+				success: function(data) {
 					$('#loader').hide();
 					$('.div-loading').removeClass('background-load');
 
-					var data = jQuery.parseJSON(result);
-					
-					if (data.success == '1') {
+					if(data.success === 1) {
 						$(".step-2").show();
             $(".bsub").show();
 						$("#step-1").html('<p>Your order confirmation will be emailed to:</p><span class="sumo-psuedo-link">'+data.email+'</span>');
+
+            if(data.reseller_price > 0)
+            {
+               $(".total_price").html('Rp '+'<strike>'+formatNumber(data.price)+'</strike> '+formatNumber(data.reseller_price));
+            }
 
             if(data.status_upgrade == 1) //false which mean upgrade
             {

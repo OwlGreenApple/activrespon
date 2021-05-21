@@ -191,7 +191,8 @@
                                 <a class="nav-link {{ (request()->is('appointment')) ? 'active' : '' }}" href="{{ route('appointment') }}">Appointment</a>
                             </li>
                             @endif
-                          @else
+
+                          @elseif(Auth()->user()->status == 2)
 														<!--
                             <li class="nav-item">
                                 <a class="nav-link {{ (request()->is('google-form')) ? 'active' : '' }}" href="{{ url('google-form') }}">Google Form</a>

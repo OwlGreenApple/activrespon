@@ -82,12 +82,14 @@ class LoginController extends Controller
         $password = $request->password;
         $upgrade_price = 0;
         $namapaket = session('order')['namapaket'];
+        $pricing = session('order')['price'];
 
         if(Auth::guard('web')->attempt(['email' => $email, 'password' => $password])) 
         {
             $user = Auth::user();
+            $reseller_price = 0;
             $package_upgrade = session('order')['upgrade']; //for coupon package upgrade
-            $order_session = session()->pull('order', []); 
+            $order_session = session()->pull('order', []); // set session to empty
             $upgrade_price = getPackagePrice($namapaket);
 
             if($namapaket <> null && $package_upgrade == 0)
@@ -115,6 +117,7 @@ class LoginController extends Controller
             {
                $order_session['status_upgrade'] = 0; 
             }      
+
             session::put('order',$order_session);
 
             if(session('order')['diskon'] > 0)
@@ -126,12 +129,21 @@ class LoginController extends Controller
               $price = '';
             }
 
+            if($user->reseller_id > 0)
+            {
+              $percent = 10;
+              $discount = ($pricing * $percent/100);
+              $reseller_price = $pricing - $discount;
+              $price = (int)$pricing;
+            }
+
             return response()->json([
                 'success' => 1,
                 'email' => $request->email,
                 'status_upgrade'=>session('order')['status_upgrade'],
                 'price'=>$price,
                 'total'=>number_format($upgrade_price),
+                'reseller_price'=>$reseller_price
             ]);
         } else {
             return response()->json([
