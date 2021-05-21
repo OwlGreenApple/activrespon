@@ -860,7 +860,7 @@ class ApiUserController extends Controller
         try
         {
           $coupon->save();
-          $data['response'] = url('checkout')."/1/0/".$link_coupon;
+          $data['response'] = url('checkout')."/1".$link_coupon;
         }
         catch(QueryException $e)
         {

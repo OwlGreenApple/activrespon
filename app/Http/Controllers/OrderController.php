@@ -84,7 +84,7 @@ class OrderController extends Controller
     return view('order.pricing');
   }
 
-  public function checkout($id,$chat,$coupon_reseller){
+  public function checkout($id,$coupon_reseller = null){
     //halaman checkout
 
     if(session('order') <> null)
@@ -111,9 +111,9 @@ class OrderController extends Controller
 			}
 			$dayleft = $user->day_left;
 
-      if($chat == 1 && !is_null($order)){
+      /*if($chat == 1 && !is_null($order)){
         $priceupgrade+=100000;
-      }
+      }*/
 		}
 
     $is_coupon = false;
@@ -128,8 +128,8 @@ class OrderController extends Controller
               'id'=>$id,
               'priceupgrade'=>$priceupgrade,
               'dayleft'=>$dayleft,
-              'chat'=>$chat,
-              'is_coupon'=>$is_coupon
+              'is_coupon'=>$is_coupon,
+              'coupon_reseller'=>$coupon_reseller
             ));
   }
 
