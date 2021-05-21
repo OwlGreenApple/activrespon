@@ -126,7 +126,7 @@
                       <span class="error email"></span>
                     </div> 
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                       <label>Birthday*</label>
                       <div class="form-inline">
                           <select name="day" class="form-control mr-2" id="dobday"></select>
@@ -192,7 +192,7 @@
                         <option value="hindu">Hindu</option>
                       </select>
                       <span class="error religion"></span>
-                    </div> 
+                    </div>  -->
 
 
                     @if(count($additional) > 0)
