@@ -89,6 +89,7 @@ Route::get('/api/delete-list','ApiUserController@delete_list');
 Route::post('/api/subscriber','ApiUserController@add_subscriber');
 Route::post('/api/subscribers','ApiUserController@get_subscriber');
 Route::post('/api/update-subscriber','ApiUserController@update_subscriber');
+Route::get('/api/batch-subscriber','ApiUserController@batch_subscriber');
 Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
 
 
@@ -366,11 +367,12 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::post('send_chat_media','ChatsController@sendMedia');
   Route::get('debug_message','ChatsController@getChatMessages');
 
-   // RESELLER
+   // RESELLER USER
   Route::get('reseller-home','HomeController@reseller_home');
   Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-token','HomeController@createRandomToken');
   Route::get('reseller-token-page','HomeController@reseller_token_page');
+  Route::get('reseller-member','HomeController@reseller_member');
   Route::get('reseller-detail/{period}','HomeController@monthly_report');
 
   /* RESEND */

@@ -1069,6 +1069,62 @@ class ApiUserController extends Controller
       return json_encode($data);
     }
 
+    public function batch_subscriber()
+    {
+      // $req = json_decode(file_get_contents('php://input'),true);
+      // $token = $req['token'];
+      // $data = $req['data'];
+      // $list_id = $req['list_id'];
+
+      $data = "[
+        {
+          'name':'aaaa',
+          'email':'aaaa@test.com',
+          'hp':'62222222222'
+        },
+        {
+          'name':'bbb',
+          'email':'bbb@test.com',
+          'hp':'622223333'
+        },
+        {
+          'name':'ccc',
+          'email':'cccc@test.com',
+          'hp':'62222333344'
+        },
+      ]";
+
+      $req['data'] = json_decode($data,true);
+
+     /* $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }*/
+      $user_id = 3;
+      $list_id = 135;
+
+      //UserList::where([['id',$list_id],['user_id',$user_id]])->first()
+
+      dd($req['data']);
+
+      if(count($req['data']) > 0)
+      {
+        foreach($req['data'] as $row)
+        {
+          $customer = new Customer;
+          $customer->user_id = $user_id;
+          $customer->list_id = $list_id;
+          $customer->name = $row->name;
+          $customer->email = $row->email;
+          $customer->telegram_number = $row->hp;
+          $customer->save();
+        }
+      }
+    }
+
     /*SUBSCRIBER*/
 
     public function add_subscriber()

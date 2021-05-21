@@ -345,6 +345,13 @@ class HomeController extends Controller
       return view('reseller.token',['user'=>$user]);
     }
 
+    public function reseller_member()
+    {
+      $user_id = Auth::id();
+      $members = User::where('reseller_id',$user_id)->orderBy('id','desc')->get();
+      return view('reseller.member',['data'=>$members]);
+    }
+
     /* DISPLAY AVAILABLE / DELETED USER DATA */
     public function reseller_user_data(Request $request)
     {
