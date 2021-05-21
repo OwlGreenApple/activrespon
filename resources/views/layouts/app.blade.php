@@ -211,9 +211,9 @@
                              <a href="{{url('reseller-home')}}" class="nav-link {{ (request()->is('reseller-home')) ? 'active' : '' }}">Home</a>
                             </li>
 
-                            <!-- <li class="nav-item">
-                             <a href="{{url('reseller-invoice')}}" class="nav-link {{ (request()->is('reseller-invoice')) ? 'active' : '' }}">Reseller Commision</a>
-                            </li> -->
+                            <li class="nav-item">
+                             <a href="{{url('reseller-token-page')}}" class="nav-link {{ (request()->is('reseller-token-page')) ? 'active' : '' }}">Generate Token</a>
+                            </li>
 
                             <li class="nav-item">
                              <a target="_blank" href="https://docs.google.com/document/d/1b4OwN-_V2q2deV-KMk9WHHqFOMLaZV2HLvOMD2SKxfU/edit?usp=sharing" class="nav-link">Tutorial API</a>

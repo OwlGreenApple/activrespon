@@ -37,6 +37,7 @@ class AuthSettings
       /*RESELLER PAGE / RESELLER USER*/
       if($user->status == 2)
       {
+
         return self::reseller_page($current_url,$next,$request);
       }
 
@@ -70,7 +71,8 @@ class AuthSettings
         $current_url = $temp_url[0];
       }
 
-      $url = ['reseller-home','tutorial-api','reseller-detail','reseller-data'];
+      $url = ['reseller-home','tutorial-api','reseller-detail','reseller-data','reseller-token-page','reseller-token'];
+
       if (in_array($current_url, $url) == true && $request->ajax()) 
       {
         return $next($request);

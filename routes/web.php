@@ -370,6 +370,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('reseller-home','HomeController@reseller_home');
   Route::get('reseller-data','HomeController@reseller_user_data');
   Route::get('reseller-token','HomeController@createRandomToken');
+  Route::get('reseller-token-page','HomeController@reseller_token_page');
   Route::get('reseller-detail/{period}','HomeController@monthly_report');
 
   /* RESEND */

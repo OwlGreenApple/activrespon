@@ -339,6 +339,12 @@ class HomeController extends Controller
        return view('reseller.home');
     }
 
+    public function reseller_token_page()
+    {
+      $user = Auth::user();
+      return view('reseller.token',['user'=>$user]);
+    }
+
     /* DISPLAY AVAILABLE / DELETED USER DATA */
     public function reseller_user_data(Request $request)
     {
