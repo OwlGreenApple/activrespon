@@ -500,15 +500,15 @@ class OrderController extends Controller
 		$month = 1;
 		if(substr($request->namapaket,0,5) === "basic"){
 			$month = 1;
-      $chat_price = 100000;
+      // $chat_price = 100000;
     }
 		if(substr($request->namapaket,0,10) === "bestseller"){
 			$month = 2;
-      $chat_price = 200000;
+      // $chat_price = 200000;
     }
 		if(substr($request->namapaket,0,10) === "supervalue"){
 			$month = 3;
-      $chat_price = 300000;
+      // $chat_price = 300000;
     }
 
 		$total =  $base_price;
@@ -517,14 +517,14 @@ class OrderController extends Controller
     $kuponid = $upgrade_package = null;
 
     /*CHAT ENABLE*/
-    if($request->chat == 1)
+    /*if($request->chat == 1)
     {
       if($request->kupon == null)
       {
          $total += $chat_price;
       }
       $base_price += $chat_price;
-    }
+    }*/
 
     // USE NORMAL COUPON
     if($request->kupon <> null){
@@ -577,7 +577,7 @@ class OrderController extends Controller
       "status_upgrade"=>$status_upgrade,
       "priceupgrade"=>0,
       "chat_price"=> $chat_price,
-      "chat"=> $request->chat,
+      "chat"=> 0,
       "reseller"=>$reseller
     );
 
@@ -779,15 +779,15 @@ class OrderController extends Controller
 		$month = 1;
 		if(substr($request->namapaket,0,5) === "basic"){
 			$month = 1;
-      $chat_price = 100000;
+      // $chat_price = 100000;
     }
 		if(substr($request->namapaket,0,10) === "bestseller"){
 			$month = 2;
-      $chat_price = 200000;
+      // $chat_price = 200000;
     }
 		if(substr($request->namapaket,0,10) === "supervalue"){
 			$month = 3;
-      $chat_price = 300000;
+      // $chat_price = 300000;
     }
 
     $diskon = 0;
@@ -796,10 +796,10 @@ class OrderController extends Controller
     $kuponid = null;
 
     //if enable chat feature
-    if($request->chat == 1)
+   /* if($request->chat == 1)
     {
       $price += $chat_price;
-    }
+    }*/
 
     if($request->kupon <> null)
     {
@@ -810,7 +810,7 @@ class OrderController extends Controller
       } else {
 
         $diskon = $kpn['diskon'];
-        $pricing_upgrade = $kpn['price'] -  (int)$price;
+        $pricing_upgrade = $kpn['price'] - (int)$price;
 
         if($kpn['coupon']!=null)
         {
@@ -861,7 +861,7 @@ class OrderController extends Controller
 			"month"=> $month,
       "upgrade"=>$upgrade_package,
       "status_upgrade"=>$status_upgrade,
-      "chat"=>$request->chat,
+      "chat"=>0,
       "reseller"=>$reseller
 		];
 
