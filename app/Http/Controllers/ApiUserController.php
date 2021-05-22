@@ -958,7 +958,7 @@ class ApiUserController extends Controller
       $list->save();
       $list_id = $list->id;
 
-      $data['response'] = 'List created successfuly';
+      $data['response'] = 'List created successfully';
       $data['list_id'] = $list_id;
       $data['link'] = $list_name;
       return json_encode($data);
@@ -1066,101 +1066,6 @@ class ApiUserController extends Controller
          $data['response'] = 'Maaf server kami terlalu sibuk, silahkan coba lagi.';
       }
      
-      return json_encode($data);
-    }
-
-    public function batch_subscriber()
-    {
-      $req = json_decode(file_get_contents('php://input'),true);
-      $token = $req['token'];
-      $arr = $req['data'];
-      $list_id = $req['list_id'];
-
-      /*$data = [
-        array(
-           'name'=>'aaaa-api',
-           'email'=>'aaaa@test.com',
-           'hp'=>'62222222222'
-        ),
-        array(
-          'name'=>'bbb-api',
-          'email'=>'bbb@test.com',
-          'hp'=>'622223333'
-        ),
-        array(
-          'name'=>'ccc-api',
-          'email'=>'cccc@test.com',
-          'hp'=>'62222333344'
-        ),
-      ];*/
-
-      
-      $arr = json_decode($arr,true);
-      $user = self::check_token($token);
-
-      if($user == false)
-      {
-        $data['response'] = 'Invalid Token';
-        return json_encode($data);
-      }
-
-      $user_id = $user->id;
-      $check_list = UserList::where([['id',$list_id],['user_id',$user_id]])->first();
-
-      if(is_null($check_list))
-      {
-        $data['response'] = 'Invalid List ID';
-        return json_encode($data);
-      }
-
-      
-      if(count($arr) > 0)
-      {
-        foreach($arr as $row)
-        {
-          // TO CHECK IF USER EMAIL OR PHONE IS AVAILABLE, UPDATE IF AVAILABLE
-          $subs = new Subscriber;
-          $check_phone = $subs->checkDuplicateSubscriberPhone($row['hp'],$list_id);
-          $check_email = $subs->checkDuplicateSubscriberEmail($row['email'],$list_id);
-
-          if($check_phone == true || $check_email == true)
-          {
-             $reg = [
-                'name'=>$row['name'],
-                'email'=>$row['email'],
-                'telegram_number'=>$row['hp'],
-                'status'=>1
-             ];
-
-             $customer = Customer::where([['telegram_number',$row['hp']],['list_id',$list_id],['user_id',$user_id]])->orWhere('email',$row['email']);
-
-             try{
-                $customer->update($reg);
-             }
-             catch(QueryException $e)
-             {
-                $e->getMessage();
-             }
-          }
-          else
-          {
-             $customer = new Customer;
-             $customer->user_id = $user_id;
-             $customer->list_id = $list_id;
-             $customer->name = $row['name'];
-             $customer->email = $row['email'];
-             $customer->telegram_number = $row['hp'];
-             $customer->status = 1;
-             $customer->save();
-          }
-        }
-
-        $data['response'] = 'Data transferred';
-      }
-      else
-      {
-        $data['response'] = 0;
-      }
       return json_encode($data);
     }
 
@@ -1331,6 +1236,81 @@ class ApiUserController extends Controller
         $data['response'] = $del->getData()->message;
       }
 
+      return json_encode($data);
+    }
+
+    public function batch_subscriber()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $arr = $req['data'];
+      $list_id = $req['list_id'];
+      
+      $arr = json_decode($arr,true);
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $user_id = $user->id;
+      $check_list = UserList::where([['id',$list_id],['user_id',$user_id]])->first();
+
+      if(is_null($check_list))
+      {
+        $data['response'] = 'Invalid List ID';
+        return json_encode($data);
+      }
+      
+      if(count($arr) > 0)
+      {
+        foreach($arr as $row)
+        {
+          // TO CHECK IF USER EMAIL OR PHONE IS AVAILABLE, UPDATE IF AVAILABLE
+          $subs = new Subscriber;
+          $check_phone = $subs->checkDuplicateSubscriberPhone($row['hp'],$list_id);
+          $check_email = $subs->checkDuplicateSubscriberEmail($row['email'],$list_id);
+
+          if($check_phone == true || $check_email == true)
+          {
+             $reg = [
+                'name'=>$row['name'],
+                'email'=>$row['email'],
+                'telegram_number'=>$row['hp'],
+                'status'=>1
+             ];
+
+             $customer = Customer::where([['telegram_number',$row['hp']],['list_id',$list_id],['user_id',$user_id]])->orWhere('email',$row['email']);
+
+             try{
+                $customer->update($reg);
+             }
+             catch(QueryException $e)
+             {
+                $e->getMessage();
+             }
+          }
+          else
+          {
+             $customer = new Customer;
+             $customer->user_id = $user_id;
+             $customer->list_id = $list_id;
+             $customer->name = $row['name'];
+             $customer->email = $row['email'];
+             $customer->telegram_number = $row['hp'];
+             $customer->status = 1;
+             $customer->save();
+          }
+        }
+
+        $data['response'] = 'Data transferred';
+      }
+      else
+      {
+        $data['response'] = 0;
+      }
       return json_encode($data);
     }
 
