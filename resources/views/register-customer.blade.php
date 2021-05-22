@@ -101,23 +101,6 @@
                             <span class="error phone"></span>
                           </div>
                       </div>
-
-                      <!-- <div class="form-group">
-                          <label>{{ $label_phone }}*</label>
-                          <div class="col-sm-12 row">
-                            <div class="col-lg-3 row relativity">
-                              <input name="code_country" class="form-control custom-select-campaign" value="+62" autocomplete="off" />
-                              <span class="icon-carret-down-circle"></span>
-                              <span class="error code_country"></span>
-                            </div>
-
-                            <div class="col-sm-9">
-                              <input type="text" id="phone_number" name="phone_number" class="form-control" />
-                              <span class="error phone"></span>
-                            </div>
-                            <div class="col-lg-12 pad-fix"><ul id="display_countries"><!-- Display country here... </ul></div>
-                          </div>
-                      </div> -->
                     </div>
 
                     <div class="form-group">
@@ -126,7 +109,7 @@
                       <span class="error email"></span>
                     </div> 
 
-                    <!-- <div class="form-group">
+                    <div class="form-group">
                       <label>Birthday*</label>
                       <div class="form-inline">
                           <select name="day" class="form-control mr-2" id="dobday"></select>
@@ -192,7 +175,7 @@
                         <option value="hindu">Hindu</option>
                       </select>
                       <span class="error religion"></span>
-                    </div>  -->
+                    </div> 
 
 
                     @if(count($additional) > 0)
