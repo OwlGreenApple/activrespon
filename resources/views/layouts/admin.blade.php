@@ -131,15 +131,18 @@
                             </li> 
                             <li class="nav-item">
                               <a class="nav-link {{ (request()->is('broadcast-admin')) ? 'active' : '' }}" href="{{ url('broadcast-admin') }}">Broadcast</a>
+                            </li> 
+                            <li class="nav-item">
+                              <a class="nav-link {{ (request()->is('list-utility')) ? 'active' : '' }}" href="{{ url('list-utility') }}">Utility</a>
                             </li>
 													@endif
 													@if ( ($user->is_admin == 1) or ($user->is_admin == 2) )
-                            <li class="nav-item">
+                           <!--  <li class="nav-item">
                               <a class="nav-link {{ (request()->is('list-woowa')) ? 'active' : '' }}" href="{{ url('list-woowa') }}">WooWA order</a>
                             </li> 
                             <li class="nav-item">
                               <a class="nav-link {{ (request()->is('list-invoice')) ? 'active' : '' }}" href="{{ url('list-invoice') }}">WooWA Invoice</a>
-                            </li> 
+                            </li>  -->
 													@endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

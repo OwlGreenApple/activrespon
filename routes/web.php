@@ -199,6 +199,10 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::get('reseller-invoice','HomeController@invoice');
   Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
   Route::post('pay-reseller','HomeController@pay_reseller');
+
+  // UTILITIES
+  Route::get('list-utility','Admin\UtilityController@index');
+  Route::post('list-save-category','Admin\UtilityController@add_category');
 });
 
 /* SETTING */
