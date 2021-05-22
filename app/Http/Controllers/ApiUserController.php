@@ -27,6 +27,11 @@ class ApiUserController extends Controller
 {
     private static function check_token($token)
     {
+      if(is_null($token) || empty($token))
+      {
+        return false;
+      }
+
       $user_token = User::where('reseller_token','=',$token)->first();
 
       /*TO PREVENT INAPPROPIATE TOKEN*/
@@ -144,7 +149,7 @@ class ApiUserController extends Controller
     }
 
     // CREATE DEVICE
-    public function createdevice()
+    /*public function createdevice()
     {
       $req = json_decode(file_get_contents('php://input'),true);
       $token = $req['token'];
@@ -195,7 +200,7 @@ class ApiUserController extends Controller
       endif;
 
       return json_encode($data);
-    }
+    }*/
 
     /*
     public function createdevice($callback_user_token = null,$callback_device_name = null,$callback_package = null)
@@ -299,7 +304,7 @@ class ApiUserController extends Controller
       return json_encode($data);
     }*/
 
-    public function qrcode()
+    /*public function qrcode()
     {
       $req = json_decode(file_get_contents('php://input'),true);
       $token = $req['token'];
@@ -364,80 +369,10 @@ class ApiUserController extends Controller
       }
 
       return $data;
-    }
-
-    /*public function qrcode($callback_token = null,$callback_phone_id = null)
-    {
-        $req = json_decode(file_get_contents('php://input'),true);
-
-        if($callback_token == null && $callback_phone_id == null):
-           $token = $req['token'];
-           $phone_id = $req['phone_id'];
-        else:
-           $token = $callback_token;
-           $phone_id = $callback_phone_id;
-        endif;
-
-        $user = self::check_token($token);
-
-        if($user == false)
-        {
-          $data['response'] = 'Invalid Token';
-          return json_encode($data);
-        }
-
-        $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id],['is_delete',0]])->first();
-
-        if(is_null($phone))
-        {
-          $data['response'] = 'Invalid ID';
-          return json_encode($data);
-        }
-
-        $ip_server = $phone->ip_server;
-        $pair = WamateHelper::pair($phone->token,$phone->device_id,$ip_server);
-        $pair = json_decode($pair,true);
-
-        if($pair['status'] == 'PAIRING')
-        {
-           $data = '<img src="'.$pair['qr_code'].'" />';
-        }
-        elseif($pair['status'] == 'IDLE')
-        {
-           //DEVICE NOT READY
-           $data = 'Device is not ready yet, please try again.';
-        } 
-        elseif($pair['status'] == 'PAIRED' )
-        {
-           //DEVICE HAS PAIRED
-           $data = "Device has paired already";
-        }  
-        elseif($pair['status'] == 404 )
-        {
-           //DEVICE NOT AVAILABLE
-           $data = 'Sorry, device is not available.';
-        }  
-        elseif($pair['status'] == 401 )
-        {
-           //EXPIRED TOKEN
-           return self::login_user($phone->email_wamate,$phone->user_id,$phone->token,$token,$phone_id,null,null,$ip_server);
-        } 
-        elseif($pair == null)
-        {
-           //DELETED SERVER
-           $data = 'Invalid ID';
-        }
-        else
-        {
-           //401 --INVALID DEVICE TOKEN -- tell to login again
-           $data = 'Sorry our server is too busy, please try to login again --104';
-        }
-        
-        return $data;
     }*/
 
     /*TO CHANGE STATUS ON DATABASE PHONE API AFTER PAIRING / SCAN*/
-    public function device_status()
+    /*public function device_status()
     {
         $req = json_decode(file_get_contents('php://input'),true);
         $token = $req['token'];
@@ -465,7 +400,7 @@ class ApiUserController extends Controller
         $phone_status = $check_phone['status'];
         $device_key = $check_phone['device_key'];
 
-        /*to set settings on wamate */
+        // to set settings on wamate 
         if($phone_status == 'PAIRED')
         {
            WamateHelper::autoreadsetting($device_key,$ip_server);
@@ -479,7 +414,7 @@ class ApiUserController extends Controller
            $data['response'] = 'phone_disconnected';
         }
 
-        /*UPDATE TABL PHONE API PHONE & DEVICE STATUS*/
+        // UPDATE TABL PHONE API PHONE & DEVICE STATUS
         try
         {
           $phone->save();
@@ -491,13 +426,12 @@ class ApiUserController extends Controller
         }
 
         return json_encode($data);
-    }
+    }*/
 
     public function device_info()
     {
         $req = json_decode(file_get_contents('php://input'),true);
         $token = $req['token'];
-        // $phone_id = $req['phone_id'];
 
         $user = self::check_token($token);
 
@@ -702,7 +636,66 @@ class ApiUserController extends Controller
        return json_encode($data);
     }
 
-   /* public function send_image()
+    /*public function delete_device(Request $request)
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $phone_id = $req['phone_id']; 
+  
+      $user = self::check_token($token);
+
+      if($user == false)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
+
+      if(is_null($phone))
+      {
+        $data['response'] = 'Invalid ID';
+        return json_encode($data);
+      }
+
+      $device_id = $phone->wamate_id;
+      $ip_server = $phone->ip_server;
+
+      $set = new Settings;
+      $tel['id'] = $phone_id;
+      $tel['api'] = $user;
+      $request = new Request($tel);
+      $del = $set->delete_phone($request);
+
+      if($del['status'] == 'success')
+      {
+        $data['response'] = 'device_deleted';
+      }
+      else
+      {
+        $data['response'] = 0;
+      }
+
+      return json_encode($data);
+
+      $check_phone = WamateHelper::delete_devices($device_id,$phone
+        ->token,$ip_server);
+
+      if(isset($check_phone['code']))
+      {
+        // INVALID DEVICE KEY
+          return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --108'));
+      }
+      else
+      {
+          $phone->is_delete = 1;
+          $phone->device_status = 0;
+          $phone->save();
+          return json_encode(array('response'=>'Device '.$device_name.' has been deleted.'));
+      }
+    }*/
+
+    /* public function send_image()
     {
       $req = json_decode(file_get_contents('php://input'),true);
       $token = $req['token'];
@@ -764,65 +757,6 @@ class ApiUserController extends Controller
           return json_encode(array('response'=>'Your image has been sent'));
       }
     }*/
-
-    public function delete_device(Request $request)
-    {
-      $req = json_decode(file_get_contents('php://input'),true);
-      $token = $req['token'];
-      $phone_id = $req['phone_id']; 
-  
-      $user = self::check_token($token);
-
-      if($user == false)
-      {
-        $data['response'] = 'Invalid Token';
-        return json_encode($data);
-      }
-
-      $phone = PhoneNumber::where([['id','=',$phone_id],['user_id',$user->id]])->first();
-
-      if(is_null($phone))
-      {
-        $data['response'] = 'Invalid ID';
-        return json_encode($data);
-      }
-
-      $device_id = $phone->wamate_id;
-      $ip_server = $phone->ip_server;
-
-      $set = new Settings;
-      $tel['id'] = $phone_id;
-      $tel['api'] = $user;
-      $request = new Request($tel);
-      $del = $set->delete_phone($request);
-
-      if($del['status'] == 'success')
-      {
-        $data['response'] = 'device_deleted';
-      }
-      else
-      {
-        $data['response'] = 0;
-      }
-
-      return json_encode($data);
-
-      /*$check_phone = WamateHelper::delete_devices($device_id,$phone
-        ->token,$ip_server);
-
-      if(isset($check_phone['code']))
-      {
-        // INVALID DEVICE KEY
-          return json_encode(array('response'=>'Sorry our server is too busy,please contact administrator --108'));
-      }
-      else
-      {
-          $phone->is_delete = 1;
-          $phone->device_status = 0;
-          $phone->save();
-          return json_encode(array('response'=>'Device '.$device_name.' has been deleted.'));
-      }*/
-    }
 
     // GENERATE LINK API
     public function generate_link()
