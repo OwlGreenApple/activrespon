@@ -89,7 +89,7 @@ Route::get('/api/delete-list','ApiUserController@delete_list');
 Route::post('/api/subscriber','ApiUserController@add_subscriber');
 Route::post('/api/subscribers','ApiUserController@get_subscriber');
 Route::post('/api/update-subscriber','ApiUserController@update_subscriber');
-Route::get('/api/batch-subscriber','ApiUserController@batch_subscriber');
+Route::post('/api/batch_subscriber','ApiUserController@batch_subscriber');
 Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
 
 

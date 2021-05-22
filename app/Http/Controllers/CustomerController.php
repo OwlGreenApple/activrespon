@@ -131,7 +131,7 @@ class CustomerController extends Controller
         $listname = $request->listname;
 
         // if add subscriber from API
-        if($request->api == true)
+        if($request->api == false)
         {
           $phone_number = $request->code_country.$request->phone_number;
         }
@@ -269,7 +269,7 @@ class CustomerController extends Controller
               
               try
               {
-                Customer::where('telegram_number',$phone_number)->orWhere('email',$request->email)->update($reg);
+                Customer::where([['telegram_number',$phone_number],['list_id',$list->id],['user_id',$list->user_id]])->orWhere('email',$request->email)->update($reg);
                 $data['success'] = true;
                 $data['message'] = $message_conf;
               }
@@ -298,6 +298,7 @@ class CustomerController extends Controller
             }
 
             $customer::create_link_unsubs($customer->id,$list->id);
+
             /*
             Kalo is_secure maka akan dikirim langsung message wa nya 
             */
@@ -471,7 +472,7 @@ class CustomerController extends Controller
 			return response()->json($data);
 		}
 
-    private function checkDuplicateSubscriberPhone($wa_number,$list_id)
+    public function checkDuplicateSubscriberPhone($wa_number,$list_id)
     {
         $customer = Customer::where([
           ['telegram_number','=',$wa_number],
@@ -488,7 +489,7 @@ class CustomerController extends Controller
         }
     } 
 
-    private function checkDuplicateSubscriberEmail($email,$list_id)
+    public function checkDuplicateSubscriberEmail($email,$list_id)
     {
         $customer = Customer::where([
           ['email','=',$email],

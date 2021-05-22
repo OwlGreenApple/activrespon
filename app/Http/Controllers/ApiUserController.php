@@ -1071,58 +1071,97 @@ class ApiUserController extends Controller
 
     public function batch_subscriber()
     {
-      // $req = json_decode(file_get_contents('php://input'),true);
-      // $token = $req['token'];
-      // $data = $req['data'];
-      // $list_id = $req['list_id'];
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $arr = $req['data'];
+      $list_id = $req['list_id'];
 
-      $data = "[
-        {
-          'name':'aaaa',
-          'email':'aaaa@test.com',
-          'hp':'62222222222'
-        },
-        {
-          'name':'bbb',
-          'email':'bbb@test.com',
-          'hp':'622223333'
-        },
-        {
-          'name':'ccc',
-          'email':'cccc@test.com',
-          'hp':'62222333344'
-        },
-      ]";
+      /*$data = [
+        array(
+           'name'=>'aaaa-api',
+           'email'=>'aaaa@test.com',
+           'hp'=>'62222222222'
+        ),
+        array(
+          'name'=>'bbb-api',
+          'email'=>'bbb@test.com',
+          'hp'=>'622223333'
+        ),
+        array(
+          'name'=>'ccc-api',
+          'email'=>'cccc@test.com',
+          'hp'=>'62222333344'
+        ),
+      ];*/
 
-      $req['data'] = json_decode($data,true);
-
-     /* $user = self::check_token($token);
+      
+      $arr = json_decode($arr,true);
+      $user = self::check_token($token);
 
       if($user == false)
       {
         $data['response'] = 'Invalid Token';
         return json_encode($data);
-      }*/
-      $user_id = 3;
-      $list_id = 135;
-
-      //UserList::where([['id',$list_id],['user_id',$user_id]])->first()
-
-      dd($req['data']);
-
-      if(count($req['data']) > 0)
-      {
-        foreach($req['data'] as $row)
-        {
-          $customer = new Customer;
-          $customer->user_id = $user_id;
-          $customer->list_id = $list_id;
-          $customer->name = $row->name;
-          $customer->email = $row->email;
-          $customer->telegram_number = $row->hp;
-          $customer->save();
-        }
       }
+
+      $user_id = $user->id;
+      $check_list = UserList::where([['id',$list_id],['user_id',$user_id]])->first();
+
+      if(is_null($check_list))
+      {
+        $data['response'] = 'Invalid List ID';
+        return json_encode($data);
+      }
+
+      
+      if(count($arr) > 0)
+      {
+        foreach($arr as $row)
+        {
+          // TO CHECK IF USER EMAIL OR PHONE IS AVAILABLE, UPDATE IF AVAILABLE
+          $subs = new Subscriber;
+          $check_phone = $subs->checkDuplicateSubscriberPhone($row['hp'],$list_id);
+          $check_email = $subs->checkDuplicateSubscriberEmail($row['email'],$list_id);
+
+          if($check_phone == true || $check_email == true)
+          {
+             $reg = [
+                'name'=>$row['name'],
+                'email'=>$row['email'],
+                'telegram_number'=>$row['hp'],
+                'status'=>1
+             ];
+
+             $customer = Customer::where([['telegram_number',$row['hp']],['list_id',$list_id],['user_id',$user_id]])->orWhere('email',$row['email']);
+
+             try{
+                $customer->update($reg);
+             }
+             catch(QueryException $e)
+             {
+                $e->getMessage();
+             }
+          }
+          else
+          {
+             $customer = new Customer;
+             $customer->user_id = $user_id;
+             $customer->list_id = $list_id;
+             $customer->name = $row['name'];
+             $customer->email = $row['email'];
+             $customer->telegram_number = $row['hp'];
+             $customer->status = 1;
+             $customer->save();
+          }
+        }
+
+        $data['response'] = 'Data transferred';
+      }
+      else
+      {
+        $data['response'] = 0;
+      }
+      return json_encode($data);
     }
 
     /*SUBSCRIBER*/
