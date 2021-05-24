@@ -116,7 +116,7 @@ class RegisterController extends Controller
           'timezone'=>strip_tags($timezone),
         ]);
 
-        if(env('APP_ENV') == 'local')
+        if(env('APP_ENV') !== 'local')
         {
 					// $list = UserList::find(78);
 					$list = UserList::find(15);
