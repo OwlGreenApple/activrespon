@@ -48,7 +48,7 @@ class CheckMembership extends Command
      */
     public function handle()
     {
-        $users = User::where('day_left','>',-2)->get();
+        $users = User::where([['day_left','>',-2],['status','!=',2]])->get();
         $membership = $remain_day_left = 0;
         $phone = null;
 
