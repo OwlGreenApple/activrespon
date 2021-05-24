@@ -74,6 +74,22 @@ class Order extends Model
       $order->status = 1;
       $order->is_chat = 0;
       $order->save();
+
+      $email_reseller = [
+          'order' => $order,
+          'user' => $user,
+          'nama_paket' => $data['namapaket'],
+          'no_order' => $order_number,
+      ];
+
+      if(env('APP_ENV') !== 'local'):
+        Mail::send('emails.order', $email_reseller, function ($message) use ($order_number) {
+          $message->from('no-reply@activrespon.com', 'Activrespon');
+          $message->to('michaelsugih@gmail.com');
+          $message->subject('[Activrespon] Order Nomor '.$order_number);
+        });
+      endif;
+
       return;
     }
 
@@ -115,6 +131,7 @@ class Order extends Model
     }
 
     if($order->grand_total!=0){
+
       //mail order to user 
       $emaildata = [
           'order' => $order,
