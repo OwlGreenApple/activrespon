@@ -1105,7 +1105,7 @@ class ApiUserController extends Controller
       }
 
       $rules = [
-        'phone_number'=>['required','numeric','digits_between:6,18',new InternationalTel],
+        'phone_number'=>['required',new InternationalTel],
         'email'=>['required','email','max:50'],
         'subscribername'=>['required','min:4','max:50'],
       ];
