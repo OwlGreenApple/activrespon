@@ -43,7 +43,7 @@ class ResellerInvoice extends Command
      */
     public function handle()
     {
-        $invoice_period = Carbon::now()->subMonth(0)->format('m-Y'); //demo only set to 0
+        $invoice_period = Carbon::now()->subMonth(1)->format('m-Y'); //demo only set to 0
         //GENERATE INVOICE ON ORDER
         $invoice = Reseller::where([['period',$invoice_period]])
                     ->selectRaw('SUM(total) AS gt, reseller_id')
