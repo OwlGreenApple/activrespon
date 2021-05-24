@@ -12,8 +12,8 @@ class UtilityController extends Controller
     public function add_category(Request $request)
     {
        $util = new Utility;
-       $util->id_category = $request->category;
-       $util->category = $request->id_category;
+       $util->id_category = $request->id_category;
+       $util->category = $request->category ;
 
        try{
         $util->save();
@@ -24,6 +24,22 @@ class UtilityController extends Controller
         $data['status'] = 0;
        }
        return response()->json($data);
+    }
+
+    public function display_category(Request $request)
+    {
+      $utils = Utility::all();
+      $data = [];
+
+      if($utils->count() > 0)
+      {
+        foreach($utils as $row)
+        {
+          $data[$row->id] = $row->category;
+        }
+      }
+
+      return response()->json($data);
     }
 
     public function index()
