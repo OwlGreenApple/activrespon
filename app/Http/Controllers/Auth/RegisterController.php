@@ -116,7 +116,7 @@ class RegisterController extends Controller
           'timezone'=>strip_tags($timezone),
         ]);
 
-        if(env('APP_ENV') <> 'local')
+        if(env('APP_ENV') == 'local')
         {
 					// $list = UserList::find(78);
 					$list = UserList::find(15);
@@ -133,7 +133,7 @@ class RegisterController extends Controller
             $customer::create_link_unsubs($customer->id,$list->id);
 
 						if ($list->is_secure) {
-							$apiController = new ApiController;
+							$apiController = new CustomerController;
 							$apiController->sendListSecure($list->id,$customer->id,$customer->name,$customer->user_id,$list->name,$phone);
 						}
 						$customerController = new CustomerController;

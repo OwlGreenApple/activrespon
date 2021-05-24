@@ -404,7 +404,14 @@ class CustomerController extends Controller
 		function sendListSecure($list_id,$customer_id,$subscribername,$user_id,$list_name,$phone_number)
 		{
 			$phoneNumber = PhoneNumber::where("user_id",$user_id)->first();
-			$key = $phoneNumber->filename;
+			// $key = $phoneNumber->filename;
+
+      // this function attached due can cause error user unable to get email
+      if(is_null($phoneNumber))
+      {
+        $data['success'] = true;
+        return response()->json($data);
+      }
 
 			//pengecekan klo pake simi
 			if(env('APP_ENV') !== 'local')
