@@ -45,8 +45,8 @@
     save_category();
     display_category();
     display_category_table();
+    // edit_category();
     /*
-    editCountry();
     delCountry();
     cancelUpdate();*/
   });
@@ -121,8 +121,8 @@
     $.ajax({
       type : "GET",
       url : "{{ url('list-category') }}",
-      dataType : 'html',
       data : {'id':0},
+      dataType : 'html',
       success: function(result)
       {
         $("#category").html(result);
@@ -133,6 +133,42 @@
       }
     });
   }
+
+  function edit_category() 
+  {
+    $("body").on("click",".save",function(){
+      var id = $(this).attr('id');
+      var value = $("#category-"+id).val();
+       
+      $.ajax({
+        headers : { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        type : "POST",
+        url : "{{ url('list-category-edit') }}",
+        dataType : 'json',
+        data : {'category':value,'id':id},
+        success: function(result)
+        {
+          if(result.status == 1)
+          {
+            alert('Data telah di edit');
+          }
+          else if(result.status == 2)
+          {
+            alert('Invalid id');
+          }
+          else
+          {
+            alert('Error');
+          }
+        },
+        error : function(xhr)
+        {
+          console.log(xhr.responseText);
+        }
+      });
+    });
+  }
+
 
   /***************************/
  
@@ -150,26 +186,6 @@
       $("#submit").removeAttr('update');
       $("#submit").html('Insert Country');
       $(".cancel").hide();
-  }
-
-  function editCountry() {
-    $(".cancel").hide();
-
-    $("body").on("click",".cedit",function(){
-      var id = $(this).attr('id');
-      var name = $(this).attr('data-name');
-      var code = $(this).attr('data-code');
-       
-      $("input[name='country_name']").val(name);
-      $("input[name='code_country']").val(code);
-      $("#submit").html('Update');
-      $("#submit").attr('update',id);
-      $(".cancel").show();
-
-      $('html, body').animate({
-          scrollTop: $("#save_country").offset().top
-      }, 500);
-    });
   }
 
   function delCountry() {

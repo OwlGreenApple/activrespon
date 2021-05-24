@@ -205,6 +205,8 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::post('list-save-category','Admin\UtilityController@add_category');
   Route::get('list-category-option','Admin\UtilityController@display_category_option');
   Route::get('list-category/{id?}','Admin\UtilityController@display_category');
+  Route::post('list-category-edit','Admin\UtilityController@edit_category');
+  Route::get('test-recursive/{id}','Admin\UtilityController@delete_reccursive');
 });
 
 /* SETTING */
