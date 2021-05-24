@@ -18,7 +18,7 @@
 
                     <div class="col-sm-6">
                       <select id="parent" name="id_category" class="form-control">
-                        <option value="0">Pilih Kategori</option>
+                        <!--  -->
                       </select>
                       <span class="error country_name"></span>
                     </div>
@@ -33,10 +33,8 @@
     </div>
     <!--  -->
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-          $
-        </div>
+    <div class="row justify-content-center mt-3">
+        <div id="category" class="col-md-8"></div>
     </div>
 
 <!-- end container -->
@@ -46,7 +44,7 @@
   $(document).ready(function(){
     save_category();
     display_category();
-    table();
+    display_category_table();
     /*
     editCountry();
     delCountry();
@@ -85,6 +83,8 @@
             }
 
             $(".alert").delay(5000).fadeOut(2000);
+            display_category();
+            display_category_table();
             $("#submit").prop('disabled',false).html('Buat Kategori');
           },
           error : function(xhr)
@@ -97,10 +97,10 @@
   }
 
   function display_category(){ 
-    var options = "";
+    var options = "<option value='0'>Pilih Kategori</option>";
     $.ajax({
       type : "GET",
-      url : "{{ url('list-category') }}",
+      url : "{{ url('list-category-option') }}",
       dataType : 'json',
       success: function(result)
       {
@@ -108,7 +108,7 @@
           options += "<option value="+key+">"+value+"</option>";
         });
         // console.log(options);
-        $("#parent").append(options);
+        $("#parent").html(options);
       },
       error : function(xhr)
       {
@@ -117,8 +117,21 @@
     });
   }
 
-  function table(){
-      $("#category").dataTable();
+  function display_category_table(){
+    $.ajax({
+      type : "GET",
+      url : "{{ url('list-category') }}",
+      dataType : 'html',
+      data : {'id':0},
+      success: function(result)
+      {
+        $("#category").html(result);
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
   }
 
   /***************************/

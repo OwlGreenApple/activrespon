@@ -203,7 +203,8 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   // UTILITIES
   Route::get('list-utility','Admin\UtilityController@index');
   Route::post('list-save-category','Admin\UtilityController@add_category');
-  Route::get('list-category','Admin\UtilityController@display_category');
+  Route::get('list-category-option','Admin\UtilityController@display_category_option');
+  Route::get('list-category/{id?}','Admin\UtilityController@display_category');
 });
 
 /* SETTING */
