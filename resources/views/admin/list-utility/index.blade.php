@@ -45,10 +45,8 @@
     save_category();
     display_category();
     display_category_table();
-    // edit_category();
-    /*
-    delCountry();
-    cancelUpdate();*/
+    edit_category();
+    del_category();
   });
 
   function save_category()
@@ -169,41 +167,31 @@
     });
   }
 
-
-  /***************************/
- 
-
-  function cancelUpdate()
-  {
-      $("body").on("click",".cancel",function(){
-          clearForm();
-      });
-  }
-
-  function clearForm()
-  {
-      $("input").val('');
-      $("#submit").removeAttr('update');
-      $("#submit").html('Insert Country');
-      $(".cancel").hide();
-  }
-
-  function delCountry() {
-    $("body").on("click",".cdel",function(){
-      var conf = confirm('Are you sure to delete this country?');
+  function del_category() {
+    $("body").on("click",".del",function(){
+      var conf = confirm('Apakah yakin mau menghapus kategori?');
       var id = $(this).attr('id');
 
       if(conf == true)
       {
         $.ajax({
-          type : "GET",
-          url : "{{ url('country-del') }}",
-          data : {id : id},
+          headers : { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          type : "POST",
+          url : "{{ url('list-delete') }}",
+          data : {"id" : id},
           dataType : 'json',
           success: function(result)
           {
-            alert(result.msg);
-            displayCountry();
+            if(result.status == 1)
+            {
+              alert('Kategori telah dihapus');
+            }
+            else
+            {
+              alert('Error-');
+            }
+
+            display_category_table();
           },
           error : function(xhr)
           {

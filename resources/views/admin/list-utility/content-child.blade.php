@@ -42,6 +42,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
     table();
+    del_category();
     edit_category_child();
   });
 
@@ -83,6 +84,46 @@
           console.log(xhr.responseText);
         }
       });
+    });
+  }
+
+  function del_category() {
+    $("body").on("click",".del",function(){
+      var conf = confirm('Apakah yakin mau menghapus kategori?');
+      var id = $(this).attr('id');
+
+      if(conf == true)
+      {
+        $.ajax({
+          headers : { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          type : "POST",
+          url : "{{ url('list-delete') }}",
+          data : {"id" : id},
+          dataType : 'json',
+          success: function(result)
+          {
+            if(result.status == 1)
+            {
+              alert('Kategori telah dihapus');
+            }
+            else
+            {
+              alert('Error-');
+            }
+
+            location.href="{{ url('list-category') }}/{{ $id }}";
+          },
+          error : function(xhr)
+          {
+            console.log(xhr.responseText);
+          }
+        });
+      }
+      else
+      {
+        return false;
+      }
+        
     });
   }
 

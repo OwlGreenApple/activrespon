@@ -12,6 +12,7 @@ class UtilityController extends Controller
     public function delete_category(Request $request)
     {
       $id = $request->id;
+      return $this->delete_reccursive($id);
     }
 
     public function delete_reccursive($id)
@@ -26,20 +27,59 @@ class UtilityController extends Controller
         endforeach;
       }
 
-      // dd($data);
-     if(count($data) > 0)
-     {
-        $util = Utility::whereIn('id_category',$data)->get();
+      try
+      {
+         Utility::find($id)->delete();
+      }
+      catch(QueryException $e)
+      {
+        $ret['status'] = $e->getMessage();
+        return response()->json($ret);
+      }
+
+      // RETURN JSON IF NO CHILDS FROM PARENT
+      if(count($data) > 0)
+      {
+        return self::extract_array($data);
+      }
+      else
+      {
+        $ret['status'] = 1;
+        return response()->json($ret);
+      }
+
+    }
+
+    private static function extract_array(array $data)
+    {
+      $arr = array();
+      $util = Utility::whereIn('id_category',$data)->get();
+
+      //PUT CHILDS ID FROM DATA ARRAY
+      if($util->count() > 0)
+      {
         foreach($util as $row)
         {
-          $data[] = $row->id;
+          $arr[] = $row->id;
         }
-        dd($data);
-     }
-     /* else
+      }
+      
+      // DELETE PREVIOUS ID
+      foreach($data as $col)
       {
-        
-      }*/
+        Utility::find($col)->delete();
+      }
+     
+      if(count($arr) > 0)
+      {
+        return self::extract_array($arr);
+      }
+      else
+      {
+        $ret['status'] = 1;
+        return response()->json($ret);
+      } 
+     
     }
 
     public function edit_category(Request $request)
