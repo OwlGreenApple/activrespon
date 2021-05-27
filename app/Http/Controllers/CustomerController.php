@@ -19,6 +19,7 @@ use App\User;
 use App\Server;
 use App\Countries;
 use App\Message;
+use App\Utility;
 use App\Console\Commands\SendWA as SendMessage;
 use App\Helpers\ApiHelper;
 use App\Rules\CheckWANumbers;
@@ -85,6 +86,28 @@ class CustomerController extends Controller
         $user = User::find($list->user_id);
         $status = $user->status;
 
+        // UTILITIES
+        $utils_city = Utility::where('id_category',1)->get();
+        $utils_hobbies = Utility::where('id_category',2)->get();
+        $utils_occupation = Utility::where('id_category',3)->get();
+
+        $hobby = array();
+        if($utils_hobbies->count() > 0)
+        {
+          foreach($utils_hobbies as $row)
+          {
+            $hobby[] = $row->id;
+          }
+        }
+
+        //  if hobbies have descendant
+        if(count($hobby) > 0)
+        {
+          $hobby = $this->extract_hobbies($hobby);
+        }
+
+        $utils_hobby = Utility::whereIn('id',$hobby)->get();
+
         $data = [
           'id'=>encrypt($list->id),
           'label_name'=>$list->label_name,
@@ -99,16 +122,82 @@ class CustomerController extends Controller
           'additional'=>$arr,
           'btn_message'=>$list->button_subscriber,
           'link_add_customer'=>url($link_list),
-          'status'=>$status
+          'status'=>$status,
+          'utils_city'=>$utils_city,
+          'utils_hobby'=>$utils_hobby,
+          'utils_occupation'=>$utils_occupation,
+          'religion'=>self::$religion,
+          'lists'=>$list
         ];
 
         return view('register-customer',$data);
       }
     }
 
+    private function extract_hobbies(array $data)
+    {
+       $arr = [];
+       $repeat = false;
+
+       foreach($data as $col)
+       {
+          $utils = Utility::where('id_category',$col)->get();
+
+          if($utils->count() > 0)
+          {
+            foreach($utils as $row)
+            {
+              $arr[] = $row->id;
+            }
+            $repeat = true;
+          }
+          else
+          {
+              $arr[] = $col;
+          }
+       }
+
+       //CHECK IF CHILD STILL AVAILABLE
+       $check_child = Utility::whereIn('id_category',$arr)->get();
+
+       if($check_child->count() > 0)
+       {
+          return $this->extract_hobbies($arr); 
+       }
+       else
+       {
+          return $arr; 
+       } 
+      
+    }
+
+     // display religion
+    public static $religion =  ['all','islam','christianity','catholic','budhist','hindu'];
+
     public function saveSubscriber(Request $request)
     {
-        // dd($request->all());
+        $birthday = $request->year."-".$request->month."-".$request->day;
+        $gender = $request->sex;
+        $city = $request->city;
+        $marriage = $request->marriage_status;
+        $religion = $request->religion;
+        $hobbies = $occupations = null;
+        $birthday = Carbon::createFromFormat('Y-m-d',$birthday);
+
+        if(count($request->hobby) > 0)
+        {
+          foreach($request->hobby as $key=> $row):
+            $hobbies .= $row.";";
+          endforeach;
+        }
+
+        if(count($request->occupation) > 0)
+        {
+          foreach($request->occupation as $key=> $row):
+            $occupations .= $row.";";
+          endforeach;
+        }
+
         $arr_data = [
            // Do not allow any shady characters
            'subscribername' => 'max:255|regex:/^[\s\w-]*$/', // alpha num with white space
@@ -291,7 +380,14 @@ class CustomerController extends Controller
                  'telegram_number'=>strip_tags($phone_number),
                  'code_country'=>strip_tags($request->data_country),
                  'email'=> strip_tags($request->email),
-                 'status'=> $status,
+                 'birthday'=>$birthday,
+                 'gender'=>$gender,
+                 'city'=>$city,
+                 'marriage'=>$marriage,
+                 'hobby'=>$hobbies,
+                 'occupation'=>$occupations,
+                 'religion'=>$religion,
+                 'status'=> $status
               ]);
               $customer_id = $customer->id;
               $customer_join = $customer->created_at;

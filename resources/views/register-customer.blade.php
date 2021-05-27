@@ -80,7 +80,7 @@
                     <div class="form-group">
                       <label>Name*</label>
                       <input type="text" name="subscribername" class="form-control" />
-                      <input type="hidden" id="city" name="city" />
+                     <!--  <input type="hidden" id="city" name="city" /> -->
                       <span class="error name"></span>
                     </div>
 
@@ -110,13 +110,15 @@
                     </div> 
 
                     <div class="form-group">
-                      <label>Birthday*</label>
+                      <label>Birthday @if($lists->is_validate_dob == 1)*@endif</label>
                       <div class="form-inline">
                           <select name="day" class="form-control mr-2" id="dobday"></select>
                           <select name="month" class="form-control mr-2" id="dobmonth"></select>
                           <select name="year" class="form-control" id="dobyear"></select>
                       </div>
-                      <span class="error email"></span>
+                      <span class="error day"></span>
+                      <span class="error month"></span>
+                      <span class="error year"></span>
                     </div> 
 
                     <div class="form-group">
@@ -128,51 +130,65 @@
                       <span class="error sex"></span>
                     </div> 
 
+                    @if($utils_city->count() > 0)
                     <div class="form-group">
-                      <label>City*</label>
+                      <label>City @if($lists->is_validate_city == 1)*@endif</label>
                       <select name="city" class="form-control">
-                        <option value="surabaya" selected>Surabaya</option>
-                        <option value="jakarta">Jakarta</option>
+                        @foreach($utils_city as $row)
+                          <option value="{{$row->category}}">{{$row->category}}</option>
+                        @endforeach
                       </select>
                       <span class="error city"></span>
                     </div> 
+                    @endif
 
                     <div class="form-group">
                       <label>Status*</label>
                       <select name="marriage_status" class="form-control">
-                        <option value="married" selected>Married</option>
-                        <option value="single">Single</option>
+                        <option value="single" selected>Single</option>
+                        <option value="married">Married</option>
                       </select>
-                      <span class="error email"></span>
+                      <span class="error marriage_status"></span>
                     </div> 
 
+                    @if($utils_hobby->count() > 0)
                     <div class="form-group">
-                      <label>Hobby*</label><br/>
-                      <input type="checkbox" name="Sport" value="sport">
-                      <label>Sport</label><br>
-                      <input type="checkbox" name="Cook" value="cook">
-                      <label>Cook</label><br>
+                      <label>Hobby @if($lists->is_validate_hobby == 1)*@endif</label><br/>
+                      
+                      @foreach($utils_hobby as $row)
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="hobby[]" value="{{$row->category}}">
+                        <label class="form-check-label">{{ $row->category }}</label>
+                      </div>
+                      @endforeach
+                      <div class="error hobby"></div>
                     </div> 
+                    @endif
 
+                    @if($utils_occupation->count() > 0)
                     <div class="form-group">
-                      <label>Occupation*</label>
-                      <select name="occupation" class="form-control">
-                        <option value="all" selected>All</option>
-                        <option value="sales">Sales</option>
-                        <option value="doctor">Doctor</option>
-                      </select>
-                      <span class="error occupation"></span>
+                      <label>Occupation @if($lists->is_validate_job == 1)*@endif</label><br/>
+
+                      @foreach($utils_occupation as $row)
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="occupation[]" value="{{$row->category}}">
+                        <label class="form-check-label">{{ $row->category }}</label>
+                      </div>
+                      @endforeach
+                      
+                      <div class="error occupation"></div>
                     </div> 
+                    @endif
 
                     <div class="form-group">
                       <label>Religion*</label>
                       <select name="religion" class="form-control">
-                        <option value="all" selected>All</option>
-                        <option value="islam">Islam</option>
-                        <option value="christian">Christian</option>
-                        <option value="catholic">Catholic</option>
-                        <option value="budhist">Budhist</option>
-                        <option value="hindu">Hindu</option>
+                        <option value="{{ $religion[0] }}" selected>{{ $religion[0] }}</option>
+                        <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
+                        <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
+                        <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
+                        <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
+                        <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
                       </select>
                       <span class="error religion"></span>
                     </div> 
@@ -261,10 +277,10 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-      $.get("https://api.ipdata.co?api-key=test", function(response) {
+     /* $.get("https://api.ipdata.co?api-key=test", function(response) {
           // console.log(response.country_name);
           $("#city").val(response.city);
-      }, "jsonp");    
+      }, "jsonp");    */
     
       //choose();
       grecaptcha.ready(function() {
@@ -375,7 +391,7 @@
             {name:'data_country',value:data_country},
             {name:'listname',value:'{{ $listname }}'},
             {name:'listid',value:'{{ $id }}'},
-            {name:'city',value:$("#city").val()},
+            // {name:'city',value:$("#city").val()},
           );
 
           $.ajaxSetup({
@@ -418,6 +434,16 @@
                     $(".error_list").text(result.list);
                     $(".error_list").text(result.list);
                     $(".main").html(result.main);
+  
+                    $(".year").html(result.year);
+                    $(".month").html(result.month);
+                    $(".day").html(result.day);
+                    $(".sex").html(result.sex);
+                    $(".city").html(result.city);
+                    $(".marriage_status").html(result.marriage_status);
+                    $(".religion").html(result.religion);
+                    $(".hobby").html(result.hobby);
+                    $(".occupation").html(result.occupation);
 
                     if(result.message !== undefined){
                          $(".error_message").html('<div class="alert alert-danger text-center">'+result.message+'</div>');

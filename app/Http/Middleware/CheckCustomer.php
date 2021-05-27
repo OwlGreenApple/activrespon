@@ -8,6 +8,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use App\Customer;
 use App\UserList;
 use App\Additional;
+use App\Utility;
 use App\Rules\InternationalTel;
 use App\Rules\SubscriberEmail;
 use App\Rules\SubscriberUsername;
@@ -17,6 +18,10 @@ use App\Rules\CheckPlusCode;
 use App\Rules\CheckWANumbers;
 use App\Rules\CheckExistIdOnDB;
 use App\Rules\CheckListName;
+use App\Rules\CheckGender;
+use App\Rules\CheckCity;
+use App\Rules\CheckStatusMarriage;
+use App\Rules\CheckReligion;
 use Session;
 
 class CheckCustomer
@@ -63,12 +68,29 @@ class CheckCustomer
           return response()->json($error);
         }
 
+        $lists = UserList::find($id_list);
+
           /* concat wa number so that get the correct number */
          $rules = [
             'subscribername'=> ['required','min:4','max:50'],
             'code_country' => ['required',new CheckPlusCode,new CheckCallCode],
             'listname' => ['required',new CheckListName],
+            'sex' => ['required',new CheckGender],
+            'marriage_status' => ['required',new CheckStatusMarriage],
+            'religion' => ['required',new CheckReligion],
          ];
+
+         if($lists->is_validate_dob == 1)
+         {
+            $rules['year'] = ['required','numeric'];
+            $rules['month'] = ['required','numeric'];
+            $rules['day'] = ['required','numeric'];
+         }
+
+         if($lists->is_validate_city == 1)
+         {
+            $rules['city'] = ['required',new CheckCity];
+         }
 
          if(array_key_exists('last_name',$req) == true)
          {
@@ -113,9 +135,80 @@ class CheckCustomer
                 'code_country'=>$error->first('code_country'),
                 'data_update'=>$error->first('data_update'),
                 'listname'=>$error->first('listname'),
+                'city'=>$error->first('city'),
+                'sex'=>$error->first('sex'),
+                'year'=>$error->first('year'),
+                'month'=>$error->first('month'),
+                'day'=>$error->first('day'),
+                'marriage_status'=>$error->first('marriage_status'),
+                'religion'=>$error->first('religion'),
             );
             return response()->json($err);
         }
+
+        // VALIDATOR HOBBY AND OCCUPATION
+          if($lists->is_validate_hobby == 1)
+         {  
+            if($request->hobby == null)
+            {
+              $hobbies = array();
+            }
+            else
+            {
+              $hobbies = $request->hobby;
+            }
+
+            if(count($hobbies) < 1)
+            {
+              $err['hobby'] = 'Please choose 1 from these options.';
+              return response()->json($err);
+            }
+            
+            // check to avoid reckless options
+            $util = 0;
+            if(count($hobbies) > 0)
+            {
+              $util = Utility::whereIn('category',$hobbies)->get();
+            }
+
+            if($util->count() !== count($hobbies))
+            {
+              $err['hobby'] = 'Please use valid option.';
+              return response()->json($err);
+            }
+         }
+
+         if($is_validate_job == 1)
+         {  
+            if($request->occupation == null)
+            {
+              $occupation = array();
+            }
+            else
+            {
+              $occupation = $request->occupation;
+            }
+
+            if(count($occupation) < 1)
+            {
+              $err['occupation'] = 'Please choose 1 from these options.';
+              return response()->json($err);
+            }
+            
+            // check to avoid reckless options
+            $util = 0;
+            if(count($occupation) > 0)
+            {
+              $util = Utility::whereIn('category',$occupation)->get();
+            }
+
+            if($util->count() !== count($occupation))
+            {
+              $err['occupation'] = 'Please use valid option.';
+              return response()->json($err);
+            }
+         }
+
 
          if(isset($req['data']) && $this->checkAdditional($req['data'],$id_list) !== true)
          {
