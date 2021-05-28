@@ -302,6 +302,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('list-delete-campaign','CampaignController@listDeleteCampaign'); 
   Route::get('list-datatable-campaign','CampaignController@listAutoSchedule'); 
   Route::post('edit-campaign-name','CampaignController@editCampaign'); 
+  Route::post('calculate-user','CampaignController@calculate_user_list'); 
   
   /* EVENT */
   Route::get('event-del','EventController@delEvent');

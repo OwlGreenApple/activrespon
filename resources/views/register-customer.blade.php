@@ -183,8 +183,7 @@
                     <div class="form-group">
                       <label>Religion*</label>
                       <select name="religion" class="form-control">
-                        <option value="{{ $religion[0] }}" selected>{{ $religion[0] }}</option>
-                        <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
+                        <option value="{{ $religion[1] }}" selected>{{ $religion[1] }}</option>
                         <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
                         <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
                         <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>

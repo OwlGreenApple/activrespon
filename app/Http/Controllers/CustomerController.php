@@ -134,7 +134,7 @@ class CustomerController extends Controller
       }
     }
 
-    private function extract_hobbies(array $data)
+    public function extract_hobbies(array $data)
     {
        $arr = [];
        $repeat = false;

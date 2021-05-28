@@ -163,6 +163,105 @@
 				</div>
       </div>
 
+      <!-- TARGETTING -->
+      <div class="form-group row target">
+        <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Targetting :</label>
+          <div class="col-sm-8 col-md-8 col-lg-9">
+            <div class="form-inline">
+              <label class="mr-2">Sex :</label>
+              <select name="sex" class="form-control">
+                <option value="all" selected>All</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div> 
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Status :</label>
+              <select name="marriage_status" class="form-control">
+                <option value="all" selected>All</option>
+                <option value="single">Single</option>
+                <option value="married">Married</option>
+              </select>
+            </div> 
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Age :</label>
+              <select name="age_start" class="form-control mr-2">
+                <option value="all">All</option>
+                @for($x=10;$x<100;$x++)
+                  <option value="{{$x}}">{{$x}}</option>
+                @endfor
+              </select>
+              <select name="age_end" class="form-control">
+                <option value="all">All</option>
+                @for($x=10;$x<100;$x++)
+                  <option value="{{$x}}">{{$x}}</option>
+                @endfor
+              </select>
+            </div> 
+
+            @if($utils_city->count() > 0)
+            <div class="form-inline mt-2">
+              <label class="mr-2">City :</label>
+              <select name="city" class="form-control">
+                  <option value="all">All</option>
+                @foreach($utils_city as $row)
+                  <option value="{{$row->category}}">{{$row->category}}</option>
+                @endforeach
+              </select>
+            </div> 
+            @endif 
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Religion :</b></label>
+               <select name="religion" class="form-control">
+                  <option value="{{ $religion[0] }}" selected>{{ $religion[0] }}</option>
+                  <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
+                  <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
+                  <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
+                  <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
+                  <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
+                </select>
+            </div> 
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Birthday :</label>
+              <input type="checkbox" class="form-check-input" name="birthday" value="0" />
+            </div> 
+
+            @if($utils_hobby->count() > 0)
+            <div class="form-inline mt-2">
+               <label class="mr-2">Hobby :</label>
+                @foreach($utils_hobby as $row)
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="hobby[]" value="{{$row->category}}">
+                  <span class="form-check-label">{{ $row->category }}</span>
+                </div>
+                @endforeach
+            </div> 
+            @endif
+
+            @if($utils_occupation->count() > 0)
+            <div class="form-inline mt-2">
+               <label class="mr-2">Occupation :</label>
+                @foreach($utils_occupation as $row)
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="occupation[]" value="{{$row->category}}">
+                  <span class="form-check-label">{{ $row->category }}</span>
+                </div>
+                @endforeach
+            </div> 
+            @endif
+
+            <div class="form-group mt-3">
+              <div class="mb-2" id="result_calculate"><!-- Total : 10 --></div>
+              <button id="calculate" type="button" class="btn btn-info">Calculate</button>
+            </div> 
+            <!--  -->
+        </div>
+      </div>
+
       <div class="form-group row">
         <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Message :
 					<span class="tooltipstered" title="<div class='panel-heading'>Message</div><div class='panel-content'>
@@ -247,7 +346,65 @@ use min 5 spintax variations is recommended	<br>
     saveCampaign();
     sendTestMessage();
     pictureClass();
+    checkbox_value();
+    calculate_targetting();
   });
+
+  function calculate_targetting() 
+  {
+    $("#calculate").click(function(){
+      var data = $("#save_campaign").serialize();
+
+      $.ajax({
+          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          type : 'POST',
+          url : '{{url("calculate-user")}}',
+          data : data,
+          dataType : 'json',
+          beforeSend: function()
+          {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+          },
+          success : function(result)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            
+            if(result.status == 1)
+            {
+              $("#result_calculate").html("Total : <b>"+result.total+"</b>");
+            }
+            else
+            {
+              $("#result_calculate").html("<span class='error'>Please fill Date Send</span>");
+            }
+          },
+          error : function(xhr,attribute,throwable)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            console.log(xhr.responseText);
+          }
+      });
+      //ajax
+    });
+  }
+
+  function checkbox_value()
+  {
+    $("input[name='birthday']").click(function(){
+      var clicked = $(this).prop('checked');
+      if(clicked == true)
+      {
+        $(this).val(1);
+      }
+      else
+      {
+        $(this).val(0);
+      }
+    });
+  }
 
   function saveCampaign()
   {
@@ -351,6 +508,8 @@ use min 5 spintax variations is recommended	<br>
 
   function openingPageType()
   {
+    // BOLD LABEL
+    $("label").css("font-weight","bold");
     var radio_option = $("input[name='campaign_type']:checked").val();
     displayFormCampaign(radio_option);
   }
@@ -404,6 +563,7 @@ use min 5 spintax variations is recommended	<br>
         $(".inputh").html(hplus);
         //$(".broadcast-type").hide();
         $(".date-send").hide();
+        $(".target").hide();
       }
       else {
         $("input[name=event_time]").prop('disabled',true);
@@ -412,6 +572,7 @@ use min 5 spintax variations is recommended	<br>
         $(".reminder").hide();
         $(".date-send").show();
         $(".inputh").html(hday);
+        $(".target").show();
         //$(".broadcast-type").show();
       }
   }

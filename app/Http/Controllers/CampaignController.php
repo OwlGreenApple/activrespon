@@ -17,6 +17,7 @@ use App\BroadCastCustomers;
 use App\Reminder;
 use App\ReminderCustomers;
 use App\Message;
+use App\Utility;
 use App\Rules\CheckDateEvent;
 use App\Rules\CheckValidListID;
 use App\Rules\CheckEventEligibleDate;
@@ -245,11 +246,139 @@ class CampaignController extends Controller
 		public function CreateCampaign() 
     {
       $userid = Auth::id();
+      $customer = new \App\Http\Controllers\CustomerController;
+
+      // UTILITIES
+      $utils_city = Utility::where('id_category',1)->get();
+      $utils_hobbies = Utility::where('id_category',2)->get();
+      $utils_occupation = Utility::where('id_category',3)->get();
+
+      $hobby = array();
+      if($utils_hobbies->count() > 0)
+      {
+        foreach($utils_hobbies as $row)
+        {
+          $hobby[] = $row->id;
+        }
+      }
+
+      //  if hobbies have descendant
+      if(count($hobby) > 0)
+      {
+        $hobby = $customer->extract_hobbies($hobby);
+      }
+
+      $utils_hobby = Utility::whereIn('id',$hobby)->get();
+
       $data = array(
           'lists'=>displayListWithContact($userid),
+          'utils_city'=>$utils_city,
+          'utils_hobby'=>$utils_hobby,
+          'utils_occupation'=>$utils_occupation,
+          'religion'=>$customer::$religion
       );
 
       return view('campaign.create-campaign',$data);
+    }
+
+    public function calculate_user_list(Request $request)
+    {
+      // dd($request->all());
+      $statement = "";
+      $user_id = Auth::id();
+      $list_id = $request->list_id;
+      $sex = $request->sex;
+      $marriage_status = $request->marriage_status;
+      $city = $request->city;
+      $hobbies = $request->hobby;
+      $job = $request->occupation;
+      $religion = $request->religion;
+      $birthday = $request->birthday;
+      $age_start = $request->age_start;
+      $age_end = $request->age_end;
+      $date_send = $request->date_send;
+
+      if($hobbies == null){$hobbies = array();}
+      if($job == null){$job = array();}
+
+      if($date_send == null)
+      {
+        // return error validation
+        $res['status'] = 0;
+        return response()->json($res);
+      }
+
+      $data = [
+        ['list_id',$list_id],
+        ['user_id',$user_id],
+        ['city',$city],
+        ['marriage',$marriage_status],
+        ['religion',$religion],
+        ['gender',$sex],
+      ];
+
+      if($city == 'all')
+      {
+        unset($data[2]);
+      }
+
+      if($marriage_status == 'all')
+      {
+        unset($data[3]);
+      }
+
+      if($religion == 'all')
+      {
+        unset($data[4]);
+      }
+
+      if($sex == 'all')
+      {
+        unset($data[5]);
+      }
+
+      if(count($hobbies) > 0)
+      {
+        foreach($hobbies as $row):
+           $data[] = ['hobby','like','%'.$row.'%'];
+        endforeach;
+      }
+
+      if(count($job) > 0)
+      {
+        foreach($job as $row):
+           $data[] = ['occupation','like','%'.$row.'%'];
+        endforeach;
+      }
+
+      $customer = Customer::where($data);
+
+      // PREVENT USER FILL AGE WITH ALL EITHER START OR END
+      $age = null;
+      if($age_start == 'all' || $age_end == 'all')
+      {
+        $age = 'all';
+      }
+
+      // TARGETTING BY AGE
+      if($age !== "all")
+      {
+        $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
+        $customer = $customer->whereRaw($target_age);
+      }
+      
+      // TARGETTING BIRTHDAY
+      if($birthday == 1)
+      {
+        $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
+        $customer = $customer->whereRaw($statement);
+      }
+      
+      $customer = $customer->get()->count();
+    
+      $res['status'] = 1;
+      $res['total'] = $customer;
+      return response()->json($res);
     }
 
     public function SaveCampaign(Request $request)

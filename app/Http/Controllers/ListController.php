@@ -706,6 +706,10 @@ class ListController extends Controller
         $additional = null;
         $additionaldropdown = null;
         $data['additionalerror'] = false;
+        $is_validation_dob = $request->validate_dob;
+        $is_validate_city = $request->validate_city;
+        $is_validate_job = $request->validate_job;
+        $is_validate_hobby = $request->validate_hobby;
 
         // $lists = UserList::where([['id',$id],['user_id','=',$userid]])->update([
         $lists = UserList::find($id);
@@ -713,20 +717,25 @@ class ListController extends Controller
         $lists->label_last_name = $request->label_last_name;
         $lists->label_phone = $label_phone;
         $lists->label_email = $label_email;
-        $lists->checkbox_email = $request->checkbox_email;
+        // $lists->checkbox_email = $request->checkbox_email;
         $lists->checkbox_lastname = $request->checkbox_lastname;
         $lists->button_subscriber = $request->button_rename;
         $lists->message_conf = $request->conf_message;
         $lists->content = $editor;
         $lists->pixel_text = $pixel;
+        $lists->is_validate_dob = $is_validation_dob;
+        $lists->is_validate_city = $is_validate_city;
+        $lists->is_validate_job = $is_validate_job;
+        $lists->is_validate_hobby = $is_validate_hobby;
 
         try
         {
           $lists->save();
         }
-        catch(Exception $e)
+        catch(QueryException $e)
         {
-           $data['message'] = 'Sorry, unable to update your list, our system is busy';
+           // $data['message'] = 'Sorry, unable to update your list, our system is busy';
+           $data['message'] = $e->getMessage();
            return response()->json($data);
         }
 
@@ -886,7 +895,11 @@ class ListController extends Controller
             'start_custom_message'=>$list->start_custom_message,
             'unsubs_custom_message'=>$list->unsubs_custom_message,
             'auto_reply'=>$data_autoreply,
-            'mod'=>$mod
+            'mod'=>$mod,
+            'is_validate_dob'=>$list->is_validate_dob,
+            'is_validate_city'=>$list->is_validate_city,
+            'is_validate_job'=>$list->is_validate_job,
+            'is_validate_hobby'=>$list->is_validate_hobby
         );
 
         $url = env('APP_URL').$list->name; 

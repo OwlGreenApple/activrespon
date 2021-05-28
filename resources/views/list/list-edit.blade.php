@@ -79,11 +79,38 @@
                     <input type="text" name="label_email" class="form-control" placeholder="Label Email" value="{{ $data['label_email'] }}"/>
                   </div>
 
-                  <div class="form-group col-md-1">
-                    <input type="checkbox" name="checkbox_email" class="mt-2" @if($data['checkbox_email'] == 1) checked value="1" @else value="0" @endif />
-                  </div>
+                 <!--  <div class="form-group col-md-1">
+                    <input type="checkbox" name="checkbox_email" class="mt-2" if($data['checkbox_email'] == 1) checked value="1" else value="0" endif />
+                  </div> -->
                   <div class="error label_email col-lg-12 text-left"></div>
               </div>
+
+              <div class="form-group">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="validate_dob" @if($data[
+                  "is_validate_dob"] == 1) checked value="1" @else value="0" @endif/>
+                  <h6 class="form-check-label">Validation DOB</h6>
+                </div> 
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="validate_city" @if($data[
+                  "is_validate_city"] == 1) checked value="1" @else value="0" @endif/>
+                  <h6 class="form-check-label">Validation City</h6>
+                </div>
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="validate_job" @if($data[
+                  "is_validate_job"] == 1) checked value="1" @else value="0" @endif/>
+                  <h6 class="form-check-label">Validation Occupation</h6>
+                </div>
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="validate_hobby" @if($data[
+                  "is_validate_hobby"] == 1) checked value="1" @else value="0" @endif/>
+                  <h6 class="form-check-label">Validation Hobby</h6>
+                </div>
+              </div> 
+
             </div><!-- end form contact -->
           </div><!-- end wrapper -->
           
@@ -963,7 +990,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function getChecked()
   {
-    $("input[name='checkbox_lastname'],input[name='checkbox_email']").change(function(){
+    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby']").change(function(){
       var checked = $(this).prop('checked');
       if(checked == true)
       {
@@ -1719,7 +1746,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 label_last_name : $("input[name='label_last_name']").val(),
                 label_phone : $("input[name='label_phone']").val(),
                 label_email : $("input[name='label_email']").val(),
-                checkbox_email : $("input[name='checkbox_email']").val(),
+                // checkbox_email : $("input[name='checkbox_email']").val(),
                 checkbox_lastname : $("input[name='checkbox_lastname']").val(),
                 button_rename : $("input[name='button_rename']").val(),
                 editor : CKEDITOR.instances.editor1.getData(),
@@ -1727,6 +1754,10 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 conf_message : CKEDITOR.instances.editor2.getData(),
                 fields : datafields,
                 dropfields : datadropfields,
+                validate_dob : $("input[name='validate_dob']").val(),
+                validate_city : $("input[name='validate_city']").val(),
+                validate_job : $("input[name='validate_job']").val(),
+                validate_hobby : $("input[name='validate_hobby']").val(),
              };
 
             $.ajaxSetup({

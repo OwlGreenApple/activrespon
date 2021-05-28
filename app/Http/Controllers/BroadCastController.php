@@ -35,6 +35,17 @@ class BroadCastController extends Controller
         $broadcast_schedule = $request->broadcast_schedule;
         $date_send = $request->date_send;
 
+        // targetting
+        $sex = $request->sex;
+        $marriage_status = $request->marriage_status;
+        $age_start = $request->age_start;
+        $age_end = $request->age_end;
+        $city = $request->city;
+        $religion = $request->religion;
+        $birthday = $request->birthday;
+        $hobby = $request->hobby;
+        $occupation = $request->occupation;
+
 				$folder="";
 				$filename="";
 				if($request->hasFile('imageWA')) {
@@ -132,6 +143,18 @@ class BroadCastController extends Controller
           $broadcast->hour_time = $time_sending;
           $broadcast->image = $folder.$filename;
           $broadcast->message = $message;
+
+          // SAVE TARGETTING
+          $broadcast->birthday = $birthday;
+          $broadcast->gender = $sex;
+          $broadcast->city = $city;
+          $broadcast->marriage = $marriage_status;
+          $broadcast->hobby = $hobby;
+          $broadcast->occupation = $occupation;
+          $broadcast->religion = $religion;
+          $broadcast->start_age = $age_start;
+          $broadcast->end_age = $age_end;
+
           $broadcast->save();
           $broadcast_id = $broadcast->id;
         }
