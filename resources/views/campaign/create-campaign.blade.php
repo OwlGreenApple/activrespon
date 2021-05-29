@@ -163,9 +163,18 @@
 				</div>
       </div>
 
-      <!-- TARGETTING -->
-      <div class="form-group row target">
+      <div class="form-group row">
         <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Targetting :</label>
+        <div class="col-sm-8 col-md-8 col-lg-9">
+          <div class="form-inline mt-2">
+            <input type="checkbox" name='is_targetting' class="form-check-input" value="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- TARGETTING -->
+      <div class="form-group row targeting">
+        <label class="col-sm-4 col-md-4 col-lg-3 col-form-label"><!--  --></label>
           <div class="col-sm-8 col-md-8 col-lg-9">
             <div class="form-inline">
               <label class="mr-2">Sex :</label>
@@ -260,6 +269,7 @@
             </div> 
             <!--  -->
         </div>
+
       </div>
 
       <div class="form-group row">
@@ -348,7 +358,35 @@ use min 5 spintax variations is recommended	<br>
     pictureClass();
     checkbox_value();
     calculate_targetting();
+    display_targeting();
+    targeting_start();
   });
+
+  function targeting_start()
+  {
+    var checked = $("input[name='is_targetting']").prop("checked");
+    targetting(checked);
+  }
+
+  function display_targeting()
+  {
+    $("input[name='is_targetting']").click(function(){
+      var checked = $(this).prop("checked");
+      targetting(checked)
+    });
+  }
+
+  function targetting(checked)
+  {
+    if(checked == true)
+    {
+      $(".targeting").show();
+    }
+    else
+    {
+      $(".targeting").hide();
+    }
+  }
 
   function calculate_targetting() 
   {
@@ -563,7 +601,7 @@ use min 5 spintax variations is recommended	<br>
         $(".inputh").html(hplus);
         //$(".broadcast-type").hide();
         $(".date-send").hide();
-        $(".target").hide();
+        $(".targeting").hide();
       }
       else {
         $("input[name=event_time]").prop('disabled',true);
@@ -572,7 +610,7 @@ use min 5 spintax variations is recommended	<br>
         $(".reminder").hide();
         $(".date-send").show();
         $(".inputh").html(hday);
-        $(".target").show();
+        $(".targeting").show();
         //$(".broadcast-type").show();
       }
   }

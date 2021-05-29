@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\BroadCastController;
+use App\Http\Controllers\CustomerController;
 use App\UserList;
 use App\Customer;
 use App\Campaign;
@@ -79,6 +80,9 @@ class CampaignController extends Controller
             ->paginate($paging); 
       }
 
+      $customer = new CustomerController;
+      $utils_city = Utility::where('id_category',1)->get(); //kota / city
+
       $data['lists'] = displayListWithContact($userid);
       $data['paginate'] = $campaign;
       $data['campaign'] = $campaign;
@@ -87,6 +91,8 @@ class CampaignController extends Controller
       $data['campaign_controller'] = new CampaignController;
       $data['autoschedule'] = new Reminder;
       $data['userid'] = $userid;
+      $data['religion'] = $customer::$religion;
+      $data['utils_city'] = $utils_city;
 
       if($request->ajax())
       {
@@ -246,12 +252,12 @@ class CampaignController extends Controller
 		public function CreateCampaign() 
     {
       $userid = Auth::id();
-      $customer = new \App\Http\Controllers\CustomerController;
+      $customer = new CustomerController;
 
       // UTILITIES
-      $utils_city = Utility::where('id_category',1)->get();
-      $utils_hobbies = Utility::where('id_category',2)->get();
-      $utils_occupation = Utility::where('id_category',3)->get();
+      $utils_city = Utility::where('id_category',1)->get(); //kota
+      $utils_hobbies = Utility::where('id_category',2)->get(); //hobby
+      $utils_occupation = Utility::where('id_category',3)->get(); //pekerjaan
 
       $hobby = array();
       if($utils_hobbies->count() > 0)
@@ -281,6 +287,7 @@ class CampaignController extends Controller
       return view('campaign.create-campaign',$data);
     }
 
+    // calculate / filter user accorfing on targetting
     public function calculate_user_list(Request $request)
     {
       // dd($request->all());
@@ -374,10 +381,16 @@ class CampaignController extends Controller
         $customer = $customer->whereRaw($statement);
       }
       
-      $customer = $customer->get()->count();
+      $customer = $customer->get();
+
+      //if this function call from function saveCampaign orr another function
+      if($request->save_campaign !== null)
+      {
+        return $customer;
+      }
     
       $res['status'] = 1;
-      $res['total'] = $customer;
+      $res['total'] = $customer->count();
       return response()->json($res);
     }
 
@@ -531,13 +544,36 @@ class CampaignController extends Controller
             return response()->json($data_error);
         }
 
+        $req = $request->all();
+        $req['save_campaign'] = true;
+        $request = new Request($req);
+        $get_filtered_customer = $this->calculate_user_list($request);
+
+        if($get_filtered_customer->count() > 0)
+        {
+          $req['customers'] = $get_filtered_customer;
+        }
+        else
+        {
+          $req['customers'] = false;
+        }
+
+        $request = new Request($req);
         $broadcast = new BroadCastController;
         $saveBroadcast = $broadcast->saveBroadCast($request);
 				
+        if($saveBroadcast == false)
+        {
+          $data['status'] = false;
+          $data['message'] = "Sorry our server is too busy, please try again later";
+          return response()->json($data);
+        }
+
         if(!empty($saveBroadcast))
         {
-            $data['message'] = $saveBroadcast;
-            return response()->json($data);
+          $data['status'] = true;
+          $data['message'] = $saveBroadcast;
+          return response()->json($data);
         }
 
 				// CreateBroadcast::dispatch(serialize($request));

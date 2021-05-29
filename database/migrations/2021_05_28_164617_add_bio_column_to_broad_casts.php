@@ -19,11 +19,11 @@ class AddBioColumnToBroadCasts extends Migration
             $table->string('gender')->after('birthday');
             $table->string('city')->after('gender');
             $table->string('marriage')->after('city');
-            $table->text('hobby')->after('marriage');
-            $table->text('occupation')->after('hobby');
+            $table->text('hobby')->nullable()->after('marriage');
+            $table->text('occupation')->nullable()->after('hobby');
             $table->string('religion')->after('occupation');
-            $table->Integer('start_age')->default(0)->after('religion');
-            $table->Integer('end_age')->default(0)->after('start_age');
+            $table->string('start_age')->default('all')->after('religion');
+            $table->string('end_age')->default('all')->after('start_age');
         });
     }
 

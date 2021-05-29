@@ -168,6 +168,102 @@
                       </div>
                     </div>
 
+
+                    <div id="target_box_duplicate">
+                      <div class="form-group row istarget">
+                        <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">Targetting :</label>
+                        <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                          <input type="checkbox" class="form-check-input ml-1" name="is_targetting" value="1" />
+                        </div>
+                      </div>
+
+                      <!-- TARGETTING -->
+                      <div class="form-group row target">
+                        <label class="col-sm-4 col-md-4 col-lg-4 col-form-label"><!--  --></label>
+
+                          <div class="col-sm-8 col-md-8 col-lg-8 relativity">
+                            <div class="form-inline">
+                              <label class="mr-2">Sex :</label>
+                              <select name="sex" class="form-control">
+                                <option value="all" >All</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                              </select>
+                            </div> 
+
+                            <div class="form-inline mt-2">
+                              <label class="mr-2">Status :</label>
+                              <select name="marriage_status" class="form-control">
+                                <option value="all">All</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                              </select>
+                            </div> 
+
+                            <div class="form-inline mt-2">
+                              <label class="mr-2">Age :</label>
+                              <select name="age_start" class="form-control mr-2">
+                                <option value="all">All</option>
+                                @for($x=10;$x<100;$x++)
+                                  <option value="{{$x}}">{{$x}}</option>
+                                @endfor
+                              </select>
+                              <select name="age_end" class="form-control">
+                                <option value="all">All</option>
+                                @for($x=10;$x<100;$x++)
+                                  <option value="{{$x}}">{{$x}}</option>
+                                @endfor
+                              </select>
+                            </div> 
+
+                            @if($utils_city->count() > 0)
+                            <div class="form-inline mt-2">
+                              <label class="mr-2">City :</label>
+                              <select name="city" class="form-control">
+                                  <option value="all">All</option>
+                                @foreach($utils_city as $row)
+                                  <option value="{{$row->category}}">{{$row->category}}</option>
+                                @endforeach
+                              </select>
+                            </div> 
+                            @endif 
+
+                            <div class="form-inline mt-2">
+                              <label class="mr-2">Religion :</b></label>
+                               <select name="religion" class="form-control">
+                                  <option value="{{ $religion[0] }}">{{ $religion[0] }}</option>
+                                  <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
+                                  <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
+                                  <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
+                                  <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
+                                  <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
+                                </select>
+                            </div> 
+
+                            <div class="form-inline mt-2">
+                              <label class="mr-2">Birthday :</label>
+                              <input type="checkbox" class="form-check-input" name="birthday" value="0" />
+                            </div> 
+
+                            <div class="form-inline mt-2 hobby-cover">
+                               <label class="mr-2">Hobby :</label>
+                               <span class="form-inline" id="hobby"></span>
+                            </div> 
+
+                            <div class="form-inline mt-2">
+                               <label class="mr-2">Occupation :</label>
+                               <span class="form-inline" id="job"></span>
+                            </div> 
+
+                            <div class="form-group mt-3">
+                              <div class="mb-2" id="result_calculate"></div>
+                              <button id="calculate" type="button" class="btn btn-info">Calculate</button>
+                            </div> 
+                            <!--  -->
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="form-group">
                       <label>Message :</label>
                       <div class="col-sm-12 pad-fix">
@@ -243,6 +339,8 @@
 											</div>
 										</div>
 
+                    <div id="targeting-box"><!-- apppend to class target --></div>
+                    
 										<div class="form-group">
                       <label>Message :</label>
                       <textarea name="edit_message" id="edit_message" class="form-control"></textarea>
@@ -322,6 +420,8 @@
       sendTestMessage();
       pictureClass();
       pagination();
+      display_targeting();
+      calculate_targetting() ;
   });
 
   function clearToolTip()
@@ -588,6 +688,7 @@
     });
   }
 
+  // DUPLICATE
   function duplicateBroadcastForm()
   {
     $("body").on("click",".broadcast_duplicate",function(){
@@ -608,6 +709,17 @@
             $('#loader').hide();
             $('.div-loading').removeClass('background-load');
             clearToolTip();
+            if(result.is_targetting == 1)
+            {
+              $(".istarget").show();
+              $(".target").show();
+            }
+            else
+            {
+              $(".istarget").hide();
+              $(".target").hide();
+            }
+
             broadcastFormArrange(result);
           },
           error: function(xhr,attr,throwable)
@@ -622,13 +734,109 @@
     });
   }
 
+  function calculate_targetting() 
+  {
+    $("#calculate").click(function(){
+      var data = $("#duplicate_broadcast").serialize();
+
+      $.ajax({
+          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          type : 'POST',
+          url : '{{url("calculate-user")}}',
+          data : data,
+          dataType : 'json',
+          beforeSend: function()
+          {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+          },
+          success : function(result)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            
+            if(result.status == 1)
+            {
+              $("#result_calculate").html("Total : <b>"+result.total+"</b>");
+            }
+            else
+            {
+              $("#result_calculate").html("<span class='error'>Please fill Date Send</span>");
+            }
+          },
+          error : function(xhr,attribute,throwable)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            console.log(xhr.responseText);
+          }
+      });
+      //ajax
+    });
+  }
+
   function broadcastFormArrange(result)
   {
-      var box = '';
+      var box = wrapper = '';
       $("input[name='campaign_name']").val(result.campaign);
       $("input[name='date_send']").val(result.day_send);
       $("input[name='hour']").val(result.hour_time);
       $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText(result.message);
+
+      // TARGETTING LOGIC
+      $("select[name='sex'] option[value="+result.sex+"]").prop('selected',true);
+      $("select[name='marriage_status'] option[value="+result.marriage+"]").prop('selected',true);
+      if(result.birthday == 1)
+      {
+        $("input[name='birthday']").prop('checked',true);
+      }
+      else
+      {
+        $("input[name='birthday']").prop('checked',false);
+      }
+
+      if(result.is_targetting == 1)
+      {
+        $("input[name='is_targetting']").prop('checked',true);
+      }
+      else
+      {
+        $(".target").hide();
+        $("input[name='is_targetting']").prop('checked',false);
+      }
+
+      var hasOption = $("select[name='city'] option[value="+result.city+"]").length;
+      if(hasOption == 0)
+      {
+        var opt = "<option value='"+result.city+"' selected>"+result.city+"</option>";
+        $(opt).appendTo("select[name='city']");
+      }
+      else
+      {
+        $("select[name='city'] option[value="+result.city+"]").prop('selected',true);
+      }
+
+      $("select[name='age_start'] option[value="+result.age_start+"]").prop('selected',true);
+      $("select[name='age_end'] option[value="+result.age_end+"]").prop('selected',true);
+      $("select[name='religion'] option[value="+result.religion+"]").prop('selected',true);
+
+      $.each(result.hobbies,function(index, val){
+        box += '<div class="form-check form-check-inline">';
+        box += '<input checked class="form-check-input" type="checkbox" name="hobby[]" value="'+val+'">';
+        box += '<span class="form-check-label">'+val+'</span>';
+        box += '</div>';
+      });
+
+      $("#hobby").html(box);
+
+      $.each(result.jobs,function(i, vals){
+        wrapper += '<div class="form-check form-check-inline">';
+        wrapper += '<input checked class="form-check-input" type="checkbox" name="occupation[]" value="'+vals+'">';
+        wrapper += '<span class="form-check-label">'+vals+'</span>';
+        wrapper += '</div>';
+      });
+      $("#job").html(wrapper);
+     
       /*
       if(result.list_id > 0){
         $(".broadcast-type").html('Schedule Broadcast');
@@ -667,6 +875,21 @@
         box += '</div>';
         $(".box-schedule").html(box);
       } */
+  }
+
+  function display_targeting()
+  {
+    $("input[name='is_targetting']").click(function(){
+      var checked = $(this).prop("checked");
+      if(checked == true)
+      {
+        $(".target").show();
+      }
+      else
+      {
+        $(".target").hide();
+      }
+    });
   }
 
   function draftBroadCast()

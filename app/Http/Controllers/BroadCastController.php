@@ -21,6 +21,8 @@ use App\Campaign;
 use Session;
 use DB,Storage;
 use App\Http\Controllers\ListController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CampaignController;
 use App\Jobs\CreateBroadcast;
 
 class BroadCastController extends Controller
@@ -36,15 +38,35 @@ class BroadCastController extends Controller
         $date_send = $request->date_send;
 
         // targetting
+        $is_targetting = $request->is_targetting;
         $sex = $request->sex;
         $marriage_status = $request->marriage_status;
         $age_start = $request->age_start;
         $age_end = $request->age_end;
         $city = $request->city;
         $religion = $request->religion;
-        $birthday = $request->birthday;
         $hobby = $request->hobby;
         $occupation = $request->occupation;
+        $hobbies = $occupations = null;
+
+        if($request->hobby !== null)
+        {
+          $hobbies = $this->data_spree($request->hobby);
+        }
+
+        if($request->occupation !== null)
+        {
+          $occupations = $this->data_spree($request->occupation);
+        }
+
+        if($request->birthday == null)
+        {
+          $birthday = 0;
+        }
+        else
+        {
+          $birthday = $request->birthday;
+        }
 
 				$folder="";
 				$filename="";
@@ -128,10 +150,20 @@ class BroadCastController extends Controller
         $campaign->type =  $campaign_type;
         $campaign->list_id = $list_id;
         $campaign->user_id = $user->id;
-        $campaign->save();
-        $campaign_id = $campaign->id;
-    
-        if($campaign->save())
+       
+        try
+        {
+          $campaign->save();
+          $campaign_id = $campaign->id;
+        }
+        catch(Queryexception $e)
+        {
+          //$e->getMessage();
+          return false;
+        }
+
+        //save broadcast
+        try
         {
           $broadcast = new BroadCast;
           $broadcast->user_id = $user->id;
@@ -143,37 +175,52 @@ class BroadCastController extends Controller
           $broadcast->hour_time = $time_sending;
           $broadcast->image = $folder.$filename;
           $broadcast->message = $message;
-
-          // SAVE TARGETTING
+          $broadcast->is_targetting = $is_targetting;
           $broadcast->birthday = $birthday;
           $broadcast->gender = $sex;
           $broadcast->city = $city;
           $broadcast->marriage = $marriage_status;
-          $broadcast->hobby = $hobby;
-          $broadcast->occupation = $occupation;
           $broadcast->religion = $religion;
           $broadcast->start_age = $age_start;
           $broadcast->end_age = $age_end;
-
+          $broadcast->hobby = $hobbies;
+          $broadcast->occupation = $occupations;
           $broadcast->save();
           $broadcast_id = $broadcast->id;
         }
-        else
+        catch(Queryexception $e)
         {
-          return 'Sorry, cannot create event, please contact administrator';
+          // dd($e->getMessage());
+          return false;
         }
 
         /* if successful inserted data broadcast into database then this run */
-        if($broadcast->save()){         
+        if($request->is_targetting == null)
+        {         
             // retrieve customer id 
             $customers = Customer::where([
                 ['user_id','=',$user->id],
                 ['list_id','=',$list_id],
                 ['status','=',1],
             ])->get();
+        } 
+        else 
+        {
+            // customers according on targetting BC
+            $customers = $request->customers;
+            if($customers->count() > 0)
+            {
+              foreach($customers as $col)
+              {
+                // CreateBroadcast::dispatch($col->id,$broadcast_id);
+                $broadcastcustomer = new BroadCastCustomers;
+                $broadcastcustomer->broadcast_id = $broadcast_id;
+                $broadcastcustomer->customer_id = $col->id;
+                $broadcastcustomer->save();
+              }
 
-        } else {
-            return 'Error! Unable to create broadcast';
+              return 1;
+            }
         }
 
         if($customers->count() > 0)
@@ -183,18 +230,11 @@ class BroadCastController extends Controller
             $queueBroadcastCustomer->list_id = $list_id;
             $queueBroadcastCustomer->user_id = $user->id;
             $queueBroadcastCustomer->save();
-            /*foreach($customers as $col){
-							CreateBroadcast::dispatch($col->id,$broadcast_id);
-                // $broadcastcustomer = new BroadCastCustomers;
-                // $broadcastcustomer->broadcast_id = $broadcast_id;
-                // $broadcastcustomer->customer_id = $col->id;
-                // $broadcastcustomer->save();
-            }*/
-        } else if($broadcast_schedule == 0) {
+        }  
+
+        if($broadcast_schedule == 0) {
             return 'Broadcast created, but will not send anything because you do not have subscriber';
-        } else {
-            return 'Your broadcast has been created';
-        }
+        } 
 
 				return 'Your broadcast has been created';
 
@@ -203,6 +243,16 @@ class BroadCastController extends Controller
         // } else {
             // return 'Error!!Your broadcast failed to create';
         // }
+    }
+
+    // extract data from array to string with semcolon ex : text;
+    public function data_spree($data)
+    {
+      $arr = null;
+      foreach($data as $key=> $row):
+        $arr .= $row.";";
+      endforeach;
+      return $arr;
     }
 
     /* Display broadcast */
@@ -407,6 +457,20 @@ class BroadCastController extends Controller
           ->select('campaigns.name','broad_casts.*','broad_casts.id AS broadcast_id')
           ->first();
 
+        // TARGETTING
+        $hobbies = $broadcast->hobby;
+        $occupations = $broadcast->occupation;
+
+        if($hobbies !== null)
+        {
+          $hobbies = $this->extract_text($hobbies);
+        }
+
+        if($occupations !== null)
+        {
+          $occupations = $this->extract_text($occupations);
+        }
+        
         $data = array(
           'list_id' => $broadcast->list_id,
           'group_name' => $broadcast->group_name,
@@ -415,9 +479,27 @@ class BroadCastController extends Controller
           'day_send' => $broadcast->day_send,
           'hour_time' => $broadcast->hour_time,
           'message' => $broadcast->message,
+          'is_targetting'=>$broadcast->is_targetting,
+          'city' => $broadcast->city, 
+          'sex' => $broadcast->gender, 
+          'marriage' => $broadcast->marriage,
+          'age_start' => $broadcast->start_age,
+          'age_end' => $broadcast->end_age,
+          'birthday' => $broadcast->birthday,
+          'religion' => $broadcast->religion,
+          'hobbies' => $hobbies,
+          'jobs' => $occupations,
+          'is_targetting' => $broadcast->is_targetting
         );
 
         return response()->json($data);
+    }
+
+    public function extract_text($text)
+    {
+      $arr = explode(";",$text);
+      array_pop($arr);
+      return $arr;
     }
 
     public function duplicateBroadcast(Request $request)
@@ -432,6 +514,26 @@ class BroadCastController extends Controller
         $broadcast_group_name =  $request->group_name;
         $broadcast_channel =  $request->channel_name;
         $folder = $filename = null;
+        $prevbroadcast = BroadCast::find($broadcast_id);
+
+        $sex = $request->sex;
+        $marriage_status = $request->marriage_status;
+        $city = $request->city;
+        $religion = $request->religion;
+        $age_start = $request->age_start;
+        $age_end = $request->age_end;
+        $hobbies = $request->hobby;
+        $job = $request->occupation;
+
+        if($hobbies !== null)
+        {
+          $hobbies = $this->data_spree($hobbies);
+        }
+
+        if($job !== null)
+        {
+          $job = $this->data_spree($job);
+        }
 
        if($request->hasFile('imageWA')) 
        {
@@ -461,7 +563,6 @@ class BroadCastController extends Controller
         }
         else
         {
-          $prevbroadcast = BroadCast::find($broadcast_id);
           $image_path = $prevbroadcast->image;
         }
 
@@ -490,8 +591,46 @@ class BroadCastController extends Controller
           $broadcast->hour_time = $broadcast_sending;
           $broadcast->message = $broadcast_message;
           $broadcast->image = $image_path;
+
+          if($request->is_targetting == null)
+          {
+            $is_targetting = 0;
+          }
+          else
+          {
+            $is_targetting = $request->is_targetting;
+          }
+
+          if($request->birthday == null)
+          {
+            $birthday = 0;
+          }
+          else
+          {
+            $birthday = $request->birthday;
+          }
+
+          $broadcast->is_targetting = $is_targetting;
+          $broadcast->birthday = $birthday;
+          $broadcast->gender = $sex;
+          $broadcast->city = $marriage_status;
+          $broadcast->marriage = $city;
+          $broadcast->religion = $religion;
+          $broadcast->start_age = $age_start;
+          $broadcast->end_age = $age_end;
+          $broadcast->hobby = $hobbies;
+          $broadcast->occupation = $job;
+        }
+
+        try
+        {
           $broadcast->save();
           $broadcastnewID = $broadcast->id;
+        }
+        catch(QueryException $e)
+        {
+          // $e->getMessage();
+          return response()->json(['message'=>'Sorry our server is too busy, please try again.']);
         }
 
         /*else if(empty($list_id) && !empty($broadcast_group_name))
@@ -517,20 +656,33 @@ class BroadCastController extends Controller
           $broadcast->save();
         }*/
 
-        if($broadcast->save() && $list_id > 0)
+        if($list_id > 0)
         { 
           //$broadcastcustomer = BroadCastCustomers::where([['broadcast_id',$broadcast_id]])->get();
-           $customer = Customer::where([
-                ['user_id','=',$user_id],
-                ['list_id','=',$list_id],
-                ['status','=',1],
-            ])->get();
+           if($request->is_targetting == 0)
+           {
+              $customer = Customer::where([
+                  ['user_id','=',$user_id],
+                  ['list_id','=',$list_id],
+                  ['status','=',1],
+              ])->get();
+           }
+           else
+           {
+              $req = $request->all();
+              $req['save_campaign'] = true;
+              $request = new Request($req);
+
+              $calculate = new CampaignController;
+              $customer = $calculate->calculate_user_list($request);
+           }
         }
-        else if($broadcast->save() && $list_id == 0)
+        elseif($list_id == 0)
         {
           return response()->json(['message'=>'Your campaign duplicated successfully']);
         }
-        else {
+        else 
+        {
            return response()->json(['message'=>'Sorry, cannot duplicate your campaign, please call administrator']);
         }
 

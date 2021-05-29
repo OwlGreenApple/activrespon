@@ -20,7 +20,7 @@
         </td>
         <td>
           <button id="{{ $col->id }}" type="button" class="btn btn-primary btn-sm save">Save</button>
-          <button id="{{ $col->id }}" type="button" class="btn btn-danger btn-sm del">Delete</button>
+          <!-- <button id="{{ $col->id }}" type="button" class="btn btn-danger btn-sm del">Delete</button> -->
         </td>
       </tr>
     @endforeach
