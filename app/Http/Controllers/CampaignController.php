@@ -30,7 +30,7 @@ use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use App\PhoneNumber;
 use App\Server;
-use Storage,Session;
+use Storage,Session, DB;
 
 class CampaignController extends Controller
 {
@@ -367,28 +367,30 @@ class CampaignController extends Controller
         $age = 'all';
       }
 
-      // TARGETTING BY AGE
-      if($age !== "all")
-      {
-        $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
-        $customer = $customer->whereRaw($target_age);
-      }
-      
       // TARGETTING BIRTHDAY
       if($birthday == 1)
       {
         $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
         $customer = $customer->whereRaw($statement);
       }
+
+       // TARGETTING BY AGE
+      if($age !== "all")
+      {
+        $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
+        // $customer = $customer->whereRaw($target_age);
+        $customer = $customer->orWhere(DB::raw($target_age));
+      }
       
       $customer = $customer->get();
-
-      //if this function call from function saveCampaign orr another function
+    
+      //return this value if call from function saveCampaign or another function
       if($request->save_campaign !== null)
       {
         return $customer;
       }
     
+      // return this value if call from ajax calculate
       $res['status'] = 1;
       $res['total'] = $customer->count();
       return response()->json($res);

@@ -168,99 +168,107 @@
                       </div>
                     </div>
 
-
+                     <!-- TARGETTING FORM -->
                     <div id="target_box_duplicate">
-                      <div class="form-group row istarget">
-                        <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">Targetting :</label>
-                        <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
-                          <input type="checkbox" class="form-check-input ml-1" name="is_targetting" value="1" />
+                      <div class="target_append"><!-- to make element move either on edit or duplicate -->
+                        <div class="form-group row istarget">
+                          <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">Targetting :</label>
+                          <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                            <input type="checkbox" class="form-check-input ml-1" name="is_targetting" value="1" />
+                          </div>
                         </div>
-                      </div>
 
-                      <!-- TARGETTING -->
-                      <div class="form-group row target">
-                        <label class="col-sm-4 col-md-4 col-lg-4 col-form-label"><!--  --></label>
+                        <!-- TARGETTING -->
+                        <div class="form-group row target">
+                          <label class="col-sm-4 col-md-4 col-lg-4 col-form-label"><!--  --></label>
 
-                          <div class="col-sm-8 col-md-8 col-lg-8 relativity">
-                            <div class="form-inline">
-                              <label class="mr-2">Sex :</label>
-                              <select name="sex" class="form-control">
-                                <option value="all" >All</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                              </select>
-                            </div> 
-
-                            <div class="form-inline mt-2">
-                              <label class="mr-2">Status :</label>
-                              <select name="marriage_status" class="form-control">
-                                <option value="all">All</option>
-                                <option value="single">Single</option>
-                                <option value="married">Married</option>
-                              </select>
-                            </div> 
-
-                            <div class="form-inline mt-2">
-                              <label class="mr-2">Age :</label>
-                              <select name="age_start" class="form-control mr-2">
-                                <option value="all">All</option>
-                                @for($x=10;$x<100;$x++)
-                                  <option value="{{$x}}">{{$x}}</option>
-                                @endfor
-                              </select>
-                              <select name="age_end" class="form-control">
-                                <option value="all">All</option>
-                                @for($x=10;$x<100;$x++)
-                                  <option value="{{$x}}">{{$x}}</option>
-                                @endfor
-                              </select>
-                            </div> 
-
-                            @if($utils_city->count() > 0)
-                            <div class="form-inline mt-2">
-                              <label class="mr-2">City :</label>
-                              <select name="city" class="form-control">
-                                  <option value="all">All</option>
-                                @foreach($utils_city as $row)
-                                  <option value="{{$row->category}}">{{$row->category}}</option>
-                                @endforeach
-                              </select>
-                            </div> 
-                            @endif 
-
-                            <div class="form-inline mt-2">
-                              <label class="mr-2">Religion :</b></label>
-                               <select name="religion" class="form-control">
-                                  <option value="{{ $religion[0] }}">{{ $religion[0] }}</option>
-                                  <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
-                                  <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
-                                  <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
-                                  <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
-                                  <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
+                            <div class="col-sm-8 col-md-8 col-lg-8 relativity">
+                              <div class="form-inline">
+                                <label class="mr-2">Sex :</label>
+                                <select name="sex" class="form-control">
+                                  <option value="all" >All</option>
+                                  <option value="male">Male</option>
+                                  <option value="female">Female</option>
                                 </select>
-                            </div> 
+                              </div> 
 
-                            <div class="form-inline mt-2">
-                              <label class="mr-2">Birthday :</label>
-                              <input type="checkbox" class="form-check-input" name="birthday" value="0" />
-                            </div> 
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Status :</label>
+                                <select name="marriage_status" class="form-control">
+                                  <option value="all">All</option>
+                                  <option value="single">Single</option>
+                                  <option value="married">Married</option>
+                                </select>
+                              </div> 
 
-                            <div class="form-inline mt-2 hobby-cover">
-                               <label class="mr-2">Hobby :</label>
-                               <span class="form-inline" id="hobby"></span>
-                            </div> 
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Age :</label>
+                                <select name="age_start" class="form-control mr-2">
+                                  <option value="all">All</option>
+                                  @for($x=10;$x<100;$x++)
+                                    <option value="{{$x}}">{{$x}}</option>
+                                  @endfor
+                                </select>
+                                <select name="age_end" class="form-control">
+                                  <option value="all">All</option>
+                                  @for($x=10;$x<100;$x++)
+                                    <option value="{{$x}}">{{$x}}</option>
+                                  @endfor
+                                </select>
+                              </div> 
 
-                            <div class="form-inline mt-2">
-                               <label class="mr-2">Occupation :</label>
-                               <span class="form-inline" id="job"></span>
-                            </div> 
+                              @if($utils_city->count() > 0)
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">City :</label>
+                                <select name="city" class="form-control">
+                                    <option value="all">All</option>
+                                  @foreach($utils_city as $row)
+                                    <option value="{{$row->category}}">{{$row->category}}</option>
+                                  @endforeach
+                                </select>
+                              </div> 
+                              @endif 
 
-                            <div class="form-group mt-3">
-                              <div class="mb-2" id="result_calculate"></div>
-                              <button id="calculate" type="button" class="btn btn-info">Calculate</button>
-                            </div> 
-                            <!--  -->
-                        </div>
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Religion :</b></label>
+                                 <select name="religion" class="form-control">
+                                    <option value="{{ $religion[0] }}">{{ $religion[0] }}</option>
+                                    <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
+                                    <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
+                                    <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
+                                    <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
+                                    <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
+                                  </select>
+                              </div> 
+
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Birthday :</label>
+                                <input type="checkbox" class="form-check-input" name="birthday" value="1" />
+                              </div> 
+
+                              <div class="form-inline mt-2 hobby-cover">
+                                 <label class="mr-2">Hobby :</label>
+                                 <span class="form-inline" id="hobby"></span>
+                              </div> 
+
+                              <div class="form-inline mt-2">
+                                 <label class="mr-2">Occupation :</label>
+                                 <span class="form-inline" id="job"></span>
+                              </div> 
+                              <!--  -->
+                          </div>
+                      <!--  -->
+                      </div>
+                    </div>
+                     <!-- end target_box_duplicate -->
+                    </div>
+
+                    <!-- calculate -->
+                    <div class="form-group row calc">
+                      <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">&nbsp;</label>
+                      <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                        <div class="mb-2" id="result_calculate"></div>
+                        <button id="calculate" type="button" class="btn btn-info">Calculate</button>
                       </div>
                     </div>
 
@@ -277,6 +285,8 @@
                       <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                     </div>
                   </form>
+                  <!-- close target -->
+                </div>
                 </div>
                
             </div>
@@ -340,6 +350,15 @@
 										</div>
 
                     <div id="targeting-box"><!-- apppend to class target --></div>
+
+                    <!-- calculate -->
+                    <div class="form-group row calc">
+                      <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">&nbsp;</label>
+                      <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                        <div class="mb-2" id="result_calculate_edit"></div>
+                        <button id="calculate_edit" type="button" class="btn btn-info">Calculate</button>
+                      </div>
+                    </div>
                     
 										<div class="form-group">
                       <label>Message :</label>
@@ -421,7 +440,8 @@
       pictureClass();
       pagination();
       display_targeting();
-      calculate_targetting() ;
+      calculate_duplicate() ;
+      calculate_edit();
   });
 
   function clearToolTip()
@@ -586,12 +606,15 @@
         var time = $(this).attr('data-time');
         var message = $(this).attr('data-message');
         var published = $(this).attr('data-publish');
+        var list_id = $(this).attr('list_id');
           
         $("#broadcast_edit").attr('broadcast_id',id);
         $("input[name='campaign_name']").val(name);
         $("input[name='date_send']").val(date);
         $("#time_sending").val(time);
         $("#edit_message").emojioneArea()[0].emojioneArea.setText(message);
+        $("#calculate_edit").attr('list_id',list_id);
+
         if(published == 1)
         {
             $("#publish").hide();
@@ -600,7 +623,12 @@
         {
             $("#publish").show();
         }
+
         $(".error").hide();
+        broadcast_ajax_targetting(id);
+        setTimeout(function(){
+          $(".target_append").appendTo("#targeting-box");
+        },200);
         $("#modal_edit_broadcast").modal();
     });
   }
@@ -693,52 +721,76 @@
   {
     $("body").on("click",".broadcast_duplicate",function(){
         var id = $(this).attr('id');
-
-        $.ajax({
-          type : 'GET',
-          url : '{{ url("broadcast-check") }}',
-          data : {id : id},
-          dataType : "json",
-          beforeSend: function()
-          {
-            $('#loader').show();
-            $('.div-loading').addClass('background-load');
-          },
-          success : function(result)
-          {
-            $('#loader').hide();
-            $('.div-loading').removeClass('background-load');
-            clearToolTip();
-            if(result.is_targetting == 1)
-            {
-              $(".istarget").show();
-              $(".target").show();
-            }
-            else
-            {
-              $(".istarget").hide();
-              $(".target").hide();
-            }
-
-            broadcastFormArrange(result);
-          },
-          error: function(xhr,attr,throwable)
-          {
-            $('#loader').hide();
-            $('.div-loading').removeClass('background-load');
-          }
-        });
+        broadcast_ajax_targetting(id);
 
         $("#duplicate_broadcast").attr('data',id);
+        setTimeout(function(){
+          $(".target_append").appendTo("#target_box_duplicate");
+        },200);
         $("#modal_duplicate_broadcast").modal();
     });
   }
 
-  function calculate_targetting() 
+  function broadcast_ajax_targetting(id)
+  {
+    $.ajax({
+      type : 'GET',
+      url : '{{ url("broadcast-check") }}',
+      data : {id : id},
+      dataType : "json",
+      beforeSend: function()
+      {
+        $('#loader').show();
+        $('.div-loading').addClass('background-load');
+      },
+      success : function(result)
+      {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
+        clearToolTip();
+        if(result.is_targetting == 1)
+        {
+          $(".istarget").show();
+          $(".target").show();
+          $(".calc").show();
+        }
+        else
+        {
+          $(".istarget").hide();
+          $(".target").hide();
+          $(".calc").hide();
+        }
+
+        broadcastFormArrange(result);
+      },
+      error: function(xhr,attr,throwable)
+      {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
+      }
+    });
+  } 
+
+  function calculate_duplicate()
   {
     $("#calculate").click(function(){
       var data = $("#duplicate_broadcast").serialize();
+      calculate_targetting(data);
+    });
+  }
 
+  function calculate_edit()
+  {
+    $("#calculate_edit").click(function(){
+      var list_id = $(this).attr('list_id');
+      var data = $("#edit_broadcast").serializeArray();
+      data.push({name : 'list_id', value : list_id});
+      calculate_targetting(data);
+    });
+  }
+
+  function calculate_targetting(data) 
+  {
       $.ajax({
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
           type : 'POST',
@@ -758,10 +810,12 @@
             if(result.status == 1)
             {
               $("#result_calculate").html("Total : <b>"+result.total+"</b>");
+              $("#result_calculate_edit").html("Total : <b>"+result.total+"</b>");
             }
             else
             {
               $("#result_calculate").html("<span class='error'>Please fill Date Send</span>");
+              $("#result_calculate_edit").html("<span class='error'>Please fill Date Send</span>");
             }
           },
           error : function(xhr,attribute,throwable)
@@ -772,7 +826,6 @@
           }
       });
       //ajax
-    });
   }
 
   function broadcastFormArrange(result)

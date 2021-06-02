@@ -322,6 +322,38 @@ class BroadCastController extends Controller
         $message = $request->edit_message;
         $publish = $request->publish;
 				$folder = $filename = null;
+
+         // targetting
+        $is_targetting = $request->is_targetting;
+        $sex = $request->sex;
+        $marriage_status = $request->marriage_status;
+        $age_start = $request->age_start;
+        $age_end = $request->age_end;
+        $city = $request->city;
+        $religion = $request->religion;
+        $hobby = $request->hobby;
+        $occupation = $request->occupation;
+        $hobbies = $occupations = null;
+
+        if($request->hobby !== null)
+        {
+          $hobbies = $this->data_spree($request->hobby);
+        }
+
+        if($request->occupation !== null)
+        {
+          $occupations = $this->data_spree($request->occupation);
+        }
+
+        if($request->birthday == null)
+        {
+          $birthday = 0;
+        }
+        else
+        {
+          $birthday = $request->birthday;
+        }
+
 				
 				/*if($request->hasFile('imageWA')) {
 					//save ke temp local dulu baru di kirim 
@@ -368,13 +400,27 @@ class BroadCastController extends Controller
         $broadcast->hour_time = $time_sending;
 				$broadcast->image = $image_path;
         $broadcast->message = $message;
+        $broadcast->is_targetting = $is_targetting;
+        $broadcast->birthday = $birthday;
+        $broadcast->gender = $sex;
+        $broadcast->city = $city;
+        $broadcast->marriage = $marriage_status;
+        $broadcast->religion = $religion;
+        $broadcast->start_age = $age_start;
+        $broadcast->end_age = $age_end;
+        $broadcast->hobby = $hobbies;
+        $broadcast->occupation = $occupations;
 
         try
-        {
+        {   
+            $req = $request->all();
+            $req['save_campaign'] = true;
+            $request = new Request($req);
+            $this->update_broadcast_customers($request,$broadcast_id);
             $broadcast->save();
             $campaign_id = $broadcast->campaign_id;
         }
-        catch(Exception $e)
+        catch(QueryException $e)
         {
             $data['msg'] = 'Failed to update broadcast, our server is too busy';
             $data['success'] = 0;
@@ -404,12 +450,60 @@ class BroadCastController extends Controller
               $data['publish'] = false;
             }
         }
-        catch(Exception $e)
+        catch(QueryException $e)
         {
             $data['msg'] = 'Failed to update broadcast, our server is too busy.-';
             $data['success'] = 0;
         }
         return response()->json($data);
+    }
+
+    // update broadcast customer (delete on queue message and then put the 1 targetting)
+    public function update_broadcast_customers($request,$broadcast_id)
+    {
+      // DELETE BROADCAST CUSTOMER / MESSAGE
+      $bc = BroadCastCustomers::where([['broadcast_id',$broadcast_id],['status',0]])->select('id')->get();
+
+      $br = BroadCast::find($broadcast_id);
+
+      if($bc->count() > 0)
+      {
+        foreach($bc as $col)
+        {
+          BroadCastCustomers::find($col->id)->delete();
+        }
+      }
+
+      if(is_null($br))
+      {
+        $data['success'] = 0;
+        $data['publish'] = false;
+        return response()->json($data);
+      }
+     
+     // CREATE NEW MESSAGE ACCORDING ON TARGETTING DATA
+      $list_id = $br->list_id;
+      $req = $request->all();
+      $req['list_id'] = $list_id;
+      $request = new Request($req);
+      $customer = new CampaignController;
+      $customers = $customer->calculate_user_list($request);
+
+      if($customers->count() > 0)
+      {
+        foreach($customers as $col)
+        {
+          // CreateBroadcast::dispatch($col->id,$broadcast_id);
+          $broadcastcustomer = new BroadCastCustomers;
+          $broadcastcustomer->broadcast_id = $broadcast_id;
+          $broadcastcustomer->customer_id = $col->id;
+          $broadcastcustomer->save();
+        }
+      }
+
+      $data['success'] = 1;
+      $data['publish'] = false;
+      return response()->json($data);
     }
 
     public function delBroadcast(Request $request)
