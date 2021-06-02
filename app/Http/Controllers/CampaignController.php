@@ -82,6 +82,8 @@ class CampaignController extends Controller
 
       $customer = new CustomerController;
       $utils_city = Utility::where('id_category',1)->get(); //kota / city
+      $utils_hobbies = Utility::where('id_category',2)->get(); //hobby
+      $utils_occupation = Utility::where('id_category',3)->get(); //pekerjaan
 
       $data['lists'] = displayListWithContact($userid);
       $data['paginate'] = $campaign;
@@ -93,6 +95,8 @@ class CampaignController extends Controller
       $data['userid'] = $userid;
       $data['religion'] = $customer::$religion;
       $data['utils_city'] = $utils_city;
+      $data['utils_hobbies'] = $utils_hobbies;
+      $data['utils_occupation'] = $utils_occupation;
 
       if($request->ajax())
       {
@@ -308,13 +312,6 @@ class CampaignController extends Controller
       if($hobbies == null){$hobbies = array();}
       if($job == null){$job = array();}
 
-      if($date_send == null)
-      {
-        // return error validation
-        $res['status'] = 0;
-        return response()->json($res);
-      }
-
       $data = [
         ['list_id',$list_id],
         ['user_id',$user_id],
@@ -370,8 +367,16 @@ class CampaignController extends Controller
       // TARGETTING BIRTHDAY
       if($birthday == 1)
       {
+        $date_send = Carbon::now()->toDateString();
         $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
         $customer = $customer->whereRaw($statement);
+      }
+
+      // FILTER TO PREVENT EMPTY DATE SEND
+      if($date_send == null)
+      {
+        $res['status'] = 0;
+        return response()->json($res);
       }
 
        // TARGETTING BY AGE
@@ -427,6 +432,10 @@ class CampaignController extends Controller
         {
           unset($req['event_time']);
           $req['event_time'] = $get_reminder_date->event_time;
+        }
+        elseif($request->birthday !== null)
+        {
+           $req['event_time'] = Carbon::now()->toDateString();
         }
         else
         {

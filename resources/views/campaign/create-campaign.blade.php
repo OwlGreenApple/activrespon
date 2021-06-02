@@ -106,6 +106,11 @@
           <span class="icon-calendar"></span>
           <span class="error date_send"></span>
         </div>
+        <div class="form-inline mt-2">
+          <input type="checkbox" class="form-check-input" name="birthday" value="1" />
+          <label class="ml-2">Birthday</label>
+        </div> 
+
       </div>
 
       <div class="form-group row event-time">
@@ -210,17 +215,17 @@
               </select>
             </div> 
 
-            @if($utils_city->count() > 0)
             <div class="form-inline mt-2">
               <label class="mr-2">City :</label>
               <select name="city" class="form-control">
                   <option value="all">All</option>
-                @foreach($utils_city as $row)
-                  <option value="{{$row->category}}">{{$row->category}}</option>
-                @endforeach
+                  @if($utils_city->count() > 0)
+                    @foreach($utils_city as $row)
+                      <option value="{{$row->category}}">{{$row->category}}</option>
+                    @endforeach
+                  @endif 
               </select>
             </div> 
-            @endif 
 
             <div class="form-inline mt-2">
               <label class="mr-2">Religion :</b></label>
@@ -232,11 +237,6 @@
                   <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
                   <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
                 </select>
-            </div> 
-
-            <div class="form-inline mt-2">
-              <label class="mr-2">Birthday :</label>
-              <input type="checkbox" class="form-check-input" name="birthday" value="0" />
             </div> 
 
             @if($utils_hobby->count() > 0)
@@ -435,11 +435,13 @@ use min 5 spintax variations is recommended	<br>
       var clicked = $(this).prop('checked');
       if(clicked == true)
       {
-        $(this).val(1);
+        $("input[name='date_send']").val('--- Disabled ---');
+        $("input[name='date_send']").prop('disabled',true);
       }
       else
       {
-        $(this).val(0);
+        $("input[name='date_send']").val('');
+        $("input[name='date_send']").prop('disabled',false);
       }
     });
   }
