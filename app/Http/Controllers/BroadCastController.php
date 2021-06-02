@@ -707,8 +707,8 @@ class BroadCastController extends Controller
           $broadcast->is_targetting = $is_targetting;
           $broadcast->birthday = $birthday;
           $broadcast->gender = $sex;
-          $broadcast->city = $marriage_status;
-          $broadcast->marriage = $city;
+          $broadcast->city = $city;
+          $broadcast->marriage = $marriage_status;
           $broadcast->religion = $religion;
           $broadcast->start_age = $age_start;
           $broadcast->end_age = $age_end;

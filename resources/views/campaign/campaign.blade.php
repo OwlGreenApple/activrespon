@@ -704,7 +704,7 @@
           {
             $("#publish").hide();
           }
-          loadPagination(global_url,2,null);
+          loadPagination(global_url,null,null);
         }
       },
       error : function(xhr,attr,throwable){

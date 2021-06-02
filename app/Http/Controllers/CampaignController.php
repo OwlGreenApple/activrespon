@@ -378,12 +378,12 @@ class CampaignController extends Controller
       if($age !== "all")
       {
         $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
-        // $customer = $customer->whereRaw($target_age);
-        $customer = $customer->orWhere(DB::raw($target_age));
+        $customer = $customer->whereRaw($target_age);
+        // $customer = $customer->orWhere(DB::raw($target_age));
       }
       
       $customer = $customer->get();
-    
+
       //return this value if call from function saveCampaign or another function
       if($request->save_campaign !== null)
       {
