@@ -9,7 +9,7 @@
             <div id="msg"><!-- message --></div>
             <form id="save_category">
                <div class="form-group">
-                  <label>Buat Kategori*</label>
+                  <label>Nama Kota*</label>
                   <div class="col-sm-12 row">
                     <div class="col-lg-3 row">
                       <input name="category" class="form-control" autocomplete="off" />
@@ -17,16 +17,17 @@
                     </div>
 
                     <div class="col-sm-6">
-                      <select id="parent" name="id_category" class="form-control">
-                        <!--  -->
+                      <!-- <select id="parent" name="id_category" class="form-control">
+                        
                       </select>
-                      <span class="error country_name"></span>
+                      <span class="error country_name"></span> -->
+                      *Huruf kecil semua, contoh : surabaya, <b>jangan</b> Surabaya
                     </div>
 
                   </div>
                 </div>
 
-              <button id="submit" type="submit" class="btn btn-primary mb-2">Buat Kategori</button>
+              <button id="submit" type="submit" class="btn btn-primary mb-2">Buat</button>
             </form>
         </div>
 
@@ -43,7 +44,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
     save_category();
-    display_category();
+    // display_category();
     display_category_table();
     edit_category();
     del_category();
@@ -119,7 +120,7 @@
     $.ajax({
       type : "GET",
       url : "{{ url('list-category') }}",
-      data : {'id':0},
+      data : {'id':1},
       dataType : 'html',
       success: function(result)
       {

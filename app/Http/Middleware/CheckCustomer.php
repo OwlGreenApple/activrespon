@@ -168,7 +168,7 @@ class CheckCustomer
             $util = 0;
             if(count($hobbies) > 0)
             {
-              $util = Utility::whereIn('category',$hobbies)->get();
+              $util = Utility::where([['user_id',$lists->user_id],['id_category',2]])->whereIn('category',$hobbies)->get();
             }
 
             if($util->count() !== count($hobbies))
@@ -178,7 +178,7 @@ class CheckCustomer
             }
          }
 
-         if($is_validate_job == 1)
+         if($lists->is_validate_job == 1)
          {  
             if($request->occupation == null)
             {
@@ -199,7 +199,7 @@ class CheckCustomer
             $util = 0;
             if(count($occupation) > 0)
             {
-              $util = Utility::whereIn('category',$occupation)->get();
+              $util = Utility::where([['user_id',$lists->user_id],['id_category',3]])->whereIn('category',$occupation)->get();
             }
 
             if($util->count() !== count($occupation))

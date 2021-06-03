@@ -260,8 +260,8 @@ class CampaignController extends Controller
 
       // UTILITIES
       $utils_city = Utility::where('id_category',1)->get(); //kota
-      $utils_hobbies = Utility::where('id_category',2)->get(); //hobby
-      $utils_occupation = Utility::where('id_category',3)->get(); //pekerjaan
+      $utils_hobbies = Utility::where([['user_id',$userid],['id_category',2]])->get(); //hobby
+        $utils_occupation = Utility::where([['user_id',$userid],['id_category',3]])->get(); //pekerjaan
 
       $hobby = array();
       if($utils_hobbies->count() > 0)
@@ -291,12 +291,26 @@ class CampaignController extends Controller
       return view('campaign.create-campaign',$data);
     }
 
+    // create utility / targeting form
+    public function utility_form()
+    {
+      return view('utility.index');
+    }
+
     // calculate / filter user accorfing on targetting
     public function calculate_user_list(Request $request)
     {
       // dd($request->all());
       $statement = "";
-      $user_id = Auth::id();
+      if($request->user_id == null)
+      {
+        $user_id = Auth::id();
+      }
+      else
+      {
+        $user_id = $request->user_id;
+      }
+
       $list_id = $request->list_id;
       $sex = $request->sex;
       $marriage_status = $request->marriage_status;
@@ -384,7 +398,6 @@ class CampaignController extends Controller
       {
         $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
         $customer = $customer->whereRaw($target_age);
-        // $customer = $customer->orWhere(DB::raw($target_age));
       }
       
       $customer = $customer->get();
@@ -432,10 +445,6 @@ class CampaignController extends Controller
         {
           unset($req['event_time']);
           $req['event_time'] = $get_reminder_date->event_time;
-        }
-        elseif($request->birthday !== null)
-        {
-           $req['event_time'] = Carbon::now()->toDateString();
         }
         else
         {
@@ -530,12 +539,16 @@ class CampaignController extends Controller
         $rules = array(
           'campaign_name'=>['required','max:50'],
           'list_id'=>['required', new CheckValidListID],
-          'date_send'=>['required',new CheckBroadcastDate],
           'hour'=>['required','date_format:H:i',new EligibleTime($request->date_send,0)],
           'message'=>['required','max:65000'],
           'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
         );
 
+        if($request->birthday == null)
+        {
+           $rules['date_send'] = ['required',new CheckBroadcastDate];
+        }
+       
         $validator = Validator::make($request->all(),$rules);
         if($validator->fails())
         {
@@ -557,6 +570,7 @@ class CampaignController extends Controller
 
         $req = $request->all();
         $req['save_campaign'] = true;
+
         $request = new Request($req);
         $get_filtered_customer = $this->calculate_user_list($request);
 

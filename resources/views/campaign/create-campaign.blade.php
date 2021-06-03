@@ -168,6 +168,8 @@
 				</div>
       </div>
 
+      <!-- TARGETTING OPEN -->
+      @if(getMembership(Auth()->user()->membership) > 3) 
       <div class="form-group row">
         <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Targetting :</label>
         <div class="col-sm-8 col-md-8 col-lg-9">
@@ -221,7 +223,7 @@
                   <option value="all">All</option>
                   @if($utils_city->count() > 0)
                     @foreach($utils_city as $row)
-                      <option value="{{$row->category}}">{{$row->category}}</option>
+                      <option class="text-capitalize" value="{{$row->category}}">{{$row->category}}</option>
                     @endforeach
                   @endif 
               </select>
@@ -229,7 +231,7 @@
 
             <div class="form-inline mt-2">
               <label class="mr-2">Religion :</b></label>
-               <select name="religion" class="form-control">
+               <select name="religion" class="form-control text-capitalize">
                   <option value="{{ $religion[0] }}" selected>{{ $religion[0] }}</option>
                   <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
                   <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
@@ -269,8 +271,9 @@
             </div> 
             <!--  -->
         </div>
-
       </div>
+       <!-- END TARGETTING -->
+        @endif
 
       <div class="form-group row">
         <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Message :

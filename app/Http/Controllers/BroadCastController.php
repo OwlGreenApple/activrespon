@@ -18,6 +18,7 @@ use App\User;
 use App\Sender;
 use App\ReminderCustomers;
 use App\Campaign;
+use App\Message;
 use Session;
 use DB,Storage;
 use App\Http\Controllers\ListController;
@@ -66,6 +67,11 @@ class BroadCastController extends Controller
         else
         {
           $birthday = $request->birthday;
+        }
+
+        if($birthday == 1)
+        {
+          $date_send = Carbon::now()->toDateString();
         }
 
 				$folder="";
@@ -218,7 +224,6 @@ class BroadCastController extends Controller
                 $broadcastcustomer->customer_id = $col->id;
                 $broadcastcustomer->save();
               }
-
               return 1;
             }
         }
