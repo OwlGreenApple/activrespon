@@ -145,6 +145,16 @@
                     </div>
 
                     <div class="form-group row">
+                      <label class="col-sm-4 col-form-label"></label>
+                      <div id="duplicate_bd" class="col-sm-8 relativity">
+                          <div class="form-inline mt-2 ml-1 hbd">
+                            <input type="checkbox" class="form-check-input" name="birthday" value="1" />
+                            <label class="mr-2">Birthday</label>
+                          </div> 
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
                       <label class="col-sm-4 col-form-label">Time to send Message :</label>
                       <div class="col-sm-8 relativity">
                         <input name="hour" id="hour" type="text" class="timepicker form-control" value="00:00" />
@@ -241,11 +251,6 @@
                                   </select>
                               </div> 
 
-                              <div class="form-inline mt-2">
-                                <label class="mr-2">Birthday :</label>
-                                <input type="checkbox" class="form-check-input" name="birthday" value="1" />
-                              </div> 
-
                               <div class="form-inline mt-2 hobby-cover">
                                  <label class="mr-2">Hobby :</label>
                                  <span class="form-inline" id="hobby"></span>
@@ -323,6 +328,12 @@
                         <span class="icon-calendar"></span>
                       </div>
                       <span class="error event_time"></span>
+                    </div>
+
+                    <div class="form-group"> 
+                      <div id="edit_bd" class="relativity">
+                        <!-- birthday input move here if user open edit -->
+                      </div>
                     </div>
 
                     <div class="form-group">
@@ -440,8 +451,9 @@
       pictureClass();
       pagination();
       display_targeting();
-      calculate_duplicate() ;
+      calculate_duplicate();
       calculate_edit();
+      display_birthday();
   });
 
   function clearToolTip()
@@ -628,6 +640,7 @@
         broadcast_ajax_targetting(id);
         setTimeout(function(){
           $(".target_append").appendTo("#targeting-box");
+          $(".hbd").appendTo("#edit_bd");
         },200);
         $("#modal_edit_broadcast").modal();
     });
@@ -726,6 +739,7 @@
         $("#duplicate_broadcast").attr('data',id);
         setTimeout(function(){
           $(".target_append").appendTo("#target_box_duplicate");
+          $(".hbd").appendTo("#duplicate_bd");
         },200);
         $("#modal_duplicate_broadcast").modal();
     });
@@ -839,13 +853,18 @@
       // TARGETTING LOGIC
       $("select[name='sex'] option[value="+result.sex+"]").prop('selected',true);
       $("select[name='marriage_status'] option[value="+result.marriage+"]").prop('selected',true);
+
       if(result.birthday == 1)
       {
         $("input[name='birthday']").prop('checked',true);
+        $("input[name='date_send']").val('--- Disabled ---');
+        $("input[name='date_send']").prop('disabled',true);
       }
       else
       {
         $("input[name='birthday']").prop('checked',false);
+        $("input[name='date_send']").prop('disabled',false);
+        $("input[name='date_send']").val(result.day_send);
       }
 
       if(result.is_targetting == 1)
@@ -928,6 +947,23 @@
         box += '</div>';
         $(".box-schedule").html(box);
       } */
+  }
+
+  function display_birthday()
+  {
+    $("input[name='birthday']").click(function(){
+      var checked = $(this).prop("checked");
+      if(checked == true)
+      {
+        $("input[name='date_send']").prop('disabled',true);
+        $("input[name='date_send']").val('--- Disabled ---');
+      }
+      else
+      {
+        $("input[name='date_send']").prop('disabled',false);
+        $("input[name='date_send']").val('');
+      }
+    });
   }
 
   function display_targeting()

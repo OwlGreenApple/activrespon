@@ -10,8 +10,19 @@
     @if($row->type == 2) 
       @php
         $broad_cast = $broadcast->where('campaign_id',$row->id)->first();
-        $sending = Date('H:i',strtotime($broad_cast->hour_time));
-        $day_send = Date('M d, Y',strtotime($broad_cast->day_send));
+        
+
+        if($broad_cast->day_send == null)
+        {
+          $day_send = 'Waiting';
+          $sending = null;
+        }
+        else
+        {
+          $day_send = Date('M d, Y',strtotime($broad_cast->day_send));
+          $sending = Date('H:i',strtotime($broad_cast->hour_time));
+        }
+        
         $broadcast_message = $broad_cast->message;        
 
         $list_id = $row->list_id;

@@ -21,7 +21,6 @@
                   <label><b>Hobby*</b></label>
                     <div class="col-lg-6 row">
                       <input name="category" class="form-control" autocomplete="off" />
-                      <small>Please use lowercase letter ex : sport <b>NOT</b> Sport</small>
                       <span class="error category"></span>
                     </div>
                 </div>

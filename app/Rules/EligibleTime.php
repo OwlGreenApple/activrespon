@@ -72,6 +72,6 @@ class EligibleTime implements Rule
      */
     public function message()
     {
-        return 'Time cannot be less than today\'s current time.';
+        return 'Time cannot less than today\'s current time.';
     }
 }

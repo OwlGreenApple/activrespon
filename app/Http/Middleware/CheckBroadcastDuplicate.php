@@ -38,11 +38,15 @@ class CheckBroadcastDuplicate
             $rules = array(
               'broadcast_id'=>['required',new CheckExistIdOnDB('broad_casts',$cond)],
               'campaign_name'=>['required','max:50'],
-              'date_send'=>['required',new CheckBroadcastDate],
-              'hour'=>['required',new EligibleTime($date_send,0)],
               'edit_message'=>['required','max:65000'],
               'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
             );
+
+            if($request->birthday == null)
+            {
+               $rules['date_send'] = ['required',new CheckBroadcastDate];
+               $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
+            }
 
             $validator = Validator::make($request->all(),$rules);
             if($validator->fails())
@@ -68,8 +72,6 @@ class CheckBroadcastDuplicate
         $message = $request->message;
         $rules = array(
           'campaign_name'=>['required','max:50'],
-          'date_send'=>['required',new CheckBroadcastDate],
-          'hour'=>['required'],
           'message'=>['max:65000'],
           'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
         );
@@ -78,6 +80,12 @@ class CheckBroadcastDuplicate
         {
            $rules['list_id'] = ['required', new CheckValidListID];
         } 
+
+        if($request->birthday == null)
+        {
+           $rules['date_send'] = ['required',new CheckBroadcastDate];
+           $rules['hour'] =['required'];
+        }
 
       /*  if(isset($_POST['group_name']))
         {

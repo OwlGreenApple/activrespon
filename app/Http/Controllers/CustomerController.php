@@ -177,7 +177,7 @@ class CustomerController extends Controller
     }
 
      // display religion
-    public static $religion =  ['all','islam','christianity','catholic','budhist','hindu'];
+    public static $religion =  ['all','budhist','catholic','christianity','hindu','islam'];
 
     public function saveSubscriber(Request $request)
     {

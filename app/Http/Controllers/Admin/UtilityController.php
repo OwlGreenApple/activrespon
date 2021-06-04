@@ -109,7 +109,7 @@ class UtilityController extends Controller
     public function edit_category(Request $request)
     {
       $id = $request->id;
-      $category = $request->category;
+      $category = strip_tags($request->category);
       $utils = Utility::where([['id',$id],['user_id',Auth::id()]])->first();
 
       if(is_null($utils))
@@ -181,13 +181,13 @@ class UtilityController extends Controller
 
     public function add_category_admin(Request $request)
     {
-      $category = $request->category;
+      $category = strip_tags($request->category);
       return $this->add_category($category,1);
     }
 
     public function add_category_user(Request $request)
     {
-      $category = $request->category;
+      $category = strip_tags($request->category);
       $id_category = $request->id_category;
 
       $rules = [

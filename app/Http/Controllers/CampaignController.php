@@ -387,11 +387,11 @@ class CampaignController extends Controller
       }
 
       // FILTER TO PREVENT EMPTY DATE SEND
-      if($date_send == null)
-      {
-        $res['status'] = 0;
-        return response()->json($res);
-      }
+      // if($date_send == null)
+      // {
+      //   $res['status'] = 0;
+      //   return response()->json($res);
+      // }
 
        // TARGETTING BY AGE
       if($age !== "all")
@@ -536,10 +536,25 @@ class CampaignController extends Controller
       else
       {
         /* Validator Broadcast */
+
+        // bc targeting
+        $req = $request->all();
+        $req['save_campaign'] = true;
+        $rquest = new Request($req);
+        $get_filtered_customer = $this->calculate_user_list($rquest);
+
+        if($get_filtered_customer->count() > 0)
+        {
+          $req['customers'] = $get_filtered_customer;
+        }
+        else
+        {
+          $req['customers'] = false;
+        }
+
         $rules = array(
           'campaign_name'=>['required','max:50'],
           'list_id'=>['required', new CheckValidListID],
-          'hour'=>['required','date_format:H:i',new EligibleTime($request->date_send,0)],
           'message'=>['required','max:65000'],
           'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
         );
@@ -547,6 +562,7 @@ class CampaignController extends Controller
         if($request->birthday == null)
         {
            $rules['date_send'] = ['required',new CheckBroadcastDate];
+           $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
         }
        
         $validator = Validator::make($request->all(),$rules);
@@ -568,24 +584,9 @@ class CampaignController extends Controller
             return response()->json($data_error);
         }
 
-        $req = $request->all();
-        $req['save_campaign'] = true;
-
-        $request = new Request($req);
-        $get_filtered_customer = $this->calculate_user_list($request);
-
-        if($get_filtered_customer->count() > 0)
-        {
-          $req['customers'] = $get_filtered_customer;
-        }
-        else
-        {
-          $req['customers'] = false;
-        }
-
-        $request = new Request($req);
+        $quest = new Request($req);
         $broadcast = new BroadCastController;
-        $saveBroadcast = $broadcast->saveBroadCast($request);
+        $saveBroadcast = $broadcast->saveBroadCast($quest);
 				
         if($saveBroadcast == false)
         {

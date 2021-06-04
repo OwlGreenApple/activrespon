@@ -39,7 +39,6 @@ class BroadCastController extends Controller
         $date_send = $request->date_send;
 
         // targetting
-        $is_targetting = $request->is_targetting;
         $sex = $request->sex;
         $marriage_status = $request->marriage_status;
         $age_start = $request->age_start;
@@ -49,6 +48,7 @@ class BroadCastController extends Controller
         $hobby = $request->hobby;
         $occupation = $request->occupation;
         $hobbies = $occupations = null;
+        $targeting_cs = $request->customers;
 
         if($request->hobby !== null)
         {
@@ -60,6 +60,16 @@ class BroadCastController extends Controller
           $occupations = $this->data_spree($request->occupation);
         }
 
+        // to prevent error due is_targeting can't be null due tinyint
+        if($request->is_targetting == null)
+        {
+          $is_targetting = 0;
+        }
+        else
+        {
+          $is_targetting = $request->is_targetting;
+        }
+
         if($request->birthday == null)
         {
           $birthday = 0;
@@ -67,11 +77,16 @@ class BroadCastController extends Controller
         else
         {
           $birthday = $request->birthday;
-        }
+        } 
 
-        if($birthday == 1)
+        if($birthday == 1 && $targeting_cs !== false)
         {
           $date_send = Carbon::now()->toDateString();
+        }
+
+        if(($birthday == 1 && $targeting_cs == false) || ($birthday == 1 && $is_targetting == 0))
+        {
+          $date_send = null;
         }
 
 				$folder="";
@@ -203,32 +218,42 @@ class BroadCastController extends Controller
         /* if successful inserted data broadcast into database then this run */
         if($request->is_targetting == null)
         {         
-            // retrieve customer id 
-            $customers = Customer::where([
+           $customers = Customer::where([
                 ['user_id','=',$user->id],
                 ['list_id','=',$list_id],
                 ['status','=',1],
-            ])->get();
+            ]);
+            // retrieve customer id 
+          if($request->birthday == null)
+          {
+            $customers = $customers->get();
+          }
+          else
+          {
+            $date_send = Carbon::now()->toDateString();
+            $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
+            $customers = $customers->whereRaw($statement)->get();
+          }
         } 
         else 
         {
             // customers according on targetting BC
-            $customers = $request->customers;
+            $customers = $targeting_cs;
+            // in case of birthday but nobody at that day
+            if($customers == false)
+            {
+              return 1;
+            }
+
             if($customers->count() > 0)
             {
-              foreach($customers as $col)
-              {
-                // CreateBroadcast::dispatch($col->id,$broadcast_id);
-                $broadcastcustomer = new BroadCastCustomers;
-                $broadcastcustomer->broadcast_id = $broadcast_id;
-                $broadcastcustomer->customer_id = $col->id;
-                $broadcastcustomer->save();
-              }
+              $this->set_loop_for_birthday_or_targeting($customers,$broadcast_id);
               return 1;
             }
         }
 
-        if($customers->count() > 0)
+        // NORMAL CASE AND NOT BIRTHDAY
+        if($customers->count() > 0 && $request->birthday == null)
         {
             $queueBroadcastCustomer = new QueueBroadcastCustomer; 
             $queueBroadcastCustomer->broadcast_id = $broadcast_id;
@@ -236,6 +261,22 @@ class BroadCastController extends Controller
             $queueBroadcastCustomer->user_id = $user->id;
             $queueBroadcastCustomer->save();
         }  
+
+        // CASE OF BIRTHDAY AND THAT DAY
+        if($customers->count() > 0 && $request->birthday !== null)
+        {
+          try
+          {
+            $ubc = BroadCast::find($broadcast_id);
+            $ubc->day_send = $date_send;
+            $ubc->save();
+          }
+          catch(QueryException $e)
+          {
+            return 'Sorry our server is too busy, please try again later';
+          }
+          $this->set_loop_for_birthday_or_targeting($customers,$broadcast_id);
+        }
 
         if($broadcast_schedule == 0) {
             return 'Broadcast created, but will not send anything because you do not have subscriber';
@@ -248,6 +289,25 @@ class BroadCastController extends Controller
         // } else {
             // return 'Error!!Your broadcast failed to create';
         // }
+    }
+
+    public function birthday_filter($customers,$date_send)
+    {
+       $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
+       $customers = $customers->whereRaw($statement)->get();
+       return $customers;
+    }
+
+    public function set_loop_for_birthday_or_targeting($customers,$broadcast_id)
+    {
+      foreach($customers as $col)
+      {
+        // CreateBroadcast::dispatch($col->id,$broadcast_id);
+        $broadcastcustomer = new BroadCastCustomers;
+        $broadcastcustomer->broadcast_id = $broadcast_id;
+        $broadcastcustomer->customer_id = $col->id;
+        $broadcastcustomer->save();
+      }
     }
 
     // extract data from array to string with semcolon ex : text;
@@ -329,7 +389,6 @@ class BroadCastController extends Controller
 				$folder = $filename = null;
 
          // targetting
-        $is_targetting = $request->is_targetting;
         $sex = $request->sex;
         $marriage_status = $request->marriage_status;
         $age_start = $request->age_start;
@@ -339,6 +398,12 @@ class BroadCastController extends Controller
         $hobby = $request->hobby;
         $occupation = $request->occupation;
         $hobbies = $occupations = null;
+
+        $req = $request->all();
+        $req['save_campaign'] = true;
+        $rquest = new Request($req);
+        $campaign = new CampaignController;
+        $targeting_cs = $campaign->calculate_user_list($rquest);
 
         if($request->hobby !== null)
         {
@@ -350,6 +415,15 @@ class BroadCastController extends Controller
           $occupations = $this->data_spree($request->occupation);
         }
 
+        if($request->is_targetting == null)
+        {
+          $is_targetting = 0;
+        }
+        else
+        {
+          $is_targetting = $request->is_targetting;
+        } 
+
         if($request->birthday == null)
         {
           $birthday = 0;
@@ -359,6 +433,15 @@ class BroadCastController extends Controller
           $birthday = $request->birthday;
         }
 
+        if($birthday == 1 && $targeting_cs !== false)
+        {
+          $date_send = Carbon::now()->toDateString();
+        }
+
+        if($birthday == 1 && $targeting_cs == false)
+        {
+          $date_send = null;
+        }
 				
 				/*if($request->hasFile('imageWA')) {
 					//save ke temp local dulu baru di kirim 
@@ -418,15 +501,13 @@ class BroadCastController extends Controller
 
         try
         {   
-            $req = $request->all();
-            $req['save_campaign'] = true;
-            $request = new Request($req);
-            $this->update_broadcast_customers($request,$broadcast_id);
+            $this->update_broadcast_customers($rquest,$broadcast_id);
             $broadcast->save();
             $campaign_id = $broadcast->campaign_id;
         }
         catch(QueryException $e)
         {
+            // dd($e->getMessage());
             $data['msg'] = 'Failed to update broadcast, our server is too busy';
             $data['success'] = 0;
             return response()->json($data);
@@ -760,11 +841,21 @@ class BroadCastController extends Controller
           //$broadcastcustomer = BroadCastCustomers::where([['broadcast_id',$broadcast_id]])->get();
            if($request->is_targetting == 0)
            {
-              $customer = Customer::where([
+              $customers = Customer::where([
                   ['user_id','=',$user_id],
                   ['list_id','=',$list_id],
                   ['status','=',1],
-              ])->get();
+              ]);
+
+              if($request->birthday == null)
+              {
+                $customers = $customers->get();
+              }
+              else
+              {
+                $date_send = Carbon::now()->toDateString();
+                $customers = $this->birthday_filter($customers,$date_send);
+              }
            }
            else
            {
@@ -773,7 +864,7 @@ class BroadCastController extends Controller
               $request = new Request($req);
 
               $calculate = new CampaignController;
-              $customer = $calculate->calculate_user_list($request);
+              $customers = $calculate->calculate_user_list($request);
            }
         }
         elseif($list_id == 0)
@@ -786,25 +877,31 @@ class BroadCastController extends Controller
         }
 
         //CUSTOMER ADDING IF TYPE : SCHEDULE BROADCAST
-        if($customer->count() > 0)
-        {
-            foreach($customer as $col){
+        $check_loop = 0;
+        $loop = [];
+        if($customers->count() > 0)
+        {    
+            $check_loop = $customers->count();
+            foreach($customers as $col)
+            {
                 $broadcastcustomers = new BroadCastCustomers;
                 $broadcastcustomers->broadcast_id = $broadcastnewID;
                 $broadcastcustomers->customer_id = $col->id;
                 $broadcastcustomers->save();
+                $loop[] = $col->id;
             }
         } else {
-            return response()->json(['message'=>'Broadcast created, but will not send anything because you do not have subscriber']);
+            return response()->json(['message'=>'Your campaign duplicated successfully']);
         }
 
-        if($broadcastcustomers->save())
+        // check whether total count and id same, false if different
+        if($check_loop == count($loop))
         {
             return response()->json(['message'=>'Your campaign duplicated successfully']);
         }
         else
         {
-            return response()->json(['message'=>'Sorry, cannot duplicate your campaign subscriber, please call administrator']);
+            return response()->json(['message'=>'Sorry, our server is too busy, please try again later.']);
         }
     }
 
