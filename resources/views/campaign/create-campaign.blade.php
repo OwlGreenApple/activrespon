@@ -106,7 +106,7 @@
           <span class="icon-calendar"></span>
           <span class="error date_send"></span>
         </div>
-        <div class="form-inline mt-2">
+        <div class="form-inline">
           <input type="checkbox" class="form-check-input" name="birthday" value="1" />
           <label class="ml-2">Birthday</label>
         </div> 
