@@ -230,7 +230,7 @@
                               @if($utils_city->count() > 0)
                               <div class="form-inline mt-2">
                                 <label class="mr-2">City :</label>
-                                <select name="city" class="form-control">
+                                <select name="city" class="form-control text-capitalize">
                                     <option value="all">All</option>
                                   @foreach($utils_city as $row)
                                     <option value="{{$row->category}}">{{$row->category}}</option>
@@ -241,7 +241,7 @@
 
                               <div class="form-inline mt-2">
                                 <label class="mr-2">Religion :</b></label>
-                                 <select name="religion" class="form-control">
+                                 <select name="religion" class="form-control text-capitalize">
                                     <option value="{{ $religion[0] }}">{{ $religion[0] }}</option>
                                     <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
                                     <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
@@ -766,13 +766,11 @@
         clearToolTip();
         if(result.is_targetting == 1)
         {
-          $(".istarget").show();
           $(".target").show();
           $(".calc").show();
         }
         else
         {
-          $(".istarget").hide();
           $(".target").hide();
           $(".calc").hide();
         }

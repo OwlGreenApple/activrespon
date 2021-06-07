@@ -80,19 +80,29 @@ class CheckBroadCastBirthday extends Command
             $arr['occupation'] = explode(";",$col->occupation);
           }
 
-          $cp = new Cp;
-          $request = new Request($arr);
-          $customers = $cp->calculate_user_list($request);
+          // if targeting set enable
+          if($col->is_targetting == 1)
+          {
+            $cp = new Cp;
+            $request = new Request($arr);
+            $customers = $cp->calculate_user_list($request);
+          }
+          else
+          {
+            $customers = Customer::where('list_id',$list_id)->whereRaw("DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$today."','%m-%d')")->get();
+          }
 
           if($customers->count() > 0)
           {
             // update brodacast day send according on birthday date
+
             $bbc = BroadCast::find($bc_id);
             $bbc->day_send = $today;
             $bbc->save();
 
             foreach($customers as $row)
             {
+              // print_r($row->id."\n");
               $broadcastcustomer = new BroadCastCustomers;
               $broadcastcustomer->broadcast_id = $bc_id;
               $broadcastcustomer->customer_id = $row->id;
