@@ -710,6 +710,7 @@ class ListController extends Controller
         $is_validate_city = $request->validate_city;
         $is_validate_job = $request->validate_job;
         $is_validate_hobby = $request->validate_hobby;
+        $is_validate_religion = $request->religion;
 
         // $lists = UserList::where([['id',$id],['user_id','=',$userid]])->update([
         $lists = UserList::find($id);
@@ -727,6 +728,7 @@ class ListController extends Controller
         $lists->is_validate_city = $is_validate_city;
         $lists->is_validate_job = $is_validate_job;
         $lists->is_validate_hobby = $is_validate_hobby;
+        $lists->is_validate_religion = $is_validate_religion;
 
         try
         {
@@ -899,7 +901,8 @@ class ListController extends Controller
             'is_validate_dob'=>$list->is_validate_dob,
             'is_validate_city'=>$list->is_validate_city,
             'is_validate_job'=>$list->is_validate_job,
-            'is_validate_hobby'=>$list->is_validate_hobby
+            'is_validate_hobby'=>$list->is_validate_hobby,
+            'is_validate_religion'=>$list->is_validate_religion
         );
 
         $url = env('APP_URL').$list->name; 

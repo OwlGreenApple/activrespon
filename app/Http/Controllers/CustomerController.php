@@ -20,12 +20,16 @@ use App\Server;
 use App\Countries;
 use App\Message;
 use App\Utility;
+use App\Province;
+use App\Kabupaten;
 use App\Console\Commands\SendWA as SendMessage;
 use App\Helpers\ApiHelper;
 use App\Rules\CheckWANumbers;
 use App\Http\Controllers\ApiController as API;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ApiWPController;
+use Maatwebsite\Excel\Facades\Excel;
+use Storage;
 
 class CustomerController extends Controller
 {
@@ -92,7 +96,8 @@ class CustomerController extends Controller
         $status = $user->status;
 
         // UTILITIES
-        $utils_city = Utility::where('id_category',1)->get(); //kota
+        // $utils_city = Utility::where('id_category',1)->get(); //kota
+        $utils_province = ''; //province
         $utils_hobbies = Utility::where([['user_id',$list->user_id],['id_category',2]])->get(); //hobby
         $utils_occupation = Utility::where([['user_id',$list->user_id],['id_category',3]])->get(); //pekerjaan
 
@@ -128,7 +133,7 @@ class CustomerController extends Controller
           'btn_message'=>$list->button_subscriber,
           'link_add_customer'=>url($link_list),
           'status'=>$status,
-          'utils_city'=>$utils_city,
+          'utils_province'=>$utils_province,
           'utils_hobby'=>$utils_hobby,
           'utils_occupation'=>$utils_occupation,
           'religion'=>self::$religion,
@@ -177,7 +182,42 @@ class CustomerController extends Controller
     }
 
      // display religion
-    public static $religion =  ['all','budhist','catholic','christianity','hindu','islam'];
+    public static $religion =  ['all','islam','christianity','catholic','budhist','hindu'];
+
+    // GET PROVINCE
+    public function get_province(Request $request)
+    {
+      $val = array();
+      $name = $request->name;
+      if($name == null)
+      {
+        return response()->json($val);
+      }
+
+      $province = Province::where('nama','LIKE','%'.$name.'%')->get();
+
+      if($province->count() > 0)
+      {
+        foreach($province as $col)
+        {
+          $val[$col->id] = $col->nama;
+        }
+      }
+
+      return response()->json($val);
+    }
+
+    public function get_city()
+    {
+      $data = [
+        [11=>'bbb'],
+        [11=>'cccc'],
+        [12=>'aaa'],
+      ];
+
+      dd(array_column($data,11));
+      
+    }
 
     public function saveSubscriber(Request $request)
     {

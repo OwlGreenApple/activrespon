@@ -89,25 +89,31 @@
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" name="validate_dob" @if($data[
                   "is_validate_dob"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Validation DOB</h6>
+                  <h6 class="form-check-label">Birthday</h6>
                 </div> 
 
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" name="validate_city" @if($data[
                   "is_validate_city"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Validation City</h6>
+                  <h6 class="form-check-label">City</h6>
                 </div>
 
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" name="validate_job" @if($data[
                   "is_validate_job"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Validation Occupation</h6>
+                  <h6 class="form-check-label">Occupation</h6>
                 </div>
 
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" name="validate_hobby" @if($data[
                   "is_validate_hobby"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Validation Hobby</h6>
+                  <h6 class="form-check-label">Hobby</h6>
+                </div>  
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="validate_religion" @if($data[
+                  "is_validate_religion"] == 1) checked value="1" @else value="0" @endif/>
+                  <h6 class="form-check-label">Religion</h6>
                 </div>
               </div> 
 
@@ -990,7 +996,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function getChecked()
   {
-    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby']").change(function(){
+    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby'],input[name='validate_religion']").change(function(){
       var checked = $(this).prop('checked');
       if(checked == true)
       {
@@ -1758,6 +1764,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 validate_city : $("input[name='validate_city']").val(),
                 validate_job : $("input[name='validate_job']").val(),
                 validate_hobby : $("input[name='validate_hobby']").val(),
+                religion : $("input[name='validate_religion']").val(),
              };
 
             $.ajaxSetup({

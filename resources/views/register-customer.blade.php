@@ -18,6 +18,9 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="{{ asset('/assets/css/nunito.css') }}" rel="stylesheet" />
 
+     <!-- Font Awesome 5 -->
+    <link href="{{ asset('/assets/font-awesome-5/all.css') }}" rel="stylesheet">
+
     <!-- Styles -->
     <link href="{{ asset('/assets/css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/main.css') }}" rel="stylesheet" />
@@ -26,6 +29,12 @@
      <!-- Intl Dialing Code -->
     <link href="{{ asset('/assets/intl-tel-input/css/intlTelInput.min.css') }}" rel="stylesheet" />
     <script type="text/javascript" src="{{ asset('/assets/intl-tel-input/js/intlTelInput.js') }}"></script> 
+
+    <!-- jquery datetime picker -->
+    <script src="{{ asset('/assets/js/datepicker.js') }}"></script>
+
+    <!-- Datetimepicker -->
+    <link href="{{ asset('/assets/css/datepicker.css') }}" rel="stylesheet">
 
     <!-- Icomoon -->
     <link href="{{ asset('/assets/icomoon/icomoon.css') }}" rel="stylesheet" />
@@ -61,7 +70,7 @@
       </div>
   </nav>-->
 
-  <main class="p-5">
+  <main class="p-3">
 
     @if($status > 0)
     <div class="container">
@@ -109,17 +118,21 @@
                       <span class="error email"></span>
                     </div> 
 
+                    @if($lists->is_validate_dob == 1)
                     <div class="form-group">
-                      <label>Birthday @if($lists->is_validate_dob == 1)*@endif</label>
-                      <div class="form-inline">
-                          <select name="day" class="form-control mr-2" id="dobday"></select>
+                      <label>Birthday*</label>
+                     <!--  <div class="form-inline"> -->
+                        <input id="datetimepicker" type="text" name="birthday" class="form-control" />
+                         <!--  <select name="day" class="form-control mr-2" id="dobday"></select>
                           <select name="month" class="form-control mr-2" id="dobmonth"></select>
-                          <select name="year" class="form-control" id="dobyear"></select>
-                      </div>
-                      <span class="error day"></span>
+                          <select name="year" class="form-control" id="dobyear"></select> -->
+                      <!-- </div> -->
+                      <span class="error birthday"></span>
+                     <!--  <span class="error day"></span>
                       <span class="error month"></span>
-                      <span class="error year"></span>
+                      <span class="error year"></span> -->
                     </div> 
+                    @endif
 
                     <div class="form-group">
                       <label>Sex*</label>
@@ -130,18 +143,22 @@
                       <span class="error sex"></span>
                     </div> 
 
-                    @if($utils_city->count() > 0)
+                   
                     <div class="form-group">
-                      <label>City @if($lists->is_validate_city == 1)*@endif</label>
-                      <select name="city" class="form-control">
-                        @foreach($utils_city as $row)
-                          <option value="{{$row->category}}">{{$row->category}}</option>
-                        @endforeach
-                      </select>
+                      <label>Province*</label>
+                      <input name="province" class="form-control" />
+                      <div class="live-search-wrapper">
+                        <div id="display_province" class="live-search"><!-- display ajax here --></div>
+                      </div>
+                      <span class="error province"></span>
+                    </div>
+
+                    <div class="form-group">
+                      <label>City*</label>
+                      <input name="city"class="form-control" />
                       <span class="error city"></span>
                     </div> 
-                    @endif
-
+                   
                     <div class="form-group">
                       <label>Status*</label>
                       <select name="marriage_status" class="form-control">
@@ -273,6 +290,7 @@
  </div>
 
 <script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -295,8 +313,62 @@
 			<?php if(session('message')) { ?>
 			alert("<?php echo session('message'); ?>");
 			<?php }?>
-      dob_picker();
+      date_birthday();
+      get_province();
+      fill_province();
+      // dob_picker();
   });
+
+  function get_province()
+  {
+    $("input[name='province']").on("keypress keyup",delay(function(){
+      var val = $(this).val();
+      $(".live-search-wrapper").show();
+      display_province(val);
+    },100));
+  }
+
+  function display_province(name)
+  {
+    var box = '';
+    $.ajax({
+      type : 'GET',
+      url : '{{ url("provinces") }}',
+      data : {'name' : name},
+      dataType : 'json',
+      success : function(result)
+      {
+        $.each(result, function( index, value ) {
+          box += '<div id="'+index+'" class="prov_opt dropdown-item">'+value+'</div>';
+        });
+        $("#display_province").html(box);
+      },
+      error : function(xhr)
+      {
+        console.log(xhr.responseText);
+      }
+    });
+  }
+
+  function fill_province()
+  {
+    $("body").on("click",".prov_opt",function(){
+       var opt = $(this).text();
+      $("input[name='province']").val(opt);
+      $(".live-search-wrapper").hide();
+    });
+  }
+
+  function date_birthday()
+  {
+     $('#datetimepicker').datepicker({
+        dateFormat : 'yy-mm-dd',
+        yearRange: "-90:-12",
+        changeMonth: true,
+        changeYear: true
+        // debug : true
+      });
+  }
 
   function fixWidthPhoneInput()
   {
