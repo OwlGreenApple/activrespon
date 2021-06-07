@@ -368,6 +368,7 @@ use min 5 spintax variations is recommended	<br>
   function targeting_start()
   {
     var checked = $("input[name='is_targetting']").prop("checked");
+    console.log(checked);
     targetting(checked);
   }
 
@@ -384,10 +385,12 @@ use min 5 spintax variations is recommended	<br>
     if(checked == true)
     {
       $(".targeting").show();
+      $(".calc").show();
     }
     else
     {
       $(".targeting").hide();
+      $(".calc").hide();
     }
   }
 

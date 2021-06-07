@@ -684,6 +684,7 @@ class BroadCastController extends Controller
 
     public function duplicateBroadcast(Request $request)
     {
+        // dd($request->all());
         $user_id = Auth::id();
         $list_id = $request->list_id;
         $campaign_name = $request->campaign_name;
@@ -696,14 +697,31 @@ class BroadCastController extends Controller
         $folder = $filename = null;
         $prevbroadcast = BroadCast::find($broadcast_id);
 
-        $sex = $request->sex;
-        $marriage_status = $request->marriage_status;
-        $city = $request->city;
-        $religion = $request->religion;
-        $age_start = $request->age_start;
-        $age_end = $request->age_end;
-        $hobbies = $request->hobby;
-        $job = $request->occupation;
+        if($request->is_targetting == null)
+        {
+          $is_targetting = 0;
+        }
+        else
+        {
+          $is_targetting = $request->is_targetting;
+        }
+
+        if($is_targetting == 0)
+        {
+           $sex = $marriage_status = $city = $religion = $age_start = $age_end = 'all';
+           $hobbies = $job = null;
+        }
+        else
+        { 
+           $sex = $request->sex;
+           $marriage_status = $request->marriage_status;
+           $city = $request->city;
+           $religion = $request->religion;
+           $age_start = $request->age_start;
+           $age_end = $request->age_end;
+           $hobbies = $request->hobby;
+           $job = $request->occupation;
+        }
 
         if($hobbies !== null)
         {
@@ -772,15 +790,6 @@ class BroadCastController extends Controller
           $broadcast->message = $broadcast_message;
           $broadcast->image = $image_path;
 
-          if($request->is_targetting == null)
-          {
-            $is_targetting = 0;
-          }
-          else
-          {
-            $is_targetting = $request->is_targetting;
-          }
-
           if($request->birthday == null)
           {
             $birthday = 0;
@@ -809,7 +818,7 @@ class BroadCastController extends Controller
         }
         catch(QueryException $e)
         {
-          // $e->getMessage();
+          // dd($e->getMessage());
           return response()->json(['message'=>'Sorry our server is too busy, please try again.']);
         }
 

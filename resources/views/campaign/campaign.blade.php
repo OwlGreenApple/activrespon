@@ -692,6 +692,7 @@
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
         clearToolTip();
+        $(".alert").show();
 
         if(result.success == 0)
         { 
@@ -719,6 +720,7 @@
           }
           loadPagination(global_url,null,null);
         }
+        $(".alert").delay(2000).hide(3000);
       },
       error : function(xhr,attr,throwable){
         $('#loader').hide();
@@ -973,11 +975,12 @@
       if(checked == true)
       {
         $(".target").show();
+        $(".calc").show();
       }
       else
       {
         $(".target").hide();
-      }
+        $(".calc").hide();      }
     });
   }
 
