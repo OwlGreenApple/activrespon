@@ -156,6 +156,9 @@
                     <div class="form-group">
                       <label>City*</label>
                       <input name="city"class="form-control" />
+                        <div class="live-search-wrapper-city">
+                        <div id="display_city" class="live-search"><!-- display ajax here --></div>
+                      </div>
                       <span class="error city"></span>
                     </div> 
                    
@@ -289,6 +292,10 @@
   </main>
  </div>
 
+<script type="text/javascript">
+  var url_province = '{{ url("provinces") }}';
+  var url_city = '{{ url("cities") }}';
+</script>
 <script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
 <script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 
@@ -314,60 +321,24 @@
 			alert("<?php echo session('message'); ?>");
 			<?php }?>
       date_birthday();
-      get_province();
-      fill_province();
       // dob_picker();
   });
 
-  function get_province()
-  {
-    $("input[name='province']").on("keypress keyup",delay(function(){
-      var val = $(this).val();
-      $(".live-search-wrapper").show();
-      display_province(val);
-    },100));
-  }
-
-  function display_province(name)
-  {
-    var box = '';
-    $.ajax({
-      type : 'GET',
-      url : '{{ url("provinces") }}',
-      data : {'name' : name},
-      dataType : 'json',
-      success : function(result)
-      {
-        $.each(result, function( index, value ) {
-          box += '<div id="'+index+'" class="prov_opt dropdown-item">'+value+'</div>';
-        });
-        $("#display_province").html(box);
-      },
-      error : function(xhr)
-      {
-        console.log(xhr.responseText);
-      }
-    });
-  }
-
-  function fill_province()
-  {
-    $("body").on("click",".prov_opt",function(){
-       var opt = $(this).text();
-      $("input[name='province']").val(opt);
-      $(".live-search-wrapper").hide();
-    });
-  }
-
   function date_birthday()
   {
+      var myDate = new Date(1941,1,1) 
      $('#datetimepicker').datepicker({
         dateFormat : 'yy-mm-dd',
-        yearRange: "-90:-12",
+        yearRange: "-80:-12",
         changeMonth: true,
-        changeYear: true
-        // debug : true
+        changeYear: true,
+        // debug : true,
+        show : function(date)
+        {
+          alert(date);
+        }
       });
+     $('#datetimepicker').datepicker('setDate',myDate);
   }
 
   function fixWidthPhoneInput()

@@ -207,16 +207,23 @@ class CustomerController extends Controller
       return response()->json($val);
     }
 
-    public function get_city()
+    // GET PROVINCE ACCORDING ON PROVINCE
+    public function get_city(Request $request)
     {
-      $data = [
-        [11=>'bbb'],
-        [11=>'cccc'],
-        [12=>'aaa'],
-      ];
+      // dd($request->all());
+      $data = array();
+      $prov_id = $request->provinsi_id;
+      $nama = $request->name;
+      $kab = Kabupaten::where([['provinsi_id',$prov_id],['nama','LIKE','%'.$nama.'%']])->get();
 
-      dd(array_column($data,11));
-      
+      if($kab->count() > 0)
+      {
+        foreach($kab as $row):
+          $data[$row->provinsi_id] = $row->nama;
+        endforeach;
+      }
+
+      return response()->json($data);
     }
 
     public function saveSubscriber(Request $request)

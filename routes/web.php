@@ -413,6 +413,7 @@ Route::get('link/unsubscribe/{list_name}/{customer_id}','CustomerController@link
 
 /* SUBSCRIBE */
 Route::get('provinces', 'CustomerController@get_province');
+Route::get('cities', 'CustomerController@get_city');
 Route::get('countries', 'CustomerController@Country');
 Route::get('/{list_name}', 'CustomerController@subscriber');
 //Route::get('/ev/{list_name}','CustomerController@event'); //register-customer.blade
