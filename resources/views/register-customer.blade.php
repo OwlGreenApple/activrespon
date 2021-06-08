@@ -122,7 +122,7 @@
                     <div class="form-group">
                       <label>Birthday*</label>
                      <!--  <div class="form-inline"> -->
-                        <input id="datetimepicker" type="text" name="birthday" class="form-control" />
+                        <input id="datetimepicker" type="text" name="birthday" class="form-control" readonly="readonly" />
                          <!--  <select name="day" class="form-control mr-2" id="dobday"></select>
                           <select name="month" class="form-control mr-2" id="dobmonth"></select>
                           <select name="year" class="form-control" id="dobyear"></select> -->
@@ -134,6 +134,7 @@
                     </div> 
                     @endif
 
+                    @if($lists->is_validate_gender == 1)
                     <div class="form-group">
                       <label>Sex*</label>
                       <select name="sex" class="form-control">
@@ -142,8 +143,9 @@
                       </select>
                       <span class="error sex"></span>
                     </div> 
-
+                    @endif
                    
+                    @if($lists->is_validate_city == 1)
                     <div class="form-group">
                       <label>Province*</label>
                       <input name="province" class="form-control" />
@@ -161,7 +163,9 @@
                       </div>
                       <span class="error city"></span>
                     </div> 
+                    @endif
                    
+                    @if($lists->is_validate_marriage == 1)
                     <div class="form-group">
                       <label>Status*</label>
                       <select name="marriage_status" class="form-control">
@@ -170,6 +174,7 @@
                       </select>
                       <span class="error marriage_status"></span>
                     </div> 
+                    @endif
 
                     @if($utils_hobby->count() > 0)
                     <div class="form-group">
@@ -200,6 +205,7 @@
                     </div> 
                     @endif
 
+                    @if($lists->is_validate_relgion == 1)
                     <div class="form-group">
                       <label>Religion*</label>
                       <select name="religion" class="form-control text-capitalize">
@@ -211,7 +217,7 @@
                       </select>
                       <span class="error religion"></span>
                     </div> 
-
+                    @endif
 
                     @if(count($additional) > 0)
                       @foreach($additional as $is_optional=>$row)
