@@ -9,7 +9,7 @@ class Customer extends Model
 {
 
 	protected $table = 'customers';
-	protected $fillable = ['user_id','list_id','name','last_name','email','telegram_number','code_country','birthday','gender','city','marriage','hobby','occupation','religion','additional','status'];
+	protected $fillable = ['user_id','list_id','name','last_name','email','telegram_number','code_country','birthday','gender','province','city','marriage','hobby','occupation','religion','additional','status'];
     /*
 		status : 
 		0 = deleted

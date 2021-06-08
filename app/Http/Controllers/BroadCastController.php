@@ -43,6 +43,7 @@ class BroadCastController extends Controller
         $marriage_status = $request->marriage_status;
         $age_start = $request->age_start;
         $age_end = $request->age_end;
+        $province = $request->province;
         $city = $request->city;
         $religion = $request->religion;
         $hobby = $request->hobby;
@@ -199,6 +200,7 @@ class BroadCastController extends Controller
           $broadcast->is_targetting = $is_targetting;
           $broadcast->birthday = $birthday;
           $broadcast->gender = $sex;
+          $broadcast->province = $province;
           $broadcast->city = $city;
           $broadcast->marriage = $marriage_status;
           $broadcast->religion = $religion;
@@ -660,6 +662,7 @@ class BroadCastController extends Controller
           'hour_time' => $broadcast->hour_time,
           'message' => $broadcast->message,
           'is_targetting'=>$broadcast->is_targetting,
+          'province' => $broadcast->province, 
           'city' => $broadcast->city, 
           'sex' => $broadcast->gender, 
           'marriage' => $broadcast->marriage,

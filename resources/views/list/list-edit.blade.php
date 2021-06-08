@@ -85,38 +85,6 @@
                   <div class="error label_email col-lg-12 text-left"></div>
               </div>
 
-              <div class="form-group">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="validate_dob" @if($data[
-                  "is_validate_dob"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Birthday</h6>
-                </div> 
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="validate_city" @if($data[
-                  "is_validate_city"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">City</h6>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="validate_job" @if($data[
-                  "is_validate_job"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Occupation</h6>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="validate_hobby" @if($data[
-                  "is_validate_hobby"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Hobby</h6>
-                </div>  
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="validate_religion" @if($data[
-                  "is_validate_religion"] == 1) checked value="1" @else value="0" @endif/>
-                  <h6 class="form-check-label">Religion</h6>
-                </div>
-              </div> 
-
             </div><!-- end form contact -->
           </div><!-- end wrapper -->
           
@@ -158,6 +126,53 @@
 
           <!-- middle wrapper -->
           <div class="wrapper">
+
+            <div class="form-group text-left">
+              <label>Targeting Form</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_dob" @if($data[
+                "lists"]->is_validate_dob == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">Birthday</h6>
+              </div> 
+
+             <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_city" @if($data[
+                "lists"]->is_validate_city == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">City</h6>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_gender" @if($data[
+                "lists"]->is_validate_gender == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">Sex</h6>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_marriage" @if($data[
+                "lists"]->is_validate_marriage == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">Marriage Status</h6>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_religion" @if($data[
+                "lists"]->is_validate_relgion == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">Religion</h6>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_hobby" @if($data[
+                "lists"]->is_validate_hobby == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"><a target="_blank" href="{{url('targeting-form')}}">Hobby</a></h6>
+              </div>  
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_job" @if($data[
+                "lists"]->is_validate_job == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"><a target="_blank" href="{{url('targeting-form')}}">Occupation</a></h6>
+              </div>
+
+            </div> 
+
             <div class="form-group text-left">
                <label>Add Script 
                     <span class="tooltipstered" title="<div class='panel-heading'>Media Sosial</div><div class='panel-content'>
@@ -996,7 +1011,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function getChecked()
   {
-    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby'],input[name='validate_religion']").change(function(){
+    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby'],input[name='validate_religion'],input[name='validate_marriage'],input[name='validate_gender']").change(function(){
       var checked = $(this).prop('checked');
       if(checked == true)
       {
@@ -1764,7 +1779,9 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 validate_city : $("input[name='validate_city']").val(),
                 validate_job : $("input[name='validate_job']").val(),
                 validate_hobby : $("input[name='validate_hobby']").val(),
-                religion : $("input[name='validate_religion']").val(),
+                validate_gender : $("input[name='validate_gender']").val(),
+                validate_marriage : $("input[name='validate_marriage']").val(),
+                validate_religion : $("input[name='validate_religion']").val(),
              };
 
             $.ajaxSetup({

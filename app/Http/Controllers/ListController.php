@@ -695,6 +695,8 @@ class ListController extends Controller
         $userid = Auth::id();
         $id = $request->id;
 
+        // dd($request->all());
+
         //$list_label = $request->list_label;
         $label_name = $request->label_name;
         $label_phone = $request->label_phone;
@@ -710,7 +712,9 @@ class ListController extends Controller
         $is_validate_city = $request->validate_city;
         $is_validate_job = $request->validate_job;
         $is_validate_hobby = $request->validate_hobby;
-        $is_validate_religion = $request->religion;
+        $is_validate_gender = $request->validate_gender;
+        $is_validate_marriage = $request->validate_marriage;
+        $is_validate_religion = $request->validate_religion;
 
         // $lists = UserList::where([['id',$id],['user_id','=',$userid]])->update([
         $lists = UserList::find($id);
@@ -728,7 +732,9 @@ class ListController extends Controller
         $lists->is_validate_city = $is_validate_city;
         $lists->is_validate_job = $is_validate_job;
         $lists->is_validate_hobby = $is_validate_hobby;
-        $lists->is_validate_religion = $is_validate_religion;
+        $lists->is_validate_gender = $is_validate_gender;
+        $lists->is_validate_marriage = $is_validate_marriage;
+        $lists->is_validate_relgion = $is_validate_religion;
 
         try
         {
@@ -898,11 +904,7 @@ class ListController extends Controller
             'unsubs_custom_message'=>$list->unsubs_custom_message,
             'auto_reply'=>$data_autoreply,
             'mod'=>$mod,
-            'is_validate_dob'=>$list->is_validate_dob,
-            'is_validate_city'=>$list->is_validate_city,
-            'is_validate_job'=>$list->is_validate_job,
-            'is_validate_hobby'=>$list->is_validate_hobby,
-            'is_validate_religion'=>$list->is_validate_religion
+            'lists'=>$list
         );
 
         $url = env('APP_URL').$list->name; 

@@ -133,7 +133,6 @@ class CustomerController extends Controller
           'btn_message'=>$list->button_subscriber,
           'link_add_customer'=>url($link_list),
           'status'=>$status,
-          'utils_province'=>$utils_province,
           'utils_hobby'=>$utils_hobby,
           'utils_occupation'=>$utils_occupation,
           'religion'=>self::$religion,
@@ -228,13 +227,13 @@ class CustomerController extends Controller
 
     public function saveSubscriber(Request $request)
     {
-        $birthday = $request->year."-".$request->month."-".$request->day;
+        $birthday = $request->birthday;
         $gender = $request->sex;
+        $province = $request->province;
         $city = $request->city;
         $marriage = $request->marriage_status;
         $religion = $request->religion;
         $hobbies = $occupations = null;
-        $birthday = Carbon::createFromFormat('Y-m-d',$birthday);
 
         if(count($request->hobby) > 0)
         {
@@ -434,6 +433,7 @@ class CustomerController extends Controller
                  'email'=> strip_tags($request->email),
                  'birthday'=>$birthday,
                  'gender'=>$gender,
+                 'province'=>$province,
                  'city'=>$city,
                  'marriage'=>$marriage,
                  'hobby'=>$hobbies,

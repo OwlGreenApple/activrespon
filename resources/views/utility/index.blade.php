@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-              <button id="submit_hobby" type="submit" class="btn btn-primary mb-2">Fill Hobby</button>
+              <button id="submit_hobby" type="submit" class="btn btn-primary mb-2">Add Hobby</button>
             </form>
 
             <!-- table -->
@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-              <button id="save_job" type="submit" class="btn btn-primary mb-2">Fill Occupation</button>
+              <button id="save_job" type="submit" class="btn btn-primary mb-2">Add Occupation</button>
             </form>
 
             <!-- table -->

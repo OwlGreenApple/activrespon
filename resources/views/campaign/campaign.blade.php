@@ -227,17 +227,25 @@
                                 </select>
                               </div> 
 
-                              @if($utils_city->count() > 0)
+                              <!-- province & city -->
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Province :</label>
+                                <input name="province" class="form-control" autocomplete="disabled" />
+                              </div> 
+                            
+                              <div class="live-search-wrapper ml-4">
+                                 <div id="display_province" class="live-search"><!-- display ajax here --></div>
+                              </div>
+
                               <div class="form-inline mt-2">
                                 <label class="mr-2">City :</label>
-                                <select name="city" class="form-control text-capitalize">
-                                    <option value="all">All</option>
-                                  @foreach($utils_city as $row)
-                                    <option value="{{$row->category}}">{{$row->category}}</option>
-                                  @endforeach
-                                </select>
+                                <input name="city"class="form-control" autocomplete="disabled" />
                               </div> 
-                              @endif 
+
+                              <div class="live-search-wrapper-city ml-4">
+                                <div id="display_city" class="live-search"><!-- display ajax here --></div>
+                              </div>
+                              <!-- end province & city -->
 
                               <div class="form-inline mt-2">
                                 <label class="mr-2">Religion :</b></label>
@@ -409,6 +417,11 @@
   </div>
   <!-- End Modal -->
 
+<script type="text/javascript">
+  var url_province = '{{ url("provinces") }}';
+  var url_city = '{{ url("cities") }}';
+</script>
+<script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 
   /* Datetimepicker */
@@ -877,7 +890,7 @@
         $("input[name='is_targetting']").prop('checked',false);
       }
 
-      var hasOption = $("select[name='city'] option[value="+result.city+"]").length;
+     /* var hasOption = $("select[name='city'] option[value="+result.city+"]").length;
       if(hasOption == 0)
       {
         var opt = "<option value='"+result.city+"' selected>"+result.city+"</option>";
@@ -886,7 +899,10 @@
       else
       {
         $("select[name='city'] option[value="+result.city+"]").prop('selected',true);
-      }
+      }*/
+
+      $("input[name='city']").val(result.city);
+      $("input[name='province']").val(result.province);
 
       $("select[name='age_start'] option[value="+result.age_start+"]").prop('selected',true);
       $("select[name='age_end'] option[value="+result.age_end+"]").prop('selected',true);

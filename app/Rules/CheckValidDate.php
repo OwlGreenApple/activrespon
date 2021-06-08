@@ -3,21 +3,18 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Kabupaten;
+use DateTime;
 
-class CheckCity implements Rule
+class CheckValidDate implements Rule
 {
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-
-    public $id_province;
-
-    public function __construct($id_province)
+    public function __construct()
     {
-        $this->id_province = $id_province;
+        //
     }
 
     /**
@@ -29,15 +26,15 @@ class CheckCity implements Rule
      */
     public function passes($attribute, $value)
     {
-        $util = Kabupaten::where([['nama',$value],['provinsi_id','=',$this->id_province]])->first();
+        $d = DateTime::createFromFormat('Y-m-d', $value);
 
-        if(is_null($util))
+        if($d == true)
         {
-          return false;
+          return true;
         }
         else
         {
-          return true;
+          return false;
         }
     }
 
@@ -48,6 +45,6 @@ class CheckCity implements Rule
      */
     public function message()
     {
-        return 'Invalid city.';
+        return 'Please use valid date.';
     }
 }

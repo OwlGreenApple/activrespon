@@ -217,17 +217,25 @@
               </select>
             </div> 
 
+            <!-- province & city -->
+            <div class="form-inline mt-2">
+              <label class="mr-2">Province :</label>
+              <input name="province" class="form-control" autocomplete="disabled" />
+            </div> 
+          
+            <div class="live-search-wrapper ml-4">
+               <div id="display_province" class="live-search"><!-- display ajax here --></div>
+            </div>
+
             <div class="form-inline mt-2">
               <label class="mr-2">City :</label>
-              <select name="city" class="form-control">
-                  <option value="all">All</option>
-                  @if($utils_city->count() > 0)
-                    @foreach($utils_city as $row)
-                      <option class="text-capitalize" value="{{$row->category}}">{{$row->category}}</option>
-                    @endforeach
-                  @endif 
-              </select>
+              <input name="city"class="form-control" autocomplete="disabled" />
             </div> 
+
+            <div class="live-search-wrapper-city ml-4">
+              <div id="display_city" class="live-search"><!-- display ajax here --></div>
+            </div>
+            <!-- end province & city -->
 
             <div class="form-inline mt-2">
               <label class="mr-2">Religion :</b></label>
@@ -327,6 +335,12 @@ use min 5 spintax variations is recommended	<br>
   </form>
 </div>
 
+
+<script type="text/javascript">
+  var url_province = '{{ url("provinces") }}';
+  var url_city = '{{ url("cities") }}';
+</script>
+<script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
     var date = new Date();
     date.setHours(0,0,0,0);
@@ -368,7 +382,7 @@ use min 5 spintax variations is recommended	<br>
   function targeting_start()
   {
     var checked = $("input[name='is_targetting']").prop("checked");
-    console.log(checked);
+    // console.log(checked);
     targetting(checked);
   }
 

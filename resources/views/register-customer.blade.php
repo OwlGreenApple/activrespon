@@ -148,7 +148,7 @@
                     @if($lists->is_validate_city == 1)
                     <div class="form-group">
                       <label>Province*</label>
-                      <input name="province" class="form-control" />
+                      <input name="province" class="form-control" autocomplete="disabled" />
                       <div class="live-search-wrapper">
                         <div id="display_province" class="live-search"><!-- display ajax here --></div>
                       </div>
@@ -157,10 +157,10 @@
 
                     <div class="form-group">
                       <label>City*</label>
-                      <input name="city"class="form-control" />
+                      <input name="city"class="form-control" autocomplete="disabled" />
                         <div class="live-search-wrapper-city">
-                        <div id="display_city" class="live-search"><!-- display ajax here --></div>
-                      </div>
+                          <div id="display_city" class="live-search"><!-- display ajax here --></div>
+                        </div>
                       <span class="error city"></span>
                     </div> 
                     @endif
@@ -176,33 +176,37 @@
                     </div> 
                     @endif
 
-                    @if($utils_hobby->count() > 0)
-                    <div class="form-group">
-                      <label>Hobby @if($lists->is_validate_hobby == 1)*@endif</label><br/>
-                      
-                      @foreach($utils_hobby as $row)
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="hobby[]" value="{{$row->category}}">
-                        <label class="form-check-label">{{ $row->category }}</label>
-                      </div>
-                      @endforeach
-                      <div class="error hobby"></div>
-                    </div> 
+                    @if($lists->is_validate_hobby == 1)
+                      @if($utils_hobby->count() > 0)
+                      <div class="form-group">
+                        <label>Hobby*</label><br/>
+                        
+                        @foreach($utils_hobby as $row)
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="hobby[]" value="{{$row->category}}">
+                          <label class="form-check-label">{{ $row->category }}</label>
+                        </div>
+                        @endforeach
+                        <div class="error hobby"></div>
+                      </div> 
+                      @endif
                     @endif
 
-                    @if($utils_occupation->count() > 0)
-                    <div class="form-group">
-                      <label>Occupation @if($lists->is_validate_job == 1)*@endif</label><br/>
+                    @if($lists->is_validate_job == 1)
+                      @if($utils_occupation->count() > 0)
+                      <div class="form-group">
+                        <label>Occupation*</label><br/>
 
-                      @foreach($utils_occupation as $row)
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="occupation[]" value="{{$row->category}}">
-                        <label class="form-check-label">{{ $row->category }}</label>
-                      </div>
-                      @endforeach
-                      
-                      <div class="error occupation"></div>
-                    </div> 
+                        @foreach($utils_occupation as $row)
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="occupation[]" value="{{$row->category}}">
+                          <label class="form-check-label">{{ $row->category }}</label>
+                        </div>
+                        @endforeach
+                        
+                        <div class="error occupation"></div>
+                      </div> 
+                      @endif
                     @endif
 
                     @if($lists->is_validate_relgion == 1)
@@ -302,8 +306,8 @@
   var url_province = '{{ url("provinces") }}';
   var url_city = '{{ url("cities") }}';
 </script>
-<script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
 <script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -439,6 +443,7 @@
             {name:'data_country',value:data_country},
             {name:'listname',value:'{{ $listname }}'},
             {name:'listid',value:'{{ $id }}'},
+            {name:'id_province',value:$("input[name='province']").attr('data-id')},
             // {name:'city',value:$("#city").val()},
           );
 
@@ -482,11 +487,10 @@
                     $(".error_list").text(result.list);
                     $(".error_list").text(result.list);
                     $(".main").html(result.main);
-  
-                    $(".year").html(result.year);
-                    $(".month").html(result.month);
-                    $(".day").html(result.day);
+
+                    $(".birthday").html(result.birthday);
                     $(".sex").html(result.sex);
+                    $(".province").html(result.province);
                     $(".city").html(result.city);
                     $(".marriage_status").html(result.marriage_status);
                     $(".religion").html(result.religion);

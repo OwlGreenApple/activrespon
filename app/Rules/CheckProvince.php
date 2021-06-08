@@ -3,21 +3,18 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Kabupaten;
+use App\Province;
 
-class CheckCity implements Rule
+class CheckProvince implements Rule
 {
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-
-    public $id_province;
-
-    public function __construct($id_province)
+    public function __construct()
     {
-        $this->id_province = $id_province;
+        //
     }
 
     /**
@@ -29,9 +26,9 @@ class CheckCity implements Rule
      */
     public function passes($attribute, $value)
     {
-        $util = Kabupaten::where([['nama',$value],['provinsi_id','=',$this->id_province]])->first();
+        $prov = Province::where('nama','=',$value)->first();
 
-        if(is_null($util))
+        if(is_null($prov))
         {
           return false;
         }
@@ -48,6 +45,6 @@ class CheckCity implements Rule
      */
     public function message()
     {
-        return 'Invalid city.';
+        return 'Invalid Province.';
     }
 }
