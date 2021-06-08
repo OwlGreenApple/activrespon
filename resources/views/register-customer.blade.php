@@ -326,7 +326,7 @@
 
   function date_birthday()
   {
-      var myDate = new Date(1941,1,1) 
+      var myDate = new Date(1941,0,1) 
      $('#datetimepicker').datepicker({
         dateFormat : 'yy-mm-dd',
         yearRange: "-80:-12",
