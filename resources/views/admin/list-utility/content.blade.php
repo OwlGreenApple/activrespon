@@ -12,7 +12,7 @@
     @foreach($data as $col)
       <tr>
         <td>{{ $no++ }}</td>
-        <td><input id="category-{{ $col->id }}" class="form-control form-control-sm category" value="{{ $col->category }}"/></td>
+        <td><input id="{{ $col->id }}" class="form-control form-control-sm category_f" value="{{ $col->category }}"/></td>
        <!--  <td>
           if($callback->call_display_function($col->id)->count() > 0)
             <a target="_blank" href=" url('list-category') / $col->id ">View</a>

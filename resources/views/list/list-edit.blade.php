@@ -1802,6 +1802,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 success : function(result){
                    $('#loader').hide();
                    $('.div-loading').removeClass('background-load');
+                   $(".alerts").show();
 
                    if(result.error == undefined)
                    {
@@ -1809,7 +1810,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                       $(".alerts").html('<div class="alert alert-success mt-2">'+result.message+'</div>');
                       $(".error").hide();
                       displayAdditional();
-                      $(".alerts").delay(2000).fadeOut(3000);
+                      $(".alerts").delay(2000).hide(3000);
                    }
                    else if(result.additionalerror == false)
                    {

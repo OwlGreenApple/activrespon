@@ -59,6 +59,7 @@ class CheckBroadCastBirthday extends Command
             'list_id' => $list_id,
             'sex' => $col->gender,
             'marriage_status' => $col->marriage,
+            'province' => $col->province,
             'city' => $col->city,
             'religion' => $col->religion,
             'birthday' => $col->birthday,
@@ -66,6 +67,7 @@ class CheckBroadCastBirthday extends Command
             'age_end' => $col->end_age,
             'date_send' => $today,
             'save_campaign' => true,
+            'cron' => 1,
           ];
 
           $arr['hobby'] = [];

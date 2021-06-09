@@ -361,11 +361,18 @@ class CampaignController extends Controller
         unset($data[6]);
       }
 
+      $data_hobby = [];
       if(count($hobbies) > 0)
       {
         foreach($hobbies as $row):
-           $data[] = ['hobby','like','%'.$row.'%'];
+           $data_hobby[] = $row;
         endforeach;
+      }
+
+      if(count($data_hobby) > 0)
+      {
+        $data_hobby = implode(";",$data_hobby);
+        $data[] = ['hobby','like','%'.$data_hobby.'%'];
       }
 
       if(count($job) > 0)
@@ -385,7 +392,7 @@ class CampaignController extends Controller
       }
 
       // TARGETTING BIRTHDAY
-      if($birthday == 1)
+      if($request->cron == 1)
       {
         $date_send = Carbon::now()->toDateString();
         $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";

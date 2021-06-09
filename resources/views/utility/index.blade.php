@@ -219,15 +219,22 @@
   function edit_category() 
   {
     $("body").on("click",".save",function(){
-      var id = $(this).attr('id');
-      var value = $("#category-"+id).val();
+      // var value = $("#category-"+id).val();
+      var data = [];
+
+      $(".category_f").each(function(index){
+        var id = $(this).attr('id');
+        var val = $(this).val();
+        data.push({name:'category[]','value': val});
+        data.push({name:'id[]','value': id});
+      });
        
       $.ajax({
         headers : { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         type : "POST",
         url : "{{ url('targeting-edit') }}",
         dataType : 'json',
-        data : {'category':value,'id':id},
+        data : data,
         beforeSend: function()
         {
           $('#loader').show();
@@ -237,16 +244,9 @@
         {
           if(result.status == 1)
           {
-            if(result.idc == 2)
-            {
-              display_hobby();
-            }
-            else
-            {
-              display_job();
-            }
-
             $("#msg").html('<div class="alert alert-success">Data telah di edit.</div>');
+            display_hobby();
+            display_job();
           }
           else if(result.status == 2)
           {
@@ -254,7 +254,7 @@
           }
           else
           {
-             $("#msg").html('<div class="alert alert-danger">Error</div>');
+             $("#msg").html('<div class="alert alert-danger">Sorry our server is too busy, please try again later.</div>');
           }
           $('#loader').hide();
           $('.div-loading').removeClass('background-load');

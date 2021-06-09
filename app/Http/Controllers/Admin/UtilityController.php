@@ -108,27 +108,49 @@ class UtilityController extends Controller
 
     public function edit_category(Request $request)
     {
+      // dd($request->all());
       $id = $request->id;
-      $category = strip_tags($request->category);
-      $utils = Utility::where([['id',$id],['user_id',Auth::id()]])->first();
+      $category = $request->category;
+      $name = [];
 
-      if(is_null($utils))
+      if(count($category) > 0)
+      {
+        foreach($category as $val)
+        {
+          $name[] = strip_tags($val);
+        }
+      }
+
+      $results = array_combine($id,$name);
+      $utils = Utility::where('user_id',Auth::id())->whereIn('id',$id)->get();
+
+      // CHECK TO PREVENT USER MANIPULATE ID
+      if($utils->count() !== count($results))
       {
         $data['status'] = 2;
         return response()->json($data);
       }
 
-      $idc = $utils->id_category;
-
-      try{
-        $utils->category = $category;
-        $utils->save();
-        $data['status'] = 1;
-        $data['idc'] = $idc;
-      }
-      catch(QueryException $e)
+      $success = [];
+      if(count($results) > 0)
       {
-        // $e->getMessage();
+        foreach($results as $id => $val):
+          $util = Utility::find($id);
+          try{
+            $util->category = $val;
+            $util->save();
+            $data['status'] = 1;
+            $success[] = $id;
+          }
+          catch(QueryException $e)
+          {
+            // $e->getMessage();
+          }
+        endforeach;
+      }
+
+      if(count($results) !== count($success))
+      {
         $data['status'] = 0;
       }
 
