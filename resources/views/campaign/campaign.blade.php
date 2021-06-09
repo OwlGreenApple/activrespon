@@ -181,18 +181,18 @@
                      <!-- TARGETTING FORM -->
                     <div id="target_box_duplicate">
                       <div class="target_append"><!-- to make element move either on edit or duplicate -->
-                        <div class="form-group row istarget">
-                          <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">Targetting :</label>
-                          <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                        <div class="form-group row istarget mb-0">
+                          <label class="col-sm-3 col-md-3 col-lg-3 col-form-label">Targetting</label>
+                          <div class="col-9 col-md-9 col-lg-9 mt-2">
                             <input type="checkbox" class="form-check-input ml-1" name="is_targetting" value="1" />
                           </div>
                         </div>
 
                         <!-- TARGETTING -->
                         <div class="form-group row target">
-                          <label class="col-sm-4 col-md-4 col-lg-4 col-form-label"><!--  --></label>
+                          <label class="col-3 col-md-3 col-lg-3 col-form-label"><!--  --></label>
 
-                            <div class="col-sm-8 col-md-8 col-lg-8 relativity">
+                            <div class="col-9 col-md-9 col-lg-9 relativity">
                               <div class="form-inline">
                                 <label class="mr-2">Sex :</label>
                                 <select name="sex" class="form-control">
@@ -201,6 +201,7 @@
                                   <option value="female">Female</option>
                                 </select>
                               </div> 
+                              <span class="error sex"></span> 
 
                               <div class="form-inline mt-2">
                                 <label class="mr-2">Status :</label>
@@ -210,6 +211,7 @@
                                   <option value="married">Married</option>
                                 </select>
                               </div> 
+                              <span class="error marriage_status"></span> 
 
                               <div class="form-inline mt-2">
                                 <label class="mr-2">Age :</label>
@@ -231,7 +233,8 @@
                               <div class="form-inline mt-2">
                                 <label class="mr-2">Province :</label>
                                 <input name="province" class="form-control" autocomplete="disabled" />
-                              </div> 
+                              </div>
+                              <span class="error province"></span> 
                             
                               <div class="live-search-wrapper ml-4">
                                  <div id="display_province" class="live-search"><!-- display ajax here --></div>
@@ -241,6 +244,7 @@
                                 <label class="mr-2">City :</label>
                                 <input name="city"class="form-control" autocomplete="disabled" />
                               </div> 
+                              <span class="error city"></span>
 
                               <div class="live-search-wrapper-city ml-4">
                                 <div id="display_city" class="live-search"><!-- display ajax here --></div>
@@ -257,7 +261,8 @@
                                     <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
                                     <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
                                   </select>
-                              </div> 
+                              </div>
+                              <span class="error religion"></span> 
 
                               <div class="form-inline mt-2 hobby-cover">
                                  <label class="mr-2">Hobby :</label>
@@ -277,9 +282,9 @@
                     </div>
 
                     <!-- calculate -->
-                    <div class="form-group row calc">
-                      <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">&nbsp;</label>
-                      <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                    <div class="form-group row calc mt-n2">
+                      <label class="col-3 col-md-3 col-lg-3 col-form-label">&nbsp;</label>
+                      <div class="col-9 col-md-9 col-lg-9">
                         <div class="mb-2" id="result_calculate"></div>
                         <button id="calculate" type="button" class="btn btn-info">Calculate</button>
                       </div>
@@ -372,8 +377,8 @@
 
                     <!-- calculate -->
                     <div class="form-group row calc">
-                      <label class="col-sm-4 col-md-4 col-lg-4 col-form-label">&nbsp;</label>
-                      <div class="col-sm-8 col-md-8 col-lg-8 relativity mt-2">
+                      <label class="col-3 col-md-3 col-lg-3 col-form-label">&nbsp;</label>
+                      <div class="col-9 col-md-9 col-lg-9 relativit">
                         <div class="mb-2" id="result_calculate_edit"></div>
                         <button id="calculate_edit" type="button" class="btn btn-info">Calculate</button>
                       </div>
@@ -669,6 +674,7 @@
       formData.append('broadcast_id',broadcast_id);
       formData.append('is_update',1);
       formData.append('publish',publish);
+      formData.append('id_province',$("input[name='province']").attr('data-id'));
       updateBroadcast(formData);
     });
   }
@@ -681,6 +687,7 @@
       var formData = new FormData(form);
       formData.append('broadcast_id',broadcast_id);
       formData.append('is_update',1);
+      formData.append('id_province',$("input[name='province']").attr('data-id'));
       updateBroadcast(formData);
     });
   }
@@ -716,6 +723,11 @@
           $(".event_time").html(result.event_time);
           $(".msg").html('<div class="alert alert-danger">'+result.broadcast_id+'</div>')
           $(".image").html(result.image);
+          $(".province").html(result.province);
+          $(".city").html(result.city);
+          $(".religion").html(result.religion);
+          $(".sex").html(result.sex);
+          $(".marriage_status").html(result.marriage_status);
 
           if(result.msg !== undefined)
           {
@@ -903,6 +915,7 @@
 
       $("input[name='city']").val(result.city);
       $("input[name='province']").val(result.province);
+      $("input[name='province']").attr('data-id',result.province_id);
 
       $("select[name='age_start'] option[value="+result.age_start+"]").prop('selected',true);
       $("select[name='age_end'] option[value="+result.age_end+"]").prop('selected',true);
@@ -1008,6 +1021,7 @@
       var data = new FormData(form);
       data.append('id', reminder_id);
       data.append('draft', true);
+      data.append('id_province',$("input[name='province']").attr('data-id'));
       duplicateBroadcast(data)
     });
   }
@@ -1045,6 +1059,11 @@
             $(".message").html(result.message);
             $(".list_id").html(result.list_id);
             $(".image").html(result.image);
+            $(".province").html(result.province);
+            $(".city").html(result.city);
+            $(".religion").html(result.religion);
+            $(".sex").html(result.sex);
+            $(".marriage_status").html(result.marriage_status);
           }
           else
           {

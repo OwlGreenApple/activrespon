@@ -13,7 +13,7 @@ var delay_duration = 200;
 
 function get_province()
   {
-    $("input[name='province']").on("keyup focusin",delay(function(){
+    $("input[name='province']").on("keyup focusin focusout",delay(function(){
       var val = $(this).val();
       $(".live-search-wrapper").show();
       display_province(val);
@@ -83,6 +83,10 @@ function fill_province()
 	  $("input[name='province']").attr('data-id',id);
 	  $(".live-search-wrapper").hide();
 	});
+
+	$("input[name='province']").on("focusout",delay(function(){
+    	$(".live-search-wrapper").hide();
+    },delay_duration));
 }		
 
 function fill_city()
@@ -92,6 +96,10 @@ function fill_city()
 	  $("input[name='city']").val(opt);
 	  $(".live-search-wrapper-city").hide();
 	});
+
+	$("input[name='city']").on("focusout",delay(function(){
+    	$(".live-search-wrapper-city").hide();
+    },delay_duration));
 }
 
 function delay(callback, ms) {

@@ -132,9 +132,9 @@
                             <li class="nav-item">
                               <a class="nav-link {{ (request()->is('broadcast-admin')) ? 'active' : '' }}" href="{{ url('broadcast-admin') }}">Broadcast</a>
                             </li> 
-                            <li class="nav-item">
-                              <a class="nav-link {{ (request()->is('list-utility')) ? 'active' : '' }}" href="{{ url('list-utility') }}">Tambah Kota</a>
-                            </li>
+                           <!--  <li class="nav-item">
+                              <a class="nav-link  (request()->is('list-utility')) ? 'active' : '' " href=" url('list-utility') ">Tambah Kota</a>
+                            </li> -->
 													@endif
 													@if ( ($user->is_admin == 1) or ($user->is_admin == 2) )
                            <!--  <li class="nav-item">

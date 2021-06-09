@@ -96,8 +96,6 @@ class CustomerController extends Controller
         $status = $user->status;
 
         // UTILITIES
-        // $utils_city = Utility::where('id_category',1)->get(); //kota
-        $utils_province = ''; //province
         $utils_hobbies = Utility::where([['user_id',$list->user_id],['id_category',2]])->get(); //hobby
         $utils_occupation = Utility::where([['user_id',$list->user_id],['id_category',3]])->get(); //pekerjaan
 

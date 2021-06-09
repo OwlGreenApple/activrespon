@@ -105,12 +105,13 @@
           <input id="datetimepicker-date" type="text" name="date_send" class="form-control custom-select-campaign" />
           <span class="icon-calendar"></span>
           <span class="error date_send"></span>
-        </div>
-        <div class="form-inline">
-          <input type="checkbox" class="form-check-input" name="birthday" value="1" />
-          <label class="ml-2">Birthday</label>
-        </div> 
 
+          <div class="form-inline bday_checkbox">
+            <input type="checkbox" class="form-check-input" name="birthday" value="1" />
+            <label class="ml-2">Birthday</label>
+          </div> 
+
+        </div>
       </div>
 
       <div class="form-group row event-time">
@@ -171,10 +172,10 @@
       <!-- TARGETTING OPEN -->
       @if(getMembership(Auth()->user()->membership) > 3) 
       <div class="form-group row">
-        <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Targetting :</label>
-        <div class="col-sm-8 col-md-8 col-lg-9">
-          <div class="form-inline mt-2">
-            <input type="checkbox" name='is_targetting' class="form-check-input" value="1" />
+        <label class="col-5 col-md-4 col-lg-3 col-form-label">Targetting :</label>
+        <div class="col-7 col-md-8 col-lg-9">
+          <div class="form-inline mt-2 fix-mt">
+            <input type="checkbox" name='is_targetting' class="form-check-input align-center" value="1" />
           </div>
         </div>
       </div>
@@ -191,6 +192,7 @@
                 <option value="female">Female</option>
               </select>
             </div> 
+            <span class="error sex"></span>
 
             <div class="form-inline mt-2">
               <label class="mr-2">Status :</label>
@@ -200,6 +202,7 @@
                 <option value="married">Married</option>
               </select>
             </div> 
+            <span class="error marriage_status"></span>
 
             <div class="form-inline mt-2">
               <label class="mr-2">Age :</label>
@@ -220,8 +223,9 @@
             <!-- province & city -->
             <div class="form-inline mt-2">
               <label class="mr-2">Province :</label>
-              <input name="province" class="form-control" autocomplete="disabled" />
-            </div> 
+              <input name="province" class="form-control text-capitalize" value="all" autocomplete="disabled" />
+            </div>
+            <span class="error province"></span> 
           
             <div class="live-search-wrapper ml-4">
                <div id="display_province" class="live-search"><!-- display ajax here --></div>
@@ -229,8 +233,9 @@
 
             <div class="form-inline mt-2">
               <label class="mr-2">City :</label>
-              <input name="city"class="form-control" autocomplete="disabled" />
+              <input name="city"class="form-control text-capitalize" value="all" autocomplete="disabled" />
             </div> 
+            <span class="error city"></span>
 
             <div class="live-search-wrapper-city ml-4">
               <div id="display_city" class="live-search"><!-- display ajax here --></div>
@@ -248,6 +253,7 @@
                   <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
                 </select>
             </div> 
+            <span class="error religion"></span>
 
             @if($utils_hobby->count() > 0)
             <div class="form-inline mt-2">
@@ -473,6 +479,7 @@ use min 5 spintax variations is recommended	<br>
       // var data = $(this).serialize();
 				var form = $('#save_campaign')[0];
 				var formData = new FormData(form);
+        formData.append('id_province',$("input[name='province']").attr('data-id'));
 				
       $.ajax({
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -534,6 +541,11 @@ use min 5 spintax variations is recommended	<br>
                 $(".hour").html(result.hour);
                 $(".msg").html(result.msg);
 								$(".image").html(result.image);
+                $(".province").html(result.province);
+                $(".city").html(result.city);
+                $(".religion").html(result.religion);
+                $(".sex").html(result.sex);
+                $(".marriage_status").html(result.marriage_status);
             }
             else
             {

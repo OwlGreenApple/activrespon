@@ -30,6 +30,7 @@ use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use App\PhoneNumber;
 use App\Server;
+use App\Http\Middleware\CheckBroadcastDuplicate;
 use Storage,Session, DB;
 
 class CampaignController extends Controller
@@ -81,7 +82,6 @@ class CampaignController extends Controller
       }
 
       $customer = new CustomerController;
-      $utils_city = Utility::where('id_category',1)->get(); //kota / city
       $utils_hobbies = Utility::where('id_category',2)->get(); //hobby
       $utils_occupation = Utility::where('id_category',3)->get(); //pekerjaan
 
@@ -94,7 +94,6 @@ class CampaignController extends Controller
       $data['autoschedule'] = new Reminder;
       $data['userid'] = $userid;
       $data['religion'] = $customer::$religion;
-      $data['utils_city'] = $utils_city;
       $data['utils_hobbies'] = $utils_hobbies;
       $data['utils_occupation'] = $utils_occupation;
 
@@ -314,6 +313,7 @@ class CampaignController extends Controller
       $list_id = $request->list_id;
       $sex = $request->sex;
       $marriage_status = $request->marriage_status;
+      $province = $request->province;
       $city = $request->city;
       $hobbies = $request->hobby;
       $job = $request->occupation;
@@ -333,6 +333,7 @@ class CampaignController extends Controller
         ['marriage',$marriage_status],
         ['religion',$religion],
         ['gender',$sex],
+        ['province',$province],
       ];
 
       if($city == 'all')
@@ -353,6 +354,11 @@ class CampaignController extends Controller
       if($sex == 'all')
       {
         unset($data[5]);
+      }
+
+      if($province == 'all')
+      {
+        unset($data[6]);
       }
 
       if(count($hobbies) > 0)
@@ -535,22 +541,10 @@ class CampaignController extends Controller
       }
       else
       {
-        /* Validator Broadcast */
+        /* VALIDTOR BROADCASTS */
 
-        // bc targeting
         $req = $request->all();
-        $req['save_campaign'] = true;
-        $rquest = new Request($req);
-        $get_filtered_customer = $this->calculate_user_list($rquest);
-
-        if($get_filtered_customer->count() > 0)
-        {
-          $req['customers'] = $get_filtered_customer;
-        }
-        else
-        {
-          $req['customers'] = false;
-        }
+        // dd($req);
 
         $rules = array(
           'campaign_name'=>['required','max:50'],
@@ -558,6 +552,36 @@ class CampaignController extends Controller
           'message'=>['required','max:65000'],
           'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
         );
+
+         // bc targeting
+        if($request->is_targetting == 1)
+        {
+          $req['save_campaign'] = true;
+          $rquest = new Request($req);
+          $get_filtered_customer = $this->calculate_user_list($rquest);
+
+          if($get_filtered_customer->count() > 0)
+          {
+            $req['customers'] = $get_filtered_customer;
+          }
+          else
+          {
+            $req['customers'] = false;
+          }
+
+          // TARGETING VALIDATOR
+          $vd = new CheckBroadcastDuplicate;
+          $tg = $vd->targeting_validator($request);
+
+          if(count($tg) > 0)
+          {
+            foreach($tg as $rl=>$value)
+            {
+              $rules[$rl] = $value;
+            }
+          }
+        }
+        // --
 
         if($request->birthday == null)
         {
@@ -579,6 +603,12 @@ class CampaignController extends Controller
               'hour'=>$error->first('hour'),
               'msg'=>$error->first('message'),
 							'image'=>$error->first('imageWA'),
+
+              'province'=>$error->first('province'),
+              'city'=>$error->first('city'),
+              'marriage_status'=>$error->first('marriage_status'),
+              'religion'=>$error->first('religion'),
+              'sex'=>$error->first('sex'),
             ];
 
             return response()->json($data_error);

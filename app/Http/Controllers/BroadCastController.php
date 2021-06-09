@@ -25,6 +25,7 @@ use App\Http\Controllers\ListController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CampaignController;
 use App\Jobs\CreateBroadcast;
+use App\Province;
 
 class BroadCastController extends Controller
 {
@@ -395,6 +396,7 @@ class BroadCastController extends Controller
         $marriage_status = $request->marriage_status;
         $age_start = $request->age_start;
         $age_end = $request->age_end;
+        $province = $request->province;
         $city = $request->city;
         $religion = $request->religion;
         $hobby = $request->hobby;
@@ -493,6 +495,7 @@ class BroadCastController extends Controller
         $broadcast->is_targetting = $is_targetting;
         $broadcast->birthday = $birthday;
         $broadcast->gender = $sex;
+        $broadcast->province = $province;
         $broadcast->city = $city;
         $broadcast->marriage = $marriage_status;
         $broadcast->religion = $religion;
@@ -652,6 +655,17 @@ class BroadCastController extends Controller
         {
           $occupations = $this->extract_text($occupations);
         }
+
+        $province_id = Province::where('nama',$broadcast->province)->select('id')->first();
+
+        if(is_null($province_id))
+        {
+          $province_id = null;
+        }
+        else
+        {
+          $province_id = $province_id->id;
+        }
         
         $data = array(
           'list_id' => $broadcast->list_id,
@@ -663,6 +677,7 @@ class BroadCastController extends Controller
           'message' => $broadcast->message,
           'is_targetting'=>$broadcast->is_targetting,
           'province' => $broadcast->province, 
+          'province_id' => $province_id, 
           'city' => $broadcast->city, 
           'sex' => $broadcast->gender, 
           'marriage' => $broadcast->marriage,
@@ -718,6 +733,7 @@ class BroadCastController extends Controller
         { 
            $sex = $request->sex;
            $marriage_status = $request->marriage_status;
+           $province = $request->province;
            $city = $request->city;
            $religion = $request->religion;
            $age_start = $request->age_start;
@@ -805,6 +821,7 @@ class BroadCastController extends Controller
           $broadcast->is_targetting = $is_targetting;
           $broadcast->birthday = $birthday;
           $broadcast->gender = $sex;
+          $broadcast->province = $province;
           $broadcast->city = $city;
           $broadcast->marriage = $marriage_status;
           $broadcast->religion = $religion;

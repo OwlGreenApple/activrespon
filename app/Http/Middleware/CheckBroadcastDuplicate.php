@@ -48,6 +48,16 @@ class CheckBroadcastDuplicate
                $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
             }
 
+            // targeting validator
+            $tg = $this->targeting_validator($request);
+            if(count($tg) > 0)
+            {
+              foreach($tg as $rl=>$value)
+              {
+                $rules[$rl] = $value;
+              }
+            }
+
             $validator = Validator::make($request->all(),$rules);
             if($validator->fails())
             {
@@ -59,6 +69,11 @@ class CheckBroadcastDuplicate
                   'time_sending'=>$error->first('hour'),
                   'edit_message'=>$error->first('edit_message'),
                   'image'=>$error->first('imageWA'),
+                  'province'=>$error->first('province'),
+                  'city'=>$error->first('city'),
+                  'marriage_status'=>$error->first('marriage_status'),
+                  'religion'=>$error->first('religion'),
+                  'sex'=>$error->first('sex'),
                   'success'=>0,
                 ];
 
@@ -87,6 +102,16 @@ class CheckBroadcastDuplicate
            $rules['hour'] =['required'];
         }
 
+        // targeting validator
+        $tg = $this->targeting_validator($request);
+        if(count($tg) > 0)
+        {
+          foreach($tg as $rl=>$value)
+          {
+            $rules[$rl] = $value;
+          }
+        }
+
       /*  if(isset($_POST['group_name']))
         {
            $rules['group_name'] = ['required', 'max:50'];
@@ -110,6 +135,11 @@ class CheckBroadcastDuplicate
               'hour'=>$error->first('hour'),
               'message'=>$error->first('message'),
               'image'=>$error->first('imageWA'),
+              'province'=>$error->first('province'),
+              'city'=>$error->first('city'),
+              'marriage_status'=>$error->first('marriage_status'),
+              'religion'=>$error->first('religion'),
+              'sex'=>$error->first('sex'),
               'success'=>0,
             ];
 
@@ -117,4 +147,41 @@ class CheckBroadcastDuplicate
         }
         return $next($request);
     }
+
+    public function targeting_validator($request)
+    {
+      $rules= [];
+      if($request->is_targetting == 1)
+        {
+          if($request->sex !== 'all')
+          {
+            $rules['sex'] = ['required',new \App\Rules\CheckGender];
+          }
+
+          if($request->marriage_status !== 'all')
+          {
+            $rules['marriage_status'] = ['required',new \App\Rules\CheckStatusMarriage];
+          }
+
+          if($request->province !== 'all')
+          {
+            $rules['province'] = ['required',new \App\Rules\CheckProvince];
+          }
+
+          if($request->city !== 'all')
+          {
+             $rules['city'] = ['required',new \App\Rules\CheckCity($request->id_province)];
+          }
+
+          if($request->religion !== 'all')
+          {  
+             $rules['religion'] = ['required',new \App\Rules\CheckReligion()];
+          }
+
+          return $rules;
+        }
+        // --
+    }
+
+/*end middleware*/    
 }
