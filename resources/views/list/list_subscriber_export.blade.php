@@ -4,6 +4,16 @@
       <th>Name</th>
       <th>WA Number</th>
       <th>Email</th>
+      <th>Birthday</th>
+      <th>Gender</th>
+      <th>Country</th>
+      <th>Province</th>
+      <th>City</th>
+      <th>Zip</th>
+      <th>Status</th>
+      <th>Hobby</th>
+      <th>Occupation</th>
+      <th>Religion</th>
       @if($import == 0)
         <th>Additional</th>
       @endif
@@ -17,6 +27,34 @@
           <td>{{ $row->name }}</td>
           <td>{{ $row->telegram_number }}</td>
           <td>{{ $row->email }}</td>
+          <td>{{ $row->birthday }}</td>
+          <td>{{ $row->gender }}</td>
+          <td>
+            @if($import == 0)
+              {{ $fct->get_country_name($row->country) }}
+            @else
+              {{ $row->country }}
+            @endif
+          </td>
+          <td>{{ $row->province }}</td>
+          <td>{{ $row->city }}</td>
+          <td>{{ $row->zip }}</td>
+          <td>{{ $row->marriage }}</td>
+          <td>
+            @if($import == 0)
+              {{ str_replace(";","|",$row->hobby) }}
+            @else
+              {{ $row->hobby }}
+            @endif
+          </td>
+          <td>
+            @if($import == 0)
+              {{ str_replace(";","|",$row->occupation) }}
+            @else
+              {{ $row->occupation }}
+            @endif
+          </td>
+          <td>{{ $row->religion }}</td>
           @if($import == 0)
             <td>
                 @php 

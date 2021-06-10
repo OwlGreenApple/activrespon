@@ -269,8 +269,8 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 		<!-- TABS 2 -->
     <div class="tabs-container" id="tab2C">
       <div class="act-tel-tab">
-        <div class="form-control wrapper message mimport">
-          If you want add contact more than 1 please click : "<a class="open_import"><b>import contacts</b></a>" <!--or "<b>take from group</b>" if you want -->
+        <div class="form-control wrapper bg-telegram">
+          Please click here to : "<a class="open_import"><b>import contacts</b></a>" (.xlsx) <!--or "<b>take from group</b>" if you want -->
         </div>
 
         <div class="wrapper">
@@ -1498,9 +1498,21 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
             {   
                 var errors = '';
                 var errname, errphone, erremail;
-                (result.name !== undefined)?errors+=result.name+"\n":errname='';
-                (result.phone !== undefined)?errors+=result.phone+"\n":errphone='';
-                (result.email !== undefined)?errors+=result.email:erremail='';
+                (result.name !== "")?errors+=result.name+"<br />":errors+='';
+                (result.phone !== "")?errors+=result.phone+"<br />":errors+='';
+                (result.email !== "")?errors+=result.email+"<br />":errors+='';
+                // console.log(result);
+                (result.birthday !== "")?errors+=result.birthday+"<br />":errors+='';
+                (result.gender !== "")?errors+=result.gender+"<br />":errors+='';
+                (result.country !== "")?errors+=result.country+"<br />":errors+='';
+                (result.province !== "")?errors+=result.province+"<br />":errors+='';
+                (result.city !== "")?errors+=result.city+"<br />":errors+='';
+                (result.zip !== "")?errors+=result.zip+"<br />":errors+='';
+                (result.marriage !== "")?errors+=result.marriage+"<br />":errors+='';
+                (result.religion !== "")?errors+=result.religion+"<br />":errors+='';
+                (result.hobby !== "")?errors+=result.hobby+"<br />":errors+='';
+                (result.occupation !== "")?errors+=result.occupation:errors+='';
+
                 $(".error_notif").html('<div class="alert alert-danger">'+errors+'</div>');
 
                 if(result.message !== undefined)

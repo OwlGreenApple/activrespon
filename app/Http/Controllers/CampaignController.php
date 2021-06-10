@@ -361,28 +361,54 @@ class CampaignController extends Controller
         unset($data[6]);
       }
 
-      $data_hobby = [];
-      if(count($hobbies) > 0)
+      // in case if hobby is only 1
+      if(count($hobbies) == 1)
       {
-        foreach($hobbies as $row):
-           $data_hobby[] = $row;
-        endforeach;
+         $data[] = ['hobby','like','%'.$hobbies[0].'%'];
       }
 
-      if(count($data_hobby) > 0)
+      if(count($job) == 1)
       {
-        $data_hobby = implode(";",$data_hobby);
-        $data[] = ['hobby','like','%'.$data_hobby.'%'];
-      }
-
-      if(count($job) > 0)
-      {
-        foreach($job as $row):
-           $data[] = ['occupation','like','%'.$row.'%'];
-        endforeach;
+         $data[] = ['occupation','like','%'.$job[0].'%'];
       }
 
       $customer = Customer::where($data);
+
+      // in case if hobby more than 1
+      $hobby_statement = '';
+      if(count($hobbies) > 1)
+      {
+        $last_index = count($hobbies) - 1;
+        foreach($hobbies as $index => $row):
+          if($index == $last_index)
+          {
+            $hobby_statement .= "hobby LIKE '%".$row."%'";
+          }
+          else
+          {
+            $hobby_statement .= "hobby LIKE '%".$row."%' OR ";
+          }
+        endforeach;
+        $customer->whereRaw($hobby_statement);
+      }
+
+      // in case if job / occupation more than 1
+      $job_statement = '';
+      if(count($job) > 1)
+      {
+        $last_index = count($job) - 1;
+        foreach($job as $index => $row):
+          if($index == $last_index)
+          {
+            $job_statement .= "occupation LIKE '%".$row."%'";
+          }
+          else
+          {
+            $job_statement .= "occupation LIKE '%".$row."%' OR ";
+          }
+        endforeach;
+        $customer->whereRaw($job_statement);
+      }
 
       // PREVENT USER FILL AGE WITH ALL EITHER START OR END
       $age = null;
@@ -392,19 +418,23 @@ class CampaignController extends Controller
       }
 
       // TARGETTING BIRTHDAY
-      if($request->cron == 1)
+      if($birthday == 1)
       {
         $date_send = Carbon::now()->toDateString();
+      }
+
+      if($request->cron == 1 && $birthday == 1)
+      {
         $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
         $customer = $customer->whereRaw($statement);
       }
 
       // FILTER TO PREVENT EMPTY DATE SEND
-      // if($date_send == null)
-      // {
-      //   $res['status'] = 0;
-      //   return response()->json($res);
-      // }
+      if($date_send == null)
+      {
+        $res['status'] = 0;
+        return response()->json($res);
+      }
 
        // TARGETTING BY AGE
       if($age !== "all")

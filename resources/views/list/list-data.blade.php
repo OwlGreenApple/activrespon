@@ -109,12 +109,12 @@
           <div class="mb-2">
             <div class="form-check">
               <label class="form-check-label">
-                <input type="radio" class="form-controller" name="status_export" value="0" checked/> For Data
+                <input type="radio" class="form-controller" name="status_export" value="0" checked/> Data for read
               </label>
             </div>
             <div class="form-check">
               <label class="form-check-label">
-                <input type="radio" class="form-controller" name="status_export" value="1"/> For Import
+                <input type="radio" class="form-controller" name="status_export" value="1"/> Data for import
               </label>
             </div>
              

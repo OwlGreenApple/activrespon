@@ -98,7 +98,7 @@ class CheckBroadcastDuplicate
 
         if($request->birthday == null)
         {
-           $rules['date_send'] = ['required',new CheckBroadcastDate];
+           $rules['date_send'] = ['required',new CheckValidDate];
            $rules['hour'] =['required'];
         }
 
@@ -175,7 +175,7 @@ class CheckBroadcastDuplicate
 
           if($request->religion !== 'all')
           {  
-             $rules['religion'] = ['required',new \App\Rules\CheckReligion()];
+             $rules['religion'] = ['required',new \App\Rules\CheckReligion];
           }
 
           return $rules;

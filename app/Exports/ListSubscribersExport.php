@@ -13,6 +13,8 @@ use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithMapping;*/
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use App\Http\Controllers\ListController;
+
 
 class ListSubscribersExport implements FromView
 {
@@ -30,16 +32,17 @@ class ListSubscribersExport implements FromView
 
       if($this->import == 1)
       {
-          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','telegram_number','email')->get();
+          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','telegram_number','email','birthday','gender','country','province','city','zip','marriage','hobby','occupation','religion')->get();
       }
       else
       {
-          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','telegram_number','email','additional')->get();
+          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','telegram_number','email','birthday','gender','country','province','city','zip','marriage','hobby','occupation','religion','additional')->get();
       }
 
       return view('list.list_subscriber_export', [
           'import'=>$this->import,
           'customer' => $list_subscriber,
+          'fct'=> new ListController
       ]);
   }
 	
