@@ -32,11 +32,11 @@ class ListSubscribersExport implements FromView
 
       if($this->import == 1)
       {
-          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','telegram_number','email','birthday','gender','country','province','city','zip','marriage','hobby','occupation','religion')->get();
+          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','last_name','telegram_number','email','birthday','gender','country','province','city','zip','marriage','hobby','occupation','religion')->get();
       }
       else
       {
-          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','telegram_number','email','birthday','gender','country','province','city','zip','marriage','hobby','occupation','religion','additional')->get();
+          $list_subscriber = Customer::query()->where([['list_id',$this->idlist],['user_id','=',$userid]])->select('name','last_name','telegram_number','email','birthday','gender','country','province','city','zip','marriage','hobby','occupation','religion','additional')->get();
       }
 
       return view('list.list_subscriber_export', [

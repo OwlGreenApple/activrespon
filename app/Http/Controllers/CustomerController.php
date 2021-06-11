@@ -96,6 +96,7 @@ class CustomerController extends Controller
         $status = $user->status;
 
         // UTILITIES
+        $countries = $this->get_countries();
         $utils_hobbies = Utility::where([['user_id',$list->user_id],['id_category',2]])->get(); //hobby
         $utils_occupation = Utility::where([['user_id',$list->user_id],['id_category',3]])->get(); //pekerjaan
 
@@ -134,11 +135,19 @@ class CustomerController extends Controller
           'utils_hobby'=>$utils_hobby,
           'utils_occupation'=>$utils_occupation,
           'religion'=>self::$religion,
-          'lists'=>$list
+          'lists'=>$list,
+          'countries'=>$countries
         ];
 
         return view('register-customer',$data);
       }
+    }
+
+    // GET COUNTRY
+    public function get_countries()
+    {
+      $ctr = Countries::whereIn('id',[13,95,126,192,228,229])->get();
+      return $ctr;
     }
 
     public function extract_hobbies(array $data)
@@ -225,12 +234,14 @@ class CustomerController extends Controller
 
     public function saveSubscriber(Request $request)
     {
-        $birthday = $request->birthday;
-        $gender = $request->sex;
-        $province = $request->province;
-        $city = $request->city;
-        $marriage = $request->marriage_status;
-        $religion = $request->religion;
+        $birthday = strip_tags($request->birthday);
+        $gender = strip_tags($request->sex);
+        $country = strip_tags($request->country);
+        $province = strip_tags($request->province);
+        $city = strip_tags($request->city);
+        $zip = strip_tags($request->zip);
+        $marriage = strip_tags($request->marriage_status);
+        $religion = strip_tags($request->religion);
         $hobbies = $occupations = null;
 
         if(count($request->hobby) > 0)
@@ -432,7 +443,9 @@ class CustomerController extends Controller
                  'birthday'=>$birthday,
                  'gender'=>$gender,
                  'province'=>$province,
+                 'country'=>$country,
                  'city'=>$city,
+                 'zip'=>$zip,
                  'marriage'=>$marriage,
                  'hobby'=>$hobbies,
                  'occupation'=>$occupations,

@@ -147,6 +147,16 @@
                    
                     @if($lists->is_validate_city == 1)
                     <div class="form-group">
+                      <label>Country*</label>
+                      <select name="country" class="form-control">
+                       @foreach($countries as $row)
+                        <option value="{{ $row->id }}" @if($row->id == 95) selected @endif>{{ $row->name }}</option>
+                       @endforeach
+                      </select>
+                      <span class="error country"></span>
+                    </div> 
+
+                    <div class="form-group form_province">
                       <label>Province*</label>
                       <input name="province" class="form-control" autocomplete="disabled" />
                       <div class="live-search-wrapper">
@@ -162,6 +172,12 @@
                           <div id="display_city" class="live-search"><!-- display ajax here --></div>
                         </div>
                       <span class="error city"></span>
+                    </div> 
+
+                    <div class="form-group form_zip">
+                      <label>Zip*</label>
+                      <input name="zip"class="form-control" maxlength="10" autocomplete="disabled" />
+                      <span class="error zip"></span>
                     </div> 
                     @endif
                    
@@ -444,7 +460,6 @@
             {name:'listname',value:'{{ $listname }}'},
             {name:'listid',value:'{{ $id }}'},
             {name:'id_province',value:$("input[name='province']").attr('data-id')},
-            // {name:'city',value:$("#city").val()},
           );
 
           $.ajaxSetup({
@@ -490,8 +505,10 @@
 
                     $(".birthday").html(result.birthday);
                     $(".sex").html(result.sex);
+                    $(".country").html(result.country);
                     $(".province").html(result.province);
                     $(".city").html(result.city);
+                    $(".zip").html(result.zip);
                     $(".marriage_status").html(result.marriage_status);
                     $(".religion").html(result.religion);
                     $(".hobby").html(result.hobby);

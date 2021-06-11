@@ -25,6 +25,7 @@ use App\Rules\CheckReligion;
 use App\Rules\CheckValidDate;
 use App\Rules\CheckProvince;
 use App\Rules\CheckHobby;
+use App\Rules\CheckCountry;
 use Session;
 
 class CheckCustomer
@@ -80,6 +81,11 @@ class CheckCustomer
             'listname' => ['required',new CheckListName]
          ];
 
+         if($lists->checkbox_lastname == 1)
+         {
+            $rules['last_name'] = ['required', 'max:50'];
+         }
+
          if($lists->is_validate_dob == 1)
          {
             $rules['birthday'] = ['required', new CheckValidDate];
@@ -87,8 +93,19 @@ class CheckCustomer
 
          if($lists->is_validate_city == 1)
          {
-            $rules['province'] = ['required',new CheckProvince];
-            $rules['city'] = ['required',new CheckCity($request->id_province)];
+            $rules['country'] = ['required',new CheckCountry];
+
+            if($request->country == 95)
+            {
+              $rules['province'] = ['required',new CheckProvince];
+              $rules['city'] = ['required',new CheckCity($request->id_province)];
+            }
+            else
+            {
+              $rules['zip'] = ['required','max : 10'];
+            }
+
+            $rules['city'] = ['required','max : 85'];
          }
 
          if($lists->is_validate_marriage == 1)
@@ -118,11 +135,6 @@ class CheckCustomer
          }
 
          // END TARGETING
-
-         if(array_key_exists('last_name',$req) == true)
-         {
-            $rules['last_name'] = ['max:50'];
-         }
 
          if(array_key_exists('email',$req) == true)
          {
@@ -162,8 +174,10 @@ class CheckCustomer
                 'code_country'=>$error->first('code_country'),
                 'data_update'=>$error->first('data_update'),
                 'listname'=>$error->first('listname'),
+                'country'=>$error->first('country'),
                 'province'=>$error->first('province'),
                 'city'=>$error->first('city'),
+                'zip'=>$error->first('zip'),
                 'sex'=>$error->first('sex'),
                 'birthday'=>$error->first('birthday'),
                 'marriage_status'=>$error->first('marriage_status'),

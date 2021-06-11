@@ -28,7 +28,7 @@ use App\Kabupaten;
 use Carbon\Carbon;
 use DB;
 use Session;
-use stdClass;
+use stdClass, DateTime;
 
 class ListController extends Controller
 {
@@ -1166,6 +1166,7 @@ class ListController extends Controller
         $customer = new SubscriberImport;
         $data = Excel::toArray(new SubscriberImport,$file);
         $count = 0;
+        $rowcolumn = 1;
 
         if(count($data[0]) > 1)
         {
@@ -1176,25 +1177,27 @@ class ListController extends Controller
                 $name = strip_tags($value[$key][0]);
                 $phone = strip_tags($value[$key][1]);
                 $email = strip_tags($value[$key][2]);
-                $birthday = strip_tags($value[$key][3]);
-                $gender = strip_tags($value[$key][4]);
-                $country = strip_tags($value[$key][5]);
-                $province = strip_tags($value[$key][6]);
-                $city = strip_tags($value[$key][7]);
-                $zip = strip_tags($value[$key][8]);
-                $marriage = strip_tags($value[$key][9]);
-                $hobby = strip_tags($value[$key][10]);
-                $occupation = strip_tags($value[$key][11]);
-                $religion = strip_tags($value[$key][12]);
+                $last_name = strip_tags($value[$key][3]);
+                $birthday = strip_tags($value[$key][4]);
+                $gender = strip_tags($value[$key][5]);
+                $country = strip_tags($value[$key][6]);
+                $province = strip_tags($value[$key][7]);
+                $city = strip_tags($value[$key][8]);
+                $zip = strip_tags($value[$key][9]);
+                $marriage = strip_tags($value[$key][10]);
+                $hobby = strip_tags($value[$key][11]);
+                $occupation = strip_tags($value[$key][12]);
+                $religion = strip_tags($value[$key][13]);
                 $rowcolumn++;
 
-                $check_valid = $this->checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
+                $check_valid = $this->checkValid($name,$last_name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
                
                 if($check_valid['error'] == 1)
                 {
                     $err = array(
                         'success'=>0,
                         'name'=>$check_valid['name'],
+                        'last_name'=>$check_valid['last_name'],
                         'phone'=>$check_valid['phone'],
                         'email'=>$check_valid['email'],
                         'birthday'=>$check_valid['birthday'],
@@ -1290,17 +1293,41 @@ class ListController extends Controller
                 $name = strip_tags($value[$key][0]);
                 $phone = strip_tags($value[$key][1]);
                 $email = strip_tags($value[$key][2]);
-                $birthday = strip_tags($value[$key][3]);
-                $gender = strip_tags($value[$key][4]);
-                $country = strip_tags($value[$key][5]);
-                $province = strip_tags($value[$key][6]);
-                $city = strip_tags($value[$key][7]);
-                $zip = strip_tags($value[$key][8]);
-                $marriage = strip_tags($value[$key][9]);
-                $hobby = strip_tags($value[$key][10]);
-                $occupation = strip_tags($value[$key][11]);
-                $religion = strip_tags($value[$key][12]);
+                $last_name = strip_tags($value[$key][3]);
+                $birthday = strip_tags($value[$key][4]);
+                $gender = strip_tags($value[$key][5]);
+                $country = strip_tags($value[$key][6]);
+                $province = strip_tags($value[$key][7]);
+                $city = strip_tags($value[$key][8]);
+                $zip = strip_tags($value[$key][9]);
+                $marriage = strip_tags($value[$key][10]);
+                $hobby = strip_tags($value[$key][11]);
+                $occupation = strip_tags($value[$key][12]);
+                $religion = strip_tags($value[$key][13]);
                 $rowcolumn++;
+
+                // prevent empty col
+                if($country =="")
+                {
+                  $country = 0;
+                } 
+               
+                // convert date to string
+                if($birthday !== "")
+                {
+                  // if date equal with yyyy-mm-dd doesn't need to convert from excel date
+                  $filter_date = preg_match("/\-/i", $birthday);
+                  if($filter_date == 0)
+                  {
+                    // excel date
+                    $UNIX_DATE = ($birthday - 25569) * 86400;
+                    $birthday = gmdate('Y-m-d',$UNIX_DATE);
+                  }
+                }
+                else
+                {
+                   $birthday = null;
+                }
 
                 //FILTER 1
                /* $check_valid = $this->checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
@@ -1335,27 +1362,31 @@ class ListController extends Controller
                 $checkuniquephone = $this->checkUniquePhone($phone,$id_list);           
                 // $checkuniqueemail = $this->checkUniqueEmail($email,$id_list);
 
+                // if new field db just adding here
+                $arr = [
+                  'name' => $name,
+                  'last_name' => $last_name,
+                  'telegram_number' => $phone,
+                  'email' => $email,
+                  'birthday' => $birthday,
+                  'gender' => $gender,
+                  'country' => $country,
+                  'province' => $province,
+                  'city' => $city,
+                  'zip' => $zip,
+                  'marriage' => $marriage,
+                  'hobby' => $hobby,
+                  'occupation' => $occupation,
+                  'religion' => $religion
+                ];
                 // SAVE
                 if($checkuniquephone == true)
                 {
                   $customer = new Customer;
                   $customer->user_id = $userid;
                   $customer->list_id = $id_list;
-                  $customer->name = $name;
-                  $customer->telegram_number = $phone;
-                  $customer->email = $email;
-                  $customer->birthday = $birthday;
-                  $customer->gender = $gender;
-                  $customer->country = $country;
-                  $customer->province = $province;
-                  $customer->city = $city;
-                  $customer->zip = $zip;
-                  $customer->marriage = $marriage;
-                  $customer->hobby = $hobby;
-                  $customer->occupation = $occupation;
-                  $customer->religion = $religion;
-                  $customer->status = 1;
-                  
+                  self::save_import($customer,$arr);
+
                   try
                   {     
                     $customer->save();
@@ -1375,10 +1406,8 @@ class ListController extends Controller
                    $customer_rewrite = Customer::where([['telegram_number',$phone],['list_id',$id_list]])->first();
                    $customer_id = $customer_rewrite->id;
                    $data_customer = Customer::find($customer_id);
-                   $data_customer->name = $name;
-                   $data_customer->email = $email;
-                   $data_customer->status = 1;
-                   $data_customer->save();
+                   self::save_import($data_customer,$arr);
+                   $count++;
                 }
              endforeach;
             } // ENDFOREACH
@@ -1402,7 +1431,25 @@ class ListController extends Controller
         return response()->json($msg);
     }
 
-
+    private static function save_import($sql, array $data)
+    {
+      $sql->name = $data['name'];
+      $sql->last_name = $data['last_name'];
+      $sql->telegram_number = $data['telegram_number'];
+      $sql->email = $data['email'];
+      $sql->birthday = $data['birthday'];
+      $sql->gender = $data['gender'];
+      $sql->country = $data['country'];
+      $sql->province = $data['province'];
+      $sql->city = $data['city'];
+      $sql->zip = $data['zip'];
+      $sql->marriage = $data['marriage'];
+      $sql->hobby = $data['hobby'];
+      $sql->occupation = $data['occupation'];
+      $sql->religion = $data['religion'];
+      $sql->status = 1;
+      $sql->save();
+    }
 
     private function checkUniquePhone($number,$list_id)
     {
@@ -1430,12 +1477,13 @@ class ListController extends Controller
         }
     }
 
-    private function checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowerror)
+    private function checkValid($name,$last_name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowerror)
     {
         $data = array(
             'name'=>$name,
             'phone'=>$phone,
             'email'=>$email,
+            'last_name'=>$last_name,
             'birthday'=>Date('Y-m-d',strtotime($birthday)),
             'marriage'=>$marriage,
             'gender'=>$gender,
@@ -1464,7 +1512,8 @@ class ListController extends Controller
         $rules = [
           'name'=> ['required','max:50'],
           'phone'=> ['required','min:10','max:22',new ImportValidation],
-          'email'=>['max:190']
+          'email'=>['max:190'],
+          'last_name'=>['max:50'],
         ];
 
         if(!empty($marriage) || $marriage !== null)
@@ -1482,14 +1531,20 @@ class ListController extends Controller
           $rules['country'] = [new \App\Rules\CheckCountry];
         }
 
-        if(!empty($province) || $province !== null && $country == 95)
+        if((!empty($province) || $province !== null) && $country == "95")
         {
           $rules['province'] = [new \App\Rules\CheckProvince];
         }
 
-        if(!empty($city) || $city !== null && $country == 95)
+        if(!empty($city) || $city !== null)
         {
-          $rules['city'] = [new \App\Rules\CheckCity($id_province)];
+          if($country == "95"){
+            $rules['city'] = [new \App\Rules\CheckCity($id_province)];
+          }
+          else
+          {
+            $rules['city'] = ['max : 85'];
+          }
         }
 
         if(!empty($zip) || $zip !== null)
@@ -1532,6 +1587,9 @@ class ListController extends Controller
             $err_email = str_replace("."," ",$errors->first('email'));
             ($err_email <> null)?$error_email = $err_email.'on row : '.$rowerror : $error_email=''; 
 
+            $err_lname = str_replace("."," ",$errors->first('last_name'));
+            ($err_lname <> null)?$error_lname = $err_lname.'on row : '.$rowerror : $error_lname=''; 
+
             $err_birthday = str_replace("."," ",$errors->first('birthday'));
             ($err_birthday <> null)?$error_birthday = $err_birthday.'on row : '.$rowerror : $error_birthday = ''; 
 
@@ -1565,6 +1623,7 @@ class ListController extends Controller
             $err = array(
               'error'=>1,
               'name'=>$error_name,
+              'last_name'=>$error_lname,
               'phone'=>$error_phone,
               'email'=>$error_email,
               'birthday'=>$error_birthday,

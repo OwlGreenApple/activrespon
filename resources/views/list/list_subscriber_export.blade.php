@@ -4,6 +4,7 @@
       <th>Name</th>
       <th>WA Number</th>
       <th>Email</th>
+      <th>Last Name</th>
       <th>Birthday</th>
       <th>Gender</th>
       <th>Country</th>
@@ -27,7 +28,8 @@
           <td>{{ $row->name }}</td>
           <td>{{ $row->telegram_number }}</td>
           <td>{{ $row->email }}</td>
-          <td>{{ $row->birthday }}</td>
+          <td>{{ $row->last_name }}</td>
+          <td>{{ Date("Y-m-d",strtotime($row->birthday)) }}</td>
           <td>{{ $row->gender }}</td>
           <td>
             @if($import == 0)

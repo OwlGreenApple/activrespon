@@ -1366,6 +1366,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function openImport() {
     $(".open_import").click(function(){
+       $(".alert").hide();
       $("#import-contact").modal();
     });
   }
@@ -1415,14 +1416,40 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
               $('#loader').hide();
               $('input[name="csv_file"]').val('');
     
-              if(result.success == 1)
+              if(result.success == 0)
+              {   
+                  var errors = '';
+                  var errname, errphone, erremail;
+                  (result.name !== "")?errors+=result.name+"<br />":errors+='';
+                  (result.phone !== "")?errors+=result.phone+"<br />":errors+='';
+                  (result.email !== "")?errors+=result.email+"<br />":errors+='';
+                  (result.last_name !== "")?errors+=result.last_name+"<br />":errors+='';
+                  // console.log(result);
+                  (result.birthday !== "")?errors+=result.birthday+"<br />":errors+='';
+                  (result.gender !== "")?errors+=result.gender+"<br />":errors+='';
+                  (result.country !== "")?errors+=result.country+"<br />":errors+='';
+                  (result.province !== "")?errors+=result.province+"<br />":errors+='';
+                  (result.city !== "")?errors+=result.city+"<br />":errors+='';
+                  (result.zip !== "")?errors+=result.zip+"<br />":errors+='';
+                  (result.marriage !== "")?errors+=result.marriage+"<br />":errors+='';
+                  (result.religion !== "")?errors+=result.religion+"<br />":errors+='';
+                  (result.hobby !== "")?errors+=result.hobby+"<br />":errors+='';
+                  (result.occupation !== "")?errors+=result.occupation:errors+='';
+
+                  $(".error_notif").html('<div class="alert alert-danger">'+errors+'</div>');
+
+                  if(result.message !== undefined)
+                  {
+                      $(".error_notif").html("<div class='alert alert-danger'>"+result.message+"</div>");
+                  }
+              }
+              else if(result.success == 1)
               {
                   $("#btn_close_import").trigger("click");
                   $(".main").html("<div class='alert alert-success'>"+result.message+"</div>");
                   $("body .alert-success").delay(5000).fadeOut(2000);
               }
-
-              if(result.duplicate == 1)
+              else if(result.duplicate == 1)
               {   
                   $("#btn_close_import").trigger("click");
                   $(".duplicated").html("There is available phone on your xlsx file,<br/>Do you want to overwrite?");
@@ -1434,7 +1461,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                   // console.log(data);
               }
               else
-              {
+              { 
                   excelImport(data);
               }
             },
@@ -1494,32 +1521,6 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 $(".main").html("<div class='alert alert-success'>"+result.message+"</div>");
                 $("body .alert-success").delay(5000).fadeOut(2000);
             }
-            else
-            {   
-                var errors = '';
-                var errname, errphone, erremail;
-                (result.name !== "")?errors+=result.name+"<br />":errors+='';
-                (result.phone !== "")?errors+=result.phone+"<br />":errors+='';
-                (result.email !== "")?errors+=result.email+"<br />":errors+='';
-                // console.log(result);
-                (result.birthday !== "")?errors+=result.birthday+"<br />":errors+='';
-                (result.gender !== "")?errors+=result.gender+"<br />":errors+='';
-                (result.country !== "")?errors+=result.country+"<br />":errors+='';
-                (result.province !== "")?errors+=result.province+"<br />":errors+='';
-                (result.city !== "")?errors+=result.city+"<br />":errors+='';
-                (result.zip !== "")?errors+=result.zip+"<br />":errors+='';
-                (result.marriage !== "")?errors+=result.marriage+"<br />":errors+='';
-                (result.religion !== "")?errors+=result.religion+"<br />":errors+='';
-                (result.hobby !== "")?errors+=result.hobby+"<br />":errors+='';
-                (result.occupation !== "")?errors+=result.occupation:errors+='';
-
-                $(".error_notif").html('<div class="alert alert-danger">'+errors+'</div>');
-
-                if(result.message !== undefined)
-                {
-                    $(".error_notif").html("<div class='alert alert-danger'>"+result.message+"</div>");
-                }
-            }
           },
           error: function (xhr, ajaxOptions, thrownError) {
             $('#loader').hide();
@@ -1529,7 +1530,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
             for ( var property in err.errors ) {
               msg += err.errors[property][0]+"\n"; // get message by object name
             }*/
-            $(".error_notif").html('<div class="alert alert-danger">Error, sorry unable to import, maybe your csv file is corrupt or data unavailable</div>');
+            $(".error_notif").html('<div class="alert alert-danger">Error, sorry unable to import, maybe your file is corrupt or data unavailable</div>');
             $('input[name="csv_file"]').val('');
             displayCustomer();
           }

@@ -11,7 +11,8 @@ class CheckMaxHobbyAndJob implements Rule
      *
      * @return void
      */
-    public $attribute;
+
+    public $msg;
 
     public function __construct()
     {
@@ -33,13 +34,15 @@ class CheckMaxHobbyAndJob implements Rule
         array_pop($arr);
 
         // in case of wrong format not using semicolon (;)
-        if(!is_array($arr))
+        if(count($arr) == 0)
         {
+          $this->msg = 'Please use semicolon (;) as divider ';
           return false;
         }
 
         if(count($arr) > 7)
         {
+          $this->msg = 'Maximum '.$attribute.' is 7 ';
           return false;
         }
         else
@@ -48,6 +51,7 @@ class CheckMaxHobbyAndJob implements Rule
         }
     }
 
+
     /**
      * Get the validation error message.
      *
@@ -55,6 +59,6 @@ class CheckMaxHobbyAndJob implements Rule
      */
     public function message()
     {
-        return 'Please use semicolon (;) as divider and maximum hobby or occupation is 7.';
+        return $this->msg;
     }
 }

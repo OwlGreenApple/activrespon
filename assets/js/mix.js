@@ -7,9 +7,36 @@ $(function(){
   fill_province();
   get_city();
   fill_city();
+  get_country_filter();
+  change_country();
 });
 
 var delay_duration = 200;
+
+function change_country()
+{
+	$("select[name='country']").change(function(){
+		get_country_filter();
+	});
+}
+
+function get_country_filter()
+{
+	var country_id = $("select[name='country']").val();
+	if(country_id == 95)
+	{
+		$(".form_province").show();
+		$(".form_province").removeAttr('readonly');
+		$(".form_zip").hide();
+	}
+	else
+	{
+		$(".form_province").hide();
+		$(".form_province").val('');
+		$(".form_province").attr('readonly','readonly');
+		$(".form_zip").show();
+	}
+}
 
 function get_province()
   {
