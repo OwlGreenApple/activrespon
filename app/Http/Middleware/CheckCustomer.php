@@ -102,10 +102,11 @@ class CheckCustomer
             }
             else
             {
-              $rules['zip'] = ['required','max : 10'];
-            }
+              $rules['province'] = ['required', 'max: 85'];
+              $rules['city'] = ['required','max : 85'];
+            }  
 
-            $rules['city'] = ['required','max : 85'];
+            $rules['zip'] = ['required','max : 10'];
          }
 
          if($lists->is_validate_marriage == 1)

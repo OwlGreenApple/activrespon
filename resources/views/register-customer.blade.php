@@ -157,7 +157,7 @@
                     </div> 
 
                     <div class="form-group form_province">
-                      <label>Province*</label>
+                      <label>Province/State/Region*</label>
                       <input name="province" class="form-control" autocomplete="disabled" />
                       <div class="live-search-wrapper">
                         <div id="display_province" class="live-search"><!-- display ajax here --></div>

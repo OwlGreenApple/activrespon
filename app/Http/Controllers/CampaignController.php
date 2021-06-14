@@ -24,6 +24,9 @@ use App\Rules\CheckValidListID;
 use App\Rules\CheckEventEligibleDate;
 use App\Rules\CheckBroadcastDate;
 use App\Rules\CheckExistIdOnDB;
+use App\Rules\CheckCountry;
+use App\Rules\CheckProvince;
+use App\Rules\CheckCity;
 use App\Rules\EligibleTime;
 use Carbon\Carbon;
 use App\Helpers\ApiHelper;
@@ -258,9 +261,9 @@ class CampaignController extends Controller
       $customer = new CustomerController;
 
       // UTILITIES
-      $utils_city = Utility::where('id_category',1)->get(); //kota
       $utils_hobbies = Utility::where([['user_id',$userid],['id_category',2]])->get(); //hobby
-        $utils_occupation = Utility::where([['user_id',$userid],['id_category',3]])->get(); //pekerjaan
+      $utils_occupation = Utility::where([['user_id',$userid],['id_category',3]])->get(); //pekerjaan
+      $country = $customer->get_countries();
 
       $hobby = array();
       if($utils_hobbies->count() > 0)
@@ -281,9 +284,9 @@ class CampaignController extends Controller
 
       $data = array(
           'lists'=>displayListWithContact($userid),
-          'utils_city'=>$utils_city,
           'utils_hobby'=>$utils_hobby,
           'utils_occupation'=>$utils_occupation,
+          'countries'=>$country,
           'religion'=>$customer::$religion
       );
 
@@ -313,8 +316,10 @@ class CampaignController extends Controller
       $list_id = $request->list_id;
       $sex = $request->sex;
       $marriage_status = $request->marriage_status;
+      $country = $request->country;
       $province = $request->province;
       $city = $request->city;
+      $zip = $request->zip;
       $hobbies = $request->hobby;
       $job = $request->occupation;
       $religion = $request->religion;
@@ -334,6 +339,8 @@ class CampaignController extends Controller
         ['religion',$religion],
         ['gender',$sex],
         ['province',$province],
+        ['country',$country],
+        ['zip',$zip],
       ];
 
       if($city == 'all')
@@ -359,6 +366,16 @@ class CampaignController extends Controller
       if($province == 'all')
       {
         unset($data[6]);
+      }
+
+      if($country == 'all')
+      {
+        unset($data[7]);
+      }
+
+      if($zip == 'all')
+      {
+        unset($data[8]);
       }
 
       // in case if hobby is only 1
@@ -625,6 +642,21 @@ class CampaignController extends Controller
            $rules['date_send'] = ['required',new CheckBroadcastDate];
            $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
         }
+
+        $rules['country'] = ['required',new CheckCountry];
+
+        if($request->country == 95)
+        {
+          $rules['province'] = ['required',new CheckProvince];
+          $rules['city'] = ['required',new CheckCity($request->id_province)];
+        }
+        else
+        {
+          $rules['province'] = ['required', 'max: 85'];
+          $rules['city'] = ['required','max : 85'];
+        }  
+
+        $rules['zip'] = ['required','max : 10'];
        
         $validator = Validator::make($request->all(),$rules);
         if($validator->fails())
@@ -641,8 +673,10 @@ class CampaignController extends Controller
               'msg'=>$error->first('message'),
 							'image'=>$error->first('imageWA'),
 
+              'country'=>$error->first('country'),
               'province'=>$error->first('province'),
               'city'=>$error->first('city'),
+              'zip'=>$error->first('zip'),
               'marriage_status'=>$error->first('marriage_status'),
               'religion'=>$error->first('religion'),
               'sex'=>$error->first('sex'),

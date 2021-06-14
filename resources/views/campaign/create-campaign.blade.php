@@ -222,6 +222,18 @@
 
             <!-- province & city -->
             <div class="form-inline mt-2">
+              <label class="mr-2">Country :</label>
+              <select name="country" class="form-control text-capitalize">
+                <option value="all">All</option>
+               @foreach($countries as $row)
+                <!-- <option value="{{ $row->id }}" if($row->id == 95) selected endif>{{ $row->name }}</option> -->
+                <option value="{{ $row->id }}">{{ $row->name }}</option>
+               @endforeach
+              </select>
+              <span class="error country"></span>
+            </div> 
+
+            <div class="form-inline mt-2 form_province">
               <label class="mr-2">Province :</label>
               <input name="province" class="form-control text-capitalize" value="all" autocomplete="disabled" />
             </div>
@@ -240,6 +252,12 @@
             <div class="live-search-wrapper-city ml-4">
               <div id="display_city" class="live-search"><!-- display ajax here --></div>
             </div>
+
+            <div class="form-inline mt-2 form_zip">
+              <label class="mr-2">Zip :</label>
+              <input name="zip"class="form-control text-capitalize" value="all" maxlength="10" autocomplete="disabled" />
+              <span class="error zip"></span>
+            </div> 
             <!-- end province & city -->
 
             <div class="form-inline mt-2">
@@ -418,7 +436,7 @@ use min 5 spintax variations is recommended	<br>
   {
     $("#calculate").click(function(){
       var data = $("#save_campaign").serialize();
-
+      
       $.ajax({
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
           type : 'POST',

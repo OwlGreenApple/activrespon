@@ -14,7 +14,7 @@ class AddTargettingColumnToCustomers extends Migration
     public function up()
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->Date('birthday')->after('code_country');
+            $table->String('birthday')->after('code_country');
             $table->string('gender')->after('birthday');
             $table->string('city')->after('gender');
             $table->string('marriage')->after('city');

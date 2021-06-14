@@ -236,24 +236,27 @@ class CustomerController extends Controller
     {
         $birthday = strip_tags($request->birthday);
         $gender = strip_tags($request->sex);
-        $country = strip_tags($request->country);
-        $province = strip_tags($request->province);
-        $city = strip_tags($request->city);
+        $country = strip_tags(ucwords($request->country));
+        $province = strip_tags(ucwords($request->province));
+        $city = strip_tags(ucwords($request->city));
         $zip = strip_tags($request->zip);
         $marriage = strip_tags($request->marriage_status);
         $religion = strip_tags($request->religion);
+        $hobby =  strip_tags($request->hobby);
+        $occupation = strip_tags($request->occupation);
         $hobbies = $occupations = null;
 
-        if(count($request->hobby) > 0)
+      
+        if($hobby !== "")
         {
-          foreach($request->hobby as $key=> $row):
+          foreach($hobby as $key=> $row):
             $hobbies .= $row.";";
           endforeach;
         }
 
-        if(count($request->occupation) > 0)
+        if($occupation !== "")
         {
-          foreach($request->occupation as $key=> $row):
+          foreach($occupation as $key=> $row):
             $occupations .= $row.";";
           endforeach;
         }

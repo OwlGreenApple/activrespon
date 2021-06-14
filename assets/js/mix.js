@@ -7,8 +7,8 @@ $(function(){
   fill_province();
   get_city();
   fill_city();
-  get_country_filter();
-  change_country();
+  // get_country_filter();
+  // change_country();
 });
 
 var delay_duration = 200;
@@ -41,9 +41,19 @@ function get_country_filter()
 function get_province()
   {
     $("input[name='province']").on("keyup focusin focusout",delay(function(){
-      var val = $(this).val();
-      $(".live-search-wrapper").show();
-      display_province(val);
+
+      var country_id = $("select[name='country']").val();
+	  if(country_id == 95)
+	  {
+	  	var val = $(this).val();
+	    $(".live-search-wrapper").show();
+	    display_province(val);
+	  }
+	  else
+	  {
+	  	return false;
+	  }
+     
     },delay_duration));
 }
 
@@ -72,10 +82,19 @@ function display_province(name)
 function get_city()
   {
     $("input[name='city']").on("keyup focusin",delay(function(){
-      var val = $(this).val();
-      var id = $("input[name='province']").attr('data-id');
-      $(".live-search-wrapper-city").show();
-      display_city(val,id);
+      var country_id = $("select[name='country']").val();
+	  if(country_id == 95)
+	  {
+	  	 var val = $(this).val();
+	     var id = $("input[name='province']").attr('data-id');
+	     $(".live-search-wrapper-city").show();
+	     display_city(val,id);
+	  }
+	  else
+	  {
+	  	return false;
+	  }
+     
     },delay_duration));
 }
 
