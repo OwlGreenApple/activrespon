@@ -400,8 +400,10 @@ class BroadCastController extends Controller
         $marriage_status = $request->marriage_status;
         $age_start = $request->age_start;
         $age_end = $request->age_end;
+        $country = $request->country;
         $province = $request->province;
         $city = $request->city;
+        $zip = $request->zip;
         $religion = $request->religion;
         $hobby = $request->hobby;
         $occupation = $request->occupation;
@@ -499,8 +501,10 @@ class BroadCastController extends Controller
         $broadcast->is_targetting = $is_targetting;
         $broadcast->birthday = $birthday;
         $broadcast->gender = $sex;
+        $broadcast->country = $country;
         $broadcast->province = $province;
         $broadcast->city = $city;
+        $broadcast->zip = $zip;
         $broadcast->marriage = $marriage_status;
         $broadcast->religion = $religion;
         $broadcast->start_age = $age_start;
@@ -680,9 +684,11 @@ class BroadCastController extends Controller
           'hour_time' => $broadcast->hour_time,
           'message' => $broadcast->message,
           'is_targetting'=>$broadcast->is_targetting,
+          'country' => $broadcast->country, 
           'province' => $broadcast->province, 
           'province_id' => $province_id, 
           'city' => $broadcast->city, 
+          'zip' => $broadcast->zip, 
           'sex' => $broadcast->gender, 
           'marriage' => $broadcast->marriage,
           'age_start' => $broadcast->start_age,
@@ -731,14 +737,17 @@ class BroadCastController extends Controller
         if($is_targetting == 0)
         {
            $sex = $marriage_status = $city = $religion = $age_start = $age_end = 'all';
-           $hobbies = $job = null;
+           $hobbies = $job = $zip = null;
+           $country = 0;
         }
         else
         { 
            $sex = $request->sex;
            $marriage_status = $request->marriage_status;
            $province = $request->province;
+           $country = $request->country;
            $city = $request->city;
+           $zip = $request->zip;
            $religion = $request->religion;
            $age_start = $request->age_start;
            $age_end = $request->age_end;
@@ -825,8 +834,10 @@ class BroadCastController extends Controller
           $broadcast->is_targetting = $is_targetting;
           $broadcast->birthday = $birthday;
           $broadcast->gender = $sex;
+          $broadcast->country = $country;
           $broadcast->province = $province;
           $broadcast->city = $city;
+          $broadcast->zip = $zip;
           $broadcast->marriage = $marriage_status;
           $broadcast->religion = $religion;
           $broadcast->start_age = $age_start;

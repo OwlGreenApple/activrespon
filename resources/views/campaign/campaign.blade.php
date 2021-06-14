@@ -231,8 +231,19 @@
 
                               <!-- province & city -->
                               <div class="form-inline mt-2">
+                                <label class="mr-2">Country :</label>
+                                <select name="country" class="form-control text-capitalize">
+                                  <option value="all">All</option>
+                                 @foreach($countries as $row)
+                                  <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                 @endforeach
+                                </select>
+                                <span class="error country"></span>
+                              </div> 
+
+                              <div class="form-inline mt-2">
                                 <label class="mr-2">Province :</label>
-                                <input name="province" class="form-control" autocomplete="disabled" />
+                                <input name="province" class="form-control text-capitalize" autocomplete="disabled" />
                               </div>
                               <span class="error province"></span> 
                             
@@ -249,6 +260,12 @@
                               <div class="live-search-wrapper-city ml-4">
                                 <div id="display_city" class="live-search"><!-- display ajax here --></div>
                               </div>
+
+                              <div class="form-inline mt-2 form_zip">
+                                <label class="mr-2">Zip :</label>
+                                <input name="zip"class="form-control text-capitalize" value="all" maxlength="10" autocomplete="disabled" />
+                                <span class="error zip"></span>
+                              </div> 
                               <!-- end province & city -->
 
                               <div class="form-inline mt-2">
@@ -723,8 +740,10 @@
           $(".event_time").html(result.event_time);
           $(".msg").html('<div class="alert alert-danger">'+result.broadcast_id+'</div>')
           $(".image").html(result.image);
+          $(".country").html(result.country);
           $(".province").html(result.province);
           $(".city").html(result.city);
+          $(".zip").html(result.zip);
           $(".religion").html(result.religion);
           $(".sex").html(result.sex);
           $(".marriage_status").html(result.marriage_status);
@@ -908,14 +927,14 @@
         var opt = "<option value='"+result.city+"' selected>"+result.city+"</option>";
         $(opt).appendTo("select[name='city']");
       }
-      else
-      {
-        $("select[name='city'] option[value="+result.city+"]").prop('selected',true);
-      }*/
 
+      else{ }*/
+      
+      $("select[name='country'] option[value="+result.country+"]").prop('selected',true);
       $("input[name='city']").val(result.city);
       $("input[name='province']").val(result.province);
       $("input[name='province']").attr('data-id',result.province_id);
+      $("input[name='zip']").val(result.zip);
 
       $("select[name='age_start'] option[value="+result.age_start+"]").prop('selected',true);
       $("select[name='age_end'] option[value="+result.age_end+"]").prop('selected',true);
@@ -1059,8 +1078,10 @@
             $(".message").html(result.message);
             $(".list_id").html(result.list_id);
             $(".image").html(result.image);
+            $(".country").html(result.country);
             $(".province").html(result.province);
             $(".city").html(result.city);
+            $(".zip").html(result.zip);
             $(".religion").html(result.religion);
             $(".sex").html(result.sex);
             $(".marriage_status").html(result.marriage_status);

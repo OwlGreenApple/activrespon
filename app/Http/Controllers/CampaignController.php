@@ -87,6 +87,7 @@ class CampaignController extends Controller
       $customer = new CustomerController;
       $utils_hobbies = Utility::where('id_category',2)->get(); //hobby
       $utils_occupation = Utility::where('id_category',3)->get(); //pekerjaan
+      $country = $customer->get_countries();
 
       $data['lists'] = displayListWithContact($userid);
       $data['paginate'] = $campaign;
@@ -99,6 +100,7 @@ class CampaignController extends Controller
       $data['religion'] = $customer::$religion;
       $data['utils_hobbies'] = $utils_hobbies;
       $data['utils_occupation'] = $utils_occupation;
+      $data['countries'] = $country;
 
       if($request->ajax())
       {
@@ -642,21 +644,6 @@ class CampaignController extends Controller
            $rules['date_send'] = ['required',new CheckBroadcastDate];
            $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
         }
-
-        $rules['country'] = ['required',new CheckCountry];
-
-        if($request->country == 95)
-        {
-          $rules['province'] = ['required',new CheckProvince];
-          $rules['city'] = ['required',new CheckCity($request->id_province)];
-        }
-        else
-        {
-          $rules['province'] = ['required', 'max: 85'];
-          $rules['city'] = ['required','max : 85'];
-        }  
-
-        $rules['zip'] = ['required','max : 10'];
        
         $validator = Validator::make($request->all(),$rules);
         if($validator->fails())

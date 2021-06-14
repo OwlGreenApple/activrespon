@@ -148,7 +148,7 @@
                     @if($lists->is_validate_city == 1)
                     <div class="form-group">
                       <label>Country*</label>
-                      <select name="country" class="form-control">
+                      <select name="country" class="form-control text-capitalize">
                        @foreach($countries as $row)
                         <option value="{{ $row->id }}" @if($row->id == 95) selected @endif>{{ $row->name }}</option>
                        @endforeach
@@ -158,7 +158,7 @@
 
                     <div class="form-group form_province">
                       <label>Province/State/Region*</label>
-                      <input name="province" class="form-control" autocomplete="disabled" />
+                      <input name="province" class="form-control text-capitalize" autocomplete="disabled" />
                       <div class="live-search-wrapper">
                         <div id="display_province" class="live-search"><!-- display ajax here --></div>
                       </div>
@@ -167,7 +167,7 @@
 
                     <div class="form-group">
                       <label>City*</label>
-                      <input name="city"class="form-control" autocomplete="disabled" />
+                      <input name="city"class="form-control text-capitalize" autocomplete="disabled" />
                         <div class="live-search-wrapper-city">
                           <div id="display_city" class="live-search"><!-- display ajax here --></div>
                         </div>

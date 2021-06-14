@@ -9,6 +9,7 @@ use App\Rules\CheckValidListID;
 use App\Rules\CheckBroadcastDate;
 use App\Rules\EligibleTime;
 use App\Rules\CheckExistIdOnDB;
+use App\Rules\CheckValidDate;
 
 class CheckBroadcastDuplicate
 {
@@ -69,8 +70,10 @@ class CheckBroadcastDuplicate
                   'time_sending'=>$error->first('hour'),
                   'edit_message'=>$error->first('edit_message'),
                   'image'=>$error->first('imageWA'),
+                  'country'=>$error->first('country'),
                   'province'=>$error->first('province'),
                   'city'=>$error->first('city'),
+                  'zip'=>$error->first('zip'),
                   'marriage_status'=>$error->first('marriage_status'),
                   'religion'=>$error->first('religion'),
                   'sex'=>$error->first('sex'),
@@ -135,8 +138,10 @@ class CheckBroadcastDuplicate
               'hour'=>$error->first('hour'),
               'message'=>$error->first('message'),
               'image'=>$error->first('imageWA'),
+              'country'=>$error->first('country'),
               'province'=>$error->first('province'),
               'city'=>$error->first('city'),
+              'zip'=>$error->first('zip'),
               'marriage_status'=>$error->first('marriage_status'),
               'religion'=>$error->first('religion'),
               'sex'=>$error->first('sex'),
@@ -165,12 +170,36 @@ class CheckBroadcastDuplicate
 
           if($request->province !== 'all')
           {
-            $rules['province'] = ['required',new \App\Rules\CheckProvince];
+            if($request->country == 95)
+            {
+              $rules['province'] = ['required',new \App\Rules\CheckProvince];
+            }
+            else
+            {
+              $rules['province'] = ['required', 'max: 85'];
+            }
+          }
+          
+          if($request->country !== 'all')
+          {
+            $rules['country'] = ['required',new \App\Rules\CheckCountry];
+          }
+
+          if($request->zip !== 'all')
+          {
+            $rules['zip'] = ['required','max : 10'];
           }
 
           if($request->city !== 'all')
           {
-             $rules['city'] = ['required',new \App\Rules\CheckCity($request->id_province)];
+            if($request->country == 95)
+            {
+              $rules['city'] = ['required',new \App\Rules\CheckCity($request->id_province)];
+            }
+            else
+            {
+              $rules['city'] = ['required','max : 85'];
+            }  
           }
 
           if($request->religion !== 'all')
