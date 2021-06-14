@@ -13,6 +13,7 @@ $(function(){
 
 var delay_duration = 200;
 
+// ..
 function change_country()
 {
 	$("select[name='country']").change(function(){
@@ -56,6 +57,7 @@ function get_province()
      
     },delay_duration));
 }
+// ..
 
 function display_province(name)
 {
