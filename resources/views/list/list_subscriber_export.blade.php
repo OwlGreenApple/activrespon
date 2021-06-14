@@ -29,7 +29,7 @@
           <td>{{ $row->telegram_number }}</td>
           <td>{{ $row->email }}</td>
           <td>{{ $row->last_name }}</td>
-          <td>{{ Date("Y-m-d",strtotime($row->birthday)) }}</td>
+          <td>{{ $row->birthday }}</td>
           <td>{{ $row->gender }}</td>
           <td>
             @if($import == 0)
