@@ -391,21 +391,30 @@ class CampaignController extends Controller
          $data[] = ['occupation','like','%'.$job[0].'%'];
       }
 
+      $data[] = ['status','=',1];
       $customer = Customer::where($data);
 
       // in case if hobby more than 1
       $hobby_statement = '';
       if(count($hobbies) > 1)
       {
+        $pos = 0;
         $last_index = count($hobbies) - 1;
         foreach($hobbies as $index => $row):
-          if($index == $last_index)
+          $pos = $index + 1;
+          if($index == 0)
           {
-            $hobby_statement .= "hobby LIKE '%".$row."%'";
+            // FIRST STATEMENT
+            $hobby_statement .= "(SPLIT_STRING(hobby,';',".$pos.") = '".$row."' OR ";
+          }
+          elseif($index == $last_index)
+          {
+             // LAST STATEMENT
+            $hobby_statement .= "SPLIT_STRING(hobby,';',".$pos.") = '".$row."')";
           }
           else
           {
-            $hobby_statement .= "hobby LIKE '%".$row."%' OR ";
+            $hobby_statement .= "SPLIT_STRING(hobby,';',".$pos.") = '".$row."' OR ";
           }
         endforeach;
         $customer->whereRaw($hobby_statement);
@@ -417,13 +426,20 @@ class CampaignController extends Controller
       {
         $last_index = count($job) - 1;
         foreach($job as $index => $row):
-          if($index == $last_index)
+          $posj = $index + 1;
+          if($index == 0)
           {
-            $job_statement .= "occupation LIKE '%".$row."%'";
+            // FIRST STATEMENT
+            $job_statement .= "(SPLIT_STRING(occupation,';',".$posj.") = '".$row."' OR ";
+          }
+          elseif($index == $last_index)
+          {
+            // LAST STATEMENT
+            $job_statement .= "SPLIT_STRING(occupation,';',".$posj.") = '".$row."')";
           }
           else
           {
-            $job_statement .= "occupation LIKE '%".$row."%' OR ";
+            $job_statement .= "SPLIT_STRING(occupation,';',".$posj.") = '".$row."' OR ";
           }
         endforeach;
         $customer->whereRaw($job_statement);

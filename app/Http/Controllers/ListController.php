@@ -700,23 +700,35 @@ class ListController extends Controller
         // dd($request->all());
 
         //$list_label = $request->list_label;
-        $label_name = $request->label_name;
-        $label_phone = $request->label_phone;
-        $label_email = $request->label_email;
-        $editor = $request->editor;
-        $pixel = $request->pixel;
+        $label_name = strip_tags($request->label_name);
+        $label_phone = strip_tags($request->label_phone);
+        $label_email = strip_tags($request->label_email);
+        $editor = strip_tags($request->editor);
+        $pixel = strip_tags($request->pixel);
         $fields = $request->fields;
         $dropfields = $request->dropfields;
         $additional = null;
         $additionaldropdown = null;
         $data['additionalerror'] = false;
-        $is_validation_dob = $request->validate_dob;
-        $is_validate_city = $request->validate_city;
-        $is_validate_job = $request->validate_job;
-        $is_validate_hobby = $request->validate_hobby;
-        $is_validate_gender = $request->validate_gender;
-        $is_validate_marriage = $request->validate_marriage;
-        $is_validate_religion = $request->validate_religion;
+        $is_validation_dob = strip_tags($request->validate_dob);
+        $is_validate_city = strip_tags($request->validate_city);
+        $is_validate_job = strip_tags($request->validate_job);
+        $is_validate_hobby = strip_tags($request->validate_hobby);
+        $is_validate_gender = strip_tags($request->validate_gender);
+        $is_validate_marriage = strip_tags($request->validate_marriage);
+        $is_validate_religion = strip_tags($request->validate_religion);
+
+        $t_birthday = strip_tags($request->t_birthday);
+        $t_country = strip_tags($request->t_country);
+        $t_province = strip_tags($request->t_province);
+        $t_city = strip_tags($request->t_city);
+        $t_zip = strip_tags($request->t_zip);
+        $t_gender = strip_tags($request->t_gender);
+        $t_marriage = strip_tags($request->t_marriage);
+        $t_religion = strip_tags($request->t_religion);
+        $t_hobby = strip_tags($request->t_hobby);
+        $t_job = strip_tags($request->t_job);
+      
 
         // $lists = UserList::where([['id',$id],['user_id','=',$userid]])->update([
         $lists = UserList::find($id);
@@ -738,14 +750,25 @@ class ListController extends Controller
         $lists->is_validate_marriage = $is_validate_marriage;
         $lists->is_validate_relgion = $is_validate_religion;
 
+        $lists->label_birthday = $t_birthday;
+        $lists->label_country = $t_country;
+        $lists->label_province = $t_province;
+        $lists->label_city = $t_city;
+        $lists->label_zip = $t_zip;
+        $lists->label_gender = $t_gender;
+        $lists->label_marriage = $t_marriage;
+        $lists->label_religion = $t_religion;
+        $lists->label_hobby = $t_hobby;
+        $lists->label_occupation = $t_job;
+
         try
         {
           $lists->save();
         }
         catch(QueryException $e)
         {
-           // $data['message'] = 'Sorry, unable to update your list, our system is busy';
-           $data['message'] = $e->getMessage();
+           // $data['message'] = $e->getMessage();
+           $data['message'] = "Sorry, our system is too busy, please try again later.";
            return response()->json($data);
         }
 

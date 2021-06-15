@@ -87,7 +87,7 @@
 
                 <form class="add-contact" id="addcustomer">
                     <div class="form-group">
-                      <label>Name*</label>
+                      <label>{{ $lists->label_name  }}*</label>
                       <input type="text" name="subscribername" class="form-control" />
                      <!--  <input type="hidden" id="city" name="city" /> -->
                       <span class="error name"></span>
@@ -113,14 +113,14 @@
                     </div>
 
                     <div class="form-group">
-                      <label>Email*</label>
+                      <label>{{ $lists->label_email  }}*</label>
                       <input type="email" name="email" class="form-control" />
                       <span class="error email"></span>
                     </div> 
 
                     @if($lists->is_validate_dob == 1)
                     <div class="form-group">
-                      <label>Birthday*</label>
+                      <label>{{ $lists->label_birthday  }}*</label>
                      <!--  <div class="form-inline"> -->
                         <input id="datetimepicker" type="text" name="birthday" class="form-control" readonly="readonly" />
                          <!--  <select name="day" class="form-control mr-2" id="dobday"></select>
@@ -136,7 +136,7 @@
 
                     @if($lists->is_validate_gender == 1)
                     <div class="form-group">
-                      <label>Sex*</label>
+                      <label>{{ $lists->label_gender  }}*</label>
                       <select name="sex" class="form-control">
                         <option value="male" selected>Male</option>
                         <option value="female">Female</option>
@@ -147,7 +147,7 @@
                    
                     @if($lists->is_validate_city == 1)
                     <div class="form-group">
-                      <label>Country*</label>
+                      <label>{{ $lists->label_country }}*</label>
                       <select name="country" class="form-control text-capitalize">
                        @foreach($countries as $row)
                         <option value="{{ $row->id }}" @if($row->id == 95) selected @endif>{{ $row->name }}</option>
@@ -157,7 +157,7 @@
                     </div> 
 
                     <div class="form-group form_province">
-                      <label>Province/State/Region*</label>
+                      <label>{{ $lists->label_province }}*</label>
                       <input name="province" class="form-control text-capitalize" autocomplete="disabled" />
                       <div class="live-search-wrapper">
                         <div id="display_province" class="live-search"><!-- display ajax here --></div>
@@ -166,7 +166,7 @@
                     </div>
 
                     <div class="form-group">
-                      <label>City*</label>
+                      <label>{{ $lists->label_city }}*</label>
                       <input name="city"class="form-control text-capitalize" autocomplete="disabled" />
                         <div class="live-search-wrapper-city">
                           <div id="display_city" class="live-search"><!-- display ajax here --></div>
@@ -175,7 +175,7 @@
                     </div> 
 
                     <div class="form-group form_zip">
-                      <label>Zip*</label>
+                      <label>{{ $lists->label_zip }}*</label>
                       <input name="zip"class="form-control" maxlength="10" autocomplete="disabled" />
                       <span class="error zip"></span>
                     </div> 
@@ -183,7 +183,7 @@
                    
                     @if($lists->is_validate_marriage == 1)
                     <div class="form-group">
-                      <label>Status*</label>
+                      <label>{{ $lists->label_marriage }}*</label>
                       <select name="marriage_status" class="form-control">
                         <option value="single" selected>Single</option>
                         <option value="married">Married</option>
@@ -195,7 +195,7 @@
                     @if($lists->is_validate_hobby == 1)
                       @if($utils_hobby->count() > 0)
                       <div class="form-group">
-                        <label>Hobby*</label><br/>
+                        <label>{{ $lists->label_hobby }}*</label><br/>
                         
                         @foreach($utils_hobby as $row)
                         <div class="form-check form-check-inline">
@@ -211,7 +211,7 @@
                     @if($lists->is_validate_job == 1)
                       @if($utils_occupation->count() > 0)
                       <div class="form-group">
-                        <label>Occupation*</label><br/>
+                        <label>{{ $lists->label_occupation }}*</label><br/>
 
                         @foreach($utils_occupation as $row)
                         <div class="form-check form-check-inline">
@@ -227,7 +227,7 @@
 
                     @if($lists->is_validate_relgion == 1)
                     <div class="form-group">
-                      <label>Religion*</label>
+                      <label>{{ $lists->label_religion }}*</label>
                       <select name="religion" class="form-control text-capitalize">
                         <option value="{{ $religion[1] }}" selected>{{ $religion[1] }}</option>
                         <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>

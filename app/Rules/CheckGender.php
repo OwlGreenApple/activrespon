@@ -3,6 +3,8 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
+use App\Http\Controllers\CustomerController;
 
 class CheckGender implements Rule
 {
@@ -25,13 +27,10 @@ class CheckGender implements Rule
      */
     public function passes($attribute, $value)
     {
-        $corrector = false;
-        if($value == 'male' || $value == 'female')
-        {
-          $corrector = true;
-        }
+        $gender = new CustomerController;
+        $valid_gender = $gender::$gender;
 
-        if($corrector == true)
+        if(in_array($value,$valid_gender))
         {
           return true;
         }
@@ -48,6 +47,6 @@ class CheckGender implements Rule
      */
     public function message()
     {
-        return 'Please use valid gender.';
+        return Lang::get('custom.gender');
     }
 }

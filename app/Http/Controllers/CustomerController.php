@@ -31,7 +31,7 @@ use App\Http\Controllers\ApiWPController;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;
 
-class CustomerController extends Controller
+class CustomerController extends Controller 
 {
 
     public function subscriber(Request $request, $link_list)
@@ -188,7 +188,10 @@ class CustomerController extends Controller
     }
 
      // display religion
-    public static $religion =  ['all','islam','christianity','catholic','budhist','hindu'];
+    public static $religion =  ['all','islam','kristen','katolik','budha','hindu'];
+
+    // display gender
+    public static $gender =  ['all','pria','wanita'];
 
     // GET PROVINCE
     public function get_province(Request $request)
@@ -242,22 +245,22 @@ class CustomerController extends Controller
         $zip = strip_tags($request->zip);
         $marriage = strip_tags($request->marriage_status);
         $religion = strip_tags($request->religion);
-        $hobby =  strip_tags($request->hobby);
-        $occupation = strip_tags($request->occupation);
+        $hobby =  $request->hobby;
+        $occupation = $request->occupation;
         $hobbies = $occupations = null;
 
       
         if($hobby !== "")
         {
           foreach($hobby as $key=> $row):
-            $hobbies .= $row.";";
+            $hobbies .= strip_tags($row).";";
           endforeach;
         }
 
         if($occupation !== "")
         {
           foreach($occupation as $key=> $row):
-            $occupations .= $row.";";
+            $occupations .= strip_tags($row).";";
           endforeach;
         }
 

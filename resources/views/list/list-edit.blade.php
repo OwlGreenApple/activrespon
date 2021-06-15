@@ -129,46 +129,65 @@
 
             <div class="form-group text-left">
               <label>Targeting Form</label>
-              <div class="form-check">
+              <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_dob" @if($data[
                 "lists"]->is_validate_dob == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label">Birthday</h6>
+                <h6 class="form-check-label"><input name="t_birthday" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_birthday }}" /></h6>
+                <span class="error t_birthday"><!-- error --></span>
               </div> 
 
-             <div class="form-check">
+             <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_city" @if($data[
                 "lists"]->is_validate_city == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label">City</h6>
+                <h6 class="form-check-label">
+                  <input name="t_country" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_country }}" />
+                  <span class="error t_country"><!-- error --></span>
+                  <input name="t_province" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_province }}" />
+                  <span class="error t_province"><!-- error --></span>
+                  <input name="t_city" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_city }}" />
+                  <span class="error t_city"><!-- error --></span>
+                  <input name="t_zip" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_zip }}" />
+                  <span class="error t_zip"><!-- error --></span>
+                </h6>
               </div>
 
-              <div class="form-check">
+              <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_gender" @if($data[
                 "lists"]->is_validate_gender == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label">Sex</h6>
+                <h6 class="form-check-label"><input name="t_gender" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_gender }}" /></h6>
+                <span class="error t_gender"><!-- error --></span>
               </div>
 
-              <div class="form-check">
+              <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_marriage" @if($data[
                 "lists"]->is_validate_marriage == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label">Marriage Status</h6>
+                <h6 class="form-check-label"><input name="t_marriage" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_marriage }}" /></h6>
+                <span class="error t_marriage"><!-- error --></span>
               </div>
 
-              <div class="form-check">
+              <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_religion" @if($data[
                 "lists"]->is_validate_relgion == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label">Religion</h6>
+                <h6 class="form-check-label"><input name="t_religion" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_religion }}" /></h6>
+                <span class="error t_religion"><!-- error --></span>
               </div>
 
-              <div class="form-check">
+              <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_hobby" @if($data[
                 "lists"]->is_validate_hobby == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label"><a target="_blank" href="{{url('targeting-form')}}">Hobby</a></h6>
+                <h6 class="form-check-label">
+                  <input name="t_hobby" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_hobby }}" />
+                  <a target="_blank" href="{{url('targeting-form')}}">Setup Hobby</a></h6>
+                  <span class="error t_hobby"><!-- error --></span>
               </div>  
 
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="validate_job" @if($data[
                 "lists"]->is_validate_job == 1) checked value="1" @else value="0" @endif/>
-                <h6 class="form-check-label"><a target="_blank" href="{{url('targeting-form')}}">Occupation</a></h6>
+                <h6 class="form-check-label">
+                  <input name="t_job" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_occupation }}" />
+                  <a class="mt-2" target="_blank" href="{{url('targeting-form')}}">Setup Occupation</a></h6>
+                  <span class="error t_job"><!-- error --></span>
               </div>
 
             </div> 
@@ -1774,6 +1793,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
              }
 
              // all data
+            
              var data = {
                 id : {!! $id !!},
                 label_name : $("input[name='label_name']").val(),
@@ -1795,6 +1815,17 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 validate_gender : $("input[name='validate_gender']").val(),
                 validate_marriage : $("input[name='validate_marriage']").val(),
                 validate_religion : $("input[name='validate_religion']").val(),
+
+                t_birthday : $("input[name='t_birthday']").val(),
+                t_country : $("input[name='t_country']").val(),
+                t_province : $("input[name='t_province']").val(),
+                t_city : $("input[name='t_city']").val(),
+                t_zip : $("input[name='t_zip']").val(),
+                t_gender : $("input[name='t_gender']").val(),
+                t_marriage : $("input[name='t_marriage']").val(),
+                t_religion : $("input[name='t_religion']").val(),
+                t_hobby : $("input[name='t_hobby']").val(),
+                t_job : $("input[name='t_job']").val(),
              };
 
             $.ajaxSetup({
@@ -1837,6 +1868,16 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                       $(".label_email").html(result.label_email);
                       $(".button_rename").html(result.button_rename);
                       $(".message_conf").html(result.conf_message);
+                      $(".t_birthday").html(result.t_birthday);
+                      $(".t_country").html(result.t_country);
+                      $(".t_province").html(result.t_province);
+                      $(".t_city").html(result.t_city);
+                      $(".t_zip").html(result.t_zip);
+                      $(".t_gender").html(result.t_gender);
+                      $(".t_marriage").html(result.t_marriage);
+                      $(".t_religion").html(result.t_religion);
+                      $(".t_hobby").html(result.t_hobby);
+                      $(".t_job").html(result.t_job);
 
                       if(result.additionalerror == true)
                       {
