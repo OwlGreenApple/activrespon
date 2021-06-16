@@ -5,6 +5,7 @@ namespace App\Rules;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 use App\User;
 
 class OldPassword implements Rule
@@ -55,6 +56,6 @@ class OldPassword implements Rule
      */
     public function message()
     {
-        return 'Old Password does not match, please try again';
+        return Lang::get('custom.old_password');
     }
 }

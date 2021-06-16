@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Kabupaten;
 
 class CheckCity implements Rule
@@ -48,6 +49,6 @@ class CheckCity implements Rule
      */
     public function message()
     {
-        return 'Invalid city.';
+        return Lang::get('custom.city');
     }
 }

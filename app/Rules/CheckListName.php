@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\UserList;
 
 class CheckListName implements Rule
@@ -52,6 +53,6 @@ class CheckListName implements Rule
      */
     public function message()
     {
-        return 'Please do not modify list name!';
+        return Lang::get('custom.list_name');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class TelegramNumber implements Rule
 {
@@ -52,6 +53,6 @@ class TelegramNumber implements Rule
      */
     public function message()
     {
-        return 'Your Number is invalid, please use + as a leading number following by your country code and don\'t use 0 as leading number ';
+        return Lang::get('custom.tnumber');
     }
 }

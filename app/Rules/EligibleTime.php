@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Lang;
 
 class EligibleTime implements Rule
 {
@@ -72,6 +73,6 @@ class EligibleTime implements Rule
      */
     public function message()
     {
-        return 'Time cannot less than today\'s current time.';
+        return Lang::get('custom.time');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Province;
 
 class CheckProvince implements Rule
@@ -45,6 +46,6 @@ class CheckProvince implements Rule
      */
     public function message()
     {
-        return 'Invalid Province.';
+        return Lang::get('custom.province');
     }
 }

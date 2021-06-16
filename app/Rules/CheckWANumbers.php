@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use App\Customer;
 
  /* 
@@ -58,6 +59,6 @@ class CheckWANumbers implements Rule
      */
     public function message()
     {
-        return 'Sorry, this number had registered already.';
+        return Lange::get('custom.number');
     }
 }

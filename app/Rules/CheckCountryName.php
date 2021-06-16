@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Countries;
 
 class CheckCountryName implements Rule
@@ -68,6 +69,6 @@ class CheckCountryName implements Rule
      */
     public function message()
     {
-        return 'Country name available.';
+        return Lang::get('custom.country_name');
     }
 }

@@ -97,10 +97,12 @@ class CampaignController extends Controller
       $data['campaign_controller'] = new CampaignController;
       $data['autoschedule'] = new Reminder;
       $data['userid'] = $userid;
-      $data['religion'] = $customer::$religion;
       $data['utils_hobbies'] = $utils_hobbies;
       $data['utils_occupation'] = $utils_occupation;
       $data['countries'] = $country;
+      $data['religion'] = $customer::$religion;
+      $data['gender'] = $customer::$gender;
+      $data['marriage'] = $customer::$marriage;
 
       if($request->ajax())
       {
@@ -289,7 +291,9 @@ class CampaignController extends Controller
           'utils_hobby'=>$utils_hobby,
           'utils_occupation'=>$utils_occupation,
           'countries'=>$country,
-          'religion'=>$customer::$religion
+          'religion'=>$customer::$religion,
+          'gender'=>$customer::$gender,
+          'marriage'=>$customer::$marriage
       );
 
       return view('campaign.create-campaign',$data);

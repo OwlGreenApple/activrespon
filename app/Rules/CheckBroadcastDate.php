@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use App\Reminder;
 use Carbon\Carbon;
 
@@ -50,6 +51,6 @@ class CheckBroadcastDate implements Rule
      */
     public function message()
     {
-        return 'Broadcast deliver day cannot less than today.';
+        return Lang::get('custom.bc_deliver');
     }
 }

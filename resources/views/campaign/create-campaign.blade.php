@@ -188,8 +188,8 @@
               <label class="mr-2">Sex :</label>
               <select name="sex" class="form-control">
                 <option value="all" selected>All</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="1">{{ $gender[1] }}</option>
+                <option value="2">{{ $gender[2] }}</option>
               </select>
             </div> 
             <span class="error sex"></span>
@@ -198,8 +198,8 @@
               <label class="mr-2">Status :</label>
               <select name="marriage_status" class="form-control">
                 <option value="all" selected>All</option>
-                <option value="single">Single</option>
-                <option value="married">Married</option>
+                <option value="1">{{ $marriage[1] }}</option>
+                <option value="2">{{ $marriage[2] }}</option>
               </select>
             </div> 
             <span class="error marriage_status"></span>
@@ -264,11 +264,11 @@
               <label class="mr-2">Religion :</b></label>
                <select name="religion" class="form-control text-capitalize">
                   <option value="{{ $religion[0] }}" selected>{{ $religion[0] }}</option>
-                  <option value="{{ $religion[1] }}">{{ $religion[1] }}</option>
-                  <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
-                  <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
-                  <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
-                  <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
+                  <option value="1">{{ $religion[1] }}</option>
+                  <option value="2">{{ $religion[2] }}</option>
+                  <option value="3">{{ $religion[3] }}</option>
+                  <option value="4">{{ $religion[4] }}</option>
+                  <option value="5">{{ $religion[5] }}</option>
                 </select>
             </div> 
             <span class="error religion"></span>

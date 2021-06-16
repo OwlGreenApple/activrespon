@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class CheckPlusCode implements Rule
 {
@@ -41,6 +42,6 @@ class CheckPlusCode implements Rule
      */
     public function message()
     {
-        return 'Phone must be lead by + and using number.';
+        return Lang::get('custom.phone');
     }
 }

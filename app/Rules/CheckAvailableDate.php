@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use DB;
 
 class CheckAvailableDate implements Rule
@@ -57,6 +58,6 @@ class CheckAvailableDate implements Rule
      */
     public function message()
     {
-        return 'Sorry, you have appointment on date : '.$this->date.'.';
+        return Lang::get('custom.appointemnt_date').' : '.$this->date.'.';
     }
 }

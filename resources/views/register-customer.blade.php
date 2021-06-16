@@ -138,8 +138,8 @@
                     <div class="form-group">
                       <label>{{ $lists->label_gender  }}*</label>
                       <select name="sex" class="form-control">
-                        <option value="male" selected>Male</option>
-                        <option value="female">Female</option>
+                        <option value="1" selected>{{ $gender[1] }}</option>
+                        <option value="2">{{ $gender[2] }}</option>
                       </select>
                       <span class="error sex"></span>
                     </div> 
@@ -185,8 +185,8 @@
                     <div class="form-group">
                       <label>{{ $lists->label_marriage }}*</label>
                       <select name="marriage_status" class="form-control">
-                        <option value="single" selected>Single</option>
-                        <option value="married">Married</option>
+                        <option value="1" selected>{{ $marriage[1] }}</option>
+                        <option value="2">{{ $marriage[2] }}</option>
                       </select>
                       <span class="error marriage_status"></span>
                     </div> 
@@ -229,11 +229,11 @@
                     <div class="form-group">
                       <label>{{ $lists->label_religion }}*</label>
                       <select name="religion" class="form-control text-capitalize">
-                        <option value="{{ $religion[1] }}" selected>{{ $religion[1] }}</option>
-                        <option value="{{ $religion[2] }}">{{ $religion[2] }}</option>
-                        <option value="{{ $religion[3] }}">{{ $religion[3] }}</option>
-                        <option value="{{ $religion[4] }}">{{ $religion[4] }}</option>
-                        <option value="{{ $religion[5] }}">{{ $religion[5] }}</option>
+                        <option value="1" selected>{{ $religion[1] }}</option>
+                        <option value="2">{{ $religion[2] }}</option>
+                        <option value="3">{{ $religion[3] }}</option>
+                        <option value="4">{{ $religion[4] }}</option>
+                        <option value="5">{{ $religion[5] }}</option>
                       </select>
                       <span class="error religion"></span>
                     </div> 

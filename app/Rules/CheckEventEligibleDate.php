@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use Carbon\Carbon;
 
 class CheckEventEligibleDate implements Rule
@@ -65,6 +66,6 @@ class CheckEventEligibleDate implements Rule
      */
     public function message()
     {
-        return 'Invalid date, day and time';
+        return Lang::get('custom.event_eligible');
     }
 }

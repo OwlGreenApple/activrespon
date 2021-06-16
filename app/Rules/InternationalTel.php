@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class InternationalTel implements Rule
 {
@@ -41,7 +42,7 @@ class InternationalTel implements Rule
      */
     public function message()
     {
-        return "Phone numbers can't be started with + or 0 ";
+        return Lang::get('custom.phone_intel');
     }
 }
   

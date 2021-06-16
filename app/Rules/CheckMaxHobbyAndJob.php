@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class CheckMaxHobbyAndJob implements Rule
 {
@@ -36,13 +37,13 @@ class CheckMaxHobbyAndJob implements Rule
         // in case of wrong format not using semicolon (;)
         if(count($arr) == 0)
         {
-          $this->msg = 'Please use semicolon (;) as divider ';
+          $this->msg = Lang::get('custom.max_hobby_job');
           return false;
         }
 
         if(count($arr) > 7)
         {
-          $this->msg = 'Maximum '.$attribute.' is 7 ';
+          $this->msg = Lang::get('custom.max_hobby_job_total');
           return false;
         }
         else

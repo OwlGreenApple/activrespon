@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\PhoneNumber;
 
 class AvailablePhoneNumber implements Rule
@@ -47,6 +48,6 @@ class AvailablePhoneNumber implements Rule
      */
     public function message()
     {
-        return 'Sorry this number registered already';
+        return Lang::get('custom.available');
     }
 }

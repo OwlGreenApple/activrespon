@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Rules;
-use App\Customer;
 
+use App\Customer;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class SubscriberPhone implements Rule
 {
@@ -51,6 +52,6 @@ class SubscriberPhone implements Rule
      */
     public function message()
     {
-        return 'Phone number has registered already!';
+        return Lang::get('custom.phone_customer');
     }
 }

@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;*/
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use App\Http\Controllers\ListController;
+use App\Http\Controllers\CustomerController as cs;
 
 
 class ListSubscribersExport implements FromView
@@ -42,7 +43,8 @@ class ListSubscribersExport implements FromView
       return view('list.list_subscriber_export', [
           'import'=>$this->import,
           'customer' => $list_subscriber,
-          'fct'=> new ListController
+          'fct'=> new ListController,
+          'cs'=> new cs
       ]);
   }
 	

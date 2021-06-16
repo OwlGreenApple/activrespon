@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use DateTime;
 
 class CheckValidDate implements Rule
@@ -45,6 +46,6 @@ class CheckValidDate implements Rule
      */
     public function message()
     {
-        return 'Please use valid date.';
+        return Lang::get('custom.date');
     }
 }

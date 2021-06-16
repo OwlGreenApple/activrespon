@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Utility;
 
 class CheckHobby implements Rule
@@ -57,6 +58,6 @@ class CheckHobby implements Rule
      */
     public function message()
     {
-        return 'Please use valid option.';
+        return Lang::get('custom.hobby');
     }
 }

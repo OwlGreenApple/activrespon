@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use App\TemplateAppointments;
+use Illuminate\Support\Facades\Lang;
 
 class CheckAppointmentDay implements Rule
 {
@@ -52,6 +53,6 @@ class CheckAppointmentDay implements Rule
      */
     public function message()
     {
-        return 'The day registered already, please choose another day!';
+        return Lang::get('custom.appointment_day');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use App\UserList;
+use Illuminate\Support\Facades\Lang;
 
 class CheckApiListID implements Rule
 {
@@ -44,6 +45,6 @@ class CheckApiListID implements Rule
      */
     public function message()
     {
-        return 'Invalid ID.';
+        return Lang::get('custom.list_id');
     }
 }

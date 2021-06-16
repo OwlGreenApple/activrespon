@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Utility;
 
 class UniqueUtility implements Rule
@@ -50,6 +51,6 @@ class UniqueUtility implements Rule
      */
     public function message()
     {
-        return 'Category is available.';
+        return Lang::get('custom.category');
     }
 }

@@ -4,7 +4,6 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Lang;
-use App\Http\Controllers\CustomerController;
 
 class CheckGender implements Rule
 {
@@ -27,10 +26,14 @@ class CheckGender implements Rule
      */
     public function passes($attribute, $value)
     {
-        $gender = new CustomerController;
-        $valid_gender = $gender::$gender;
+        // prevent validation if user choose 'all' on calculate
+        if($value == 'all')
+        {
+          return true;
+        }
 
-        if(in_array($value,$valid_gender))
+        $valid_gender = [1,2];
+        if(in_array($value,$valid_gender) == true)
         {
           return true;
         }

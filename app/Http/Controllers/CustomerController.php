@@ -29,6 +29,7 @@ use App\Http\Controllers\ApiController as API;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ApiWPController;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Lang;
 use Storage;
 
 class CustomerController extends Controller 
@@ -136,7 +137,9 @@ class CustomerController extends Controller
           'utils_occupation'=>$utils_occupation,
           'religion'=>self::$religion,
           'lists'=>$list,
-          'countries'=>$countries
+          'countries'=>$countries,
+          'gender'=>self::$gender,
+          'marriage'=>self::$marriage 
         ];
 
         return view('register-customer',$data);
@@ -192,6 +195,8 @@ class CustomerController extends Controller
 
     // display gender
     public static $gender =  ['all','pria','wanita'];
+    // display marriage status
+    public static $marriage =  ['all','Belum Menikah','Sudah Menikah'];
 
     // GET PROVINCE
     public function get_province(Request $request)
@@ -249,15 +254,19 @@ class CustomerController extends Controller
         $occupation = $request->occupation;
         $hobbies = $occupations = null;
 
+        ($country == null || $country =="")?$country = 0 : $country = $country;
+        ($hobby == "")?$hobby = null:$hobby = $hobby;
+        ($occupation == "")?$occupation = null:$occupation = $occupation;
+
       
-        if($hobby !== "")
+        if($hobby !== null)
         {
           foreach($hobby as $key=> $row):
             $hobbies .= strip_tags($row).";";
           endforeach;
         }
 
-        if($occupation !== "")
+        if($occupation !== null)
         {
           foreach($occupation as $key=> $row):
             $occupations .= strip_tags($row).";";
@@ -302,6 +311,11 @@ class CustomerController extends Controller
 
         if(isset($req['data']))
         {
+            // for security reason
+            foreach($req['data'] as $col => $val)
+            {
+              $req['data'][$col] = strip_tags($val);
+            }
             $addt = json_encode($req['data']);
         } 
         else {
@@ -358,6 +372,7 @@ class CustomerController extends Controller
               $customer->code_country = strip_tags($request->data_country);
               $customer->status = 1;
               $customer->telegram_number = "";
+        
               if($request->phone_number !== null)
               {
                 $customer->telegram_number = strip_tags($phone_number);
@@ -415,7 +430,7 @@ class CustomerController extends Controller
     
               if($list->message_conf == null || $list->message_conf == '')
               {
-                  $message_conf = 'Your contact has been added';
+                  $message_conf = Lang::get('custom.message_conf');
               }
               else
               {
@@ -431,7 +446,7 @@ class CustomerController extends Controller
               catch(QueryException $e)
               {
                 $data['success'] = false;
-                $data['message'] = 'Sorry, our system is too busy---';
+                $data['message'] = Lang::get('custom.db').'---';
               }
 
               return response()->json($data);
@@ -446,6 +461,7 @@ class CustomerController extends Controller
                  'telegram_number'=>strip_tags($phone_number),
                  'code_country'=>strip_tags($request->data_country),
                  'email'=> strip_tags($request->email),
+                 'additional' => $addt,
                  'birthday'=>$birthday,
                  'gender'=>$gender,
                  'province'=>$province,
@@ -559,7 +575,7 @@ class CustomerController extends Controller
             catch(QueryException $e)
             {
                $data['success'] = false;
-               $data['message'] = 'Sorry, our system is too busy-.';
+               $data['message'] = Lang::get('custom.db').'-.';
             }
           
             return response()->json($data);
@@ -579,7 +595,7 @@ class CustomerController extends Controller
 					$server = Server::where('phone_id',$phoneNumber->id)->first();
 					if(is_null($server)){
 						$data['success'] = false;
-						$data['message'] = 'Sorry, our system is too busy.-';
+						$data['message'] = Lang::get('custom.db').'.-';
 						return response()->json($data);
 					}
 				}
@@ -613,7 +629,7 @@ class CustomerController extends Controller
 			$message_send->phone_number=$phone_number;
 			$message_send->message=$message;
 
-			if ($phoneNumber->mode == 0) {
+			if ($phoneNumber->mode == 0 && env('APP_ENV') !== 'local') {
 				$message_send->key=$server->url;
 				$message_send->status=8;
 			}
@@ -626,13 +642,13 @@ class CustomerController extends Controller
       try{
         $message_send->save();
         $data['success'] = true;
-        $data['message'] = "Data saved";
+        $data['message'] = Lang::get('custom.list_secure');
       }
       catch(QueryException $e)
       {
-        //$e->getMessage()
+        // dd($e->getMessage());
         $data['success'] = false;
-        $data['message'] = 'Sorry, our server is too busy please try again later';
+        $data['message'] = Lang::get('custom.db');
       }
 			return response()->json($data);
 		}

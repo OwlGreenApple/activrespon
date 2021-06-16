@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Http\Controllers\CustomerController as Subscriber;
+use Illuminate\Support\Facades\Lang;
 
 class CheckReligion implements Rule
 {
@@ -26,7 +26,7 @@ class CheckReligion implements Rule
      */
     public function passes($attribute, $value)
     {
-        $data = Subscriber::$religion;
+        $data = [1,2,3,4,5];
 
         if(in_array($value,$data) == true)
         {
@@ -45,6 +45,6 @@ class CheckReligion implements Rule
      */
     public function message()
     {
-        return 'Please use valid religion.';
+        return Lang::get('custom.faith');
     }
 }

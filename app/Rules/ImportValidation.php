@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class ImportValidation implements Rule
 {
@@ -55,6 +56,6 @@ class ImportValidation implements Rule
      */
     public function message()
     {
-        return 'Please fill in your Phone number column only (ex: 6287881115557 ), do not use "0" at the beginning.';
+        return Lang::get('custom.phone_import');
     }
 }

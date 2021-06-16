@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Countries;
 
 class CheckCountry implements Rule
@@ -54,6 +55,6 @@ class CheckCountry implements Rule
      */
     public function message()
     {
-        return 'Invalid Country.';
+        return Lang::get('custom.country');
     }
 }

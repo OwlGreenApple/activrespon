@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class CheckStatusMarriage implements Rule
 {
@@ -24,14 +25,14 @@ class CheckStatusMarriage implements Rule
      * @return bool
      */
     public function passes($attribute, $value)
-    {
-      $corrector = false;
-      if($value == 'single' || $value == 'married')
+    { 
+      if($value == 'all')
       {
-        $corrector = true;
+        return true;
       }
 
-      if($corrector == true)
+      $valid_option = [1,2];
+      if(in_array($value, $valid_option) == true)
       {
         return true;
       }
@@ -48,6 +49,6 @@ class CheckStatusMarriage implements Rule
      */
     public function message()
     {
-        return 'Please use valid status.';
+        return Lang::get('custom.marriage');
     }
 }
