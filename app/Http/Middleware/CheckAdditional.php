@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\UserList;
 use App\Http\Middleware\CheckUserLists;
+use Illuminate\Support\Facades\Lang;
 
 class CheckAdditional
 {
@@ -41,7 +42,7 @@ class CheckAdditional
         ];
 
         $messages = [
-           'required'=>'Column cannot be empty',
+           'required'=> Lang::get('custom.message'),
         ];
 
         $validator = Validator::make($request->all(),$rules,$messages);
@@ -71,21 +72,21 @@ class CheckAdditional
                 if(empty($row['field']))
                 {
                     $data['additionalerror'] = true;
-                    $data['message'] = 'Additional field cannot be empty';
+                    $data['message'] = Lang::get('custom.additional_req');
                     return response()->json($data);
                 }
 
                 // maximum character length
                 if(strlen($row['field']) > 20){
                     $data['additionalerror'] = true;
-                    $data['message'] = 'Maximum character length is 20';
+                    $data['message'] = Lang::get('custom.additional_len');
                     return response()->json($data);
                 }
 
                 // default value
                 if($row['field'] == 'subscribername' || $row['field'] == 'email' || $row['field'] == 'phone' || $row['field'] == 'usertel'){
                     $data['additionalerror'] = true;
-                    $data['message'] = 'Sorry, subscribername, email, phone, usertel has set as default';
+                    $data['message'] = Lang::get('custom.additional_default');
                     return response()->json($data);
                 }
             }
@@ -93,7 +94,7 @@ class CheckAdditional
             if(count($fields_array) !== count($fields_filter))
             {
                 $data['additionalerror'] = true;
-                $data['message'] = 'Additional field value cannot be same';
+                $data['message'] = Lang::get('custom.additional_val');
                 return response()->json($data);
             }
         }
@@ -109,21 +110,21 @@ class CheckAdditional
                 if(empty($rows['field']))
                 {
                     $data['additionalerror'] = true;
-                    $data['message'] = 'Additional dropdown field cannot be empty';
+                    $data['message'] = Lang::get('custom.additional_dropdown');
                     return response()->json($data);
                 }
 
                 // maximum character length
                 if(strlen($rows['field']) > 20){
                     $data['additionalerror'] = true;
-                    $data['message'] = 'Additional dropdown maximum character length is 20';
+                    $data['message'] = Lang::get('custom.additional_dropdown_len');
                     return response()->json($data);
                 }
 
                 // default value
                  if($rows['field'] == 'subscribername' || $rows['field'] == 'email' || $rows['field'] == 'phone' || $rows['field'] == 'usertel'){
                     $data['additionalerror'] = true;
-                    $data['message'] = 'Sorry, subscribername, email, phone, usertel has set as default';
+                    $data['message'] = Lang::get('custom.additional_default');
                     return response()->json($data);
                 }
             }
@@ -132,7 +133,7 @@ class CheckAdditional
             if(count($dropdown_array) !== count($dropdown_filter))
             {
                 $data['additionalerror'] = true;
-                $data['message'] = 'Additional dropdown field value cannot be same';
+                $data['message'] = Lang::get('custom.additional_dropdown_len');
                 return response()->json($data);
             }
 
@@ -153,7 +154,7 @@ class CheckAdditional
             if((count($fields_array) !== count($fields_filter)) || (count($dropdown_array) !== count($dropdown_filter)) || (count($merge_array) !== count($filter_array)) )
             {
                 $data['additionalerror'] = true;
-                $data['message'] = 'Additional field value cannot be same';
+                $data['message'] = Lang::get('custom.additional_val');
                 return response()->json($data);
             }
         }

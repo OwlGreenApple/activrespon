@@ -105,7 +105,10 @@ class CheckCustomer
               $rules['province'] = ['required', 'max: 85'];
               $rules['city'] = ['required','max : 85'];
             }  
+         }
 
+         if($lists->is_validate_zip == 1)
+         {
             $rules['zip'] = ['required','max : 10'];
          }
 

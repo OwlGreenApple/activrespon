@@ -1,5 +1,11 @@
 <?php
 return [
+    'additional_default'=>'Maaf, kalimat subscribername, email, phone, usertel sudah di pakai',
+    'additional_dropdown'=>'Kolom additional dropdown tidak boleh kosong',
+    'additional_dropdown_len'=>'Kolom additional dropdown maksimal karakter 20',
+    'additional_len'=>'Maksimal karakter adalah 20',
+    'additional_req'=>'Kolom additional tidak boleh kosong',
+    'additional_val'=>'Nama pada kolom additional tidak boleh sama',
     'appointemnt_date'=>'Anda sudah mempunyai janji / appointment pada tanggal', //CheckAvailableDate
     'appointment_day'=>'Hari yang di pilih sudah terdaftar, silahkan pilih hari yang lain.', //CheckAppointmentDay
     'available'=>'Maaf no ini sudah terdaftar', //AvailablePhoneNumber
@@ -25,6 +31,7 @@ return [
     'list_secure'=> 'Data telah tersimpan',
     'list_used'=> 'List telah digunakan, silahkan gunakan yang lain', //CheckListUsed
     'marriage'=> 'Mohon gunakan status pernikahan yang sah.', //CheckStatusMarriage
+    'message'=>'Kolom sukses page tidak boleh kosong',
     'message_conf'=>'Kontak telah di tambahkan',
     'max_hobby_job'=>'Mohon untuk menggunakan tanda (;) sebagai pemisah', //CheckMaxHobbyAndJob
     'max_hobby_job_total'=>'Maksimal menu adalah 7', //CheckMaxHobbyAndJob

@@ -146,10 +146,15 @@
                   <span class="error t_province"><!-- error --></span>
                   <input name="t_city" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_city }}" />
                   <span class="error t_city"><!-- error --></span>
-                  <input name="t_zip" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_zip }}" />
-                  <span class="error t_zip"><!-- error --></span>
                 </h6>
               </div>
+
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_zip" @if($data[
+                "lists"]->is_validate_zip == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"> <input name="t_zip" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_zip }}" /></h6>
+                <span class="error t_zip"><!-- error --></span>
+              </div> 
 
               <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="validate_gender" @if($data[
@@ -177,7 +182,7 @@
                 "lists"]->is_validate_hobby == 1) checked value="1" @else value="0" @endif/>
                 <h6 class="form-check-label">
                   <input name="t_hobby" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_hobby }}" />
-                  <a target="_blank" href="{{url('targeting-form')}}">Setup Hobby</a></h6>
+                  <a target="_blank" href="{{url('targeting-form')}}"><i class="fas fa-plus-circle" style="font-size : 14px"></i> Hobby</a></h6>
                   <span class="error t_hobby"><!-- error --></span>
               </div>  
 
@@ -186,7 +191,7 @@
                 "lists"]->is_validate_job == 1) checked value="1" @else value="0" @endif/>
                 <h6 class="form-check-label">
                   <input name="t_job" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_occupation }}" />
-                  <a class="mt-2" target="_blank" href="{{url('targeting-form')}}">Setup Occupation</a></h6>
+                  <a class="mt-2" target="_blank" href="{{url('targeting-form')}}"><i class="fas fa-plus-circle" style="font-size : 14px"></i> Occupation</a></h6>
                   <span class="error t_job"><!-- error --></span>
               </div>
 
@@ -1030,7 +1035,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function getChecked()
   {
-    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby'],input[name='validate_religion'],input[name='validate_marriage'],input[name='validate_gender']").change(function(){
+    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby'],input[name='validate_religion'],input[name='validate_marriage'],input[name='validate_gender'],input[name='validate_zip']").change(function(){
       var checked = $(this).prop('checked');
       if(checked == true)
       {
@@ -1810,6 +1815,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 dropfields : datadropfields,
                 validate_dob : $("input[name='validate_dob']").val(),
                 validate_city : $("input[name='validate_city']").val(),
+                validate_zip : $("input[name='validate_zip']").val(),
                 validate_job : $("input[name='validate_job']").val(),
                 validate_hobby : $("input[name='validate_hobby']").val(),
                 validate_gender : $("input[name='validate_gender']").val(),

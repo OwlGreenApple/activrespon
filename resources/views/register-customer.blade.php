@@ -173,8 +173,10 @@
                         </div>
                       <span class="error city"></span>
                     </div> 
+                    @endif
 
-                    <div class="form-group form_zip">
+                    @if($lists->is_validate_zip == 1)
+                    <div class="form-group">
                       <label>{{ $lists->label_zip }}*</label>
                       <input name="zip"class="form-control" maxlength="10" autocomplete="disabled" />
                       <span class="error zip"></span>

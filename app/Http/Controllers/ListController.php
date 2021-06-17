@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Maatwebsite\Excel\Facades\Excel;
@@ -712,6 +713,7 @@ class ListController extends Controller
         $data['additionalerror'] = false;
         $is_validation_dob = strip_tags($request->validate_dob);
         $is_validate_city = strip_tags($request->validate_city);
+        $is_validate_zip = strip_tags($request->validate_zip);
         $is_validate_job = strip_tags($request->validate_job);
         $is_validate_hobby = strip_tags($request->validate_hobby);
         $is_validate_gender = strip_tags($request->validate_gender);
@@ -744,6 +746,7 @@ class ListController extends Controller
         $lists->pixel_text = $pixel;
         $lists->is_validate_dob = $is_validation_dob;
         $lists->is_validate_city = $is_validate_city;
+        $lists->is_validate_zip = $is_validate_zip;
         $lists->is_validate_job = $is_validate_job;
         $lists->is_validate_hobby = $is_validate_hobby;
         $lists->is_validate_gender = $is_validate_gender;
@@ -768,7 +771,7 @@ class ListController extends Controller
         catch(QueryException $e)
         {
            // $data['message'] = $e->getMessage();
-           $data['message'] = "Sorry, our system is too busy, please try again later.";
+           $data['message'] = Lang::get('custom.db');
            return response()->json($data);
         }
 
