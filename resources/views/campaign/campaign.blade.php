@@ -266,6 +266,10 @@
                                 <input name="zip"class="form-control text-capitalize" value="all" maxlength="10" autocomplete="disabled" />
                                 <span class="error zip"></span>
                               </div> 
+
+                              <div class="live-search-wrapper-zip ml-4">
+                                <div id="display_zip" class="live-search"><!-- display ajax here --></div>
+                              </div>
                               <!-- end province & city -->
 
                               <div class="form-inline mt-2">
@@ -442,6 +446,7 @@
 <script type="text/javascript">
   var url_province = '{{ url("provinces") }}';
   var url_city = '{{ url("cities") }}';
+  var url_zip = '{{ url("get_zip") }}';
 </script>
 <script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
@@ -661,6 +666,7 @@
         $("#time_sending").val(time);
         $("#edit_message").emojioneArea()[0].emojioneArea.setText(message);
         $("#calculate_edit").attr('list_id',list_id);
+        $("input[name='zip']").attr('list_id',list_id);
 
         if(published == 1)
         {
@@ -783,6 +789,7 @@
         broadcast_ajax_targetting(id);
 
         $("#duplicate_broadcast").attr('data',id);
+        $("input[name='zip']").attr('list_id',0);
         setTimeout(function(){
           $(".target_append").appendTo("#target_box_duplicate");
           $(".hbd").appendTo("#duplicate_bd");

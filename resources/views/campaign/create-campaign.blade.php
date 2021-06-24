@@ -252,12 +252,17 @@
             <div class="live-search-wrapper-city ml-4">
               <div id="display_city" class="live-search"><!-- display ajax here --></div>
             </div>
-
+           
             <div class="form-inline mt-2 form_zip">
               <label class="mr-2">Zip :</label>
               <input name="zip"class="form-control text-capitalize" value="all" maxlength="10" autocomplete="disabled" />
               <span class="error zip"></span>
             </div> 
+
+             <div class="live-search-wrapper-zip ml-4">
+               <div id="display_zip" class="live-search"><!-- display ajax here --></div>
+            </div>
+
             <!-- end province & city -->
 
             <div class="form-inline mt-2">
@@ -363,6 +368,7 @@ use min 5 spintax variations is recommended	<br>
 <script type="text/javascript">
   var url_province = '{{ url("provinces") }}';
   var url_city = '{{ url("cities") }}';
+  var url_zip = '{{ url("get_zip") }}';
 </script>
 <script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script type="text/javascript">

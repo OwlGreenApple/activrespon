@@ -340,46 +340,46 @@ class CampaignController extends Controller
       $data = [
         ['list_id',$list_id],
         ['user_id',$user_id],
-        ['city',$city],
+        ['city','like','%'.$city.'%'],
         ['marriage',$marriage_status],
         ['religion',$religion],
         ['gender',$sex],
-        ['province',$province],
+        ['province','like','%'.$province.'%'],
         ['country',$country],
-        ['zip',$zip],
+        ['zip','like','%'.$zip.'%'],
       ];
 
-      if($city == 'all')
+      if(preg_match("/[all\W]/",$city) == 1)
       {
         unset($data[2]);
       }
 
-      if($marriage_status == 'all')
+      if(preg_match("/[all\W]/",$marriage_status) == 1)
       {
         unset($data[3]);
       }
 
-      if($religion == 'all')
+      if(preg_match("/[all\W]/",$religion) == 1)
       {
         unset($data[4]);
       }
 
-      if($sex == 'all')
+      if(preg_match("/[all\W]/",$sex) == 1)
       {
         unset($data[5]);
       }
 
-      if($province == 'all')
+      if(preg_match("/[all\W]/",$province) == 1)
       {
         unset($data[6]);
       }
 
-      if($country == 'all')
+      if(preg_match("/[all\W]/",$country) == 1)
       {
         unset($data[7]);
       }
 
-      if($zip == 'all')
+      if(preg_match("/[all\W]/",$zip) == 1)
       {
         unset($data[8]);
       }
@@ -396,6 +396,7 @@ class CampaignController extends Controller
       }
 
       $data[] = ['status','=',1];
+
       $customer = Customer::where($data);
 
       // in case if hobby more than 1

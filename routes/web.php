@@ -400,6 +400,9 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
 	Route::get('ckbrowse', 'CKController@ck_browse')->name('ckbrowse');
 	Route::get('ckdelete', 'CKController@ck_delete_image')->name('ckdelete');
 	Route::post('ckupload', 'CKController@ck_upload_image')->name('ckupload');
+
+  /*CUSTOMERS*/
+  Route::get('get_zip','CustomerController@get_zip');
 });
 
 /* Customers */

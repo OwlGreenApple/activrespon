@@ -7,6 +7,8 @@ $(function(){
   fill_province();
   get_city();
   fill_city();
+  get_zip();
+  fill_zip();
   // get_country_filter();
   // change_country();
 });
@@ -37,6 +39,53 @@ function get_country_filter()
 		$(".form_province").attr('readonly','readonly');
 		$(".form_zip").show();
 	}
+}
+
+function get_zip()
+  {
+    $("input[name='zip']").on("focusin",delay(function(){
+    	$(".live-search-wrapper-zip").show();
+
+    	var list_id;
+    	var list_id_edit = $(this).attr('list_id');
+
+    	if(list_id_edit == 0)
+    	{
+    	  list_id = $("select[name='list_id']").val();
+    	}
+    	else
+    	{
+    	  list_id = list_id_edit;
+    	}
+
+     	display_zip(list_id);
+    },delay_duration));
+
+    $("input[name='zip']").on("focusout",delay(function(){
+    	$(".live-search-wrapper-zip").hide();
+    },delay_duration));
+}
+
+function display_zip(list_id)
+{
+	var box = '';
+	$.ajax({
+	  type : 'GET',
+	  url : url_zip,
+	  data : {'list_id' : list_id},
+	  dataType : 'json',
+	  success : function(result)
+	  {
+	    $.each(result, function( index, value ) {
+	      box += '<div id="'+index+'" class="zip_opt dropdown-item">'+value+'</div>';
+	    });
+	    $("#display_zip").html(box);
+	  },
+	  error : function(xhr)
+	  {
+	    console.log(xhr.responseText);
+	  }
+	});
 }
 
 function get_province()
@@ -121,6 +170,16 @@ function display_city(name,province_id)
 	  }
 	});
 }
+
+function fill_zip()
+{
+	$("body").on("click",".zip_opt",function(){
+	   var opt = $(this).text();
+	   var id = $(this).attr('id');
+	  $("input[name='zip']").val(opt);
+	  $(".live-search-wrapper-zip").hide();
+	});
+}		
 
 function fill_province()
 {

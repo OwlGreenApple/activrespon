@@ -240,6 +240,24 @@ class CustomerController extends Controller
       return response()->json($data);
     }
 
+    // GET ZIP / POSTAL CODE ACCORDING ON LIST ID
+    public function get_zip(Request $request)
+    {
+      // dd($request->all());
+      $data = array();
+      $list_id = $request->list_id;
+      $zip = Customer::where([['list_id',$list_id],['user_id',Auth::id()],['zip','<>',null]])->get();
+
+      if($zip->count() > 0)
+      {
+        foreach($zip as $row):
+          $data[$row->id] = $row->zip;
+        endforeach;
+      }
+
+      return response()->json(array_unique($data));
+    }
+
     public function saveSubscriber(Request $request)
     {
         $birthday = strip_tags($request->birthday);
