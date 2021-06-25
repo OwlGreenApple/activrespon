@@ -251,7 +251,10 @@ class CustomerController extends Controller
       if($zip->count() > 0)
       {
         foreach($zip as $row):
-          $data[$row->id] = $row->zip;
+          if($row->zip !== null)
+          {
+            $data[$row->id] = $row->zip;
+          }
         endforeach;
       }
 
