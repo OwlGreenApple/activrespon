@@ -497,7 +497,7 @@ class CampaignController extends Controller
       return response()->json($res);
     }
 
-    private function filter_all($var)
+    public function filter_all($var)
     {
       if($var == 'all' || $var =='All')
       {

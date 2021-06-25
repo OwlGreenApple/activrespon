@@ -92,6 +92,11 @@ class BroadCastController extends Controller
         {
           $date_send = null;
         }
+        $cmp = new CampaignController;
+        if($cmp->filter_all($country) == 1)
+        {
+          $country = 0;
+        }
 
 				$folder="";
 				$filename="";
@@ -183,7 +188,7 @@ class BroadCastController extends Controller
         }
         catch(Queryexception $e)
         {
-          //$e->getMessage();
+          // dd($e->getMessage());
           return false;
         }
 

@@ -17,4 +17,6 @@ class Reminder extends Model
 		1 = event
     2 = appointment
     */
+
+    protected $table = 'reminders';
 }
