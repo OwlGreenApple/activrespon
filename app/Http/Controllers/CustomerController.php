@@ -19,14 +19,20 @@ use App\User;
 use App\Server;
 use App\Countries;
 use App\Message;
+use App\Utility;
+use App\Province;
+use App\Kabupaten;
 use App\Console\Commands\SendWA as SendMessage;
 use App\Helpers\ApiHelper;
 use App\Rules\CheckWANumbers;
 use App\Http\Controllers\ApiController as API;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ApiWPController;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Lang;
+use Storage;
 
-class CustomerController extends Controller
+class CustomerController extends Controller 
 {
 
     public function subscriber(Request $request, $link_list)
@@ -36,11 +42,16 @@ class CustomerController extends Controller
           ['status','=',1],
       ])->first();
 
-      if(empty($link_list)){
+      if(empty($link_list))
+      {
         return redirect('/');
-      } elseif(is_null($check_link)) {
+      } 
+      elseif(is_null($check_link)) 
+      {
         return redirect('/');
-      } else {
+      } 
+      else 
+      {
             $list = UserList::where('name',$link_list)->first();
             $additional = Additional::where('list_id',$list->id)->get();
             $data = array();
@@ -85,6 +96,28 @@ class CustomerController extends Controller
         $user = User::find($list->user_id);
         $status = $user->status;
 
+        // UTILITIES
+        $countries = $this->get_countries();
+        $utils_hobbies = Utility::where([['user_id',$list->user_id],['id_category',2]])->get(); //hobby
+        $utils_occupation = Utility::where([['user_id',$list->user_id],['id_category',3]])->get(); //pekerjaan
+
+        $hobby = array();
+        if($utils_hobbies->count() > 0)
+        {
+          foreach($utils_hobbies as $row)
+          {
+            $hobby[] = $row->id;
+          }
+        }
+
+        //  if hobbies have descendant
+        if(count($hobby) > 0)
+        {
+          $hobby = $this->extract_hobbies($hobby);
+        }
+
+        $utils_hobby = Utility::whereIn('id',$hobby)->get();
+
         $data = [
           'id'=>encrypt($list->id),
           'label_name'=>$list->label_name,
@@ -99,16 +132,165 @@ class CustomerController extends Controller
           'additional'=>$arr,
           'btn_message'=>$list->button_subscriber,
           'link_add_customer'=>url($link_list),
-          'status'=>$status
+          'status'=>$status,
+          'utils_hobby'=>$utils_hobby,
+          'utils_occupation'=>$utils_occupation,
+          'religion'=>self::$religion,
+          'lists'=>$list,
+          'countries'=>$countries,
+          'gender'=>self::$gender,
+          'marriage'=>self::$marriage 
         ];
 
         return view('register-customer',$data);
       }
     }
 
+    // GET COUNTRY
+    public function get_countries()
+    {
+      $ctr = Countries::whereIn('id',[13,95,126,192,228,229])->get();
+      return $ctr;
+    }
+
+    public function extract_hobbies(array $data)
+    {
+       $arr = [];
+       $repeat = false;
+
+       foreach($data as $col)
+       {
+          $utils = Utility::where('id_category',$col)->get();
+
+          if($utils->count() > 0)
+          {
+            foreach($utils as $row)
+            {
+              $arr[] = $row->id;
+            }
+            $repeat = true;
+          }
+          else
+          {
+              $arr[] = $col;
+          }
+       }
+
+       //CHECK IF CHILD STILL AVAILABLE
+       $check_child = Utility::whereIn('id_category',$arr)->get();
+
+       if($check_child->count() > 0)
+       {
+          return $this->extract_hobbies($arr); 
+       }
+       else
+       {
+          return $arr; 
+       } 
+      
+    }
+
+     // display religion
+    public static $religion =  ['all','islam','kristen','katolik','budha','hindu'];
+
+    // display gender
+    public static $gender =  ['all','pria','wanita'];
+    // display marriage status
+    public static $marriage =  ['all','Belum Menikah','Sudah Menikah'];
+
+    // GET PROVINCE
+    public function get_province(Request $request)
+    {
+      $val = array();
+      $name = $request->name;
+      if($name == null)
+      {
+        return response()->json($val);
+      }
+
+      $province = Province::where('nama','LIKE','%'.$name.'%')->get();
+
+      if($province->count() > 0)
+      {
+        foreach($province as $col)
+        {
+          $val[$col->id] = $col->nama;
+        }
+      }
+
+      return response()->json($val);
+    }
+
+    // GET PROVINCE ACCORDING ON PROVINCE
+    public function get_city(Request $request)
+    {
+      // dd($request->all());
+      $data = array();
+      $prov_id = $request->provinsi_id;
+      $nama = $request->name;
+      $kab = Kabupaten::where([['provinsi_id',$prov_id],['nama','LIKE','%'.$nama.'%']])->get();
+
+      if($kab->count() > 0)
+      {
+        foreach($kab as $row):
+          $data[$row->provinsi_id] = $row->nama;
+        endforeach;
+      }
+
+      return response()->json($data);
+    }
+
+    // GET ZIP / POSTAL CODE ACCORDING ON LIST ID
+    public function get_zip(Request $request)
+    {
+      // dd($request->all());
+      $data = array();
+      $list_id = $request->list_id;
+      $zip = Customer::where([['list_id',$list_id],['user_id',Auth::id()],['zip','<>',null]])->get();
+
+      if($zip->count() > 0)
+      {
+        foreach($zip as $row):
+          $data[$row->id] = $row->zip;
+        endforeach;
+      }
+
+      return response()->json(array_unique($data));
+    }
+
     public function saveSubscriber(Request $request)
     {
-        // dd($request->all());
+        $birthday = strip_tags($request->birthday);
+        $gender = strip_tags($request->sex);
+        $country = strip_tags(ucwords($request->country));
+        $province = strip_tags(ucwords($request->province));
+        $city = strip_tags(ucwords($request->city));
+        $zip = strip_tags($request->zip);
+        $marriage = strip_tags($request->marriage_status);
+        $religion = strip_tags($request->religion);
+        $hobby =  $request->hobby;
+        $occupation = $request->occupation;
+        $hobbies = $occupations = null;
+
+        ($country == null || $country =="")?$country = 0 : $country = $country;
+        ($hobby == "")?$hobby = null:$hobby = $hobby;
+        ($occupation == "")?$occupation = null:$occupation = $occupation;
+
+      
+        if($hobby !== null)
+        {
+          foreach($hobby as $key=> $row):
+            $hobbies .= strip_tags($row).";";
+          endforeach;
+        }
+
+        if($occupation !== null)
+        {
+          foreach($occupation as $key=> $row):
+            $occupations .= strip_tags($row).";";
+          endforeach;
+        }
+
         $arr_data = [
            // Do not allow any shady characters
            'subscribername' => 'max:255|regex:/^[\s\w-]*$/', // alpha num with white space
@@ -147,6 +329,11 @@ class CustomerController extends Controller
 
         if(isset($req['data']))
         {
+            // for security reason
+            foreach($req['data'] as $col => $val)
+            {
+              $req['data'][$col] = strip_tags($val);
+            }
             $addt = json_encode($req['data']);
         } 
         else {
@@ -203,6 +390,7 @@ class CustomerController extends Controller
               $customer->code_country = strip_tags($request->data_country);
               $customer->status = 1;
               $customer->telegram_number = "";
+        
               if($request->phone_number !== null)
               {
                 $customer->telegram_number = strip_tags($phone_number);
@@ -260,7 +448,7 @@ class CustomerController extends Controller
     
               if($list->message_conf == null || $list->message_conf == '')
               {
-                  $message_conf = 'Your contact has been added';
+                  $message_conf = Lang::get('custom.message_conf');
               }
               else
               {
@@ -276,7 +464,7 @@ class CustomerController extends Controller
               catch(QueryException $e)
               {
                 $data['success'] = false;
-                $data['message'] = 'Sorry, our system is too busy---';
+                $data['message'] = Lang::get('custom.db').'---';
               }
 
               return response()->json($data);
@@ -291,7 +479,18 @@ class CustomerController extends Controller
                  'telegram_number'=>strip_tags($phone_number),
                  'code_country'=>strip_tags($request->data_country),
                  'email'=> strip_tags($request->email),
-                 'status'=> $status,
+                 'additional' => $addt,
+                 'birthday'=>$birthday,
+                 'gender'=>$gender,
+                 'province'=>$province,
+                 'country'=>$country,
+                 'city'=>$city,
+                 'zip'=>$zip,
+                 'marriage'=>$marriage,
+                 'hobby'=>$hobbies,
+                 'occupation'=>$occupations,
+                 'religion'=>$religion,
+                 'status'=> $status
               ]);
               $customer_id = $customer->id;
               $customer_join = $customer->created_at;
@@ -394,7 +593,7 @@ class CustomerController extends Controller
             catch(QueryException $e)
             {
                $data['success'] = false;
-               $data['message'] = 'Sorry, our system is too busy-.';
+               $data['message'] = Lang::get('custom.db').'-.';
             }
           
             return response()->json($data);
@@ -421,7 +620,7 @@ class CustomerController extends Controller
 					$server = Server::where('phone_id',$phoneNumber->id)->first();
 					if(is_null($server)){
 						$data['success'] = false;
-						$data['message'] = 'Sorry, our system is too busy.-';
+						$data['message'] = Lang::get('custom.db').'.-';
 						return response()->json($data);
 					}
 				}
@@ -455,7 +654,7 @@ class CustomerController extends Controller
 			$message_send->phone_number=$phone_number;
 			$message_send->message=$message;
 
-			if ($phoneNumber->mode == 0) {
+			if ($phoneNumber->mode == 0 && env('APP_ENV') !== 'local') {
 				$message_send->key=$server->url;
 				$message_send->status=8;
 			}
@@ -468,13 +667,13 @@ class CustomerController extends Controller
       try{
         $message_send->save();
         $data['success'] = true;
-        $data['message'] = "Data saved";
+        $data['message'] = Lang::get('custom.list_secure');
       }
       catch(QueryException $e)
       {
-        //$e->getMessage()
+        // dd($e->getMessage());
         $data['success'] = false;
-        $data['message'] = 'Sorry, our server is too busy please try again later';
+        $data['message'] = Lang::get('custom.db');
       }
 			return response()->json($data);
 		}

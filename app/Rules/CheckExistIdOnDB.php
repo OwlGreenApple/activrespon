@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use DB;
 
 class CheckExistIdOnDB implements Rule
@@ -57,6 +58,6 @@ class CheckExistIdOnDB implements Rule
      */
     public function message()
     {
-        return 'Your data not available on our database.';
+        return Lang::get('custom.db_check');
     }
 }

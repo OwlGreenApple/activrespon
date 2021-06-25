@@ -165,7 +165,8 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a href="{{url('list-form')}}" class="nav-link {{ (request()->is('list-form') || request()->is('create-campaign')|| request()->is('create-apt')) ? 'active' : '' }}">Lists</a>
                                     
-                                    <a href="{{url('create-campaign')}}" class="nav-link {{ (request()->is('create-campaign')) ? 'active' : '' }}">Campaigns</a> 
+                                    <a href="{{url('create-campaign')}}" class="nav-link {{ (request()->is('create-campaign')) ? 'active' : '' }}">Campaigns</a>
+                                  
                                     @if(getMembership(Auth()->user()->membership) > 1) 
                                       <a href="{{url('create-event')}}" class="nav-link {{ (request()->is('create-event')) ? 'active' : '' }}">Event</a>  
 

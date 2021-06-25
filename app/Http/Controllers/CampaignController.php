@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\BroadCastController;
+use App\Http\Controllers\CustomerController;
 use App\UserList;
 use App\Customer;
 use App\Campaign;
@@ -17,18 +18,23 @@ use App\BroadCastCustomers;
 use App\Reminder;
 use App\ReminderCustomers;
 use App\Message;
+use App\Utility;
 use App\Rules\CheckDateEvent;
 use App\Rules\CheckValidListID;
 use App\Rules\CheckEventEligibleDate;
 use App\Rules\CheckBroadcastDate;
 use App\Rules\CheckExistIdOnDB;
+use App\Rules\CheckCountry;
+use App\Rules\CheckProvince;
+use App\Rules\CheckCity;
 use App\Rules\EligibleTime;
 use Carbon\Carbon;
 use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use App\PhoneNumber;
 use App\Server;
-use Storage,Session;
+use App\Http\Middleware\CheckBroadcastDuplicate;
+use Storage,Session, DB;
 
 class CampaignController extends Controller
 {
@@ -78,6 +84,11 @@ class CampaignController extends Controller
             ->paginate($paging); 
       }
 
+      $customer = new CustomerController;
+      $utils_hobbies = Utility::where('id_category',2)->get(); //hobby
+      $utils_occupation = Utility::where('id_category',3)->get(); //pekerjaan
+      $country = $customer->get_countries();
+
       $data['lists'] = displayListWithContact($userid);
       $data['paginate'] = $campaign;
       $data['campaign'] = $campaign;
@@ -86,6 +97,12 @@ class CampaignController extends Controller
       $data['campaign_controller'] = new CampaignController;
       $data['autoschedule'] = new Reminder;
       $data['userid'] = $userid;
+      $data['utils_hobbies'] = $utils_hobbies;
+      $data['utils_occupation'] = $utils_occupation;
+      $data['countries'] = $country;
+      $data['religion'] = $customer::$religion;
+      $data['gender'] = $customer::$gender;
+      $data['marriage'] = $customer::$marriage;
 
       if($request->ajax())
       {
@@ -245,11 +262,248 @@ class CampaignController extends Controller
 		public function CreateCampaign() 
     {
       $userid = Auth::id();
+      $customer = new CustomerController;
+
+      // UTILITIES
+      $utils_hobbies = Utility::where([['user_id',$userid],['id_category',2]])->get(); //hobby
+      $utils_occupation = Utility::where([['user_id',$userid],['id_category',3]])->get(); //pekerjaan
+      $country = $customer->get_countries();
+
+      $hobby = array();
+      if($utils_hobbies->count() > 0)
+      {
+        foreach($utils_hobbies as $row)
+        {
+          $hobby[] = $row->id;
+        }
+      }
+
+      //  if hobbies have descendant
+      if(count($hobby) > 0)
+      {
+        $hobby = $customer->extract_hobbies($hobby);
+      }
+
+      $utils_hobby = Utility::whereIn('id',$hobby)->get();
+
       $data = array(
           'lists'=>displayListWithContact($userid),
+          'utils_hobby'=>$utils_hobby,
+          'utils_occupation'=>$utils_occupation,
+          'countries'=>$country,
+          'religion'=>$customer::$religion,
+          'gender'=>$customer::$gender,
+          'marriage'=>$customer::$marriage
       );
 
       return view('campaign.create-campaign',$data);
+    }
+
+    // create utility / targeting form
+    public function utility_form()
+    {
+      return view('utility.index');
+    }
+
+    // calculate / filter user accorfing on targetting
+    public function calculate_user_list(Request $request)
+    {
+      // dd($request->all());
+      $statement = "";
+      if($request->user_id == null)
+      {
+        $user_id = Auth::id();
+      }
+      else
+      {
+        $user_id = $request->user_id;
+      }
+
+      $list_id = $request->list_id;
+      $sex = $request->sex;
+      $marriage_status = $request->marriage_status;
+      $country = $request->country;
+      $province = $request->province;
+      $city = $request->city;
+      $zip = $request->zip;
+      $hobbies = $request->hobby;
+      $job = $request->occupation;
+      $religion = $request->religion;
+      $birthday = $request->birthday;
+      $age_start = $request->age_start;
+      $age_end = $request->age_end;
+      $date_send = $request->date_send;
+
+      if($hobbies == null){$hobbies = array();}
+      if($job == null){$job = array();}
+
+      $data = [
+        ['list_id',$list_id],
+        ['user_id',$user_id],
+        ['city','like','%'.$city.'%'],
+        ['marriage',$marriage_status],
+        ['religion',$religion],
+        ['gender',$sex],
+        ['province','like','%'.$province.'%'],
+        ['country',$country],
+        ['zip','like','%'.$zip.'%'],
+      ];
+
+      if($this->filter_all($city) == 1)
+      {
+        unset($data[2]);
+      }
+
+      if($this->filter_all($marriage_status) == 1)
+      {
+        unset($data[3]);
+      }
+
+      if($this->filter_all($religion) == 1)
+      {
+        unset($data[4]);
+      }
+
+      if($this->filter_all($sex) == 1)
+      {
+        unset($data[5]);
+      }
+
+      if($this->filter_all($province) == 1)
+      {
+        unset($data[6]);
+      }
+
+      if($this->filter_all($country) == 1)
+      {
+        unset($data[7]);
+      }
+
+      if($this->filter_all($zip) == 1)
+      {
+        unset($data[8]);
+      }
+
+      // in case if hobby is only 1
+      if(count($hobbies) == 1)
+      {
+         $data[] = ['hobby','like','%'.$hobbies[0].'%'];
+      }
+
+      if(count($job) == 1)
+      {
+         $data[] = ['occupation','like','%'.$job[0].'%'];
+      }
+
+      $data[] = ['status','=',1];
+      $customer = Customer::where($data);
+
+      // in case if hobby more than 1
+      $hobby_statement = '';
+      if(count($hobbies) > 1)
+      {
+        $pos = 0;
+        $last_index = count($hobbies) - 1;
+        foreach($hobbies as $index => $row):
+          $pos = $index + 1;
+          if($index == 0)
+          {
+            // FIRST STATEMENT
+            $hobby_statement .= "(SPLIT_STRING(hobby,';',".$pos.") = '".$row."' OR ";
+          }
+          elseif($index == $last_index)
+          {
+             // LAST STATEMENT
+            $hobby_statement .= "SPLIT_STRING(hobby,';',".$pos.") = '".$row."')";
+          }
+          else
+          {
+            $hobby_statement .= "SPLIT_STRING(hobby,';',".$pos.") = '".$row."' OR ";
+          }
+        endforeach;
+        $customer->whereRaw($hobby_statement);
+      }
+
+      // in case if job / occupation more than 1
+      $job_statement = '';
+      if(count($job) > 1)
+      {
+        $last_index = count($job) - 1;
+        foreach($job as $index => $row):
+          $posj = $index + 1;
+          if($index == 0)
+          {
+            // FIRST STATEMENT
+            $job_statement .= "(SPLIT_STRING(occupation,';',".$posj.") = '".$row."' OR ";
+          }
+          elseif($index == $last_index)
+          {
+            // LAST STATEMENT
+            $job_statement .= "SPLIT_STRING(occupation,';',".$posj.") = '".$row."')";
+          }
+          else
+          {
+            // MIDDLE STATEMENT
+            $job_statement .= "SPLIT_STRING(occupation,';',".$posj.") = '".$row."' OR ";
+          }
+        endforeach;
+        $customer->whereRaw($job_statement);
+      }
+
+      // PREVENT USER FILL AGE WITH ALL EITHER START OR END
+      $age = null;
+      if($age_start == 'all' || $age_end == 'all')
+      {
+        $age = 'all';
+      }
+
+      // TARGETTING BIRTHDAY
+      if($birthday == 1)
+      {
+        $date_send = Carbon::now()->toDateString();
+      }
+
+      if($request->cron == 1 && $birthday == 1)
+      {
+        $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
+        $customer = $customer->whereRaw($statement);
+      }
+
+      // FILTER TO PREVENT EMPTY DATE SEND
+      if($date_send == null)
+      {
+        $res['status'] = 0;
+        return response()->json($res);
+      }
+
+       // TARGETTING BY AGE
+      if($this->filter_all($age) == 0)
+      {
+        $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
+        $customer = $customer->whereRaw($target_age);
+      }
+      
+      $customer = $customer->get();
+
+      //return this value if call from function saveCampaign or another function
+      if($request->save_campaign !== null)
+      {
+        return $customer;
+      }
+    
+      // return this value if call from ajax calculate
+      $res['status'] = 1;
+      $res['total'] = $customer->count();
+      return response()->json($res);
+    }
+
+    private function filter_all($var)
+    {
+      if($var == 'all' || $var =='All')
+      {
+        return 1;
+      }
+      return 0;
     }
 
     public function SaveCampaign(Request $request)
@@ -373,16 +627,54 @@ class CampaignController extends Controller
       }
       else
       {
-        /* Validator Broadcast */
+        /* VALIDTOR BROADCASTS */
+
+        $req = $request->all();
+        // dd($req);
+
         $rules = array(
           'campaign_name'=>['required','max:50'],
           'list_id'=>['required', new CheckValidListID],
-          'date_send'=>['required',new CheckBroadcastDate],
-          'hour'=>['required','date_format:H:i',new EligibleTime($request->date_send,0)],
           'message'=>['required','max:65000'],
           'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
         );
 
+         // bc targeting
+        if($request->is_targetting == 1)
+        {
+          $req['save_campaign'] = true;
+          $rquest = new Request($req);
+          $get_filtered_customer = $this->calculate_user_list($rquest);
+
+          if($get_filtered_customer->count() > 0)
+          {
+            $req['customers'] = $get_filtered_customer;
+          }
+          else
+          {
+            $req['customers'] = false;
+          }
+
+          // TARGETING VALIDATOR
+          $vd = new CheckBroadcastDuplicate;
+          $tg = $vd->targeting_validator($request);
+
+          if(count($tg) > 0)
+          {
+            foreach($tg as $rl=>$value)
+            {
+              $rules[$rl] = $value;
+            }
+          }
+        }
+        // --
+
+        if($request->birthday == null)
+        {
+           $rules['date_send'] = ['required',new CheckBroadcastDate];
+           $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
+        }
+       
         $validator = Validator::make($request->all(),$rules);
         if($validator->fails())
         {
@@ -397,18 +689,35 @@ class CampaignController extends Controller
               'hour'=>$error->first('hour'),
               'msg'=>$error->first('message'),
 							'image'=>$error->first('imageWA'),
+
+              'country'=>$error->first('country'),
+              'province'=>$error->first('province'),
+              'city'=>$error->first('city'),
+              'zip'=>$error->first('zip'),
+              'marriage_status'=>$error->first('marriage_status'),
+              'religion'=>$error->first('religion'),
+              'sex'=>$error->first('sex'),
             ];
 
             return response()->json($data_error);
         }
 
+        $quest = new Request($req);
         $broadcast = new BroadCastController;
-        $saveBroadcast = $broadcast->saveBroadCast($request);
+        $saveBroadcast = $broadcast->saveBroadCast($quest);
 				
+        if($saveBroadcast == false)
+        {
+          $data['status'] = false;
+          $data['message'] = "Sorry our server is too busy, please try again later";
+          return response()->json($data);
+        }
+
         if(!empty($saveBroadcast))
         {
-            $data['message'] = $saveBroadcast;
-            return response()->json($data);
+          $data['status'] = true;
+          $data['message'] = $saveBroadcast;
+          return response()->json($data);
         }
 
 				// CreateBroadcast::dispatch(serialize($request));

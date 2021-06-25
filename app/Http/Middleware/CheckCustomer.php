@@ -8,6 +8,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use App\Customer;
 use App\UserList;
 use App\Additional;
+use App\Utility;
 use App\Rules\InternationalTel;
 use App\Rules\SubscriberEmail;
 use App\Rules\SubscriberUsername;
@@ -17,6 +18,14 @@ use App\Rules\CheckPlusCode;
 use App\Rules\CheckWANumbers;
 use App\Rules\CheckExistIdOnDB;
 use App\Rules\CheckListName;
+use App\Rules\CheckGender;
+use App\Rules\CheckCity;
+use App\Rules\CheckStatusMarriage;
+use App\Rules\CheckReligion;
+use App\Rules\CheckValidDate;
+use App\Rules\CheckProvince;
+use App\Rules\CheckHobby;
+use App\Rules\CheckCountry;
 use Session;
 
 class CheckCustomer
@@ -63,17 +72,73 @@ class CheckCustomer
           return response()->json($error);
         }
 
+        $lists = UserList::find($id_list);
+
           /* concat wa number so that get the correct number */
          $rules = [
             'subscribername'=> ['required','min:4','max:50'],
             'code_country' => ['required',new CheckPlusCode,new CheckCallCode],
-            'listname' => ['required',new CheckListName],
+            'listname' => ['required',new CheckListName]
          ];
 
-         if(array_key_exists('last_name',$req) == true)
+         if($lists->checkbox_lastname == 1)
          {
-            $rules['last_name'] = ['max:50'];
+            $rules['last_name'] = ['required', 'max:50'];
          }
+
+         if($lists->is_validate_dob == 1)
+         {
+            $rules['birthday'] = ['required', new CheckValidDate];
+         }
+
+         if($lists->is_validate_city == 1)
+         {
+            $rules['country'] = ['required',new CheckCountry];
+
+            if($request->country == 95)
+            {
+              $rules['province'] = ['required',new CheckProvince];
+              $rules['city'] = ['required',new CheckCity($request->id_province)];
+            }
+            else
+            {
+              $rules['province'] = ['required', 'max: 85'];
+              $rules['city'] = ['required','max : 85'];
+            }  
+         }
+
+         if($lists->is_validate_zip == 1)
+         {
+            $rules['zip'] = ['required','max : 10'];
+         }
+
+         if($lists->is_validate_marriage == 1)
+         {
+            $rules['marriage_status'] = ['required',new CheckStatusMarriage];
+         }
+
+         if($lists->is_validate_gender == 1)
+         {
+            $rules['sex'] = ['required',new CheckGender];
+         }
+
+         if($lists->is_validate_relgion == 1)
+         {
+            $rules['religion'] = ['required',new CheckReligion];
+         }
+
+         // VALIDATOR HOBBY AND OCCUPATION
+         if($lists->is_validate_hobby == 1)
+         {  
+            $rules['hobby'] = ['required',new CheckHobby($lists->user_id,2)];
+         }
+
+         if($lists->is_validate_job == 1)
+         {  
+            $rules['occupation'] = ['required',new CheckHobby($lists->user_id,3)];
+         }
+
+         // END TARGETING
 
          if(array_key_exists('email',$req) == true)
          {
@@ -113,16 +178,26 @@ class CheckCustomer
                 'code_country'=>$error->first('code_country'),
                 'data_update'=>$error->first('data_update'),
                 'listname'=>$error->first('listname'),
+                'country'=>$error->first('country'),
+                'province'=>$error->first('province'),
+                'city'=>$error->first('city'),
+                'zip'=>$error->first('zip'),
+                'sex'=>$error->first('sex'),
+                'birthday'=>$error->first('birthday'),
+                'marriage_status'=>$error->first('marriage_status'),
+                'religion'=>$error->first('religion'),
+                'hobby'=>$error->first('hobby'),
+                'occupation'=>$error->first('occupation'),
             );
             return response()->json($err);
         }
 
-         if(isset($req['data']) && $this->checkAdditional($req['data'],$id_list) !== true)
-         {
-            $result = $this->checkAdditional($req['data'],$id_list);
-            $error['data'] = json_decode($result,true);
-            return response()->json($error);
-         }
+        if(isset($req['data']) && $this->checkAdditional($req['data'],$id_list) !== true)
+        {
+          $result = $this->checkAdditional($req['data'],$id_list);
+          $error['data'] = json_decode($result,true);
+          return response()->json($error);
+        }
         
         return $next($request);
     }

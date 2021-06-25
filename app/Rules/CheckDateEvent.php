@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use App\Reminder;
 use Carbon\Carbon;
 
@@ -50,6 +51,6 @@ class CheckDateEvent implements Rule
      */
     public function message()
     {
-        return 'Date and time cannot be less than today and current time';
+        return Lang::get('custom.date_event');
     }
 }

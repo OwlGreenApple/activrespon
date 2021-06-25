@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Countries;
 
 class CheckCallCode implements Rule
@@ -47,6 +48,6 @@ class CheckCallCode implements Rule
      */
     public function message()
     {
-        return 'Invalid calling code.';
+        return Lang::get('custom.call_code');
     }
 }

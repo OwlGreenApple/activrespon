@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Customer;
 
 class SubscriberUsername implements Rule
@@ -51,6 +52,6 @@ class SubscriberUsername implements Rule
      */
     public function message()
     {
-        return 'Telegram username has registered already!';
+        return Lang::get('custom.username');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\User;
 
 class CheckUserPhone implements Rule
@@ -62,6 +63,6 @@ class CheckUserPhone implements Rule
      */
     public function message()
     {
-        return 'Phone number had registered already.';
+        return Lang::get('custom.phone_number');
     }
 }

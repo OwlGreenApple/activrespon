@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use App\UserList;
 
 class CheckValidListID implements Rule
@@ -52,6 +53,6 @@ class CheckValidListID implements Rule
      */
     public function message()
     {
-        return 'Invalid id, please do not modify default value';
+        return Lang::get('custom.id_list');
     }
 }

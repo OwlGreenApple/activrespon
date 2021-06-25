@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use App\Campaign;
 
 class CheckListUsed implements Rule
@@ -52,6 +53,6 @@ class CheckListUsed implements Rule
      */
     public function message()
     {
-        return 'This list used already, please choose another list.';
+        return Lang::get('custom.list_used');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Countries;
 
 class CheckCountryCode implements Rule
@@ -69,6 +70,6 @@ class CheckCountryCode implements Rule
      */
     public function message()
     {
-        return 'Country code available.';
+        return Lang::get('custom.check_country_code');
     }
 }

@@ -145,6 +145,16 @@
                     </div>
 
                     <div class="form-group row">
+                      <label class="col-sm-4 col-form-label"></label>
+                      <div id="duplicate_bd" class="col-sm-8 relativity">
+                          <div class="form-inline mt-2 ml-1 hbd">
+                            <input type="checkbox" class="form-check-input" name="birthday" value="1" />
+                            <label class="mr-2">Birthday</label>
+                          </div> 
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
                       <label class="col-sm-4 col-form-label">Time to send Message :</label>
                       <div class="col-sm-8 relativity">
                         <input name="hour" id="hour" type="text" class="timepicker form-control" value="00:00" />
@@ -168,6 +178,139 @@
                       </div>
                     </div>
 
+                     <!-- TARGETTING FORM -->
+                    <div id="target_box_duplicate">
+                      <div class="target_append"><!-- to make element move either on edit or duplicate -->
+                        <div class="form-group row istarget mb-0">
+                          <label class="col-sm-3 col-md-3 col-lg-3 col-form-label">Targetting</label>
+                          <div class="col-9 col-md-9 col-lg-9 mt-2">
+                            <input type="checkbox" class="form-check-input ml-1" name="is_targetting" value="1" />
+                          </div>
+                        </div>
+
+                        <!-- TARGETTING -->
+                        <div class="form-group row target">
+                          <label class="col-3 col-md-3 col-lg-3 col-form-label"><!--  --></label>
+
+                            <div class="col-9 col-md-9 col-lg-9 relativity">
+                              <div class="form-inline">
+                                <label class="mr-2">Sex :</label>
+                                <select name="sex" class="form-control">
+                                  <option value="all" >All</option>
+                                  <option value="1">{{ $gender[1] }}</option>
+                                  <option value="2">{{ $gender[2] }}</option>
+                                </select>
+                              </div> 
+                              <span class="error sex"></span> 
+
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Status :</label>
+                                <select name="marriage_status" class="form-control">
+                                  <option value="all">All</option>
+                                  <option value="1">{{ $marriage[1] }}</option>
+                                  <option value="2">{{ $marriage[2] }}</option>
+                                </select>
+                              </div> 
+                              <span class="error marriage_status"></span> 
+
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Age :</label>
+                                <select name="age_start" class="form-control mr-2">
+                                  <option value="all">All</option>
+                                  @for($x=10;$x<100;$x++)
+                                    <option value="{{$x}}">{{$x}}</option>
+                                  @endfor
+                                </select>
+                                <select name="age_end" class="form-control">
+                                  <option value="all">All</option>
+                                  @for($x=10;$x<100;$x++)
+                                    <option value="{{$x}}">{{$x}}</option>
+                                  @endfor
+                                </select>
+                              </div> 
+
+                              <!-- province & city -->
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Country :</label>
+                                <select name="country" class="form-control text-capitalize">
+                                  <option value="all">All</option>
+                                 @foreach($countries as $row)
+                                  <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                 @endforeach
+                                </select>
+                                <span class="error country"></span>
+                              </div> 
+
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Province :</label>
+                                <input name="province" class="form-control text-capitalize" autocomplete="disabled" />
+                              </div>
+                              <span class="error province"></span> 
+                            
+                              <div class="live-search-wrapper ml-4">
+                                 <div id="display_province" class="live-search"><!-- display ajax here --></div>
+                              </div>
+
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">City :</label>
+                                <input name="city"class="form-control" autocomplete="disabled" />
+                              </div> 
+                              <span class="error city"></span>
+
+                              <div class="live-search-wrapper-city ml-4">
+                                <div id="display_city" class="live-search"><!-- display ajax here --></div>
+                              </div>
+
+                              <div class="form-inline mt-2 form_zip">
+                                <label class="mr-2">Zip :</label>
+                                <input name="zip"class="form-control text-capitalize" value="all" maxlength="10" autocomplete="disabled" />
+                                <span class="error zip"></span>
+                              </div> 
+
+                              <div class="live-search-wrapper-zip ml-4">
+                                <div id="display_zip" class="live-search"><!-- display ajax here --></div>
+                              </div>
+                              <!-- end province & city -->
+
+                              <div class="form-inline mt-2">
+                                <label class="mr-2">Religion :</b></label>
+                                 <select name="religion" class="form-control text-capitalize">
+                                    <option value="{{ $religion[0] }}">{{ $religion[0] }}</option>
+                                    <option value="1">{{ $religion[1] }}</option>
+                                    <option value="2">{{ $religion[2] }}</option>
+                                    <option value="3">{{ $religion[3] }}</option>
+                                    <option value="4">{{ $religion[4] }}</option>
+                                    <option value="5">{{ $religion[5] }}</option>
+                                  </select>
+                              </div>
+                              <span class="error religion"></span> 
+
+                              <div class="form-inline mt-2 hobby-cover">
+                                 <label class="mr-2">Hobby :</label>
+                                 <span class="form-inline" id="hobby"></span>
+                              </div> 
+
+                              <div class="form-inline mt-2">
+                                 <label class="mr-2">Occupation :</label>
+                                 <span class="form-inline" id="job"></span>
+                              </div> 
+                              <!--  -->
+                          </div>
+                      <!--  -->
+                      </div>
+                    </div>
+                     <!-- end target_box_duplicate -->
+                    </div>
+
+                    <!-- calculate -->
+                    <div class="form-group row calc mt-n2">
+                      <label class="col-3 col-md-3 col-lg-3 col-form-label">&nbsp;</label>
+                      <div class="col-9 col-md-9 col-lg-9">
+                        <div class="mb-2" id="result_calculate"></div>
+                        <button id="calculate" type="button" class="btn btn-info">Calculate</button>
+                      </div>
+                    </div>
+
                     <div class="form-group">
                       <label>Message :</label>
                       <div class="col-sm-12 pad-fix">
@@ -181,6 +324,8 @@
                       <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                     </div>
                   </form>
+                  <!-- close target -->
+                </div>
                 </div>
                
             </div>
@@ -219,6 +364,12 @@
                       <span class="error event_time"></span>
                     </div>
 
+                    <div class="form-group"> 
+                      <div id="edit_bd" class="relativity">
+                        <!-- birthday input move here if user open edit -->
+                      </div>
+                    </div>
+
                     <div class="form-group">
                       <label>Time to send Message :</label>
                       <div class="relativity"> 
@@ -243,6 +394,17 @@
 											</div>
 										</div>
 
+                    <div id="targeting-box"><!-- apppend to class target --></div>
+
+                    <!-- calculate -->
+                    <div class="form-group row calc">
+                      <label class="col-3 col-md-3 col-lg-3 col-form-label">&nbsp;</label>
+                      <div class="col-9 col-md-9 col-lg-9 relativit">
+                        <div class="mb-2" id="result_calculate_edit"></div>
+                        <button id="calculate_edit" type="button" class="btn btn-info">Calculate</button>
+                      </div>
+                    </div>
+                    
 										<div class="form-group">
                       <label>Message :</label>
                       <textarea name="edit_message" id="edit_message" class="form-control"></textarea>
@@ -281,6 +443,12 @@
   </div>
   <!-- End Modal -->
 
+<script type="text/javascript">
+  var url_province = '{{ url("provinces") }}';
+  var url_city = '{{ url("cities") }}';
+  var url_zip = '{{ url("get_zip") }}';
+</script>
+<script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 
   /* Datetimepicker */
@@ -322,6 +490,10 @@
       sendTestMessage();
       pictureClass();
       pagination();
+      display_targeting();
+      calculate_duplicate();
+      calculate_edit();
+      display_birthday();
   });
 
   function clearToolTip()
@@ -486,12 +658,16 @@
         var time = $(this).attr('data-time');
         var message = $(this).attr('data-message');
         var published = $(this).attr('data-publish');
+        var list_id = $(this).attr('list_id');
           
         $("#broadcast_edit").attr('broadcast_id',id);
         $("input[name='campaign_name']").val(name);
         $("input[name='date_send']").val(date);
         $("#time_sending").val(time);
         $("#edit_message").emojioneArea()[0].emojioneArea.setText(message);
+        $("#calculate_edit").attr('list_id',list_id);
+        $("input[name='zip']").attr('list_id',list_id);
+
         if(published == 1)
         {
             $("#publish").hide();
@@ -500,7 +676,13 @@
         {
             $("#publish").show();
         }
+
         $(".error").hide();
+        broadcast_ajax_targetting(id);
+        setTimeout(function(){
+          $(".target_append").appendTo("#targeting-box");
+          $(".hbd").appendTo("#edit_bd");
+        },200);
         $("#modal_edit_broadcast").modal();
     });
   }
@@ -515,6 +697,7 @@
       formData.append('broadcast_id',broadcast_id);
       formData.append('is_update',1);
       formData.append('publish',publish);
+      formData.append('id_province',$("input[name='province']").attr('data-id'));
       updateBroadcast(formData);
     });
   }
@@ -527,6 +710,7 @@
       var formData = new FormData(form);
       formData.append('broadcast_id',broadcast_id);
       formData.append('is_update',1);
+      formData.append('id_province',$("input[name='province']").attr('data-id'));
       updateBroadcast(formData);
     });
   }
@@ -551,6 +735,7 @@
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
         clearToolTip();
+        $(".alert").show();
 
         if(result.success == 0)
         { 
@@ -561,6 +746,13 @@
           $(".event_time").html(result.event_time);
           $(".msg").html('<div class="alert alert-danger">'+result.broadcast_id+'</div>')
           $(".image").html(result.image);
+          $(".country").html(result.country);
+          $(".province").html(result.province);
+          $(".city").html(result.city);
+          $(".zip").html(result.zip);
+          $(".religion").html(result.religion);
+          $(".sex").html(result.sex);
+          $(".marriage_status").html(result.marriage_status);
 
           if(result.msg !== undefined)
           {
@@ -576,8 +768,9 @@
           {
             $("#publish").hide();
           }
-          loadPagination(global_url,2,null);
+          loadPagination(global_url,null,null);
         }
+        $(".alert").delay(2000).hide(3000);
       },
       error : function(xhr,attr,throwable){
         $('#loader').hide();
@@ -588,16 +781,87 @@
     });
   }
 
+  // DUPLICATE
   function duplicateBroadcastForm()
   {
     $("body").on("click",".broadcast_duplicate",function(){
         var id = $(this).attr('id');
+        broadcast_ajax_targetting(id);
 
-        $.ajax({
-          type : 'GET',
-          url : '{{ url("broadcast-check") }}',
-          data : {id : id},
-          dataType : "json",
+        $("#duplicate_broadcast").attr('data',id);
+        $("input[name='zip']").attr('list_id',0);
+        setTimeout(function(){
+          $(".target_append").appendTo("#target_box_duplicate");
+          $(".hbd").appendTo("#duplicate_bd");
+        },200);
+        $("#modal_duplicate_broadcast").modal();
+    });
+  }
+
+  function broadcast_ajax_targetting(id)
+  {
+    $.ajax({
+      type : 'GET',
+      url : '{{ url("broadcast-check") }}',
+      data : {id : id},
+      dataType : "json",
+      beforeSend: function()
+      {
+        $('#loader').show();
+        $('.div-loading').addClass('background-load');
+      },
+      success : function(result)
+      {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
+        clearToolTip();
+        if(result.is_targetting == 1)
+        {
+          $(".target").show();
+          $(".calc").show();
+        }
+        else
+        {
+          $(".target").hide();
+          $(".calc").hide();
+        }
+
+        broadcastFormArrange(result);
+      },
+      error: function(xhr,attr,throwable)
+      {
+        $('#loader').hide();
+        $('.div-loading').removeClass('background-load');
+      }
+    });
+  } 
+
+  function calculate_duplicate()
+  {
+    $("#calculate").click(function(){
+      var data = $("#duplicate_broadcast").serialize();
+      calculate_targetting(data);
+    });
+  }
+
+  function calculate_edit()
+  {
+    $("#calculate_edit").click(function(){
+      var list_id = $(this).attr('list_id');
+      var data = $("#edit_broadcast").serializeArray();
+      data.push({name : 'list_id', value : list_id});
+      calculate_targetting(data);
+    });
+  }
+
+  function calculate_targetting(data) 
+  {
+      $.ajax({
+          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          type : 'POST',
+          url : '{{url("calculate-user")}}',
+          data : data,
+          dataType : 'json',
           beforeSend: function()
           {
             $('#loader').show();
@@ -607,28 +871,99 @@
           {
             $('#loader').hide();
             $('.div-loading').removeClass('background-load');
-            clearToolTip();
-            broadcastFormArrange(result);
+            
+            if(result.status == 1)
+            {
+              $("#result_calculate").html("Total : <b>"+result.total+"</b>");
+              $("#result_calculate_edit").html("Total : <b>"+result.total+"</b>");
+            }
+            else
+            {
+              $("#result_calculate").html("<span class='error'>Please fill Date Send</span>");
+              $("#result_calculate_edit").html("<span class='error'>Please fill Date Send</span>");
+            }
           },
-          error: function(xhr,attr,throwable)
+          error : function(xhr,attribute,throwable)
           {
             $('#loader').hide();
             $('.div-loading').removeClass('background-load');
+            console.log(xhr.responseText);
           }
-        });
-
-        $("#duplicate_broadcast").attr('data',id);
-        $("#modal_duplicate_broadcast").modal();
-    });
+      });
+      //ajax
   }
 
   function broadcastFormArrange(result)
   {
-      var box = '';
+      var box = wrapper = '';
       $("input[name='campaign_name']").val(result.campaign);
       $("input[name='date_send']").val(result.day_send);
       $("input[name='hour']").val(result.hour_time);
       $("#divInput-description-post").emojioneArea()[0].emojioneArea.setText(result.message);
+
+      // TARGETTING LOGIC
+      $("select[name='sex'] option[value="+result.sex+"]").prop('selected',true);
+      $("select[name='marriage_status'] option[value="+result.marriage+"]").prop('selected',true);
+
+      if(result.birthday == 1)
+      {
+        $("input[name='birthday']").prop('checked',true);
+        $("input[name='date_send']").val('--- Disabled ---');
+        $("input[name='date_send']").prop('disabled',true);
+      }
+      else
+      {
+        $("input[name='birthday']").prop('checked',false);
+        $("input[name='date_send']").prop('disabled',false);
+        $("input[name='date_send']").val(result.day_send);
+      }
+
+      if(result.is_targetting == 1)
+      {
+        $("input[name='is_targetting']").prop('checked',true);
+      }
+      else
+      {
+        $(".target").hide();
+        $("input[name='is_targetting']").prop('checked',false);
+      }
+
+     /* var hasOption = $("select[name='city'] option[value="+result.city+"]").length;
+      if(hasOption == 0)
+      {
+        var opt = "<option value='"+result.city+"' selected>"+result.city+"</option>";
+        $(opt).appendTo("select[name='city']");
+      }
+
+      else{ }*/
+      
+      $("select[name='country'] option[value="+result.country+"]").prop('selected',true);
+      $("input[name='city']").val(result.city);
+      $("input[name='province']").val(result.province);
+      $("input[name='province']").attr('data-id',result.province_id);
+      $("input[name='zip']").val(result.zip);
+
+      $("select[name='age_start'] option[value="+result.age_start+"]").prop('selected',true);
+      $("select[name='age_end'] option[value="+result.age_end+"]").prop('selected',true);
+      $("select[name='religion'] option[value="+result.religion+"]").prop('selected',true);
+
+      $.each(result.hobbies,function(index, val){
+        box += '<div class="form-check form-check-inline">';
+        box += '<input checked class="form-check-input" type="checkbox" name="hobby[]" value="'+val+'">';
+        box += '<span class="form-check-label">'+val+'</span>';
+        box += '</div>';
+      });
+
+      $("#hobby").html(box);
+
+      $.each(result.jobs,function(i, vals){
+        wrapper += '<div class="form-check form-check-inline">';
+        wrapper += '<input checked class="form-check-input" type="checkbox" name="occupation[]" value="'+vals+'">';
+        wrapper += '<span class="form-check-label">'+vals+'</span>';
+        wrapper += '</div>';
+      });
+      $("#job").html(wrapper);
+     
       /*
       if(result.list_id > 0){
         $(".broadcast-type").html('Schedule Broadcast');
@@ -669,6 +1004,39 @@
       } */
   }
 
+  function display_birthday()
+  {
+    $("input[name='birthday']").click(function(){
+      var checked = $(this).prop("checked");
+      if(checked == true)
+      {
+        $("input[name='date_send']").prop('disabled',true);
+        $("input[name='date_send']").val('--- Disabled ---');
+      }
+      else
+      {
+        $("input[name='date_send']").prop('disabled',false);
+        $("input[name='date_send']").val('');
+      }
+    });
+  }
+
+  function display_targeting()
+  {
+    $("input[name='is_targetting']").click(function(){
+      var checked = $(this).prop("checked");
+      if(checked == true)
+      {
+        $(".target").show();
+        $(".calc").show();
+      }
+      else
+      {
+        $(".target").hide();
+        $(".calc").hide();      }
+    });
+  }
+
   function draftBroadCast()
   {
     $("#duplicate_broadcast").submit(function(e){
@@ -679,6 +1047,7 @@
       var data = new FormData(form);
       data.append('id', reminder_id);
       data.append('draft', true);
+      data.append('id_province',$("input[name='province']").attr('data-id'));
       duplicateBroadcast(data)
     });
   }
@@ -716,6 +1085,13 @@
             $(".message").html(result.message);
             $(".list_id").html(result.list_id);
             $(".image").html(result.image);
+            $(".country").html(result.country);
+            $(".province").html(result.province);
+            $(".city").html(result.city);
+            $(".zip").html(result.zip);
+            $(".religion").html(result.religion);
+            $(".sex").html(result.sex);
+            $(".marriage_status").html(result.marriage_status);
           }
           else
           {

@@ -79,11 +79,12 @@
                     <input type="text" name="label_email" class="form-control" placeholder="Label Email" value="{{ $data['label_email'] }}"/>
                   </div>
 
-                  <div class="form-group col-md-1">
-                    <input type="checkbox" name="checkbox_email" class="mt-2" @if($data['checkbox_email'] == 1) checked value="1" @else value="0" @endif />
-                  </div>
+                 <!--  <div class="form-group col-md-1">
+                    <input type="checkbox" name="checkbox_email" class="mt-2" if($data['checkbox_email'] == 1) checked value="1" else value="0" endif />
+                  </div> -->
                   <div class="error label_email col-lg-12 text-left"></div>
               </div>
+
             </div><!-- end form contact -->
           </div><!-- end wrapper -->
           
@@ -125,6 +126,77 @@
 
           <!-- middle wrapper -->
           <div class="wrapper">
+
+            <div class="form-group text-left">
+              <label>Targeting Form</label>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_dob" @if($data[
+                "lists"]->is_validate_dob == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"><input name="t_birthday" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_birthday }}" /></h6>
+                <span class="error t_birthday"><!-- error --></span>
+              </div> 
+
+             <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_city" @if($data[
+                "lists"]->is_validate_city == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">
+                  <input name="t_country" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_country }}" />
+                  <span class="error t_country"><!-- error --></span>
+                  <input name="t_province" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_province }}" />
+                  <span class="error t_province"><!-- error --></span>
+                  <input name="t_city" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_city }}" />
+                  <span class="error t_city"><!-- error --></span>
+                </h6>
+              </div>
+
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_zip" @if($data[
+                "lists"]->is_validate_zip == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"> <input name="t_zip" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_zip }}" /></h6>
+                <span class="error t_zip"><!-- error --></span>
+              </div> 
+
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_gender" @if($data[
+                "lists"]->is_validate_gender == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"><input name="t_gender" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_gender }}" /></h6>
+                <span class="error t_gender"><!-- error --></span>
+              </div>
+
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_marriage" @if($data[
+                "lists"]->is_validate_marriage == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"><input name="t_marriage" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_marriage }}" /></h6>
+                <span class="error t_marriage"><!-- error --></span>
+              </div>
+
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_religion" @if($data[
+                "lists"]->is_validate_relgion == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label"><input name="t_religion" type="text" class="form-control form-control-sm col-lg-6" value="{{ $data['lists']->label_religion }}" /></h6>
+                <span class="error t_religion"><!-- error --></span>
+              </div>
+
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="validate_hobby" @if($data[
+                "lists"]->is_validate_hobby == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">
+                  <input name="t_hobby" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_hobby }}" />
+                  <a target="_blank" href="{{url('targeting-form')}}"><i class="fas fa-plus-circle" style="font-size : 14px"></i> Hobby</a></h6>
+                  <span class="error t_hobby"><!-- error --></span>
+              </div>  
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="validate_job" @if($data[
+                "lists"]->is_validate_job == 1) checked value="1" @else value="0" @endif/>
+                <h6 class="form-check-label">
+                  <input name="t_job" type="text" class="form-control form-control-sm col-lg-6 mb-2" value="{{ $data['lists']->label_occupation }}" />
+                  <a class="mt-2" target="_blank" href="{{url('targeting-form')}}"><i class="fas fa-plus-circle" style="font-size : 14px"></i> Occupation</a></h6>
+                  <span class="error t_job"><!-- error --></span>
+              </div>
+
+            </div> 
+
             <div class="form-group text-left">
                <label>Add Script 
                     <span class="tooltipstered" title="<div class='panel-heading'>Media Sosial</div><div class='panel-content'>
@@ -221,8 +293,8 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 		<!-- TABS 2 -->
     <div class="tabs-container" id="tab2C">
       <div class="act-tel-tab">
-        <div class="form-control wrapper message mimport">
-          If you want add contact more than 1 please click : "<a class="open_import"><b>import contacts</b></a>" <!--or "<b>take from group</b>" if you want -->
+        <div class="form-control wrapper bg-telegram">
+          Please click here to : "<a class="open_import"><b>import contacts</b></a>" (.xlsx) <!--or "<b>take from group</b>" if you want -->
         </div>
 
         <div class="wrapper">
@@ -963,7 +1035,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function getChecked()
   {
-    $("input[name='checkbox_lastname'],input[name='checkbox_email']").change(function(){
+    $("input[name='checkbox_lastname'],input[name='checkbox_email'],input[name='validate_dob'],input[name='validate_city'],input[name='validate_job'],input[name='validate_hobby'],input[name='validate_religion'],input[name='validate_marriage'],input[name='validate_gender'],input[name='validate_zip']").change(function(){
       var checked = $(this).prop('checked');
       if(checked == true)
       {
@@ -1318,6 +1390,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
   function openImport() {
     $(".open_import").click(function(){
+       $(".alert").hide();
       $("#import-contact").modal();
     });
   }
@@ -1367,14 +1440,40 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
               $('#loader').hide();
               $('input[name="csv_file"]').val('');
     
-              if(result.success == 1)
+              if(result.success == 0)
+              {   
+                  var errors = '';
+                  var errname, errphone, erremail;
+                  (result.name !== "")?errors+=result.name+"<br />":errors+='';
+                  (result.phone !== "")?errors+=result.phone+"<br />":errors+='';
+                  (result.email !== "")?errors+=result.email+"<br />":errors+='';
+                  (result.last_name !== "")?errors+=result.last_name+"<br />":errors+='';
+                  // console.log(result);
+                  (result.birthday !== "")?errors+=result.birthday+"<br />":errors+='';
+                  (result.gender !== "")?errors+=result.gender+"<br />":errors+='';
+                  (result.country !== "")?errors+=result.country+"<br />":errors+='';
+                  (result.province !== "")?errors+=result.province+"<br />":errors+='';
+                  (result.city !== "")?errors+=result.city+"<br />":errors+='';
+                  (result.zip !== "")?errors+=result.zip+"<br />":errors+='';
+                  (result.marriage !== "")?errors+=result.marriage+"<br />":errors+='';
+                  (result.religion !== "")?errors+=result.religion+"<br />":errors+='';
+                  (result.hobby !== "")?errors+=result.hobby+"<br />":errors+='';
+                  (result.occupation !== "")?errors+=result.occupation:errors+='';
+
+                  $(".error_notif").html('<div class="alert alert-danger">'+errors+'</div>');
+
+                  if(result.message !== undefined)
+                  {
+                      $(".error_notif").html("<div class='alert alert-danger'>"+result.message+"</div>");
+                  }
+              }
+              else if(result.success == 1)
               {
                   $("#btn_close_import").trigger("click");
                   $(".main").html("<div class='alert alert-success'>"+result.message+"</div>");
                   $("body .alert-success").delay(5000).fadeOut(2000);
               }
-
-              if(result.duplicate == 1)
+              else if(result.duplicate == 1)
               {   
                   $("#btn_close_import").trigger("click");
                   $(".duplicated").html("There is available phone on your xlsx file,<br/>Do you want to overwrite?");
@@ -1386,7 +1485,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                   // console.log(data);
               }
               else
-              {
+              { 
                   excelImport(data);
               }
             },
@@ -1446,20 +1545,6 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 $(".main").html("<div class='alert alert-success'>"+result.message+"</div>");
                 $("body .alert-success").delay(5000).fadeOut(2000);
             }
-            else
-            {   
-                var errors = '';
-                var errname, errphone, erremail;
-                (result.name !== undefined)?errors+=result.name+"\n":errname='';
-                (result.phone !== undefined)?errors+=result.phone+"\n":errphone='';
-                (result.email !== undefined)?errors+=result.email:erremail='';
-                $(".error_notif").html('<div class="alert alert-danger">'+errors+'</div>');
-
-                if(result.message !== undefined)
-                {
-                    $(".error_notif").html("<div class='alert alert-danger'>"+result.message+"</div>");
-                }
-            }
           },
           error: function (xhr, ajaxOptions, thrownError) {
             $('#loader').hide();
@@ -1469,7 +1554,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
             for ( var property in err.errors ) {
               msg += err.errors[property][0]+"\n"; // get message by object name
             }*/
-            $(".error_notif").html('<div class="alert alert-danger">Error, sorry unable to import, maybe your csv file is corrupt or data unavailable</div>');
+            $(".error_notif").html('<div class="alert alert-danger">Error, sorry unable to import, maybe your file is corrupt or data unavailable</div>');
             $('input[name="csv_file"]').val('');
             displayCustomer();
           }
@@ -1713,13 +1798,14 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
              }
 
              // all data
+            
              var data = {
                 id : {!! $id !!},
                 label_name : $("input[name='label_name']").val(),
                 label_last_name : $("input[name='label_last_name']").val(),
                 label_phone : $("input[name='label_phone']").val(),
                 label_email : $("input[name='label_email']").val(),
-                checkbox_email : $("input[name='checkbox_email']").val(),
+                // checkbox_email : $("input[name='checkbox_email']").val(),
                 checkbox_lastname : $("input[name='checkbox_lastname']").val(),
                 button_rename : $("input[name='button_rename']").val(),
                 editor : CKEDITOR.instances.editor1.getData(),
@@ -1727,6 +1813,25 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 conf_message : CKEDITOR.instances.editor2.getData(),
                 fields : datafields,
                 dropfields : datadropfields,
+                validate_dob : $("input[name='validate_dob']").val(),
+                validate_city : $("input[name='validate_city']").val(),
+                validate_zip : $("input[name='validate_zip']").val(),
+                validate_job : $("input[name='validate_job']").val(),
+                validate_hobby : $("input[name='validate_hobby']").val(),
+                validate_gender : $("input[name='validate_gender']").val(),
+                validate_marriage : $("input[name='validate_marriage']").val(),
+                validate_religion : $("input[name='validate_religion']").val(),
+
+                t_birthday : $("input[name='t_birthday']").val(),
+                t_country : $("input[name='t_country']").val(),
+                t_province : $("input[name='t_province']").val(),
+                t_city : $("input[name='t_city']").val(),
+                t_zip : $("input[name='t_zip']").val(),
+                t_gender : $("input[name='t_gender']").val(),
+                t_marriage : $("input[name='t_marriage']").val(),
+                t_religion : $("input[name='t_religion']").val(),
+                t_hobby : $("input[name='t_hobby']").val(),
+                t_job : $("input[name='t_job']").val(),
              };
 
             $.ajaxSetup({
@@ -1747,6 +1852,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                 success : function(result){
                    $('#loader').hide();
                    $('.div-loading').removeClass('background-load');
+                   $(".alerts").show();
 
                    if(result.error == undefined)
                    {
@@ -1754,7 +1860,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                       $(".alerts").html('<div class="alert alert-success mt-2">'+result.message+'</div>');
                       $(".error").hide();
                       displayAdditional();
-                      $(".alerts").delay(2000).fadeOut(3000);
+                      $(".alerts").delay(2000).hide(3000);
                    }
                    else if(result.additionalerror == false)
                    {
@@ -1768,6 +1874,16 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                       $(".label_email").html(result.label_email);
                       $(".button_rename").html(result.button_rename);
                       $(".message_conf").html(result.conf_message);
+                      $(".t_birthday").html(result.t_birthday);
+                      $(".t_country").html(result.t_country);
+                      $(".t_province").html(result.t_province);
+                      $(".t_city").html(result.t_city);
+                      $(".t_zip").html(result.t_zip);
+                      $(".t_gender").html(result.t_gender);
+                      $(".t_marriage").html(result.t_marriage);
+                      $(".t_religion").html(result.t_religion);
+                      $(".t_hobby").html(result.t_hobby);
+                      $(".t_job").html(result.t_job);
 
                       if(result.additionalerror == true)
                       {

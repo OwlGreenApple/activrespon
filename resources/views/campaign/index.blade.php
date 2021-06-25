@@ -10,8 +10,19 @@
     @if($row->type == 2) 
       @php
         $broad_cast = $broadcast->where('campaign_id',$row->id)->first();
-        $sending = Date('H:i',strtotime($broad_cast->hour_time));
-        $day_send = Date('M d, Y',strtotime($broad_cast->day_send));
+        
+
+        if($broad_cast->day_send == null)
+        {
+          $day_send = 'Waiting';
+          $sending = null;
+        }
+        else
+        {
+          $day_send = Date('M d, Y',strtotime($broad_cast->day_send));
+          $sending = Date('H:i',strtotime($broad_cast->hour_time));
+        }
+        
         $broadcast_message = $broad_cast->message;        
 
         $list_id = $row->list_id;
@@ -101,7 +112,7 @@
 
         <div class="col-md-3 col-lg-3 pad-fix col-button">
           @if($label !== null)
-              <a title="Edit Message" data-toggle="tooltip" id="{{ $broad_cast->id }}" data-name="{{ $row->name }}" data-date="{{ $broad_cast->day_send }}" data-message="{{ $broadcast_message }}" data-time="{{ $sending }}" data-publish="{{ $row->status }}" type="button" class="btn btn-custom edit_campaign btn-sm">@if($row->status == 1)Edit @else Edit/ Publish @endif</a>
+              <a title="Edit Message" data-toggle="tooltip" id="{{ $broad_cast->id }}" data-name="{{ $row->name }}" data-date="{{ $broad_cast->day_send }}" data-message="{{ $broadcast_message }}" data-time="{{ $sending }}" data-publish="{{ $row->status }}" list_id ="{{ $list_id }}" type="button" class="btn btn-custom edit_campaign btn-sm">@if($row->status == 1)Edit @else Edit/ Publish @endif</a>
             @if($row->status == 1)
               <button id="{{ $broad_cast->id }}" type="button" class="btn btn-success broadcast_duplicate btn-sm" data-toggle="tooltip" title="Duplicate"><span class="icon-copy-text"></span></button>
             @endif

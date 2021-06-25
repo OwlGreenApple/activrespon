@@ -199,6 +199,14 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::get('reseller-invoice','HomeController@invoice');
   Route::get('detail-invoice/{period}/{userid}','HomeController@monthly_report');
   Route::post('pay-reseller','HomeController@pay_reseller');
+
+  // UTILITIES
+  Route::get('list-utility','Admin\UtilityController@index');
+  Route::post('list-save-category','Admin\UtilityController@add_category_admin');
+  Route::get('list-category-option','Admin\UtilityController@display_category_option');
+  Route::get('list-category/{id?}','Admin\UtilityController@display_category');
+  Route::post('list-category-edit','Admin\UtilityController@edit_category');
+  Route::post('list-delete','Admin\UtilityController@delete_category');
 });
 
 /* SETTING */
@@ -294,6 +302,14 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('list-delete-campaign','CampaignController@listDeleteCampaign'); 
   Route::get('list-datatable-campaign','CampaignController@listAutoSchedule'); 
   Route::post('edit-campaign-name','CampaignController@editCampaign'); 
+  Route::post('calculate-user','CampaignController@calculate_user_list'); 
+
+  /* UTILITY / TARGETING */
+  Route::get('targeting-form','CampaignController@utility_form');
+  Route::post('targeting-save','Admin\UtilityController@add_category_user');
+  Route::get('targeting-list','Admin\UtilityController@display_category');
+  Route::post('targeting-edit','Admin\UtilityController@edit_category');
+  Route::get('targeting-del','Admin\UtilityController@delete_category');
   
   /* EVENT */
   Route::get('event-del','EventController@delEvent');
@@ -384,6 +400,9 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
 	Route::get('ckbrowse', 'CKController@ck_browse')->name('ckbrowse');
 	Route::get('ckdelete', 'CKController@ck_delete_image')->name('ckdelete');
 	Route::post('ckupload', 'CKController@ck_upload_image')->name('ckupload');
+
+  /*CUSTOMERS*/
+  Route::get('get_zip','CustomerController@get_zip');
 });
 
 /* Customers */
@@ -396,6 +415,8 @@ Route::get('link/activate/{list_name}/{customer_id}','CustomerController@link_ac
 Route::get('link/unsubscribe/{list_name}/{customer_id}','CustomerController@link_unsubscribe');
 
 /* SUBSCRIBE */
+Route::get('provinces', 'CustomerController@get_province');
+Route::get('cities', 'CustomerController@get_city');
 Route::get('countries', 'CustomerController@Country');
 Route::get('/{list_name}', 'CustomerController@subscriber');
 //Route::get('/ev/{list_name}','CustomerController@event'); //register-customer.blade

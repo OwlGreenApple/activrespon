@@ -105,6 +105,12 @@
           <input id="datetimepicker-date" type="text" name="date_send" class="form-control custom-select-campaign" />
           <span class="icon-calendar"></span>
           <span class="error date_send"></span>
+
+          <div class="form-inline bday_checkbox">
+            <input type="checkbox" class="form-check-input" name="birthday" value="1" />
+            <label class="ml-2">Birthday</label>
+          </div> 
+
         </div>
       </div>
 
@@ -163,6 +169,149 @@
 				</div>
       </div>
 
+      <!-- TARGETTING OPEN -->
+      @if(getMembership(Auth()->user()->membership) > 3) 
+      <div class="form-group row">
+        <label class="col-5 col-md-4 col-lg-3 col-form-label">Targetting :</label>
+        <div class="col-7 col-md-8 col-lg-9">
+          <div class="form-inline mt-2 fix-mt">
+            <input type="checkbox" name='is_targetting' class="form-check-input align-center" value="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- TARGETTING -->
+      <div class="form-group row targeting">
+        <label class="col-sm-4 col-md-4 col-lg-3 col-form-label"><!--  --></label>
+          <div class="col-sm-8 col-md-8 col-lg-9">
+            <div class="form-inline">
+              <label class="mr-2">Sex :</label>
+              <select name="sex" class="form-control">
+                <option value="all" selected>All</option>
+                <option value="1">{{ $gender[1] }}</option>
+                <option value="2">{{ $gender[2] }}</option>
+              </select>
+            </div> 
+            <span class="error sex"></span>
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Status :</label>
+              <select name="marriage_status" class="form-control">
+                <option value="all" selected>All</option>
+                <option value="1">{{ $marriage[1] }}</option>
+                <option value="2">{{ $marriage[2] }}</option>
+              </select>
+            </div> 
+            <span class="error marriage_status"></span>
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Age :</label>
+              <select name="age_start" class="form-control mr-2">
+                <option value="all">All</option>
+                @for($x=10;$x<100;$x++)
+                  <option value="{{$x}}">{{$x}}</option>
+                @endfor
+              </select>
+              <select name="age_end" class="form-control">
+                <option value="all">All</option>
+                @for($x=10;$x<100;$x++)
+                  <option value="{{$x}}">{{$x}}</option>
+                @endfor
+              </select>
+            </div> 
+
+            <!-- province & city -->
+            <div class="form-inline mt-2">
+              <label class="mr-2">Country :</label>
+              <select name="country" class="form-control text-capitalize">
+                <option value="all">All</option>
+               @foreach($countries as $row)
+                <!-- <option value="{{ $row->id }}" if($row->id == 95) selected endif>{{ $row->name }}</option> -->
+                <option value="{{ $row->id }}">{{ $row->name }}</option>
+               @endforeach
+              </select>
+              <span class="error country"></span>
+            </div> 
+
+            <div class="form-inline mt-2 form_province">
+              <label class="mr-2">Province :</label>
+              <input name="province" class="form-control text-capitalize" value="all" autocomplete="disabled" />
+            </div>
+            <span class="error province"></span> 
+          
+            <div class="live-search-wrapper ml-4">
+               <div id="display_province" class="live-search"><!-- display ajax here --></div>
+            </div>
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">City :</label>
+              <input name="city"class="form-control text-capitalize" value="all" autocomplete="disabled" />
+            </div> 
+            <span class="error city"></span>
+
+            <div class="live-search-wrapper-city ml-4">
+              <div id="display_city" class="live-search"><!-- display ajax here --></div>
+            </div>
+           
+            <div class="form-inline mt-2 form_zip">
+              <label class="mr-2">Zip :</label>
+              <input name="zip"class="form-control text-capitalize" value="all" maxlength="10" autocomplete="disabled" />
+              <span class="error zip"></span>
+            </div> 
+
+             <div class="live-search-wrapper-zip ml-4">
+               <div id="display_zip" class="live-search"><!-- display ajax here --></div>
+            </div>
+
+            <!-- end province & city -->
+
+            <div class="form-inline mt-2">
+              <label class="mr-2">Religion :</b></label>
+               <select name="religion" class="form-control text-capitalize">
+                  <option value="{{ $religion[0] }}" selected>{{ $religion[0] }}</option>
+                  <option value="1">{{ $religion[1] }}</option>
+                  <option value="2">{{ $religion[2] }}</option>
+                  <option value="3">{{ $religion[3] }}</option>
+                  <option value="4">{{ $religion[4] }}</option>
+                  <option value="5">{{ $religion[5] }}</option>
+                </select>
+            </div> 
+            <span class="error religion"></span>
+
+            @if($utils_hobby->count() > 0)
+            <div class="form-inline mt-2">
+               <label class="mr-2">Hobby :</label>
+                @foreach($utils_hobby as $row)
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="hobby[]" value="{{$row->category}}">
+                  <span class="form-check-label">{{ $row->category }}</span>
+                </div>
+                @endforeach
+            </div> 
+            @endif
+
+            @if($utils_occupation->count() > 0)
+            <div class="form-inline mt-2">
+               <label class="mr-2">Occupation :</label>
+                @foreach($utils_occupation as $row)
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="occupation[]" value="{{$row->category}}">
+                  <span class="form-check-label">{{ $row->category }}</span>
+                </div>
+                @endforeach
+            </div> 
+            @endif
+
+            <div class="form-group mt-3">
+              <div class="mb-2" id="result_calculate"><!-- Total : 10 --></div>
+              <button id="calculate" type="button" class="btn btn-info">Calculate</button>
+            </div> 
+            <!--  -->
+        </div>
+      </div>
+       <!-- END TARGETTING -->
+        @endif
+
       <div class="form-group row">
         <label class="col-sm-4 col-md-4 col-lg-3 col-form-label">Message :
 					<span class="tooltipstered" title="<div class='panel-heading'>Message</div><div class='panel-content'>
@@ -215,6 +364,13 @@ use min 5 spintax variations is recommended	<br>
   </form>
 </div>
 
+
+<script type="text/javascript">
+  var url_province = '{{ url("provinces") }}';
+  var url_city = '{{ url("cities") }}';
+  var url_zip = '{{ url("get_zip") }}';
+</script>
+<script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
     var date = new Date();
     date.setHours(0,0,0,0);
@@ -247,7 +403,98 @@ use min 5 spintax variations is recommended	<br>
     saveCampaign();
     sendTestMessage();
     pictureClass();
+    checkbox_value();
+    calculate_targetting();
+    display_targeting();
+    targeting_start();
   });
+
+  function targeting_start()
+  {
+    var checked = $("input[name='is_targetting']").prop("checked");
+    // console.log(checked);
+    targetting(checked);
+  }
+
+  function display_targeting()
+  {
+    $("input[name='is_targetting']").click(function(){
+      var checked = $(this).prop("checked");
+      targetting(checked)
+    });
+  }
+
+  function targetting(checked)
+  {
+    if(checked == true)
+    {
+      $(".targeting").show();
+      $(".calc").show();
+    }
+    else
+    {
+      $(".targeting").hide();
+      $(".calc").hide();
+    }
+  }
+
+  function calculate_targetting() 
+  {
+    $("#calculate").click(function(){
+      var data = $("#save_campaign").serialize();
+      
+      $.ajax({
+          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          type : 'POST',
+          url : '{{url("calculate-user")}}',
+          data : data,
+          dataType : 'json',
+          beforeSend: function()
+          {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+          },
+          success : function(result)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            
+            if(result.status == 1)
+            {
+              $("#result_calculate").html("Total : <b>"+result.total+"</b>");
+            }
+            else
+            {
+              $("#result_calculate").html("<span class='error'>Please fill Date Send</span>");
+            }
+          },
+          error : function(xhr,attribute,throwable)
+          {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+            console.log(xhr.responseText);
+          }
+      });
+      //ajax
+    });
+  }
+
+  function checkbox_value()
+  {
+    $("input[name='birthday']").click(function(){
+      var clicked = $(this).prop('checked');
+      if(clicked == true)
+      {
+        $("input[name='date_send']").val('--- Disabled ---');
+        $("input[name='date_send']").prop('disabled',true);
+      }
+      else
+      {
+        $("input[name='date_send']").val('');
+        $("input[name='date_send']").prop('disabled',false);
+      }
+    });
+  }
 
   function saveCampaign()
   {
@@ -256,6 +503,7 @@ use min 5 spintax variations is recommended	<br>
       // var data = $(this).serialize();
 				var form = $('#save_campaign')[0];
 				var formData = new FormData(form);
+        formData.append('id_province',$("input[name='province']").attr('data-id'));
 				
       $.ajax({
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -317,6 +565,11 @@ use min 5 spintax variations is recommended	<br>
                 $(".hour").html(result.hour);
                 $(".msg").html(result.msg);
 								$(".image").html(result.image);
+                $(".province").html(result.province);
+                $(".city").html(result.city);
+                $(".religion").html(result.religion);
+                $(".sex").html(result.sex);
+                $(".marriage_status").html(result.marriage_status);
             }
             else
             {
@@ -351,6 +604,8 @@ use min 5 spintax variations is recommended	<br>
 
   function openingPageType()
   {
+    // BOLD LABEL
+    $("label").css("font-weight","bold");
     var radio_option = $("input[name='campaign_type']:checked").val();
     displayFormCampaign(radio_option);
   }
@@ -404,6 +659,7 @@ use min 5 spintax variations is recommended	<br>
         $(".inputh").html(hplus);
         //$(".broadcast-type").hide();
         $(".date-send").hide();
+        $(".targeting").hide();
       }
       else {
         $("input[name=event_time]").prop('disabled',true);
@@ -412,6 +668,7 @@ use min 5 spintax variations is recommended	<br>
         $(".reminder").hide();
         $(".date-send").show();
         $(".inputh").html(hday);
+        $(".targeting").show();
         //$(".broadcast-type").show();
       }
   }

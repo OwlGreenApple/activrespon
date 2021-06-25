@@ -9,6 +9,7 @@ use App\Rules\CheckValidListID;
 use App\Rules\CheckBroadcastDate;
 use App\Rules\EligibleTime;
 use App\Rules\CheckExistIdOnDB;
+use App\Rules\CheckValidDate;
 
 class CheckBroadcastDuplicate
 {
@@ -38,11 +39,25 @@ class CheckBroadcastDuplicate
             $rules = array(
               'broadcast_id'=>['required',new CheckExistIdOnDB('broad_casts',$cond)],
               'campaign_name'=>['required','max:50'],
-              'date_send'=>['required',new CheckBroadcastDate],
-              'hour'=>['required',new EligibleTime($date_send,0)],
               'edit_message'=>['required','max:65000'],
               'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
             );
+
+            if($request->birthday == null)
+            {
+               $rules['date_send'] = ['required',new CheckBroadcastDate];
+               $rules['hour'] =['required','date_format:H:i',new EligibleTime($request->date_send,0)];
+            }
+
+            // targeting validator
+            $tg = $this->targeting_validator($request);
+            if(count($tg) > 0)
+            {
+              foreach($tg as $rl=>$value)
+              {
+                $rules[$rl] = $value;
+              }
+            }
 
             $validator = Validator::make($request->all(),$rules);
             if($validator->fails())
@@ -55,6 +70,13 @@ class CheckBroadcastDuplicate
                   'time_sending'=>$error->first('hour'),
                   'edit_message'=>$error->first('edit_message'),
                   'image'=>$error->first('imageWA'),
+                  'country'=>$error->first('country'),
+                  'province'=>$error->first('province'),
+                  'city'=>$error->first('city'),
+                  'zip'=>$error->first('zip'),
+                  'marriage_status'=>$error->first('marriage_status'),
+                  'religion'=>$error->first('religion'),
+                  'sex'=>$error->first('sex'),
                   'success'=>0,
                 ];
 
@@ -68,8 +90,6 @@ class CheckBroadcastDuplicate
         $message = $request->message;
         $rules = array(
           'campaign_name'=>['required','max:50'],
-          'date_send'=>['required',new CheckBroadcastDate],
-          'hour'=>['required'],
           'message'=>['max:65000'],
           'imageWA'=>['mimes:jpeg,jpg,png,gif','max:4096'],
         );
@@ -78,6 +98,22 @@ class CheckBroadcastDuplicate
         {
            $rules['list_id'] = ['required', new CheckValidListID];
         } 
+
+        if($request->birthday == null)
+        {
+           $rules['date_send'] = ['required',new CheckValidDate];
+           $rules['hour'] =['required'];
+        }
+
+        // targeting validator
+        $tg = $this->targeting_validator($request);
+        if(count($tg) > 0)
+        {
+          foreach($tg as $rl=>$value)
+          {
+            $rules[$rl] = $value;
+          }
+        }
 
       /*  if(isset($_POST['group_name']))
         {
@@ -102,6 +138,13 @@ class CheckBroadcastDuplicate
               'hour'=>$error->first('hour'),
               'message'=>$error->first('message'),
               'image'=>$error->first('imageWA'),
+              'country'=>$error->first('country'),
+              'province'=>$error->first('province'),
+              'city'=>$error->first('city'),
+              'zip'=>$error->first('zip'),
+              'marriage_status'=>$error->first('marriage_status'),
+              'religion'=>$error->first('religion'),
+              'sex'=>$error->first('sex'),
               'success'=>0,
             ];
 
@@ -109,4 +152,65 @@ class CheckBroadcastDuplicate
         }
         return $next($request);
     }
+
+    public function targeting_validator($request)
+    {
+      $rules= [];
+      if($request->is_targetting == 1)
+        {
+          if($request->sex !== 'all')
+          {
+            $rules['sex'] = ['required',new \App\Rules\CheckGender];
+          }
+
+          if($request->marriage_status !== 'all')
+          {
+            $rules['marriage_status'] = ['required',new \App\Rules\CheckStatusMarriage];
+          }
+
+          if($request->province !== 'all')
+          {
+            if($request->country == 95)
+            {
+              $rules['province'] = ['required',new \App\Rules\CheckProvince];
+            }
+            else
+            {
+              $rules['province'] = ['required', 'max: 85'];
+            }
+          }
+          
+          if($request->country !== 'all')
+          {
+            $rules['country'] = ['required',new \App\Rules\CheckCountry];
+          }
+
+          if($request->zip !== 'all')
+          {
+            $rules['zip'] = ['required','max : 10'];
+          }
+
+          if($request->city !== 'all')
+          {
+            if($request->country == 95)
+            {
+              $rules['city'] = ['required',new \App\Rules\CheckCity($request->id_province)];
+            }
+            else
+            {
+              $rules['city'] = ['required','max : 85'];
+            }  
+          }
+
+          if($request->religion !== 'all')
+          {  
+             $rules['religion'] = ['required',new \App\Rules\CheckReligion];
+          }
+
+          return $rules;
+        }
+        // --
+    }
+
+/*end middleware*/    
 }

@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 use App\Customer;
 
 class SubscriberEmail implements Rule
@@ -52,6 +53,6 @@ class SubscriberEmail implements Rule
      */
     public function message()
     {
-        return 'Email has registered already!';
+        return Lang::get('custom.email');
     }
 }

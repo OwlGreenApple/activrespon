@@ -35,6 +35,7 @@ class Kernel extends ConsoleKernel
     {
       if (env("APP_ENV")=="production") {
         $schedule->command('check:orderwoowa')->dailyAt('01:00');
+        $schedule->command('check:birthday')->dailyAt('00:00');
         $schedule->command('check:package')->dailyAt('00:01');
         $schedule->command('check:membership')->dailyAt('01:00');
         $schedule->command('notif:order')->dailyAt('08:00');

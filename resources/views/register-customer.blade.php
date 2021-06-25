@@ -18,6 +18,9 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="{{ asset('/assets/css/nunito.css') }}" rel="stylesheet" />
 
+     <!-- Font Awesome 5 -->
+    <link href="{{ asset('/assets/font-awesome-5/all.css') }}" rel="stylesheet">
+
     <!-- Styles -->
     <link href="{{ asset('/assets/css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/main.css') }}" rel="stylesheet" />
@@ -26,6 +29,12 @@
      <!-- Intl Dialing Code -->
     <link href="{{ asset('/assets/intl-tel-input/css/intlTelInput.min.css') }}" rel="stylesheet" />
     <script type="text/javascript" src="{{ asset('/assets/intl-tel-input/js/intlTelInput.js') }}"></script> 
+
+    <!-- jquery datetime picker -->
+    <script src="{{ asset('/assets/js/datepicker.js') }}"></script>
+
+    <!-- Datetimepicker -->
+    <link href="{{ asset('/assets/css/datepicker.css') }}" rel="stylesheet">
 
     <!-- Icomoon -->
     <link href="{{ asset('/assets/icomoon/icomoon.css') }}" rel="stylesheet" />
@@ -61,7 +70,7 @@
       </div>
   </nav>-->
 
-  <main class="p-5">
+  <main class="p-3">
 
     @if($status > 0)
     <div class="container">
@@ -78,9 +87,9 @@
 
                 <form class="add-contact" id="addcustomer">
                     <div class="form-group">
-                      <label>Name*</label>
+                      <label>{{ $lists->label_name  }}*</label>
                       <input type="text" name="subscribername" class="form-control" />
-                      <input type="hidden" id="city" name="city" />
+                     <!--  <input type="hidden" id="city" name="city" /> -->
                       <span class="error name"></span>
                     </div>
 
@@ -101,99 +110,136 @@
                             <span class="error phone"></span>
                           </div>
                       </div>
-
-                      <!-- <div class="form-group">
-                          <label>{{ $label_phone }}*</label>
-                          <div class="col-sm-12 row">
-                            <div class="col-lg-3 row relativity">
-                              <input name="code_country" class="form-control custom-select-campaign" value="+62" autocomplete="off" />
-                              <span class="icon-carret-down-circle"></span>
-                              <span class="error code_country"></span>
-                            </div>
-
-                            <div class="col-sm-9">
-                              <input type="text" id="phone_number" name="phone_number" class="form-control" />
-                              <span class="error phone"></span>
-                            </div>
-                            <div class="col-lg-12 pad-fix"><ul id="display_countries"><!-- Display country here... </ul></div>
-                          </div>
-                      </div> -->
                     </div>
 
                     <div class="form-group">
-                      <label>Email*</label>
+                      <label>{{ $lists->label_email  }}*</label>
                       <input type="email" name="email" class="form-control" />
                       <span class="error email"></span>
                     </div> 
 
-                    <!-- <div class="form-group">
-                      <label>Birthday*</label>
-                      <div class="form-inline">
-                          <select name="day" class="form-control mr-2" id="dobday"></select>
-                          <select name="month" class="form-control mr-2" id="dobmonth"></select>
-                          <select name="year" class="form-control" id="dobyear"></select>
-                      </div>
-                      <span class="error email"></span>
-                    </div> 
-
+                    @if($lists->is_validate_dob == 1)
                     <div class="form-group">
-                      <label>Sex*</label>
+                      <label>{{ $lists->label_birthday  }}*</label>
+                     <!--  <div class="form-inline"> -->
+                        <input id="datetimepicker" type="text" name="birthday" class="form-control" readonly="readonly" />
+                         <!--  <select name="day" class="form-control mr-2" id="dobday"></select>
+                          <select name="month" class="form-control mr-2" id="dobmonth"></select>
+                          <select name="year" class="form-control" id="dobyear"></select> -->
+                      <!-- </div> -->
+                      <span class="error birthday"></span>
+                     <!--  <span class="error day"></span>
+                      <span class="error month"></span>
+                      <span class="error year"></span> -->
+                    </div> 
+                    @endif
+
+                    @if($lists->is_validate_gender == 1)
+                    <div class="form-group">
+                      <label>{{ $lists->label_gender  }}*</label>
                       <select name="sex" class="form-control">
-                        <option value="male" selected>Male</option>
-                        <option value="female">Female</option>
+                        <option value="1" selected>{{ $gender[1] }}</option>
+                        <option value="2">{{ $gender[2] }}</option>
                       </select>
                       <span class="error sex"></span>
                     </div> 
+                    @endif
+                   
+                    @if($lists->is_validate_city == 1)
+                    <div class="form-group">
+                      <label>{{ $lists->label_country }}*</label>
+                      <select name="country" class="form-control text-capitalize">
+                       @foreach($countries as $row)
+                        <option value="{{ $row->id }}" @if($row->id == 95) selected @endif>{{ $row->name }}</option>
+                       @endforeach
+                      </select>
+                      <span class="error country"></span>
+                    </div> 
+
+                    <div class="form-group form_province">
+                      <label>{{ $lists->label_province }}*</label>
+                      <input name="province" class="form-control text-capitalize" autocomplete="disabled" />
+                      <div class="live-search-wrapper">
+                        <div id="display_province" class="live-search"><!-- display ajax here --></div>
+                      </div>
+                      <span class="error province"></span>
+                    </div>
 
                     <div class="form-group">
-                      <label>City*</label>
-                      <select name="city" class="form-control">
-                        <option value="surabaya" selected>Surabaya</option>
-                        <option value="jakarta">Jakarta</option>
-                      </select>
+                      <label>{{ $lists->label_city }}*</label>
+                      <input name="city"class="form-control text-capitalize" autocomplete="disabled" />
+                        <div class="live-search-wrapper-city">
+                          <div id="display_city" class="live-search"><!-- display ajax here --></div>
+                        </div>
                       <span class="error city"></span>
                     </div> 
+                    @endif
 
+                    @if($lists->is_validate_zip == 1)
                     <div class="form-group">
-                      <label>Status*</label>
+                      <label>{{ $lists->label_zip }}*</label>
+                      <input name="zip"class="form-control" maxlength="10" autocomplete="disabled" />
+                      <span class="error zip"></span>
+                    </div> 
+                    @endif
+                   
+                    @if($lists->is_validate_marriage == 1)
+                    <div class="form-group">
+                      <label>{{ $lists->label_marriage }}*</label>
                       <select name="marriage_status" class="form-control">
-                        <option value="married" selected>Married</option>
-                        <option value="single">Single</option>
+                        <option value="1" selected>{{ $marriage[1] }}</option>
+                        <option value="2">{{ $marriage[2] }}</option>
                       </select>
-                      <span class="error email"></span>
+                      <span class="error marriage_status"></span>
                     </div> 
+                    @endif
 
-                    <div class="form-group">
-                      <label>Hobby*</label><br/>
-                      <input type="checkbox" name="Sport" value="sport">
-                      <label>Sport</label><br>
-                      <input type="checkbox" name="Cook" value="cook">
-                      <label>Cook</label><br>
-                    </div> 
+                    @if($lists->is_validate_hobby == 1)
+                      @if($utils_hobby->count() > 0)
+                      <div class="form-group">
+                        <label>{{ $lists->label_hobby }}*</label><br/>
+                        
+                        @foreach($utils_hobby as $row)
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="hobby[]" value="{{$row->category}}">
+                          <label class="form-check-label">{{ $row->category }}</label>
+                        </div>
+                        @endforeach
+                        <div class="error hobby"></div>
+                      </div> 
+                      @endif
+                    @endif
 
-                    <div class="form-group">
-                      <label>Occupation*</label>
-                      <select name="occupation" class="form-control">
-                        <option value="all" selected>All</option>
-                        <option value="sales">Sales</option>
-                        <option value="doctor">Doctor</option>
-                      </select>
-                      <span class="error occupation"></span>
-                    </div> 
+                    @if($lists->is_validate_job == 1)
+                      @if($utils_occupation->count() > 0)
+                      <div class="form-group">
+                        <label>{{ $lists->label_occupation }}*</label><br/>
 
+                        @foreach($utils_occupation as $row)
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="occupation[]" value="{{$row->category}}">
+                          <label class="form-check-label">{{ $row->category }}</label>
+                        </div>
+                        @endforeach
+                        
+                        <div class="error occupation"></div>
+                      </div> 
+                      @endif
+                    @endif
+
+                    @if($lists->is_validate_relgion == 1)
                     <div class="form-group">
-                      <label>Religion*</label>
-                      <select name="religion" class="form-control">
-                        <option value="all" selected>All</option>
-                        <option value="islam">Islam</option>
-                        <option value="christian">Christian</option>
-                        <option value="catholic">Catholic</option>
-                        <option value="budhist">Budhist</option>
-                        <option value="hindu">Hindu</option>
+                      <label>{{ $lists->label_religion }}*</label>
+                      <select name="religion" class="form-control text-capitalize">
+                        <option value="1" selected>{{ $religion[1] }}</option>
+                        <option value="2">{{ $religion[2] }}</option>
+                        <option value="3">{{ $religion[3] }}</option>
+                        <option value="4">{{ $religion[4] }}</option>
+                        <option value="5">{{ $religion[5] }}</option>
                       </select>
                       <span class="error religion"></span>
-                    </div>  -->
-
+                    </div> 
+                    @endif
 
                     @if(count($additional) > 0)
                       @foreach($additional as $is_optional=>$row)
@@ -274,14 +320,19 @@
   </main>
  </div>
 
+<script type="text/javascript">
+  var url_province = '{{ url("provinces") }}';
+  var url_city = '{{ url("cities") }}';
+</script>
+<script src="{{ asset('/assets/js/mix.js') }}" type="text/javascript"></script>
 <script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
-      $.get("https://api.ipdata.co?api-key=test", function(response) {
+     /* $.get("https://api.ipdata.co?api-key=test", function(response) {
           // console.log(response.country_name);
           $("#city").val(response.city);
-      }, "jsonp");    
+      }, "jsonp");    */
     
       //choose();
       grecaptcha.ready(function() {
@@ -297,8 +348,26 @@
 			<?php if(session('message')) { ?>
 			alert("<?php echo session('message'); ?>");
 			<?php }?>
-      dob_picker();
+      date_birthday();
+      // dob_picker();
   });
+
+  function date_birthday()
+  {
+      var myDate = new Date(1941,0,1) 
+     $('#datetimepicker').datepicker({
+        dateFormat : 'yy-mm-dd',
+        yearRange: "-80:-12",
+        changeMonth: true,
+        changeYear: true,
+        // debug : true,
+        show : function(date)
+        {
+          alert(date);
+        }
+      });
+     $('#datetimepicker').datepicker('setDate',myDate);
+  }
 
   function fixWidthPhoneInput()
   {
@@ -392,7 +461,7 @@
             {name:'data_country',value:data_country},
             {name:'listname',value:'{{ $listname }}'},
             {name:'listid',value:'{{ $id }}'},
-            {name:'city',value:$("#city").val()},
+            {name:'id_province',value:$("input[name='province']").attr('data-id')},
           );
 
           $.ajaxSetup({
@@ -435,6 +504,17 @@
                     $(".error_list").text(result.list);
                     $(".error_list").text(result.list);
                     $(".main").html(result.main);
+
+                    $(".birthday").html(result.birthday);
+                    $(".sex").html(result.sex);
+                    $(".country").html(result.country);
+                    $(".province").html(result.province);
+                    $(".city").html(result.city);
+                    $(".zip").html(result.zip);
+                    $(".marriage_status").html(result.marriage_status);
+                    $(".religion").html(result.religion);
+                    $(".hobby").html(result.hobby);
+                    $(".occupation").html(result.occupation);
 
                     if(result.message !== undefined){
                          $(".error_message").html('<div class="alert alert-danger text-center">'+result.message+'</div>');
