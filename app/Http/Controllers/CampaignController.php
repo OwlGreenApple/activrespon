@@ -349,37 +349,37 @@ class CampaignController extends Controller
         ['zip','like','%'.$zip.'%'],
       ];
 
-      if(preg_match("/[all\W]/",$city) == 1)
+      if($this->filter_all($city) == 1)
       {
         unset($data[2]);
       }
 
-      if(preg_match("/[all\W]/",$marriage_status) == 1)
+      if($this->filter_all($marriage_status) == 1)
       {
         unset($data[3]);
       }
 
-      if(preg_match("/[all\W]/",$religion) == 1)
+      if($this->filter_all($religion) == 1)
       {
         unset($data[4]);
       }
 
-      if(preg_match("/[all\W]/",$sex) == 1)
+      if($this->filter_all($sex) == 1)
       {
         unset($data[5]);
       }
 
-      if(preg_match("/[all\W]/",$province) == 1)
+      if($this->filter_all($province) == 1)
       {
         unset($data[6]);
       }
 
-      if(preg_match("/[all\W]/",$country) == 1)
+      if($this->filter_all($country) == 1)
       {
         unset($data[7]);
       }
 
-      if(preg_match("/[all\W]/",$zip) == 1)
+      if($this->filter_all($zip) == 1)
       {
         unset($data[8]);
       }
@@ -396,7 +396,6 @@ class CampaignController extends Controller
       }
 
       $data[] = ['status','=',1];
-
       $customer = Customer::where($data);
 
       // in case if hobby more than 1
@@ -444,6 +443,7 @@ class CampaignController extends Controller
           }
           else
           {
+            // MIDDLE STATEMENT
             $job_statement .= "SPLIT_STRING(occupation,';',".$posj.") = '".$row."' OR ";
           }
         endforeach;
@@ -477,7 +477,7 @@ class CampaignController extends Controller
       }
 
        // TARGETTING BY AGE
-      if($age !== "all")
+      if($this->filter_all($age) == 0)
       {
         $target_age = "DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 >=".$age_start." AND DATE_FORMAT(FROM_DAYS(DATEDIFF(DATE_FORMAT('".$date_send."','%Y-%m-%d'), birthday)), '%Y-%m-%d') * 1 <=".$age_end." ";
         $customer = $customer->whereRaw($target_age);
@@ -495,6 +495,15 @@ class CampaignController extends Controller
       $res['status'] = 1;
       $res['total'] = $customer->count();
       return response()->json($res);
+    }
+
+    private function filter_all($var)
+    {
+      if($var == 'all' || $var =='All')
+      {
+        return 1;
+      }
+      return 0;
     }
 
     public function SaveCampaign(Request $request)
