@@ -246,7 +246,7 @@ class CustomerController extends Controller
       // dd($request->all());
       $data = array();
       $list_id = $request->list_id;
-      $zip = Customer::where([['list_id',$list_id],['user_id',Auth::id()],['zip','<>',null]])->get();
+      $zip = Customer::where([['list_id',$list_id],['user_id',Auth::id()]])->get();
 
       if($zip->count() > 0)
       {

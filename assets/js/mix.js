@@ -49,7 +49,7 @@ function get_zip()
     	var list_id;
     	var list_id_edit = $(this).attr('list_id');
 
-    	if(list_id_edit == 0)
+    	if(list_id_edit == 0 || list_id_edit == undefined)
     	{
     	  list_id = $("select[name='list_id']").val();
     	}
@@ -57,7 +57,7 @@ function get_zip()
     	{
     	  list_id = list_id_edit;
     	}
-
+    	
      	display_zip(list_id);
     },delay_duration));
 

@@ -12,7 +12,7 @@
         $broad_cast = $broadcast->where('campaign_id',$row->id)->first();
         
 
-        if($broad_cast->day_send == null)
+        if($broad_cast->day_send == null || $broad_cast->day_send =="")
         {
           $day_send = 'Waiting';
           $sending = null;
