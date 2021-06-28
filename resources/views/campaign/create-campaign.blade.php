@@ -171,7 +171,7 @@
 
       <!-- TARGETTING OPEN -->
       @if(getMembership(Auth()->user()->membership) > 3) 
-      <div class="form-group row">
+      <div class="form-group row targeting-wrapper">
         <label class="col-5 col-md-4 col-lg-3 col-form-label">Targetting :</label>
         <div class="col-7 col-md-8 col-lg-9">
           <div class="form-inline mt-2 fix-mt">
@@ -659,7 +659,7 @@ use min 5 spintax variations is recommended	<br>
         $(".inputh").html(hplus);
         //$(".broadcast-type").hide();
         $(".date-send").hide();
-        $(".targeting").hide();
+        $(".targeting-wrapper").hide();
       }
       else {
         $("input[name=event_time]").prop('disabled',true);
@@ -668,7 +668,7 @@ use min 5 spintax variations is recommended	<br>
         $(".reminder").hide();
         $(".date-send").show();
         $(".inputh").html(hday);
-        $(".targeting").show();
+        $(".targeting-wrapper").show();
         //$(".broadcast-type").show();
       }
   }
