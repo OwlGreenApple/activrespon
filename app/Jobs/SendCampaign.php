@@ -262,6 +262,7 @@ class SendCampaign implements ShouldQueue
 				$spintax = new Spintax;
         // Reminder 
         // $current_time = Carbon::now();
+
         $reminder = Reminder::where([
             ['reminder_customers.status','=',0],
             ['reminders.is_event','=',0],
@@ -298,6 +299,8 @@ class SendCampaign implements ShouldQueue
                 {
                   continue;
                 }
+
+                // REMARK IF ON LOCAL
 								if ($phoneNumber->mode == 0) {
 									$server = Server::where('phone_id',$phoneNumber->id)->first();
 									if(is_null($server)){
@@ -467,6 +470,7 @@ class SendCampaign implements ShouldQueue
                 {
                   continue;
                 }
+
 								if ($phoneNumber->mode == 0) {
 									$server = Server::where('phone_id',$phoneNumber->id)->first();
 									if(is_null($server)){
@@ -676,7 +680,6 @@ class SendCampaign implements ShouldQueue
                     continue;
                 }
 
-
                 $user = User::find($row->user_id);
 
                 // if the day before / substract 
@@ -812,7 +815,7 @@ class SendCampaign implements ShouldQueue
 
     public function replaceMessage($customer_message,$name,$email,$phone,$firstname)
     {
-     
+      $customer_message = $this->get_title($customer_message);
       $replace_target = array(
         '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]'
       );
@@ -826,6 +829,7 @@ class SendCampaign implements ShouldQueue
 
     public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname)
     {
+        $customer_message = $this->get_title($customer_message);
         $replace_target = array(
           '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]','[DATE-APT]','[TIME-APT]'
         );
@@ -836,6 +840,13 @@ class SendCampaign implements ShouldQueue
 
         $message = str_replace($replace_target,$replace,$customer_message);
         return $message;
+    }
+
+    //SET CHARACTER INSIDE [] TO UPPERCASE
+    public function get_title($title) {
+        return preg_replace_callback('/[\(\[].*?[\)\]]/', function ($m) {
+            return strtoupper($m[0]);
+        }, $title);
     }
 
     // GET STATUS AFTER SEND MESSAGE

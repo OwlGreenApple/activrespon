@@ -838,7 +838,6 @@ class SendMessage extends Command
 
     public function replaceMessage($customer_message,$name,$email,$phone,$firstname)
     {
-     
       $replace_target = array(
         '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]'
       );

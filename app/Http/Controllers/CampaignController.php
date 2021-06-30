@@ -461,13 +461,15 @@ class CampaignController extends Controller
       if($birthday == 1)
       {
         $date_send = Carbon::now()->toDateString();
-      }
-
-      if($request->cron == 1 && $birthday == 1)
-      {
         $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
         $customer = $customer->whereRaw($statement);
       }
+
+     /* if($request->cron == 1 && $birthday == 1)
+      {
+        $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
+        $customer = $customer->whereRaw($statement);
+      }*/
 
       // FILTER TO PREVENT EMPTY DATE SEND
       if($date_send == null)
