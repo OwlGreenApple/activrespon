@@ -163,7 +163,8 @@ class EventController extends Controller
 				$folder="";
 				$filename="";
 				// if($request->hasFile('imageWA')) {
-        if($image !== null) {
+        if($image !== null) 
+        {
 					//save ke temp local dulu baru di kirim 
           $image_size = getimagesize($image);
           $imagewidth = $image_size[0];
