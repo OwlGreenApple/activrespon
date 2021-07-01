@@ -391,6 +391,13 @@ class ApiController extends Controller
     {
       $obj = json_decode($request->getContent());
       return WamateHelper::send_image($obj->customer_phone,$obj->urls3,$obj->message,$obj->device_key,$obj->user_ip_server);
+      // return WamateHelper::send_image($obj['customer_phone'],$obj['urls3'],$obj['message'],$obj['device_key'],$obj['user_ip_server']);
+    }
+
+    public function get_wamate_status(Request $request)
+    {
+      $obj = json_decode($request->getContent(),true);
+      return WamateHelper::get_status_message($obj['device_key'],$obj['msg_id']);
     }
     
     public function send_image_url_simi(Request $request)
@@ -642,10 +649,22 @@ class ApiController extends Controller
 
     public function testDirectSendWA(Request $request)
     {
-        $uid = 6287852700229;
-        $to = $request->to;
-        $message = $request->wa_message;
+        $to = '628123238793';
+        $message = 'test-image-direct';
+        $image = 'https://activrespon.s3.ap-southeast-1.amazonaws.com/3/send-message/temp.jpg';
+        $device_key = '0bbe886a-5da3-4d50-ae69-ac28526782cc';
+        $ip_server = '178.128.80.152';
+        $msg_id = '248255';
 
+        // $send_image = WamateHelper::send_image($to,$image,$message,$device_key,$ip_server);
+
+        $send_image = WamateHelper::get_status_message($device_key,$msg_id);
+
+        // refresh token
+        /*$send_image = WamateHelper::auth_refresh("572c4eff863426c14dd94b5c4980ee6eXHbEviwxbZjvmPHmxpqahKcnNChSO6ElNDL7ncHeUgAqITtZSl9Ecp4YZipOzL0x");*/
+
+        dd($send_image);
+/*
         $karakter= 'abcdefghjklmnpqrstuvwxyz123456789';
         $string = 'testsendwaactivwa-';
         for ($i = 0; $i < 7 ; $i++) {
@@ -666,7 +685,7 @@ class ApiController extends Controller
             $data['msg'] = 'Message gagal dikirim';
         }
 
-        return response()->json($data);
+        return response()->json($data);*/
     } 
 
     public function testDirectSendMail(Request $request)

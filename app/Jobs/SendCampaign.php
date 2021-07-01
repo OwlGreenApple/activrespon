@@ -48,6 +48,10 @@ class SendCampaign implements ShouldQueue
      */
     public function handle()
     {
+      /*$device_key = '0bbe886a-5da3-4d50-ae69-ac28526782cc';
+      $msg_id = '248255';
+      $this->get_status_message_wamate($device_key,$msg_id);
+      dd('');*/
 			// send campaign per phone number
 			if ($this->attempts() == 1) {
 				$this->campaignBroadcast();
@@ -1046,6 +1050,35 @@ class SendCampaign implements ShouldQueue
       );
 
 		  $url = "https://activrespon.com/dashboard/send-image-url-wamate";
+
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+      ));
+
+      $response = curl_exec($curl);
+      $err = curl_error($curl);
+
+      curl_close($curl);
+      return $response;
+    }
+
+    public function get_status_message_wamate($device_key,$msg_id)
+    {
+      $curl = curl_init();
+
+      $data = array(
+          'device_key'=>$device_key,
+          'msg_id'=>$msg_id
+      );
+
+      $url = "https://activrespon.com/dashboard/get-msg-status-wamate";
 
       curl_setopt_array($curl, array(
         CURLOPT_URL => $url,
