@@ -48,10 +48,6 @@ class SendCampaign implements ShouldQueue
      */
     public function handle()
     {
-      /*$device_key = '0bbe886a-5da3-4d50-ae69-ac28526782cc';
-      $msg_id = '248255';
-      $this->get_status_message_wamate($device_key,$msg_id);
-      dd('');*/
 			// send campaign per phone number
 			if ($this->attempts() == 1) {
 				$this->campaignBroadcast();
@@ -228,7 +224,7 @@ class SendCampaign implements ShouldQueue
 
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$send_message);
                 // $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign);
-                $status = $this->getStatus($send_message,$phoneNumber->mode);
+                $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
 
                 $phoneNumber->counter --;
 
@@ -399,7 +395,7 @@ class SendCampaign implements ShouldQueue
                 $status = 'Sent';
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
 
-                $status =  $this->getStatus($send_message,$phoneNumber->mode);
+                $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
                 $remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
                 $remindercustomer_update->status = $status;
                 $remindercustomer_update->save();
@@ -584,7 +580,7 @@ class SendCampaign implements ShouldQueue
                     }
                 }
                   
-                $status =  $this->getStatus($send_message,$phoneNumber->mode);
+                $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
                 $remindercustomer_update->status = $status;
@@ -767,7 +763,7 @@ class SendCampaign implements ShouldQueue
                     }
                 }
 
-                $status =  $this->getStatus($send_message,$phoneNumber->mode);
+                $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
                 $remindercustomer_update->status = $status;
@@ -854,7 +850,7 @@ class SendCampaign implements ShouldQueue
     }
 
     // GET STATUS AFTER SEND MESSAGE
-    public function getStatus($send_message,$mode)
+    public function getStatus($send_message,$mode,$device_key = null)
     {
 			//default status 
 			$status = 2;
@@ -896,13 +892,25 @@ class SendCampaign implements ShouldQueue
 			}
 
       if ($mode == 2) {
-				$obj = json_decode($send_message);
-        if ($obj->status == 500){
+				$obj = json_decode($send_message,true);
+        $msg_id = $obj['id'];
+        $get_status = $this->get_status_message_wamate($device_key,$msg_id);
+
+        if($get_status['status'] == 'FAILED')
+        {
+          $status = 3;
+        }
+        else
+        {
+          $status = 1;
+        }
+
+        /*if ($obj->status == 500){
           $status = 3;
         }
         else {
           $status = 1;
-        }
+        }*/
       }
       return $status;
     }
