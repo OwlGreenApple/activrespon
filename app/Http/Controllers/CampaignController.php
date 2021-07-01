@@ -525,6 +525,7 @@ class CampaignController extends Controller
 				}
 			}
     
+      $image = $request->file('imageWA');
       $campaign = $request->campaign_type;
       if($request->schedule == 0)
       {
@@ -578,7 +579,7 @@ class CampaignController extends Controller
 
         $event = new EventController;
         $request = new Request($req);
-        $saveEvent = $event->saveEvent($request);
+        $saveEvent = $event->saveEvent($request,$image);
 
         if(!empty($saveEvent))
         {
@@ -618,8 +619,9 @@ class CampaignController extends Controller
             return response()->json($error);
         }
 
+        $image = $request->file('imageWA');
         $auto = new ReminderController;
-        $saveAutoReponder = $auto->saveAutoReponder($request);
+        $saveAutoReponder = $auto->saveAutoReponder($request,$image);
         
         if(!empty($saveAutoReponder))
         {
@@ -631,10 +633,7 @@ class CampaignController extends Controller
       else
       {
         /* VALIDTOR BROADCASTS */
-
         $req = $request->all();
-        // dd($req);
-
         $rules = array(
           'campaign_name'=>['required','max:50'],
           'list_id'=>['required', new CheckValidListID],
@@ -707,7 +706,7 @@ class CampaignController extends Controller
 
         $quest = new Request($req);
         $broadcast = new BroadCastController;
-        $saveBroadcast = $broadcast->saveBroadCast($quest);
+        $saveBroadcast = $broadcast->saveBroadCast($quest,$image);
 				
         if($saveBroadcast == false)
         {

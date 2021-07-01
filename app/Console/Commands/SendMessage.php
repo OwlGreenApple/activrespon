@@ -76,6 +76,8 @@ class SendMessage extends Command
       $this->campaignAppointment();
 			*/
     }    
+
+    /* ---------- NOT USE ANYMORE ----------*/
  
     /* BROADCAST */
     public function campaignBroadcast()
@@ -906,7 +908,7 @@ class SendMessage extends Command
 			}
 
       if ($mode == 2) {
-				$obj = json_decode($send_message);
+				$obj = json_decode($send_message,true);
         if ($obj->status == 500){
           $status = 3;
         }

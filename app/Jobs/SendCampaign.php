@@ -219,6 +219,7 @@ class SendCampaign implements ShouldQueue
                   }
                   if ($phoneNumber->mode == 2) {
                     $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$ip_server);
+
                   }
                 }
 

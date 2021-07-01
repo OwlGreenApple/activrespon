@@ -389,9 +389,9 @@ class ApiController extends Controller
     
     public function send_image_url_wamate(Request $request)
     {
-      $obj = json_decode($request->getContent());
-      return WamateHelper::send_image($obj->customer_phone,$obj->urls3,$obj->message,$obj->device_key,$obj->user_ip_server);
-      // return WamateHelper::send_image($obj['customer_phone'],$obj['urls3'],$obj['message'],$obj['device_key'],$obj['user_ip_server']);
+      $obj = json_decode($request->getContent(),true);
+      // return WamateHelper::send_image($obj->customer_phone,$obj->urls3,$obj->message,$obj->device_key,$obj->user_ip_server);
+      return WamateHelper::send_image($obj['customer_phone'],$obj['urls3'],$obj['message'],$obj['device_key'],$obj['user_ip_server']);
     }
 
     public function get_wamate_status(Request $request)
