@@ -895,6 +895,7 @@ class SendCampaign implements ShouldQueue
 				$obj = json_decode($send_message,true);
         $msg_id = $obj['id'];
         $get_status = $this->get_status_message_wamate($device_key,$msg_id);
+        $get_status = json_decode($get_status,true);
 
         if($get_status['status'] == 'FAILED')
         {
