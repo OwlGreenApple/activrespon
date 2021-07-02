@@ -460,6 +460,11 @@ class BroadCastController extends Controller
         {
           $date_send = null;
         }
+
+        if($country == null || $campaign->filter_all($country) == 1)
+        {
+          $country = 0;
+        }
 				
 				/*if($request->hasFile('imageWA')) {
 					//save ke temp local dulu baru di kirim 
