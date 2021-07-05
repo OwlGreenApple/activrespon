@@ -536,8 +536,9 @@ CKEDITOR.dialog.add( 'image2', function( editor ) {
 					{
 						type: 'file',
 						id: 'upload',
-						label: lang.btnUpload,
-						style: 'height:40px'
+						// label: lang.btnUpload,
+						label: 'Ukuran dimensi gambar maksimal 1165px dan 295px. <br/>Ukuran file maksimal 1Mb<br/>',
+						style: 'height:40px;margin-bottom:15px'
 					},
 					{
 						type: 'fileButton',

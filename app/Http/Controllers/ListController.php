@@ -698,13 +698,23 @@ class ListController extends Controller
         $userid = Auth::id();
         $id = $request->id;
 
-        // dd($request->all());
+        // dd($request->editor);
 
         //$list_label = $request->list_label;
         $label_name = strip_tags($request->label_name);
         $label_phone = strip_tags($request->label_phone);
         $label_email = strip_tags($request->label_email);
-        $editor = strip_tags($request->editor);
+        $editor = $request->editor;
+
+         /* FILTER FOR SECURITY REPLACEMENT STRIPTAGS */
+        preg_match_all('/&lt;script&gt;|&lt;script.*&gt;|&lt;a.*&gt;/im', $editor, $patternopen);
+        $opentag = count($patternopen[0]);
+       
+        if($opentag > 0)
+        {
+           $editor = preg_replace("/&lt;script.*&gt;|&lt;script&gt;|&lt;\/script&gt;|\(|\)|href\=\".*\"/im", "", $editor);
+        }
+
         $pixel = strip_tags($request->pixel);
         $fields = $request->fields;
         $dropfields = $request->dropfields;

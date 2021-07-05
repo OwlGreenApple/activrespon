@@ -4,7 +4,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'image2', 'id', {
 	alt: 'Teks alternatif',
-	btnUpload: 'Kirim ke Server',
+	btnUpload: 'Upload Ke Server',
 	captioned: 'Captioned image', // MISSING
 	captionPlaceholder: 'Caption', // MISSING
 	infoTab: 'Info Gambar',
