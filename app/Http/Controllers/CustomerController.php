@@ -595,6 +595,7 @@ class CustomerController extends Controller
             }
             catch(QueryException $e)
             {
+               // dd($e->getMessage());
                $data['success'] = false;
                $data['message'] = Lang::get('custom.db').'-.';
             }
@@ -795,6 +796,13 @@ class CustomerController extends Controller
         else
         {
           $is_appointment = 0;
+        }
+
+        if($is_appointment == 1)
+        {
+          $cst = Customer::find($customer_id);
+          $cst->status = 1;
+          $cst->save();
         }
         
         if($confirmation->message_conf == null && $userid <> null)

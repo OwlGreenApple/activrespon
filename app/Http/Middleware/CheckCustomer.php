@@ -81,17 +81,19 @@ class CheckCustomer
             'listname' => ['required',new CheckListName]
          ];
 
-         if($lists->checkbox_lastname == 1)
+
+         // request->manual == save from add contact from list-edit page / manual insert
+         if($lists->checkbox_lastname == 1 && $request->manual == null)
          {
             $rules['last_name'] = ['required', 'max:50'];
          }
 
-         if($lists->is_validate_dob == 1)
+         if($lists->is_validate_dob == 1 && $request->manual == null)
          {
             $rules['birthday'] = ['required', new CheckValidDate];
          }
 
-         if($lists->is_validate_city == 1)
+         if($lists->is_validate_city == 1 && $request->manual == null)
          {
             $rules['country'] = ['required',new CheckCountry];
 
@@ -107,33 +109,33 @@ class CheckCustomer
             }  
          }
 
-         if($lists->is_validate_zip == 1)
+         if($lists->is_validate_zip == 1 && $request->manual == null)
          {
             $rules['zip'] = ['required','max : 10'];
          }
 
-         if($lists->is_validate_marriage == 1)
+         if($lists->is_validate_marriage == 1 && $request->manual == null)
          {
             $rules['marriage_status'] = ['required',new CheckStatusMarriage];
          }
 
-         if($lists->is_validate_gender == 1)
+         if($lists->is_validate_gender == 1 && $request->manual == null)
          {
             $rules['sex'] = ['required',new CheckGender];
          }
 
-         if($lists->is_validate_relgion == 1)
+         if($lists->is_validate_relgion == 1 && $request->manual == null)
          {
             $rules['religion'] = ['required',new CheckReligion];
          }
 
          // VALIDATOR HOBBY AND OCCUPATION
-         if($lists->is_validate_hobby == 1)
+         if($lists->is_validate_hobby == 1 && $request->manual == null)
          {  
             $rules['hobby'] = ['required',new CheckHobby($lists->user_id,2)];
          }
 
-         if($lists->is_validate_job == 1)
+         if($lists->is_validate_job == 1 && $request->manual == null)
          {  
             $rules['occupation'] = ['required',new CheckHobby($lists->user_id,3)];
          }

@@ -1572,7 +1572,8 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
         data.push(
           {name:'code_country', value:code_country},
           {name:'data_country', value:data_country},
-          {name:'listedit',value:1}
+          {name:'listedit',value:1},
+          {name:'manual',value:true}
         );
         customerAdding(data);
       });
