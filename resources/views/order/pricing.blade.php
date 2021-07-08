@@ -5,8 +5,7 @@
  
 <!--Plugin CSS file with desired skin-->
 <link rel="stylesheet" href="{{ asset('/assets/ion.rangeSlider-master/css/ion.rangeSlider.min.css') }}"/>
-<!--Plugin JavaScript file-->
-<script src="{{ asset('/assets/ion.rangeSlider-master/js/ion.rangeSlider.min.js') }}"></script>
+
 
 <!-- TOP SECTION -->
 <section class="page-title">
@@ -152,9 +151,14 @@
   </div>
 </div>
 
+<!--Plugin JavaScript file-->
+<script src="{{ asset('/assets/ion.rangeSlider-master/js/ion.rangeSlider.min.js') }}" defer></script>
+
 <script type="text/javascript">
   var modePrice,messagePer30day;
-  $(document).ready(function(){
+
+  $(document).ready(function()
+  {
 		$("#link-checkout").attr("href","<?php echo url('checkout/2'); ?>");
 		modePrice = 2;
     box_pricing_click();

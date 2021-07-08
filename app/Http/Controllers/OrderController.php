@@ -80,7 +80,8 @@ class OrderController extends Controller
     return view('order.summary');
   }
   
-  public function pricing(Request $request){
+  public function pricing(Request $request)
+  {
     return view('order.pricing');
   }
 
