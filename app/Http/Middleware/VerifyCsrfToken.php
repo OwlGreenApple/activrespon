@@ -61,6 +61,7 @@ class VerifyCsrfToken extends Middleware
         'api/subscriber',
         'api/subscribers',
         'api/batch_subscriber',
-        'api/update-subscriber'
+        'api/update-subscriber',
+        'api/celebfans'
     ];
 }
