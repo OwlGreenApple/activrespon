@@ -40,8 +40,10 @@ class UserController extends Controller
       {
           $arr = array();
       }
-      
-      return view('admin.list-user.index',['users'=>$arr]);
+
+      // show package
+      $package = getPackage();
+      return view('admin.list-user.index',['users'=>$arr,'package'=>$package]);
     }
 
     public function load_user(Request $request){
@@ -121,25 +123,24 @@ class UserController extends Controller
 
       $user->name = $request->name;
       $user->email = $request->email;
-      $user->username = $request->username;
       $user->is_admin = $request->is_admin;
       $user->membership = $request->membership;
 
-      if(isset($request->unlimited)){
+      if($request->unlimited !== null){
         // $user->valid_until = null;
         $user->valid_until = new DateTime('+999 days');
       } else {
         if($request->valid_until==''){
           $arr['status'] = 'error';
-          $arr['message'] = 'The valid until is required (or checked the unlimited instead)';
+          $arr['message'] = 'Waktu berlangganan tidak boleh kosong, (silahkan centang unlimited)';
           return $arr;
         } else {
-          $user->valid_until = new DateTime($request->valid_until);
+          // $user->valid_until = new DateTime($request->valid_until);
+          $user->day_left = $request->valid_until;
         }
       }
 
       $user->save();
-
       $arr['status'] = 'success';
       $arr['message'] = 'Edit User berhasil';
 

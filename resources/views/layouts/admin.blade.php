@@ -18,6 +18,9 @@
     <!-- <link rel="dns-prefetch" href="//fonts.gstatic.com">-->
     <link href="{{ asset('/assets/css/nunito.css') }}" rel="stylesheet">
 
+    <!-- Font Awesome 5 -->
+    <link href="{{ asset('/assets/font-awesome-5/all.css') }}" rel="stylesheet">
+
     <!-- Datetimepicker -->
     <link href="{{ asset('/assets/datetimepicker/jquery.datetimepicker.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
