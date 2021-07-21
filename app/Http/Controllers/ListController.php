@@ -1366,7 +1366,7 @@ class ListController extends Controller
                 }
 
                 //FILTER 1
-                $check_valid = $this->checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
+                /*$check_valid = $this->checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
                
                 if($check_valid['error'] == 1)
                 {
@@ -1387,7 +1387,7 @@ class ListController extends Controller
                         'religion'=>$check_valid['religion'],
                     );
                     return response()->json($err);
-                }
+                }*/
               
                 //FILTER 2
                 if(substr($phone,0,1) <> '+')

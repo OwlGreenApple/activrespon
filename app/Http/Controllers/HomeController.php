@@ -68,7 +68,7 @@ class HomeController extends Controller
             //File::makeDirectory($path, $mode = 0741, true, true);
         }
 
-        $lists = UserList::where('user_id',$id)->get()->count();
+        $lists = UserList::where([['user_id',$id],['status','>',0]])->get()->count();
         $campaign = Campaign::where('user_id',$id)->get()->count();
         $contact = Customer::where('user_id',$id)->get()->count();
         $phone_number = PhoneNumber::where('user_id',$id)->first();
