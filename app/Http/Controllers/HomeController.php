@@ -109,7 +109,7 @@ class HomeController extends Controller
         }
         
 
-        $latest_list = DB::select('select * from lists where user_id ='.$id.' and DATE(created_at) > (NOW() - INTERVAL 7 DAY)');
+        $latest_list = DB::select('select * from lists where user_id ='.$id.' and status > 0 and DATE(created_at) > (NOW() - INTERVAL 7 DAY)');
         (count($latest_list) > 0)? $latest = '+'.count($latest_list) : $latest = count($latest_list);
 
         $reminder = ReminderCustomers::where([['user_id','=',$id],['status','=',0]])->get()->count();
