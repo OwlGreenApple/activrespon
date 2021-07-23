@@ -105,7 +105,7 @@
             BCA <b>Sugiarto Lasjim</b>
           </p>
           <p class="card-text">
-            Setelah Transfer, silahkan Klik tombol confirm payment di bawah ini <br> atau Email bukti Transfer anda ke <b>activrespon@gmail.com</b> <br>
+            Setelah Transfer, silahkan Klik tombol confirm payment di bawah ini <br> atau Email bukti Transfer anda ke <b>info@activomni.com</b> <br>
             Admin kami akan membantu anda max 1x24 jam
           </p>
 

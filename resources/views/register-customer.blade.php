@@ -296,7 +296,7 @@
     </div>
     @else
        <div class="container">
-        <div class="row justify-content-center">Please contact at : <a href="mailto:activrespon@gmail.com">activrespon@gmail.com</a></div>
+        <div class="row justify-content-center">Silahkan kontak di : <a href="mailto:info@activomni.com">info@activomni.com</a></div>
        </div>
     @endif
 
