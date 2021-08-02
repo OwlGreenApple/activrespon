@@ -1002,6 +1002,7 @@ class ListController extends Controller
         $list->user_id = Auth::id();
         $list->name = $this->createRandomListName();
         $list->label = $record->label.$embed;
+        $list->phone_number_id = $record->phone_number_id;
         $list->content = $record->content;
         $list->pixel_text = $record->pixel_text;
         $list->save();
