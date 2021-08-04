@@ -31,12 +31,36 @@ class AdminController extends Controller
 
     public function config()
     {
-        return view('admin.configs');
+        $cf = Config::find(1);
+        return view('admin.configs',['cf'=>$cf]);
     }
 
     public function setupConfig()
     {
         return view('admin.setconfig');
+    }
+
+    public function setup_delay(Request $request)
+    {
+        $id = 1;
+        $msg = $request->msg_delay;
+        $time = $request->time_delay;
+
+        $cf = Config::find($id);
+        $cf->msg = $msg;
+        $cf->time = $time;
+
+        try{
+          $cf->save();
+          $data['err'] = 0;
+          $data['msg'] = 'Data telah di save';
+        }
+        catch(QueryException $e)
+        {
+          $data['msg'] = $e->getMessage();
+        }
+
+        return response()->json($data);
     }
 
     public function saveConfig(Request $request)

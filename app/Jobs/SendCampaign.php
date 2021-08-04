@@ -21,6 +21,7 @@ use App\Helpers\Spintax;
 use App\User;
 use App\PhoneNumber;
 use App\Server;
+use App\Config;
 use DB;
 use App\Helpers\ApiHelper;
 use App\Helpers\NewCustomHelpers;
@@ -48,7 +49,9 @@ class SendCampaign implements ShouldQueue
      */
     public function handle()
     {
+      // return $this->test();
 			// send campaign per phone number
+
 			if ($this->attempts() == 1) {
 				$this->campaignBroadcast();
 		 
@@ -62,7 +65,35 @@ class SendCampaign implements ShouldQueue
 				$this->campaignAppointment();
 			}
 		}
-		
+
+    /*public function test()
+    {
+      $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid","phone_numbers.id AS phoneid","users.id AS userid","customers.*","users.timezone","users.email","customers.link_unsubs")
+          ->join('lists','lists.id','=','broad_casts.list_id')
+          ->join('users','broad_casts.user_id','=','users.id')
+          ->join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
+          ->join('phone_numbers','phone_numbers.user_id','=','broad_casts.user_id')
+          ->join('customers',"customers.id","=","broad_cast_customers.customer_id")
+          ->join('campaigns',"campaigns.id","=","broad_casts.campaign_id")
+          ->where("broad_cast_customers.status",0)
+          ->where("customers.status",1)
+          // ->where("phone_numbers.id",$this->phone_id)
+          ->where("campaigns.status",1)
+          ->where("lists.status",'>',0)
+          ->orderBy('broad_casts.user_id')
+          ->get();
+
+          // dd();
+
+        $no = 1;
+        foreach($broadcast as $row)
+        {
+          echo $no.'---'.$row->bccsid."\n";
+          $this->delay_sending($no);
+          $no++;
+        }
+    }*/
+
     /* BROADCAST */
     public function campaignBroadcast()
     {
@@ -84,6 +115,7 @@ class SendCampaign implements ShouldQueue
 
         if($broadcast->count() > 0)
         {
+            $no = 1;
             foreach($broadcast as $row)
             {
                 // $customers = Customer::where('id',$row->customer_id)->first();
@@ -227,15 +259,15 @@ class SendCampaign implements ShouldQueue
                 // $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign);
                 $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
 
-                $phoneNumber->counter --;
+                $phoneNumber->counter--;
 
                 if($max_counter > 0)
                 {
-                  $phoneNumber->max_counter --;
+                  $phoneNumber->max_counter--;
                 }
                 if($max_counter_day > 0)
                 {
-                  $phoneNumber->max_counter_day --;
+                  $phoneNumber->max_counter_day--;
                 }
                 $phoneNumber->save();
                 
@@ -252,6 +284,10 @@ class SendCampaign implements ShouldQueue
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                // delay message according on config
+                $this->delay_sending($no);
+                $no++;
             }//END LOOPING
 
         } // END BROADCAST 
@@ -283,9 +319,9 @@ class SendCampaign implements ShouldQueue
             ->get();
 
         $counter = $max_counter = 0;
-
         if($reminder->count() > 0)
         {
+            $no = 1;
             foreach($reminder as $row) 
             {
                 $phoneNumber = PhoneNumber::where('user_id','=',$row->userid)->first();
@@ -423,6 +459,10 @@ class SendCampaign implements ShouldQueue
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                //delay message sending
+                $this->delay_sending($no);
+                $no++;
             }//END LOOPING
         }
     }
@@ -447,6 +487,7 @@ class SendCampaign implements ShouldQueue
          
           if($reminder->count() > 0)
           {
+              $no = 1;
               $counter = 0;
               foreach($reminder as $row)
               {
@@ -472,6 +513,7 @@ class SendCampaign implements ShouldQueue
                   continue;
                 }
 
+                // REMARK IF ON LOCAL
 								if ($phoneNumber->mode == 0) {
 									$server = Server::where('phone_id',$phoneNumber->id)->first();
 									if(is_null($server)){
@@ -609,6 +651,10 @@ class SendCampaign implements ShouldQueue
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                //delay message sending
+                $this->delay_sending($no);
+                $no++;
               }//END FOR LOOP EVENT
           }
     }
@@ -641,6 +687,7 @@ class SendCampaign implements ShouldQueue
 
           if($reminder->count() > 0)
           {
+              $no = 1;
               $counter = 0;
               foreach($reminder as $row)
               {
@@ -669,6 +716,8 @@ class SendCampaign implements ShouldQueue
                 else{
                   continue;
                 }
+
+                // REMARK IF ON LOCAL
 								if ($phoneNumber->mode == 0) {
 									$server = Server::where('phone_id',$phoneNumber->id)->first();
 									if(is_null($server)){
@@ -784,6 +833,10 @@ class SendCampaign implements ShouldQueue
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                //delay message sending
+                $this->delay_sending($no);
+                $no++;
               }//END FOR LOOP EVENT
           }
     }
@@ -806,6 +859,24 @@ class SendCampaign implements ShouldQueue
             $string = $format;
             Storage::put($filename,$string);
         }
+    }
+
+    public function delay_sending($no)
+    {
+      $cf = Config::find(1);
+      $total_message = $cf->msg;
+      $time = $cf->time;
+      $target = 1;
+
+      if($total_message > 0)
+      {
+        $target = $no % $total_message;
+      }
+
+      if($target == 0)
+      {
+        sleep($time);
+      }
     }
 
     public function modFullname($firstname)
