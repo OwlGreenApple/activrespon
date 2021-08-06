@@ -139,6 +139,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 	Route::post('importcustomercsv','AdminController@importCustomerCSV')->name('importcustomercsv');*/
   Route::get('superadmin', 'AdminController@index');
   Route::get('configs', 'AdminController@config');
+  Route::get('save-delay', 'AdminController@setup_delay');
   Route::get('status-server', 'AdminController@changeStatusServer');
   Route::get('setupconfig', 'AdminController@setupConfig');
   Route::post('save-config', 'AdminController@saveConfig');

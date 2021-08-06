@@ -2,6 +2,27 @@
 
 @section('content')
 
+<div class="container">
+  <div class="col-lg-8 mx-auto">
+    <div id="msg"><!--  --></div>
+  </div>
+</div>
+
+<div class="container mt-2">
+  <div class="col-lg-8 mx-auto">
+    <form id="set_delay">
+      <div class="form-group">
+        <label>Delay setelah mengirim :</label>
+        <input type="number" class="form-control" name="msg_delay" value="{{ $cf->msg }}" /> message
+      </div> 
+      <div class="form-group">
+        <label>Waktu delay (dalam detik)</label>
+        <input value="{{ $cf->time }}" type="number" class="form-control" name="time_delay" />
+      </div>
+      <button class="btn btn-primary dly">Simpan</button>
+    </form>
+  </div>
+</div>
 
 <div class="container mt-5">
   <div class="col-lg-8" style="margin-left : auto; margin-right: auto;">
@@ -22,7 +43,47 @@
     changeServerStatus();
     displayConfig();
     table();
+    save_delay();
   });
+
+  function save_delay()
+  {
+    $("#set_delay").submit(function(e){
+      e.preventDefault();
+      var data = $(this).serialize();
+      save_delay_act(data);
+    });
+  }
+
+  function save_delay_act(data)
+  {
+    $.ajax({
+        type : "GET",
+        url : "{{ url('save-delay') }}",
+        data : data,
+        dataType : 'json',
+        beforeSend: function()
+        {
+          $(".dly").prop('disabled',true).html('Loading....');
+        },
+        success : function(result){
+          if(result.err == 0)
+          {
+            $("#msg").html('<div class="alert alert-success">'+result.msg+'</div>');
+          }
+          else
+          {
+            $("#msg").html('<div class="alert alert-danger">'+result.msg+'</div>');
+          }
+          $(".dly").prop('disabled',false).html('Simpan');
+        },
+        error : function(xhr)
+        {
+          $(".dly").prop('disabled',true).html('Error');
+          console.log(xhr.responseText);
+        }
+    });
+  }
 
   function changeServerStatus()
   {

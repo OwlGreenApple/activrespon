@@ -57,9 +57,16 @@ class SendMessage extends Command
                         ->where("phone_numbers.status",2)
                         ->select("phone_numbers.id")
                         ->get();
-        foreach($phoneNumbers as $phoneNumber) {
+
+        foreach($phoneNumbers as $phoneNumber) 
+        {
           SendCampaign::dispatch($phoneNumber->id);
         }
+      }
+
+      if(env("APP_ENV")=="local")
+      {
+        SendCampaign::dispatch(1);
       }
 
 			/*
