@@ -53,8 +53,6 @@ class ApiUserController extends Controller
       $admin_id = $req['admin_id'];
       $to = $req['to'];
       $message = $req['message'];
-
-      $phone_id = $phone->id;
       $fix_token = 'AX2557fd253Topq1A2';
 
       if($token !== $fix_token)
