@@ -54,14 +54,6 @@ class ApiUserController extends Controller
       $to = $req['to'];
       $message = $req['message'];
 
-      $phone = PhoneNumber::where('user_id',$admin_id)->first();
-
-      if(is_null($phone))
-      {
-        $data['response'] = 'Invalid Admin ID';
-        return json_encode($data);
-      }
-
       $phone_id = $phone->id;
       $fix_token = 'AX2557fd253Topq1A2';
 
@@ -71,50 +63,15 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      // PHONE NUMBER VALIDATION
-      $phone = PhoneNumber::find($phone_id);
-
-      if(is_null($phone))
-      {
-        $data['response'] = 'Invalid ID';
-        return json_encode($data);
-      }
-
-      if($phone->device_key == null || empty($phone->device_key))
-      {
-        $data['response'] = 'Silahkan scan terlebih dahulu';
-        return json_encode($data);
-      }
-
-      $phone_status = $phone->status;
-      if($phone_status < 2)
-      {
-        $data['response'] = 'Mohon untuk scan ulang';
-        return json_encode($data);
-      }
-
-      // TO & MESSAGE VALIDATION
-      if(empty($to) || $to == null)
-      {
-        $data['response'] = 'No tujuan tidak boleh kosong';
-        return json_encode($data);
-      }
-
-      if(empty($message) || $message == null)
-      {
-        $data['response'] = 'Message tidak boleh kosong';
-        return json_encode($data);
-      }
-
       $msg = new Message;
       $msg->user_id = $admin_id;
-      $msg->sender = $phone->phone_number;
+      $msg->sender = env('REMINDER_PHONE');
       $msg->phone_number = $to;
-      $msg->key = $phone->device_key;
+      $msg->key = env('REMINDER_PHONE_KEY');
       $msg->message = $message;
       $msg->status = 11;
       $msg->customer_id = 0;
-      $msg->ip_server = $phone->ip_server;
+      $msg->ip_server = env('REMINDER_IP_SERVER');
 
       try{
         $msg->save();
