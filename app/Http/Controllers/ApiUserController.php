@@ -61,15 +61,20 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
+      $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+      $phone = $admin->phone_number;
+      $phone_key = $admin->device_key;
+      $phone_ip = $admin->ip_server;
+
       $msg = new Message;
-      $msg->user_id = $admin_id;
-      $msg->sender = env('REMINDER_PHONE');
+      $msg->user_id = env('ADMIN_ID');
+      $msg->sender = $phone;
       $msg->phone_number = $to;
-      $msg->key = env('REMINDER_PHONE_KEY');
+      $msg->key = $phone_key;
       $msg->message = $message;
       $msg->status = 11;
       $msg->customer_id = 0;
-      $msg->ip_server = env('REMINDER_IP_SERVER');
+      $msg->ip_server = $phone_ip;
 
       try{
         $msg->save();

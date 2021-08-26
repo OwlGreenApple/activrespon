@@ -31,7 +31,10 @@ class MessageController extends Controller
 
     public function load_message_system(Request $request){
       //list messages admin
-      $messages = Message::where("key",env("REMINDER_PHONE_KEY"))
+      $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+      $phone_key = $admin->device_key;
+
+      $messages = Message::where("key",$phone_key)
                   ->orderBy("created_at","desc")
                   ->get();
 
