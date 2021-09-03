@@ -165,7 +165,10 @@ class ApiController extends Controller
 
     public function send_message_queue_system(Request $request)
     {
-      $message_send = Message::create_message($request->phone_number,$request->message,env('REMINDER_PHONE_KEY'));
+      $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+      $phone_key = $admin->device_key;
+      
+      $message_send = Message::create_message($request->phone_number,$request->message,$phone_key);
       return "success";
     }
     

@@ -83,8 +83,11 @@ class ApiWPController extends Controller
             }
           }
         }
+
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
         
-        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
+        $message_send = Message::create_message($phone_number,$content,$phone_key);
         $temp = $this->sendToCelebmail($name,$email,'dp577djr8g890');
         
         return "success";
@@ -141,7 +144,9 @@ class ApiWPController extends Controller
           }
         }
         
-        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
+        $message_send = Message::create_message($phone_number,$content,$phone_key);
         
         return "success";
       }
@@ -198,8 +203,11 @@ class ApiWPController extends Controller
           }
         // }
         
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
+
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
-        $key = env('REMINDER_PHONE_KEY');
+        $key = $phone_key;
         $mode = 0;
         $ip_server = "";
         if (!is_null($phoneNumber)){
@@ -275,8 +283,10 @@ class ApiWPController extends Controller
           }
         }
 
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
-        $key = env('REMINDER_PHONE_KEY');
+        $key = $phone_key;
         $mode = 0;
         $ip_server = "";
         if (!is_null($phoneNumber)){
@@ -351,7 +361,9 @@ class ApiWPController extends Controller
           }
         }
         
-        $message_send = Message::create_message($phone_number,$content,env('REMINDER_PHONE_KEY'));
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
+        $message_send = Message::create_message($phone_number,$content,$phone_key);
         
         return "success";
       }
@@ -407,8 +419,10 @@ class ApiWPController extends Controller
           }
         }
 
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
-        $key = env('REMINDER_PHONE_KEY');
+        $key = $phone_key;
         $mode = 0;
         $ip_server = "";
         if (!is_null($phoneNumber)){
@@ -483,8 +497,10 @@ class ApiWPController extends Controller
           }
         }
 
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
         $phoneNumber = PhoneNumber::where('user_id',$list->user_id)->first();
-        $key = env('REMINDER_PHONE_KEY');
+        $key = $phone_key;
         $mode = 0;
         $ip_server = "";
         if (!is_null($phoneNumber)){

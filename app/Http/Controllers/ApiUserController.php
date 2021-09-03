@@ -53,16 +53,6 @@ class ApiUserController extends Controller
       $admin_id = $req['admin_id'];
       $to = $req['to'];
       $message = $req['message'];
-
-      $phone = PhoneNumber::where('user_id',$admin_id)->first();
-
-      if(is_null($phone))
-      {
-        $data['response'] = 'Invalid Admin ID';
-        return json_encode($data);
-      }
-
-      $phone_id = $phone->id;
       $fix_token = 'AX2557fd253Topq1A2';
 
       if($token !== $fix_token)
@@ -71,50 +61,20 @@ class ApiUserController extends Controller
         return json_encode($data);
       }
 
-      // PHONE NUMBER VALIDATION
-      $phone = PhoneNumber::find($phone_id);
-
-      if(is_null($phone))
-      {
-        $data['response'] = 'Invalid ID';
-        return json_encode($data);
-      }
-
-      if($phone->device_key == null || empty($phone->device_key))
-      {
-        $data['response'] = 'Silahkan scan terlebih dahulu';
-        return json_encode($data);
-      }
-
-      $phone_status = $phone->status;
-      if($phone_status < 2)
-      {
-        $data['response'] = 'Mohon untuk scan ulang';
-        return json_encode($data);
-      }
-
-      // TO & MESSAGE VALIDATION
-      if(empty($to) || $to == null)
-      {
-        $data['response'] = 'No tujuan tidak boleh kosong';
-        return json_encode($data);
-      }
-
-      if(empty($message) || $message == null)
-      {
-        $data['response'] = 'Message tidak boleh kosong';
-        return json_encode($data);
-      }
+      $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+      $phone = $admin->phone_number;
+      $phone_key = $admin->device_key;
+      $phone_ip = $admin->ip_server;
 
       $msg = new Message;
-      $msg->user_id = $admin_id;
-      $msg->sender = $phone->phone_number;
+      $msg->user_id = env('ADMIN_ID');
+      $msg->sender = $phone;
       $msg->phone_number = $to;
-      $msg->key = $phone->device_key;
+      $msg->key = $phone_key;
       $msg->message = $message;
       $msg->status = 11;
       $msg->customer_id = 0;
-      $msg->ip_server = $phone->ip_server;
+      $msg->ip_server = $phone_ip;
 
       try{
         $msg->save();

@@ -204,6 +204,9 @@ class OrderController extends Controller
 
   private function email_messages($user,$emaildata,$order)
   {
+    $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+    $phone_key = $admin->device_key;
+
     $message = null;
     $message .= "*Selamat ".$user->name.",* \n\n";
     $message .= "Pembelianmu sudah *berhasil di proses*, _kamu bisa langsung gunakan akun *Activrespon*-mu sekarang juga._ \n \n";
@@ -216,7 +219,7 @@ class OrderController extends Controller
     $message .= '_*Activrespon is part of Activomni.com_';
 
     // SendNotif::dispatch($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
-    $message_send = Message::create_message($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
+    $message_send = Message::create_message($user->phone_number,$message,$phone_key);
     
     Mail::send('emails.confirm-order', $emaildata, function ($message) use ($user,$order) {
       $message->from('no-reply@activrespon.com', 'Activrespon');
