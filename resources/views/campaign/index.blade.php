@@ -9,12 +9,11 @@
     <!-- BROADCAST -->
     @if($row->type == 2) 
       @php
+        $day_send = 'Waiting';
         $broad_cast = $broadcast->where('campaign_id',$row->id)->first();
         
-
         if($broad_cast->day_send == null || $broad_cast->day_send =="")
         {
-          $day_send = 'Waiting';
           $sending = null;
         }
         else
