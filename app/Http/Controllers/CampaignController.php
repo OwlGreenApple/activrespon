@@ -958,6 +958,14 @@ class CampaignController extends Controller
              return response()->json(['message'=>'Sorry, unable to delete , contact administrator!']);
           }
         }
+        else
+        {
+          // IN CASE IF BROADCAST ERROR AND ONLY DISPLAY DEL BUTTON
+          if(!is_null($campaign))
+          {
+            $campaign->delete();
+          }
+        }
     }
 
     public function editCampaign(Request $request)

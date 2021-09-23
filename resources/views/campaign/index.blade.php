@@ -9,37 +9,43 @@
     <!-- BROADCAST -->
     @if($row->type == 2) 
       @php
-        $day_send = 'Waiting';
+        
         $broad_cast = $broadcast->where('campaign_id',$row->id)->first();
-        
-        if($broad_cast->day_send == null || $broad_cast->day_send =="")
-        {
-          $sending = null;
-        }
-        else
-        {
-          $day_send = Date('M d, Y',strtotime($broad_cast->day_send));
-          $sending = Date('H:i',strtotime($broad_cast->hour_time));
-        }
-        
-        $broadcast_message = $broad_cast->message;        
 
-        $list_id = $row->list_id;
-        $user_list = $userlist->find($list_id);
-        
-        if(!is_null($user_list))
+        if(!is_null($broad_cast))
         {
-            $label = $user_list->label;
-        }
-        else 
-        {
-            $label = null;
-        }
+          if($broad_cast->day_send == null || $broad_cast->day_send =="")
+          {
+            $day_send = 'Waiting';
+            $sending = null;
+          }
+          else
+          {
+            $day_send = Date('M d, Y',strtotime($broad_cast->day_send));
+            $sending = Date('H:i',strtotime($broad_cast->hour_time));
+          }
+          
+          $broadcast_message = $broad_cast->message;        
 
-        $total_message = $campaign_controller->broadcastCampaign($row->id,'=',0)->count();
-        $total_delivered = $campaign_controller->broadcastCampaign($row->id,'>',0)->count();
+          $list_id = $row->list_id;
+          $user_list = $userlist->find($list_id);
+          
+          if(!is_null($user_list))
+          {
+              $label = $user_list->label;
+          }
+          else 
+          {
+              $label = null;
+          }
+
+          $total_message = $campaign_controller->broadcastCampaign($row->id,'=',0)->count();
+          $total_delivered = $campaign_controller->broadcastCampaign($row->id,'>',0)->count();
+        }
+        
       @endphp
 
+      @if(!is_null($broad_cast))
       <div class="bg-dashboard campaign">
         <div class="row">
         <div class="col-md-6 col-lg-6 pad-fix col-card">
@@ -122,6 +128,37 @@
          <!--end  row -->
         </div> 
       </div> 
+      @else
+        <div class="bg-dashboard campaign">
+          <div class="row">
+            <div class="col-md-6 col-lg-6 pad-fix col-card">
+              <h5>
+                <color><span class="gr">Broadcast - Error</span></color> 
+                   {{ $row->name }}
+              </h5>
+              <div class="notes">
+               <!--  <div>
+                  Type Campaign : <color><span class="gr">Broadcast
+                   @if($row->status == 0) -- draft @endif</span></color>
+                </div> -->
+                <div class="created">
+                  Schedule post : <b>-</b> Created On : <b>{{ Date('M d, Y',strtotime($row->created_at)) }}</b>
+                </div>
+                @if($label !== null)
+                  <div>List : <a target="_blank" href="{{ url('list-edit') }}/{{ $list_id }}">{{ $label }}</a></div>
+                @else
+                  <div><b>Deleted List</b></div>
+                @endif
+              </div>
+            </div>
+            <!--  -->
+            <div class="col-md-3 col-lg-3 pad-fix col-button">
+               <button id="{{ $row->id }}" type="button" class="btn btn-danger responder-del btn-sm" data-toggle="tooltip" data-placement="top" title="Delete"><span class="icon-delete"></span></button>
+            </div>
+            <!-- end row -->
+          </div>
+        </div>
+      @endif
       <!--end  broadcast -->
     @else
       <!-- AUTO SCHEDULE -->
