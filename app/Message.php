@@ -7,10 +7,15 @@ use App\Message;
 class Message extends Model
 {
   /* 
-  * Status 
-  * 0 -> pending
-  * 1 -> executed
+  * Status (Mode 2)
+    0 -> pending
+    11 -> queue
+    1 -> sent
+    2 -> failed
+    3 -> server error
+    4 -> server disconnect
   */
+    
   protected $table = 'messages';
 	// public static function create_message($phone_number,$message,$key,$mode=0){
 	public static function create_message($phone_number,$message,$key,$mode=2,$ip_server = null){

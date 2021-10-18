@@ -209,12 +209,22 @@ class SendNotif implements ShouldQueue
 				}
 			}
 
-      if ($mode == 2) {
-				$obj = json_decode($send_message);
-        if ($obj->status == 500){
+      if($mode == 2) {
+				$obj = json_decode($send_message,true);
+        if(!isset($obj['status']))
+        {
+          $status = 4; 
+        }
+        elseif($obj['status'] == 500)
+        {
           $status = 3;
         }
-        else {
+        elseif($obj['status'] == 'FAILED')
+        {
+          $status = 2;
+        }
+        else 
+        {
           $status = 1;
         }
       }
