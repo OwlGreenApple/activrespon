@@ -7,12 +7,12 @@ use App\UserList;
 use App\Customer;
 use App\Reminder;
 use App\ReminderCustomers;
-use Carbon\Carbon;
 use App\Sender;
 use App\Mail\SendWAEmail;
 use App\Console\Commands\SendWA as wamessage;
-use Mail;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ListController as Lists;
+use App\Http\Controllers\CouponController as Coupons;
 use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Storage;
@@ -21,10 +21,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
+use App\Coupon;
 use App\Rules\CheckWANumbers;
 use App\Rules\CheckPlusCode;
 use App\Http\Controllers\ApiWPController;
+use Carbon\Carbon;
 use Validator;
+use Mail;
 
 class ApiController extends Controller
 {
@@ -326,6 +329,53 @@ class ApiController extends Controller
         }
 				
 			}
+    }
+
+    /*COUPON API WATCHERMARKET*/
+    public function add_coupon(Request $request)
+    {
+      $key = 't4ydaq0ed6c2pqi82zje4rit';
+
+      if($request->key !== $key)
+      {
+         return json_encode(['coupon'=>false]);
+      }
+
+      $cp = new Coupons;
+      $generated_code = self::createRandomCoupon();
+      $diskon_value =  $request->diskon_value;
+
+      $data = [
+        'kodekupon'=>$generated_code,
+        'diskon_value'=>$diskon_value,
+        'diskon_percent'=>0,
+        'jenis_kupon'=>3,
+        'valid_until'=>Carbon::now()->addYears(3)->toDateTimeString(),
+        'valid_to'=>"wm",
+        'keterangan'=>'Generated watchermarket coupon Rp.'.str_replace(",",".",number_format($diskon_value)),
+        'package_id'=>0,
+        'api'=>true,
+      ];
+
+      $req = new Request($data);
+      $gen_coupon = $cp->add_coupon($req);
+      return json_encode(['coupon'=>$gen_coupon['code']]);
+    }
+
+    public static function createRandomCoupon(){
+
+        $list = new Lists;
+        $generate = 'WM-'.$list->generateRandomListName();
+
+        $coupon = Coupon::where([['kodekupon','=',$generate],['used',0]])->first();
+        if(is_null($coupon))
+        {
+            return $generate;
+        } 
+        else 
+        {
+            return self::createRandomCoupon();
+        }
     }
 
     /****** SIMI ******/

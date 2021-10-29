@@ -42,6 +42,7 @@ Route::get('testdirectsendwa','ApiController@testDirectSendWA');
 Route::get('testdirectsendmail','ApiController@testDirectSendMail')->name('testdirectsendmail');
 Route::post('send-message-queue-system','ApiController@send_message_queue_system');
 Route::post('get_data_api','ApiController@get_data_from_omnilinkz');
+Route::get('gen-coupon','ApiController@add_coupon');
 
 /* API accessed from automation*/
 Route::post('send-simi','ApiController@send_simi');
