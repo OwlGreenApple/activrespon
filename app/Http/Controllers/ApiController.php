@@ -335,15 +335,16 @@ class ApiController extends Controller
     public function add_coupon(Request $request)
     {
       $key = 't4ydaq0ed6c2pqi82zje4rit';
+      $req = json_decode($request->getContent(),true);
 
-      if($request->key !== $key)
+      if($req['key'] !== $key)
       {
          return json_encode(['coupon'=>false]);
       }
 
       $cp = new Coupons;
       $generated_code = self::createRandomCoupon();
-      $diskon_value =  $request->diskon_value;
+      $diskon_value =  $req['diskon_value'];
 
       $data = [
         'kodekupon'=>$generated_code,
@@ -359,7 +360,7 @@ class ApiController extends Controller
 
       $req = new Request($data);
       $gen_coupon = $cp->add_coupon($req);
-      return json_encode(['coupon'=>$gen_coupon['code']]);
+      return json_encode(['act_coupon'=>$gen_coupon['code']]);
     }
 
     public static function createRandomCoupon(){

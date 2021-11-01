@@ -68,7 +68,7 @@ class CouponController extends Controller
       } else {
         $arr['status'] = 'error';
         $arr['message'] = $validator->errors()->first();
-        $arr['code'] = false;
+        $arr['code'] = 0;
       }
 
       return $arr;
