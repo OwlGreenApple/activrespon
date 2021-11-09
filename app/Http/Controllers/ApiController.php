@@ -609,28 +609,34 @@ class ApiController extends Controller
 
     public function testpay()
     {
+        $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImM3ZWY2M2U1MmEwODQzMjJlYzU3ZjdlODVhY2IyOGU4NTY1ZDk1M2Y4M2U1ZWEzZDA0YzVlODJiODczNjNkNjQyY2Q4NjM2NjY4OWJjMmJiIn0.eyJhdWQiOiI0IiwianRpIjoiYzdlZjYzZTUyYTA4NDMyMmVjNTdmN2U4NWFjYjI4ZTg1NjVkOTUzZjgzZTVlYTNkMDRjNWU4MmI4NzM2M2Q2NDJjZDg2MzY2Njg5YmMyYmIiLCJpYXQiOjE2MzY0Mjc5NjgsIm5iZiI6MTYzNjQyNzk2OCwiZXhwIjoxNjY3OTYzOTY4LCJzdWIiOiI3NzQ4MyIsInNjb3BlcyI6W119.ccehdUpXJO3x9TrPCVQotAQyjj885arpj0XtWZMuuBenKz3xjWTPTEe5HmZkKol3ERj_wYbJHPl4kzOH6rsxPgI3D6LYkpAV7Gd0S6K6wdExs6owyMHavJhVpfybrakQcbJ1VVSlEyGnISRRc6VKVa52giRxEwKnqU_e6lNIO3TWG7mZ4OyMM1t8edcbfKOT35adu9R4Idbdsuf94o5vf0a9cGZy2aEok-ocATi18AZQHwyH0FmGG9UUvq-tRoh3WliXiXK-UvC8skskE99nMch8LO10Ov4o1g4P8JkwIXXdR6uBm6NJIcPv58ohV9gRlKKS-7b2md3qrfI1lol-r_IX7q6lvUgdSHNnpZ8Nn_2imLn4aD0zSZQp_cKG150nhTQ5mS-wY0SgjZW8q4vPi4RcJaOpINrHsa9fmLUNfitNqVXAT_VKiZMK48nfSlsjRpRdu6xhFbYpRhvUMWY8ShdjzuHXRMrDfIob6SpIiV1VMLRoNiT3LXJ1bwB_enO-NgYGbCCsJVh4vhZosUMwFJz0obzAcltsBV5FDL9GER9FWfggCkyCtTBYlqhAl0g9t43uBV2GfPmUm-fsV84pMwmJFM4BtBHtqIrit7EHrb2IbqTrEqZL4sVON8iRIVRoHsy0tjsGueaqoAy8W6k7aX-kR-Rr_gZ2rmJfnfX7Hjc";
         $curl = curl_init();
         $data = array(
-            'email'=>'celebgramme.dev@gmail.com',
-            'list_id'=>17,
-            'is_pay'=>1
+            'email'=>'activrespon@alotivi.com',
+            'first_name'=>'activrespon',
+            'last_name'=>'api',
+            // 'list[]'=>29761 -- id list
         );
-        $url = 'http://localhost/waku/is_pay';
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => $url,
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 30,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTREDIR => 3,
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
-        ));
+        $url = 'https://api.sendfox.com/contacts';
+        $data_string = json_encode($data);
 
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'authorization: Bearer '.$token
+        ));
+       
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
 
         if ($err) {
           echo "cURL Error #:" . $err;
