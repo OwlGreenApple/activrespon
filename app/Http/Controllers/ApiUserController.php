@@ -45,6 +45,49 @@ class ApiUserController extends Controller
       }
     }
 
+    // SEND WA TO CELEBFANS ORDER
+    public function celebfans_notification()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $admin_id = $req['admin_id'];
+      $to = $req['to'];
+      $message = $req['message'];
+      $fix_token = 'AX2557fd253Topq1A2';
+
+      if($token !== $fix_token)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+      $phone = $admin->phone_number;
+      $phone_key = $admin->device_key;
+      $phone_ip = $admin->ip_server;
+
+      $msg = new Message;
+      $msg->user_id = env('ADMIN_ID');
+      $msg->sender = $phone;
+      $msg->phone_number = $to;
+      $msg->key = $phone_key;
+      $msg->message = $message;
+      $msg->status = 11;
+      $msg->customer_id = 0;
+      $msg->ip_server = $phone_ip;
+
+      try{
+        $msg->save();
+        $data['response'] = 1;
+      }
+      catch(Queryexception $e)
+      {
+        $data['response'] = "error";
+      }
+      
+      return json_encode($data);
+    }
+
     /*public static function package_list($package)
     {
       $data['Paket 1 WA'] = ['price'=>60000,'quota'=>12000];

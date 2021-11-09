@@ -15,20 +15,20 @@
       <div class="modal-body text-center">
         <input type="hidden" name="id_phone_number" id="id_phone_number">
 
-        <label><h4>Are you sure want to <i>delete</i> this phone number ?</h4></label>
+        <label><h4>Apakah anda yakin untuk <i>menghapus</i> no telepon ini ?</h4></label>
         <br><br>
         <span class="txt-mode"></span>
         <br>
         
         <div class="col-12 mb-4" style="margin-top: 30px">
           <button class="btn btn-danger btn-block btn-delete-ok" data-dismiss="modal" id="button-delete-phone">
-            Yes, Delete Now
+            Ya, Hapus Sekarang
           </button>
         </div>
         
         <div class="col-12 text-center mb-4">
           <button class="btn  btn-block btn-delete-ok" data-dismiss="modal">
-            Cancel
+            Batal
           </button>  
         </div>
       </div>
@@ -43,30 +43,47 @@
     <div class="modal-content content-premiumid">
       <div class="modal-header header-premiumid">
         <h5 class="modal-title" id="modaltitle">
-          Connect Your Phone
+          Connect Whatsapp Anda
         </h5>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body text-center">
         <input type="hidden" name="id_phone_number" id="id_phone_number">
 
-        <label><h4><b style="color:#e3342f;">Attention</b> <br>Before connecting to our server <br>
-        You must have <b>"Profile Image"</b> at your Whatsapp settings
+        <label><h4><b style="color:#e3342f;">Perhatian</b> <br>Sebelum connect ke server kami,<br>
+        Anda harus memiliki <b>"Profile Image"</b> pada setting Whatsapp
         </h4></label>
         <br><br>
         <!--<span class="txt-mode"></span>-->
         <img src="{{url('assets/img/hint-setting.png')}}" class="img img-fluid">
         <br>
-        
-        <div class="col-12 mb-4" style="margin-top: 30px">
-          <button class="btn btn-secondary btn-block" id="button-start-connect">
-            Start
-          </button>
+
+        <span>
+          <h4><b style="color:#e3342f;">PERINGATAN DARI WHATSAPP!</b></h4>
+          <p><h5>
+          Aktifitas spam, broadcast yang berlebihan ataupun memberikan pesan yang tidak diinginkan penerima dapat mengakibatkan akun di banned.
+
+          Segala akibat yang timbul adalah tanggung jawab masing-masing user.
+
+          Keputusan banned adalah sepenuhnya hak prerogratif dari Whatsapp dan tidak dapat diganggu gugat.
+        </h5>
+        </p>
+        </span>
+
+        <div class="form-check">
+          <input class="form-check-input" id="flexCheckDefault" type="checkbox" name="agreement"/>
+          <label class="form-check-label" for="flexCheckDefault">
+           <h5> Dengan mencentang box ini berarti anda telah: <b>membaca</b>, <b>mengerti</b> dan <b>setuju</b> dengan ketentuan di atas.</h5>
+          </label>
+        </div>
+       
+        <div id="display_agreement" class="col-12 mb-4" style="margin-top: 30px">
+          <!-- display start -->
         </div>
         
         <div class="col-12 text-center mb-4">
           <a href="" class="" data-dismiss="modal">
-            Cancel
+            Batal
           </a>  
         </div>
       </div>
@@ -645,6 +662,8 @@
     intialCountry();
     checkOTP();
     submitOTP();
+    agreement();
+    checked_agreement();
     // selJs();
 
     $(".iti").addClass('w-100');
@@ -669,6 +688,26 @@
 		
 		initButton();
   });
+
+  function agreement()
+  {
+    var checked = $("input[name='agreement']").prop('checked');
+    if(checked == true)
+    {
+      $("#display_agreement").html('<button class="btn btn-secondary btn-block" id="button-start-connect">Start</button>')
+    }
+    else
+    {
+      $("#display_agreement").html('');
+    }
+  }
+
+  function checked_agreement()
+  {
+    $("input[name='agreement']").click(function(){
+      agreement();
+    });
+  }
 
   function settingUser(){
     $(".message-settings").hide();
@@ -780,7 +819,7 @@
 			});
 	}
 	function buttonStartConnect(){
-    $('#button-start-connect').click(function(){
+    $('body').on('click','#button-start-connect',function(){
       var phone_number = $("#phone").val();
       var code_country = $(".iti__selected-flag").attr('data-code');
       var dataphone = $("#form-connect").serializeArray();

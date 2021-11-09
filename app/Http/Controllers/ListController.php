@@ -698,13 +698,23 @@ class ListController extends Controller
         $userid = Auth::id();
         $id = $request->id;
 
-        // dd($request->all());
+        // dd($request->editor);
 
         //$list_label = $request->list_label;
         $label_name = strip_tags($request->label_name);
         $label_phone = strip_tags($request->label_phone);
         $label_email = strip_tags($request->label_email);
-        $editor = strip_tags($request->editor);
+        $editor = $request->editor;
+
+         /* FILTER FOR SECURITY REPLACEMENT STRIPTAGS */
+        preg_match_all('/&lt;script&gt;|&lt;script.*&gt;|&lt;a.*&gt;/im', $editor, $patternopen);
+        $opentag = count($patternopen[0]);
+       
+        if($opentag > 0)
+        {
+           $editor = preg_replace("/&lt;script.*&gt;|&lt;script&gt;|&lt;\/script&gt;|\(|\)|href\=\".*\"/im", "", $editor);
+        }
+
         $pixel = strip_tags($request->pixel);
         $fields = $request->fields;
         $dropfields = $request->dropfields;
@@ -992,6 +1002,7 @@ class ListController extends Controller
         $list->user_id = Auth::id();
         $list->name = $this->createRandomListName();
         $list->label = $record->label.$embed;
+        $list->phone_number_id = $record->phone_number_id;
         $list->content = $record->content;
         $list->pixel_text = $record->pixel_text;
         $list->save();
@@ -1356,7 +1367,7 @@ class ListController extends Controller
                 }
 
                 //FILTER 1
-               /* $check_valid = $this->checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
+                /*$check_valid = $this->checkValid($name,$phone,$email,$birthday,$gender,$country,$province,$city,$zip,$marriage,$hobby,$occupation,$religion,$rowcolumn);
                
                 if($check_valid['error'] == 1)
                 {
@@ -1419,7 +1430,7 @@ class ListController extends Controller
                     $customer::create_link_unsubs($customer->id,$id_list);
                     $count++;
                   }
-                  catch(Exception $e)
+                  catch(QueryException $e)
                   {
                     $msg['success'] = 0;
                     $msg['message'] = 'Failed to import,sorry there is something wrong on our server';

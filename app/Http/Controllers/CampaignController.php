@@ -218,7 +218,8 @@ class CampaignController extends Controller
           elseif($phoneNumber->mode == 2)
           {
             // WAMATE
-            WamateHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image',$ip_server);
+            // WamateHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image',$ip_server);
+            WamateHelper::send_image($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,$ip_server);
           }
 					else {
 						ApiHelper::send_image_url($request->phone,$url,$message,$key);
@@ -461,13 +462,15 @@ class CampaignController extends Controller
       if($birthday == 1)
       {
         $date_send = Carbon::now()->toDateString();
-      }
-
-      if($request->cron == 1 && $birthday == 1)
-      {
         $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
         $customer = $customer->whereRaw($statement);
       }
+
+     /* if($request->cron == 1 && $birthday == 1)
+      {
+        $statement = "DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$date_send."','%m-%d')";
+        $customer = $customer->whereRaw($statement);
+      }*/
 
       // FILTER TO PREVENT EMPTY DATE SEND
       if($date_send == null)
@@ -522,6 +525,7 @@ class CampaignController extends Controller
 				}
 			}
     
+      $image = $request->file('imageWA');
       $campaign = $request->campaign_type;
       if($request->schedule == 0)
       {
@@ -575,7 +579,7 @@ class CampaignController extends Controller
 
         $event = new EventController;
         $request = new Request($req);
-        $saveEvent = $event->saveEvent($request);
+        $saveEvent = $event->saveEvent($request,$image);
 
         if(!empty($saveEvent))
         {
@@ -615,8 +619,9 @@ class CampaignController extends Controller
             return response()->json($error);
         }
 
+        $image = $request->file('imageWA');
         $auto = new ReminderController;
-        $saveAutoReponder = $auto->saveAutoReponder($request);
+        $saveAutoReponder = $auto->saveAutoReponder($request,$image);
         
         if(!empty($saveAutoReponder))
         {
@@ -628,10 +633,7 @@ class CampaignController extends Controller
       else
       {
         /* VALIDTOR BROADCASTS */
-
         $req = $request->all();
-        // dd($req);
-
         $rules = array(
           'campaign_name'=>['required','max:50'],
           'list_id'=>['required', new CheckValidListID],
@@ -704,7 +706,7 @@ class CampaignController extends Controller
 
         $quest = new Request($req);
         $broadcast = new BroadCastController;
-        $saveBroadcast = $broadcast->saveBroadCast($quest);
+        $saveBroadcast = $broadcast->saveBroadCast($quest,$image);
 				
         if($saveBroadcast == false)
         {
@@ -954,6 +956,14 @@ class CampaignController extends Controller
           catch(QueryException $e)
           {
              return response()->json(['message'=>'Sorry, unable to delete , contact administrator!']);
+          }
+        }
+        else
+        {
+          // IN CASE IF BROADCAST ERROR AND ONLY DISPLAY DEL BUTTON
+          if(!is_null($campaign))
+          {
+            $campaign->delete();
           }
         }
     }

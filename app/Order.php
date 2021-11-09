@@ -172,7 +172,9 @@ class Order extends Model
         // ApiHelper::send_message_android(env('REMINDER_PHONE_KEY'),$message,$phone,'reminder');
         // ApiHelper::send_simi($phone,$message,env('REMINDER_PHONE_KEY'));
         // SendNotif::dispatch($phone,$message,env('REMINDER_PHONE_KEY'));
-        $message_send = Message::create_message($phone,$message,env('REMINDER_PHONE_KEY'));
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
+        $message_send = Message::create_message($phone,$message,$phone_key);
 
         Mail::send('emails.order', $emaildata, function ($message) use ($user,$order_number) {
           $message->from('no-reply@activrespon.com', 'Activrespon');

@@ -196,7 +196,7 @@ use Illuminate\Support\Facades\Storage;
       }
     }
 
-    function getPackage($id_package,$check = null)
+    function getPackage($id_package = null,$check = null)
     {
       $package = array(
         1 => ['package'=>'basic1','price'=>195000],

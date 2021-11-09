@@ -31,7 +31,9 @@ class BroadCastController extends Controller
 {
 
     /* Create broadcast list */
-    public function saveBroadCast(Request $request){
+    public function saveBroadCast(Request $request,$image = null)
+    {
+        // dd($request->all());
 				$user = Auth::user();
         $message = $request->message;
         $time_sending = $request->hour;
@@ -100,28 +102,29 @@ class BroadCastController extends Controller
 
 				$folder="";
 				$filename="";
-				if($request->hasFile('imageWA')) {
+				// if($request->hasFile('imageWA')) {
+        if($image !== null) {
 					//save ke temp local dulu baru di kirim 
-          $image_size = getimagesize($request->file('imageWA'));
+          $image_size = getimagesize($image);
           $imagewidth = $image_size[0];
           $imageheight = $image_size[1];
           $imgtrue = imagecreatetruecolor($imagewidth,$imageheight);
 
 					$dt = Carbon::now();
-          $ext = $request->file('imageWA')->getClientOriginalExtension();
+          $ext = $image->getClientOriginalExtension();
 					$folder = $user->id."/broadcast-image/";
 					$filename = $dt->format('ymdHi').'.'.$ext;
           
-          if(checkImageSize($request->file('imageWA')) == true || $imagewidth > 1280 || $imageheight > 1280)
+          if(checkImageSize($image) == true || $imagewidth > 1280 || $imageheight > 1280)
           {
               $scale = scaleImageRatio($imagewidth,$imageheight);
               $imagewidth = $scale['width'];
               $imageheight = $scale['height'];
-              resize_image($request->file('imageWA'),$imagewidth,$imageheight,false,$folder,$filename);
+              resize_image($image,$imagewidth,$imageheight,false,$folder,$filename);
           }
           else
           {
-              Storage::disk('s3')->put($folder.$filename,file_get_contents($request->file('imageWA')), 'public');
+              Storage::disk('s3')->put($folder.$filename,file_get_contents($image), 'public');
           }
 				}
 
@@ -456,6 +459,11 @@ class BroadCastController extends Controller
         if($birthday == 1 && $targeting_cs == false)
         {
           $date_send = null;
+        }
+
+        if($country == null || $campaign->filter_all($country) == 1)
+        {
+          $country = 0;
         }
 				
 				/*if($request->hasFile('imageWA')) {

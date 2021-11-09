@@ -36,6 +36,8 @@ class VerifyCsrfToken extends Middleware
         'get-webhook',
         'get_data_api',
         'validate-api-key',
+        'get-msg-status-wamate',
+        'gen-coupon',
         
         //wp callback
         'send-message-queue-system-wp-activtemplate',
@@ -60,6 +62,7 @@ class VerifyCsrfToken extends Middleware
         'api/subscriber',
         'api/subscribers',
         'api/batch_subscriber',
-        'api/update-subscriber'
+        'api/update-subscriber',
+        'api/celebfans'
     ];
 }

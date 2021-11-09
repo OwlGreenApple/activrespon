@@ -439,7 +439,9 @@ class SettingController extends Controller
        $message .= 'Please note : this code would expired in 5 minutes'."\n";
 
        // SendNotif::dispatch($phone_number,$message,env('REMINDER_PHONE_KEY'));
-       $message_send = Message::create_message($phone_number,$message,env('REMINDER_PHONE_KEY'));
+       $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+       $phone_key = $admin->device_key;
+       $message_send = Message::create_message($phone_number,$message,$phone_key);
 
        return response()->json(['status'=>1]);
     }

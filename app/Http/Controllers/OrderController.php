@@ -80,7 +80,8 @@ class OrderController extends Controller
     return view('order.summary');
   }
   
-  public function pricing(Request $request){
+  public function pricing(Request $request)
+  {
     return view('order.pricing');
   }
 
@@ -317,6 +318,11 @@ class OrderController extends Controller
               $total = $pricing - $coupon->diskon_value;
             }
 
+            if($total < 0)
+            {
+              $total = 0;
+            }
+
            /* $arr['status'] = 'success';
             $arr['message'] = 'Coupon valid, can be use now';
             $arr['totaltitle'] = number_format($total, 0, '', '.');
@@ -341,7 +347,20 @@ class OrderController extends Controller
               $arr['message'] = 'Invalid package';
               return $arr;
             }
-           
+          }
+          elseif($coupon->coupon_type == 3)
+          {
+            $check_package = $this->filter_package($request->idpaket);
+            if($check_package == true)
+            {
+              return self::check_watchermarket_coupon($request->idpaket,$coupon);
+            }
+            else
+            {
+              $arr['status'] = 'error';
+              $arr['message'] = 'Invalid package';
+              return $arr;
+            }
           }
           /**/
         }
@@ -370,6 +389,29 @@ class OrderController extends Controller
     $arr['diskon'] = $diskon;
     $arr['coupon'] = $coupon;
     $arr['price'] = (int)$pricing;
+    return $arr;
+  }
+
+  private static function check_watchermarket_coupon($package_id,$coupon)
+  {
+    $package = getPackage($package_id,1)['price'];
+
+    if($package_id < 2)
+    {
+         $arr['status'] = 'error';
+         $arr['message'] = 'Kupon hanya berlaku untuk pembelian paket minimal bestseller1';
+         $arr['total'] = $package;
+         return $arr;
+    }
+
+    $total = $package - $coupon->diskon_value;
+
+    $arr['status'] = 'success';
+    $arr['message'] = 'Kupon valid dan bisa dipakai';
+    $arr['coupon'] = $coupon;
+    $arr['total'] = $total;
+    $arr['price'] = (int)$package;
+    $arr['diskon'] = $coupon->diskon_value;
     return $arr;
   }
 

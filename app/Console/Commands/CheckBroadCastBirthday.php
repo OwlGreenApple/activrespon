@@ -89,7 +89,8 @@ class CheckBroadCastBirthday extends Command
             $request = new Request($arr);
             $customers = $cp->calculate_user_list($request);
           }
-          else
+          
+          if($col->is_targetting == 0 && $col->birthday == 1)
           {
             $customers = Customer::where('list_id',$list_id)->whereRaw("DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT('".$today."','%m-%d')")->get();
           }

@@ -393,12 +393,12 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
           </div>
           <div class="form-group mt-3 secure-group" style="display:none;">
 						<label class="text-left" style="display:block;">START Custom Message</label>
-            <input type="text" name="start_custom_message" id="start_custom_message" class="form-control custom-form text-left" value="<?php echo $data['start_custom_message'];?>">
+             <textarea name="start_custom_message" id="divInput-description-start" class="form-control custom-form text-left" placeholder="Auto Reply Text"><?php echo $data['start_custom_message'];?></textarea>
           </div>
 
           <div class="form-group mt-3 secure-group" style="display:none;">
 						<label class="text-left" style="display:block;">UNSUBS Custom Message</label>
-            <input type="text" name="unsubs_custom_message" id="unsubs_custom_message" class="form-control custom-form text-left" value="<?php echo $data['unsubs_custom_message'];?>">
+            <textarea type="text" name="unsubs_custom_message" id="divInput-description-unsub" class="form-control custom-form text-left"><?php echo $data['unsubs_custom_message'];?></textarea>
           </div>
 
           <div class="text-right mb-3">
@@ -1123,7 +1123,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 	}
 
   $(function () {   
-      $("#divInput-description-post").emojioneArea();
+      $("#divInput-description-post, #divInput-description-start, #divInput-description-unsub").emojioneArea();
   });
 	
 	var tempText="";
@@ -1572,7 +1572,8 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
         data.push(
           {name:'code_country', value:code_country},
           {name:'data_country', value:data_country},
-          {name:'listedit',value:1}
+          {name:'listedit',value:1},
+          {name:'manual',value:true}
         );
         customerAdding(data);
       });

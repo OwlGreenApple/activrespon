@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+
 <script type="text/javascript">
   var table;
   var tableLog;
@@ -56,6 +57,7 @@
           $('#pesan').addClass('alert-success');
           $('#pesan').removeClass('alert-warning');
           $('#pesan').show();
+          $('#add-user').modal('hide');
         } else {
           $('#pesan').html(data.message);
           $('#pesan').removeClass('alert-success');
@@ -90,6 +92,7 @@
           $('#pesan').addClass('alert-success');
           $('#pesan').removeClass('alert-warning');
           $('#pesan').show();
+          $('#add-user').modal('hide');
         } else {
           $('#pesan').html(data.message);
           $('#pesan').removeClass('alert-success');
@@ -140,9 +143,6 @@
       <h5>
         Show you all users
       </h5>
-      
-
-      <div id="pesan" class="alert"></div>
 
       <br>  
 
@@ -234,6 +234,8 @@
 <!-- Modal Add User -->
 <div class="modal fade" id="add-user" role="dialog">
   <div class="modal-dialog">
+
+    <div id="pesan" class="alert"></div>
     
     <!-- Modal content-->
     <div class="modal-content">
@@ -285,12 +287,19 @@
             </label>
             <div class="col-md-9 col-12">
               <select class="form-control" name="membership" id="membership">
-                <option value="free">Free</option>
-                <option value="pro">Pro</option>
-                <option value="popular">Popular</option>
-                <option value="elite">Elite</option>
-                <option value="super">Super</option>
+                @foreach($package as $row)
+                  <option value="{{ $row['package'] }}">{{ $row['package'] }}</option>
+                @endforeach
               </select>
+            </div>
+          </div>
+
+          <div class="form-group row edit-field">
+            <label class="col-md-3 col-12">
+              <b>Waktu Berlangganan</b> 
+            </label>
+            <div class="col-md-9 col-12">
+              <input name="valid_until" type="number" min="1" class="form-control" autocomplete="off" />
             </div>
           </div>
 
@@ -314,7 +323,7 @@
         </form>
       </div>
       <div class="modal-footer" id="foot">
-        <button class="btn btn-primary" id="btn-add-user" data-dismiss="modal">
+        <button class="btn btn-primary" id="btn-add-user">
           Add
         </button>
         <button class="btn" data-dismiss="modal">
@@ -374,7 +383,7 @@
 </section>
 
 <script type="text/javascript">
-
+    
   window.onload = function () {
 
     var users = [];
@@ -435,39 +444,38 @@
     });
   });
   
-  $( "body" ).on( "click", ".btn-edit", function() {
-    $('#modaltitle').html('Edit User');
+  $( "body" ).on( "click", ".btn-edit", function() 
+  {
+    $('.modal-title').html('Edit User');
 
     $('#name').val($(this).attr('data-name'));
     $('#email').val($(this).attr('data-email'));
     $('#username').val($(this).attr('data-username'));
     $('#is_admin').val($(this).attr('data-is_admin'));
     $('#membership').val($(this).attr('data-membership'));
-
     
     $('.password-field').hide();
-    
     $('#id_edit').val($(this).attr('data-id'));
-
     $('#add-user').modal('show');
+    $(".edit-field").show();
   });
 
   $( "body" ).on( "click", ".btn-add", function() 
   {
-    $('#modaltitle').html('Add User');
+    $('.modal-title').html('Add User');
     
     $('#name').val('');
     $('#email').val('');
     $('#username').val('');
     $('#is_admin').val('Admin');
     $('#membership').val('Free');
+
     $('.password-field').show();
     $('#password').val('');
     $('#password-confirm').val('');
-
     $('#id_edit').val('');
-
     $('#add-user').modal('show');
+    $(".edit-field").hide();
   });
 
   $( "body" ).on( "click", "#btn-add-user", function() {

@@ -57,9 +57,16 @@ class SendMessage extends Command
                         ->where("phone_numbers.status",2)
                         ->select("phone_numbers.id")
                         ->get();
-        foreach($phoneNumbers as $phoneNumber) {
+
+        foreach($phoneNumbers as $phoneNumber) 
+        {
           SendCampaign::dispatch($phoneNumber->id);
         }
+      }
+
+      if(env("APP_ENV")=="local")
+      {
+        SendCampaign::dispatch(1);
       }
 
 			/*
@@ -76,6 +83,8 @@ class SendMessage extends Command
       $this->campaignAppointment();
 			*/
     }    
+
+    /* ---------- NOT USE ANYMORE ----------*/
  
     /* BROADCAST */
     public function campaignBroadcast()
@@ -838,7 +847,6 @@ class SendMessage extends Command
 
     public function replaceMessage($customer_message,$name,$email,$phone,$firstname)
     {
-     
       $replace_target = array(
         '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]'
       );
@@ -907,7 +915,7 @@ class SendMessage extends Command
 			}
 
       if ($mode == 2) {
-				$obj = json_decode($send_message);
+				$obj = json_decode($send_message,true);
         if ($obj->status == 500){
           $status = 3;
         }

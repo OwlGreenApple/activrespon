@@ -7,12 +7,12 @@ use App\UserList;
 use App\Customer;
 use App\Reminder;
 use App\ReminderCustomers;
-use Carbon\Carbon;
 use App\Sender;
 use App\Mail\SendWAEmail;
 use App\Console\Commands\SendWA as wamessage;
-use Mail;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ListController as Lists;
+use App\Http\Controllers\CouponController as Coupons;
 use App\Helpers\ApiHelper;
 use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Storage;
@@ -21,10 +21,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Message;
 use App\PhoneNumber;
 use App\Server;
+use App\Coupon;
 use App\Rules\CheckWANumbers;
 use App\Rules\CheckPlusCode;
 use App\Http\Controllers\ApiWPController;
+use Carbon\Carbon;
 use Validator;
+use Mail;
 
 class ApiController extends Controller
 {
@@ -165,7 +168,10 @@ class ApiController extends Controller
 
     public function send_message_queue_system(Request $request)
     {
-      $message_send = Message::create_message($request->phone_number,$request->message,env('REMINDER_PHONE_KEY'));
+      $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+      $phone_key = $admin->device_key;
+      
+      $message_send = Message::create_message($request->phone_number,$request->message,$phone_key);
       return "success";
     }
     
@@ -325,6 +331,54 @@ class ApiController extends Controller
 			}
     }
 
+    /*COUPON API WATCHERMARKET*/
+    public function add_coupon(Request $request)
+    {
+      $key = 't4ydaq0ed6c2pqi82zje4rit';
+      $req = json_decode($request->getContent(),true);
+
+      if($req['key'] !== $key)
+      {
+         return json_encode(['coupon'=>false]);
+      }
+
+      $cp = new Coupons;
+      $generated_code = self::createRandomCoupon();
+      $diskon_value =  $req['diskon_value'];
+
+      $data = [
+        'kodekupon'=>$generated_code,
+        'diskon_value'=>$diskon_value,
+        'diskon_percent'=>0,
+        'jenis_kupon'=>3,
+        'valid_until'=>Carbon::now()->addYears(3)->toDateTimeString(),
+        'valid_to'=>"wm",
+        'keterangan'=>'Generated watchermarket coupon Rp.'.str_replace(",",".",number_format($diskon_value)),
+        'package_id'=>0,
+        'api'=>true,
+      ];
+
+      $req = new Request($data);
+      $gen_coupon = $cp->add_coupon($req);
+      return json_encode(['act_coupon'=>$gen_coupon['code']]);
+    }
+
+    public static function createRandomCoupon(){
+
+        $list = new Lists;
+        $generate = 'WM-'.$list->generateRandomListName();
+
+        $coupon = Coupon::where([['kodekupon','=',$generate],['used',0]])->first();
+        if(is_null($coupon))
+        {
+            return $generate;
+        } 
+        else 
+        {
+            return self::createRandomCoupon();
+        }
+    }
+
     /****** SIMI ******/
 
     public function restart_simi(Request $request)
@@ -389,8 +443,15 @@ class ApiController extends Controller
     
     public function send_image_url_wamate(Request $request)
     {
-      $obj = json_decode($request->getContent());
-      return WamateHelper::send_image($obj->customer_phone,$obj->urls3,$obj->message,$obj->device_key,$obj->user_ip_server);
+      $obj = json_decode($request->getContent(),true);
+      // return WamateHelper::send_image($obj->customer_phone,$obj->urls3,$obj->message,$obj->device_key,$obj->user_ip_server);
+      return WamateHelper::send_image($obj['customer_phone'],$obj['urls3'],$obj['message'],$obj['device_key'],$obj['user_ip_server']);
+    }
+
+    public function get_wamate_status(Request $request)
+    {
+      $obj = json_decode($request->getContent(),true);
+      return WamateHelper::get_status_message($obj['device_key'],$obj['msg_id']);
     }
     
     public function send_image_url_simi(Request $request)
@@ -648,10 +709,22 @@ class ApiController extends Controller
 
     public function testDirectSendWA(Request $request)
     {
-        $uid = 6287852700229;
-        $to = $request->to;
-        $message = $request->wa_message;
+        $to = '628123238793';
+        $message = 'test-image-direct';
+        $image = 'https://activrespon.s3.ap-southeast-1.amazonaws.com/3/send-message/temp.jpg';
+        $device_key = '0bbe886a-5da3-4d50-ae69-ac28526782cc';
+        $ip_server = '178.128.80.152';
+        $msg_id = '248255';
 
+        // $send_image = WamateHelper::send_image($to,$image,$message,$device_key,$ip_server);
+
+        $send_image = WamateHelper::get_status_message($device_key,$msg_id);
+
+        // refresh token
+        /*$send_image = WamateHelper::auth_refresh("572c4eff863426c14dd94b5c4980ee6eXHbEviwxbZjvmPHmxpqahKcnNChSO6ElNDL7ncHeUgAqITtZSl9Ecp4YZipOzL0x");*/
+
+        dd($send_image);
+/*
         $karakter= 'abcdefghjklmnpqrstuvwxyz123456789';
         $string = 'testsendwaactivwa-';
         for ($i = 0; $i < 7 ; $i++) {
@@ -672,7 +745,7 @@ class ApiController extends Controller
             $data['msg'] = 'Message gagal dikirim';
         }
 
-        return response()->json($data);
+        return response()->json($data);*/
     } 
 
     public function testDirectSendMail(Request $request)

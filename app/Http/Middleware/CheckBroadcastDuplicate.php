@@ -207,8 +207,8 @@ class CheckBroadcastDuplicate
              $rules['religion'] = ['required',new \App\Rules\CheckReligion];
           }
 
-          return $rules;
         }
+        return $rules;
         // --
     }
 

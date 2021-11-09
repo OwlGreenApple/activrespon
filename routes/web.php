@@ -38,16 +38,18 @@ Route::post('entry-google-form','ApiController@entry_google_form');
 Route::get('testcoupon','ApiController@testcoupon');
 Route::get('testmail','ApiController@testmail');
 Route::get('testpay','ApiController@testpay');
-Route::get('testdirectsendwa','ApiController@testDirectSendWA')->name('testdirectsendwa');
+Route::get('testdirectsendwa','ApiController@testDirectSendWA');
 Route::get('testdirectsendmail','ApiController@testDirectSendMail')->name('testdirectsendmail');
 Route::post('send-message-queue-system','ApiController@send_message_queue_system');
 Route::post('get_data_api','ApiController@get_data_from_omnilinkz');
+Route::post('gen-coupon','ApiController@add_coupon');
 
 /* API accessed from automation*/
 Route::post('send-simi','ApiController@send_simi');
 Route::post('send-message-automation','ApiController@send_message');
 Route::post('send-wamate','ApiController@send_wamate');
 Route::post('send-image-url-wamate','ApiController@send_image_url_wamate');
+Route::post('get-msg-status-wamate','ApiController@get_wamate_status');
 Route::post('send-image-url-simi','ApiController@send_image_url_simi');
 Route::post('send-image-url','ApiController@send_image_url');
 Route::post('send-message-wassenger-automation','ApiController@send_message_wassenger_automation');
@@ -92,6 +94,8 @@ Route::post('/api/update-subscriber','ApiUserController@update_subscriber');
 Route::post('/api/batch_subscriber','ApiUserController@batch_subscriber');
 Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
 
+/*CELEBFANS API NOTIFICATION*/
+Route::post('/api/celebfans','ApiUserController@celebfans_notification');
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');
@@ -136,6 +140,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 	Route::post('importcustomercsv','AdminController@importCustomerCSV')->name('importcustomercsv');*/
   Route::get('superadmin', 'AdminController@index');
   Route::get('configs', 'AdminController@config');
+  Route::get('save-delay', 'AdminController@setup_delay');
   Route::get('status-server', 'AdminController@changeStatusServer');
   Route::get('setupconfig', 'AdminController@setupConfig');
   Route::post('save-config', 'AdminController@saveConfig');

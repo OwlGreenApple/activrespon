@@ -154,14 +154,16 @@ class RegisterController extends Controller
           $message .= '*Password :* '.$generated_password."\n\n";
           $message .= '*Link login:* ';
           $message .= 'https://activrespon.com/dashboard/login'."\n\n";
-          $message .= "Oh iya, kalau ada yang ingin ditanyakan, jangan sungkan menghubungi kami di *WA 0818-318-368*. \n\n";
+          $message .= "Oh iya, kalau ada yang ingin ditanyakan, jangan sungkan menghubungi kami di *WA 0877-9663-6121*. \n\n";
           $message .= "Salam hangat, \n";
           $message .= 'Tim Activrespon';
 
           // ApiHelper::send_message_android(env('REMINDER_PHONE_KEY'),$message,$phone,'reminder');
 					// ApiHelper::send_simi($phone,$message,env('REMINDER_PHONE_KEY'));
           // SendNotif::dispatch($phone,$message,env('REMINDER_PHONE_KEY'));
-          $message_send = Message::create_message($phone,$message,env('REMINDER_PHONE_KEY'));
+          $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+          $phone_key = $admin->device_key;
+          $message_send = Message::create_message($phone,$message,$phone_key);
           Mail::to($data['email'])->send(new RegisteredEmail($generated_password,$data['username']));
           $temp = $this->sendToCelebmail($data['username'],$data['email']);
         }

@@ -377,7 +377,7 @@
     }); 
 
     discountType();
-    dismissPaket();
+    // dismissPaket();
   });
 
   function dismissPaket()

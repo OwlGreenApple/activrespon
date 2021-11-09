@@ -52,6 +52,9 @@ class notifOrder extends Command
 									->select('orders.*','db1.email','db1.phone_number')
 									->get();
 
+        $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+        $phone_key = $admin->device_key;
+
         if($orders->count() > 0)
         {
           foreach($orders as $row)
@@ -87,7 +90,7 @@ class notifOrder extends Command
               $message .= '_*Activrespon is part of Activomni.com_';
 
               // SendNotif::dispatch($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
-              $message_send = Message::create_message($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
+              $message_send = Message::create_message($user->phone_number,$message,$phone_key);
             }
             else if ($diffDay == 5){
               $message = null;
@@ -116,7 +119,7 @@ class notifOrder extends Command
               $message .= '_*Activrespon is part of Activomni.com_';
 
               // SendNotif::dispatch($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
-              $message_send = Message::create_message($user->phone_number,$message,env('REMINDER_PHONE_KEY'));
+              $message_send = Message::create_message($user->phone_number,$message,$phone_key);
             }
            
             if($diffDay == 1 || $diffDay == 5)

@@ -560,6 +560,27 @@ class CustomerController extends Controller
                 $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'of747vmm6q720');
               }
               
+              if ($list->id == 258)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'sw509ql9lcbf7');
+              }
+              
+              if ($list->id == 259)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'bj258f08gh975');
+              }
+              
+              if ($list->id == 260)
+              {
+                //send to celebmail
+                $apiWPController = new ApiWPController;
+                $apiWPController->sendToCelebmail($request->subscribername.' '.$request->last_name,$request->email,'rf230bwtbg7c3');
+              }
+              
               
               if ($list->id == 10)
               {
@@ -595,6 +616,7 @@ class CustomerController extends Controller
             }
             catch(QueryException $e)
             {
+               // dd($e->getMessage());
                $data['success'] = false;
                $data['message'] = Lang::get('custom.db').'-.';
             }
@@ -795,6 +817,13 @@ class CustomerController extends Controller
         else
         {
           $is_appointment = 0;
+        }
+
+        if($is_appointment == 1)
+        {
+          $cst = Customer::find($customer_id);
+          $cst->status = 1;
+          $cst->save();
         }
         
         if($confirmation->message_conf == null && $userid <> null)

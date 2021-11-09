@@ -13,6 +13,7 @@ class Coupon extends Model
       column = coupon_type
       1 = kupon normal
       2 = kupon upgrade
+      3 = kupon API -- watchermarket
     */
 
     /*

@@ -41,7 +41,16 @@ class CouponController extends Controller
       //tambah kupon
       $validator = $this->validator($request->all());
 
-      if(!$validator->fails()){
+      if($request->api == null)
+      {
+        $errors = $validator->fails();
+      }
+      else
+      {
+        $errors = false;
+      }
+
+      if($errors == false){
         $coupon = new Coupon;
         $coupon->kodekupon = $request->kodekupon;
         $coupon->diskon_value = $request->diskon_value;
@@ -55,9 +64,11 @@ class CouponController extends Controller
 
         $arr['status'] = 'success';
         $arr['message'] = 'Kupon berhasil ditambahkan';
+        $arr['code'] = $request->kodekupon;
       } else {
         $arr['status'] = 'error';
         $arr['message'] = $validator->errors()->first();
+        $arr['code'] = 0;
       }
 
       return $arr;
