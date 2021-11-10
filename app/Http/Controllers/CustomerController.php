@@ -522,14 +522,25 @@ class CustomerController extends Controller
               $customer->save();
               $api = new API;
 
-              if($list->id == 4)
-              {
-                $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,7);
-              }
+              // TBO TGL 18/DEC/2020
+              // if($list->id == 4)
+              // {
+              //   // send to activcampaign
+              //   // $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,7);
+              // }
 
-              if($list->id == 5)
+              // FORM TEKNOBIE
+              // if($list->id == 5)
+              // {
+              //   // send to activcampaign
+              //   // $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);               
+              // }
+
+              // TBO dari tanggal 14/09/2021
+              if($list->id == 285)
               {
-                $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);
+                // send to sendfox
+                $api->listSendFox(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name));
               }
               
               if ($list->id == 12)

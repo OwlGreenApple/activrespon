@@ -267,6 +267,45 @@ class ApiController extends Controller
       // dd($result);
     }
 
+    // send list to sendfox
+    public function listSendFox($email,$first_name,$last_name)
+    {
+        $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUxMDBhZTA2YjEwZDkzNTRhOWJkOWEwZjVjZDRjMTM3ZDFmMTI1MzNmZTc2NzI2NDc0Y2QyNDFjNDBmN2I0N2EwZmE2OTc5ZGZlYWQ3NWNkIn0.eyJhdWQiOiI0IiwianRpIjoiZTEwMGFlMDZiMTBkOTM1NGE5YmQ5YTBmNWNkNGMxMzdkMWYxMjUzM2ZlNzY3MjY0NzRjZDI0MWM0MGY3YjQ3YTBmYTY5NzlkZmVhZDc1Y2QiLCJpYXQiOjE2MzY1MjM5OTksIm5iZiI6MTYzNjUyMzk5OSwiZXhwIjoxNjY4MDU5OTk5LCJzdWIiOiI2NjkxNSIsInNjb3BlcyI6W119.reZDchMOyxJg61L8MpV-97vWekKoO6_66UpxisX8ajT4ie7j0wsQ4BMzfZcaswE7iw5H4mncku73ksem2N_7ESBfnZsHo344XrYMV76cUwt8kMjT3P2qBhF57Y2i0vbXy1NY6y914MpqZcMkS0enR_r1RUlrgsbn1hmCV3QVd-GOnCd_2s7YUQc_kIPh40lJ4Xk1dUyUgiGrVl6eRQnBCL2yUlew_EhYt4bm3HHevncAJS1ISIl3i-DlhZDsBzPnsvy8DwwA0vQd6T_PZ18WTzyfYLB1oQs6JqN2QM9CgM5CnpNBuBHtY71JD8qS3niFVTyhF8vmcpslLBaGk3XKi_DswtV4pvAmYxekKPvgpRFQ7R036y4VMk-UmsYMGBDKAtbMyytAQH7AHVBhL5p9qsTwu__aMbcCVJqCxE_TidBSx8ac1ThUGEzAO6QGgMSXloQkGBYak7QqnsUJLWcKEcxqiOB4HOsnGhet2QUOzbaRB36YHX2sxHcsskkQ53gaqXDqVAc5Ltu9afxjXu_YfDvJO5dYzM6l4NaPXnGyL0N5539gjvoUfGFamG7P_8LUFpa0PzYIcwYHoe1LpXgLkMfca2Z6UX_ZI6jvSJUz_Hd9uEzz1yDuNG8eQRS2z9GBgU54KOZHPneArfP0q8nGZKOJVaOED_Oc7jmBsc16NEo";
+        $curl = curl_init();
+        $data = array(
+            'email'=>$email,
+            'first_name'=>$first_name,
+            'last_name'=>$last_name,
+            'list[]'=> 297501 //Teknobie Komunitas Bisnis Online
+        );
+        $url = 'https://api.sendfox.com/contacts';
+        $data_string = json_encode($data);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'authorization: Bearer '.$token
+        ));
+       
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+          echo "cURL Error #:" . $err;
+        } else {
+          json_decode($response,true);
+        }
+    }
+
     public function entry_google_form(Request $request)
     {
 			$obj = json_decode($request->getContent());
@@ -670,7 +709,7 @@ class ApiController extends Controller
 
     public function testpay()
     {
-        $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImM3ZWY2M2U1MmEwODQzMjJlYzU3ZjdlODVhY2IyOGU4NTY1ZDk1M2Y4M2U1ZWEzZDA0YzVlODJiODczNjNkNjQyY2Q4NjM2NjY4OWJjMmJiIn0.eyJhdWQiOiI0IiwianRpIjoiYzdlZjYzZTUyYTA4NDMyMmVjNTdmN2U4NWFjYjI4ZTg1NjVkOTUzZjgzZTVlYTNkMDRjNWU4MmI4NzM2M2Q2NDJjZDg2MzY2Njg5YmMyYmIiLCJpYXQiOjE2MzY0Mjc5NjgsIm5iZiI6MTYzNjQyNzk2OCwiZXhwIjoxNjY3OTYzOTY4LCJzdWIiOiI3NzQ4MyIsInNjb3BlcyI6W119.ccehdUpXJO3x9TrPCVQotAQyjj885arpj0XtWZMuuBenKz3xjWTPTEe5HmZkKol3ERj_wYbJHPl4kzOH6rsxPgI3D6LYkpAV7Gd0S6K6wdExs6owyMHavJhVpfybrakQcbJ1VVSlEyGnISRRc6VKVa52giRxEwKnqU_e6lNIO3TWG7mZ4OyMM1t8edcbfKOT35adu9R4Idbdsuf94o5vf0a9cGZy2aEok-ocATi18AZQHwyH0FmGG9UUvq-tRoh3WliXiXK-UvC8skskE99nMch8LO10Ov4o1g4P8JkwIXXdR6uBm6NJIcPv58ohV9gRlKKS-7b2md3qrfI1lol-r_IX7q6lvUgdSHNnpZ8Nn_2imLn4aD0zSZQp_cKG150nhTQ5mS-wY0SgjZW8q4vPi4RcJaOpINrHsa9fmLUNfitNqVXAT_VKiZMK48nfSlsjRpRdu6xhFbYpRhvUMWY8ShdjzuHXRMrDfIob6SpIiV1VMLRoNiT3LXJ1bwB_enO-NgYGbCCsJVh4vhZosUMwFJz0obzAcltsBV5FDL9GER9FWfggCkyCtTBYlqhAl0g9t43uBV2GfPmUm-fsV84pMwmJFM4BtBHtqIrit7EHrb2IbqTrEqZL4sVON8iRIVRoHsy0tjsGueaqoAy8W6k7aX-kR-Rr_gZ2rmJfnfX7Hjc";
+        $token ="eyJhdWQiOiI0IiwianRpIjoiYzdlZjYzZTUyYTA4NDMyMmVjNTdmN2U4NWFjYjI4ZTg1NjVkOTUzZjgzZTVlYTNkMDRjNWU4MmI4NzM2M2Q2NDJjZDg2MzY2Njg5YmMyYmIiLCJpYXQiOjE2MzY0Mjc5NjgsIm5iZiI6MTYzNjQyNzk2OCwiZXhwIjoxNjY3OTYzOTY4LCJzdWIiOiI3NzQ4MyIsInNjb3BlcyI6W119.ccehdUpXJO3x9TrPCVQotAQyjj885arpj0XtWZMuuBenKz3xjWTPTEe5HmZkKol3ERj_wYbJHPl4kzOH6rsxPgI3D6LYkpAV7Gd0S6K6wdExs6owyMHavJhVpfybrakQcbJ1VVSlEyGnISRRc6VKVa52giRxEwKnqU_e6lNIO3TWG7mZ4OyMM1t8edcbfKOT35adu9R4Idbdsuf94o5vf0a9cGZy2aEok-ocATi18AZQHwyH0FmGG9UUvq-tRoh3WliXiXK-UvC8skskE99nMch8LO10Ov4o1g4P8JkwIXXdR6uBm6NJIcPv58ohV9gRlKKS-7b2md3qrfI1lol-r_IX7q6lvUgdSHNnpZ8Nn_2imLn4aD0zSZQp_cKG150nhTQ5mS-wY0SgjZW8q4vPi4RcJaOpINrHsa9fmLUNfitNqVXAT_VKiZMK48nfSlsjRpRdu6xhFbYpRhvUMWY8ShdjzuHXRMrDfIob6SpIiV1VMLRoNiT3LXJ1bwB_enO-NgYGbCCsJVh4vhZosUMwFJz0obzAcltsBV5FDL9GER9FWfggCkyCtTBYlqhAl0g9t43uBV2GfPmUm-fsV84pMwmJFM4BtBHtqIrit7EHrb2IbqTrEqZL4sVON8iRIVRoHsy0tjsGueaqoAy8W6k7aX-kR-Rr_gZ2rmJfnfX7Hjc";
         $curl = curl_init();
         $data = array(
             'email'=>'activrespon@alotivi.com',
