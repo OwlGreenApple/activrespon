@@ -540,7 +540,15 @@ class CustomerController extends Controller
               if($list->id == 285)
               {
                 // send to sendfox
-                $api->listSendFox(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name));
+                //Teknobie Komunitas Bisnis Online
+                $api->listSendFox(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),297501);
+              }
+
+              if($list->id == 5)
+              {
+                // send to sendfox
+                //Teknobie Komunitas Content Creator
+                $api->listSendFox(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),297502);
               }
               
               if ($list->id == 12)

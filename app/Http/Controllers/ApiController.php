@@ -268,7 +268,7 @@ class ApiController extends Controller
     }
 
     // send list to sendfox
-    public function listSendFox($email,$first_name,$last_name)
+    public function listSendFox($email,$first_name,$last_name,$list)
     {
         // $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjE2NGRlMDM0MDhlYmM0MGIxMDA3MWQxZmZmMWE0OWUyYWExZDRkMzllN2IzNGJmNzdlYWQwZjdmOGI2YWU2ZjQ0NjJkNDQ3NGRjMWNmZDNiIn0.eyJhdWQiOiI0IiwianRpIjoiMTY0ZGUwMzQwOGViYzQwYjEwMDcxZDFmZmYxYTQ5ZTJhYTFkNGQzOWU3YjM0YmY3N2VhZDBmN2Y4YjZhZTZmNDQ2MmQ0NDc0ZGMxY2ZkM2IiLCJpYXQiOjE2MzY1MzU1NjIsIm5iZiI6MTYzNjUzNTU2MiwiZXhwIjoxNjY4MDcxNTYyLCJzdWIiOiI3NzQ4MyIsInNjb3BlcyI6W119.HYc6ayRpL5y-AKkpOfNVtzAuglpSVfqDe4Xc8zPrkWknvtyGteDA0UZHdPPKF-5DL9jDOfqIsnEJhCx-QvdqVl9xnKGhIYPTKrdxVLJ_43aPMtzwl5ylXcYhpwy9XX3gA73Xp8ljSceUqk3yO4zQj5DvWjwmzchQvUG_avsvazQ704cB4ndjtRl83LpuUtCO7YdhO-M0bnz66vOOIjRuIsoN1zprbdM5UKVTpCkG58MHGIKj9I961-1cntx8PY80YvsdYwPNZG9mAgyOvTMgWehU_Vx7rLX5AyBbu9zPSI5EFmzuUWswW8R3m4aJDoQyy5pDvhQtvtrdg51lrzwj0Fsbno4cWDh5JamKK19Z4wkARTGLNJoPzrYGdwIY-6Ri5eCbo1-OcAYdM-h7zySzhw7jmRElEMqId29chLqeiaqB4YpuoU3MYpbM43BvCgVJt-b-Y2DR8A0ZaTAl-DHovdU8tyFSZuBbn6yLOizbeWm23NDFGSF7KckuochRVLaaR6S6V3J-dR680anuBpWvHcvAaKdbvcFLMSuDWabR66itsOorC1wZmXE4nG8kWlxam2Sqe8o2gyQhcLfydy6UwxG5xCTNEHfBPplJtcFkTM0zcfvQcnZCehnXr6F0uQd2ZEdATM1PFyDKu2uFhBWj-4H4Xb2Zi1kv9h1LFEHHVGE";
         $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUxMDBhZTA2YjEwZDkzNTRhOWJkOWEwZjVjZDRjMTM3ZDFmMTI1MzNmZTc2NzI2NDc0Y2QyNDFjNDBmN2I0N2EwZmE2OTc5ZGZlYWQ3NWNkIn0.eyJhdWQiOiI0IiwianRpIjoiZTEwMGFlMDZiMTBkOTM1NGE5YmQ5YTBmNWNkNGMxMzdkMWYxMjUzM2ZlNzY3MjY0NzRjZDI0MWM0MGY3YjQ3YTBmYTY5NzlkZmVhZDc1Y2QiLCJpYXQiOjE2MzY1MjM5OTksIm5iZiI6MTYzNjUyMzk5OSwiZXhwIjoxNjY4MDU5OTk5LCJzdWIiOiI2NjkxNSIsInNjb3BlcyI6W119.reZDchMOyxJg61L8MpV-97vWekKoO6_66UpxisX8ajT4ie7j0wsQ4BMzfZcaswE7iw5H4mncku73ksem2N_7ESBfnZsHo344XrYMV76cUwt8kMjT3P2qBhF57Y2i0vbXy1NY6y914MpqZcMkS0enR_r1RUlrgsbn1hmCV3QVd-GOnCd_2s7YUQc_kIPh40lJ4Xk1dUyUgiGrVl6eRQnBCL2yUlew_EhYt4bm3HHevncAJS1ISIl3i-DlhZDsBzPnsvy8DwwA0vQd6T_PZ18WTzyfYLB1oQs6JqN2QM9CgM5CnpNBuBHtY71JD8qS3niFVTyhF8vmcpslLBaGk3XKi_DswtV4pvAmYxekKPvgpRFQ7R036y4VMk-UmsYMGBDKAtbMyytAQH7AHVBhL5p9qsTwu__aMbcCVJqCxE_TidBSx8ac1ThUGEzAO6QGgMSXloQkGBYak7QqnsUJLWcKEcxqiOB4HOsnGhet2QUOzbaRB36YHX2sxHcsskkQ53gaqXDqVAc5Ltu9afxjXu_YfDvJO5dYzM6l4NaPXnGyL0N5539gjvoUfGFamG7P_8LUFpa0PzYIcwYHoe1LpXgLkMfca2Z6UX_ZI6jvSJUz_Hd9uEzz1yDuNG8eQRS2z9GBgU54KOZHPneArfP0q8nGZKOJVaOED_Oc7jmBsc16NEo";
@@ -277,7 +277,7 @@ class ApiController extends Controller
             'email'=>$email,
             'first_name'=>$first_name,
             'last_name'=>$last_name,
-            'lists'=> 297501 //Teknobie Komunitas Bisnis Online
+            'lists'=> $list
         );
         $url = 'https://api.sendfox.com/contacts';
         $data_string = json_encode($data);
