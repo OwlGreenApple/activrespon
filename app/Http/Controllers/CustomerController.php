@@ -544,6 +544,7 @@ class CustomerController extends Controller
                 $api->listSendFox(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),297501);
               }
 
+              //komunitas teknobie content creator
               if($list->id == 5)
               {
                 // send to sendfox
