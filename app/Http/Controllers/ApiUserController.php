@@ -88,6 +88,64 @@ class ApiUserController extends Controller
       return json_encode($data);
     }
 
+    // SEND WA FROM TJAPNJALUK
+    public function tjapnjaluk()
+    {
+      $req = json_decode(file_get_contents('php://input'),true);
+      $token = $req['token'];
+      $customer_id = $req['cid'];
+      $winner = $req['winner'];
+      $code = $req['code'];
+      $fix_token = 'Ag2f89fd2R3To0q1A2';
+
+      if($token !== $fix_token)
+      {
+        $data['response'] = 'Invalid Token';
+        return json_encode($data);
+      }
+
+      $cst = Customer::find($customer_id);
+      if(is_null($cst))
+      {
+        $data['response'] = 'Invalid Customer ID';
+        return json_encode($data);
+      }
+
+      $message = '';
+      $to = $cst->telegram_number;
+      $message .= "Selamat kode Anda *".$code."* memenangkan hadiah tunai senilai Rp.*".$winner."*\n\n";
+      $message .= "Langkah selanjutnya silakan konfirmasi ke WA admin :"."\n";
+      $message .= "- kirimkan nomor DANA atau OVO Anda ke admin"."\n";
+      $message .= "- Admin segera membalas pesan Anda"."\n\n";
+      $message .= "*PS* : Batas waktu pengambilan hadiah 3 hari terhitung dari hari ini.";
+
+      $admin = PhoneNumber::where('user_id',env('ADMIN_SAMBAL'))->first(); //admin
+      $phone = $admin->phone_number;
+      $phone_key = $admin->device_key;
+      $phone_ip = $admin->ip_server;
+
+      $msg = new Message;
+      $msg->user_id = env('ADMIN_SAMBAL');
+      $msg->sender = $phone;
+      $msg->phone_number = $to;
+      $msg->key = $phone_key;
+      $msg->message = $message;
+      $msg->status = 11;
+      $msg->customer_id = 0;
+      $msg->ip_server = $phone_ip;
+
+      try{
+        $msg->save();
+        $data['response'] = 1;
+      }
+      catch(Queryexception $e)
+      {
+        $data['response'] = "error";
+      }
+
+      return json_encode($data);
+    }
+
     /*public static function package_list($package)
     {
       $data['Paket 1 WA'] = ['price'=>60000,'quota'=>12000];

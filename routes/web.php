@@ -96,6 +96,7 @@ Route::get('/api/delete-subscriber','ApiUserController@delete_subscriber');
 
 /*CELEBFANS API NOTIFICATION*/
 Route::post('/api/celebfans','ApiUserController@celebfans_notification');
+Route::post('/api/tjapnjaluk','ApiUserController@tjapnjaluk');
 
 /* PROTOTYPE */
 //Route::get('createlists', 'HomeController@formList');

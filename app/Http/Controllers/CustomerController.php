@@ -441,7 +441,7 @@ class CustomerController extends Controller
             } 
             else if($check_phone == true || $check_email == true)
             {
-               // user exist already
+               // AVALILABLE USER (EMAIL OR PHONE)
               $reg = array(
                 'name' => $request->subscribername,
                 'last_name' => $request->last_name,
@@ -461,6 +461,10 @@ class CustomerController extends Controller
               try
               {
                 Customer::where([['telegram_number',$phone_number],['list_id',$list->id],['user_id',$list->user_id]])->orWhere('email',$request->email)->update($reg);
+
+                // IF TJAPNJALUK
+                // $this->addSubscriber($list_id,$customer_id,$customer_join,$user_id);
+
                 $data['success'] = true;
                 $data['message'] = $message_conf;
               }
@@ -795,7 +799,7 @@ class CustomerController extends Controller
                   } 
               } //END IF IS_EVENT
               else
-              //AUTO RESPONDER
+              //AUTO RESPONDER -- create auto responder from list standard
               {
                   $days = (int)$row->days;
                   $after_sum_day = Carbon::parse($customer_join)->addDays($days);
