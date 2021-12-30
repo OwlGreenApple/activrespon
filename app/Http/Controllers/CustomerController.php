@@ -460,11 +460,18 @@ class CustomerController extends Controller
               
               try
               {
-                Customer::where([['telegram_number',$phone_number],['list_id',$list->id],['user_id',$list->user_id]])->orWhere('email',$request->email)->update($reg);
+                $customer = Customer::where([['list_id',$list->id],['telegram_number',$phone_number],['user_id',$list->user_id]])->orWhere([['email',$request->email],['list_id',$list->id]]);
 
-                // IF TJAPNJALUK
-                // $this->addSubscriber($list_id,$customer_id,$customer_join,$user_id);
+                $customer->update($reg);
+                $customer_id = $customer->first();
+                $customer_id = $customer_id->id;
 
+                // TJAPNJALUK (Tjapnjaluk customer always get WA message when entering lottery code)
+                if($list->id == 346)
+                {
+                  self::sendMessageReply($list,$customer_id,$message_conf);
+                }
+                
                 $data['success'] = true;
                 $data['message'] = $message_conf;
               }
@@ -478,6 +485,7 @@ class CustomerController extends Controller
             }
             else
             {
+              // NEW CUSTOMER
               $customer = Customer::create([
                  'user_id'  => $list->user_id,
                  'list_id'  => $list->id,
@@ -636,7 +644,24 @@ class CustomerController extends Controller
 
                $user_id = $list->user_id;
                $list_id = $list->id;
-               return $this->addSubscriber($list_id,$customer_id,$customer_join,$user_id);
+
+               // IF TJAPNJALUK LOTTERY LOGIC
+               if($list->id == 346)
+               {
+                  if($list->message_conf == null || $list->message_conf == '')
+                  {
+                      $message_conf = Lang::get('custom.message_conf');
+                  }
+                  else
+                  {
+                      $message_conf = $list->message_conf;
+                  }
+                  return self::sendMessageReply($list,$customer_id,$message_conf);
+               }
+               else
+               {
+                  return $this->addSubscriber($list_id,$customer_id,$customer_join,$user_id);
+               }
             }
             catch(QueryException $e)
             {
@@ -647,6 +672,49 @@ class CustomerController extends Controller
           
             return response()->json($data);
         }
+    }
+
+    // SEND WA MESSAGE TO EACH TJAPNJALUK CUSTOMER LOTTER
+    public static function sendMessageReply($list,$customer_id,$message_conf)
+    {
+      $reminder = Reminder::where('list_id',$list->id)->where('days',0)->where('is_event',0)->first();
+
+      $customer = Customer::find($customer_id);
+      $to = $customer->telegram_number;
+
+      $message = $reminder->message;
+      $customer_id = bin2hex($customer_id);
+      $link = "https://tjapnjaluk.com/undian/public/lottery?c=".$customer_id;
+      $message = str_replace("[CLINK]", $link, $message);
+
+      $admin = PhoneNumber::where('user_id',$list->user_id)->first(); //admin
+      $phone = $admin->phone_number;
+      $phone_key = $admin->device_key;
+      $phone_ip = $admin->ip_server;
+
+      $msg = new Message;
+      $msg->user_id = $list->user_id;
+      $msg->sender = $phone;
+      $msg->phone_number = $to;
+      $msg->key = $phone_key;
+      $msg->message = $message;
+      $msg->status = 11;
+      $msg->customer_id = 0;
+      $msg->ip_server = $phone_ip;
+
+      try{
+        $msg->save();
+        $data['success'] = true;
+        $data['message'] = $message_conf;
+      }
+      catch(Queryexception $e)
+      {
+        $data['success'] = false;
+        $data['message'] = Lang::get('custom.db').'---';
+      }
+
+      return response()->json($data);
+                        
     }
 		
 		function sendListSecure($list_id,$customer_id,$subscribername,$user_id,$list_name,$phone_number)
