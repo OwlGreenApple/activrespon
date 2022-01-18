@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OTPEmail;
 use App\Imports\UsersImport;
 use App\Message;
 use App\User;
@@ -434,15 +436,26 @@ class SettingController extends Controller
        Cookie::queue(Cookie::make('otp_code', $code, 60));
 
        $message ='';
-       $message .= 'Hi '.Auth::user()->username."\n\n";
+       $message .= 'Hi '.Auth::user()->name."\n\n";
        $message .= '*Your OTP code is:* '.$code."\n\n";
        $message .= 'Please note : this code would expired in 5 minutes'."\n";
 
        // SendNotif::dispatch($phone_number,$message,env('REMINDER_PHONE_KEY'));
-       $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
-       $phone_key = $admin->device_key;
-       $message_send = Message::create_message($phone_number,$message,$phone_key);
 
+       $admin = PhoneNumber::where('user_id',env('ADMIN_ID'))->first(); //admin
+
+       // in case if admin also disconnected
+       if(is_null($admin))
+       {
+          $user = Auth::user();
+          Mail::to($user->email)->send(new OTPEmail($code,$user->name));
+       }
+       else
+       {
+         $phone_key = $admin->device_key;
+         $message_send = Message::create_message($phone_number,$message,$phone_key);
+       }
+       
        return response()->json(['status'=>1]);
     }
 
