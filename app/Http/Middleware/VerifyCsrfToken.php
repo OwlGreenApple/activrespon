@@ -38,6 +38,8 @@ class VerifyCsrfToken extends Middleware
         'validate-api-key',
         'get-msg-status-wamate',
         'gen-coupon',
+        'save_customer',
+        'display_api_list',
         
         //wp callback
         'send-message-queue-system-wp-activtemplate',

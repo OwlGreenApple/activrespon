@@ -8,6 +8,7 @@ use App\Customer;
 use App\Reminder;
 use App\ReminderCustomers;
 use App\Sender;
+use App\User;
 use App\Mail\SendWAEmail;
 use App\Console\Commands\SendWA as wamessage;
 use App\Http\Controllers\CustomerController;
@@ -154,16 +155,78 @@ class ApiController extends Controller
           return json_encode($err);
       }
 
-      $customer = new Customer;
-      $customer->user_id = $list_check->user_id;
-      $customer->list_id = $list_id;
-      $customer->name = $name;
-      $customer->email = $email;
-      $customer->telegram_number = $phone;
-      $customer->status = 1;
-      $customer->save();
+      $this->save_customer($list_check->user_id,$list_id,$name,$email,$phone);
 
       return json_encode(['error'=>0,'response'=>'Thank you, your data has been submiting to activrespon']);
+    }
+
+    public function save_customer($user_id,$list_id,$name,$email,$phone)
+    {
+        $customer = new Customer;
+        $customer->user_id = $user_id;
+        $customer->list_id = $list_id;
+        $customer->name = $name;
+        $customer->email = $email;
+        $customer->telegram_number = $phone;
+        $customer->status = 1;
+        $customer->save();
+    }
+
+    //display list on api
+    public function display_api_list()
+    {
+      $req = file_get_contents('php://input');
+      $res = json_decode($req,true);
+
+      self::check_secure($res['service']);
+
+      $api_key = strip_tags($res['api_key_list']);
+      $user = User::where('api_key_list',$api_key)->first();
+
+
+      if(is_null($user))
+      {
+        return json_encode(['status' => null]);
+      }
+
+      $lists = UserList::where('user_id',$user->id)->select('id','label')->get()->toArray();
+      
+      return json_encode($lists);
+    }
+
+    // save customer
+    public function save_customer_api()
+    {
+      $req = file_get_contents('php://input');
+      $res = json_decode($req,true);
+
+      self::check_secure($res['service']);
+
+      // $api_key = 'aMz2sXQWxPpboi5I';
+      // $list_id = 27;
+      $api_key = strip_tags($res['api_key_list']);
+      $list_id = strip_tags($res['list_id']);
+      $user = User::where([['users.api_key_list',$api_key],['lists.id',$list_id]])->join('lists','lists.user_id','=','users.id')->select('lists.id AS list_id','users.id')->first();
+
+      if(is_null($user))
+      {
+        exit;
+      }
+
+      $name = strip_tags($res['name']);
+      $email = strip_tags($res['email']);
+      $phone = strip_tags($res['phone']);
+
+      $this->save_customer($user->id,$user->list_id,$name,$email,$phone);
+      return json_encode(['status'=>1]);
+    }
+
+    private static function check_secure($service)
+    {
+      if($service !== '$2y$10$JMoAeSl6aV0JCHmTNNafTOuNlMg/S7Yo8a6LUauEZe4Rcy.YdU37S')
+      {
+        exit();
+      }
     }
 
     public function send_message_queue_system(Request $request)

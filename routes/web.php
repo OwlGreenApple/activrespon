@@ -43,6 +43,8 @@ Route::get('testdirectsendmail','ApiController@testDirectSendMail')->name('testd
 Route::post('send-message-queue-system','ApiController@send_message_queue_system');
 Route::post('get_data_api','ApiController@get_data_from_omnilinkz');
 Route::post('gen-coupon','ApiController@add_coupon');
+Route::post('save_customer','ApiController@save_customer_api');
+Route::post('display_api_list','ApiController@display_api_list');
 
 /* API accessed from automation*/
 Route::post('send-simi','ApiController@send_simi');
@@ -221,6 +223,7 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::get('settings', 'SettingController@index');
   Route::post('save-settings', 'SettingController@settingsUser')->middleware('usersettings');
   Route::get('load-phone-number', 'SettingController@load_phone_number');
+  Route::get('generate_api_list', 'SettingController@save_api_list');
   Route::get('signout', 'Auth\LoginController@logout');
 	
 	//woowa + simi 

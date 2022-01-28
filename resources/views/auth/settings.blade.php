@@ -281,6 +281,21 @@
                 <button type="submit" class="btn btn-custom">Update Account</button>
               </div>
         </div>
+        <!-- GENERATE API -->
+        <div class="wrapper account mt-3">
+            <div class="form-group row col-fix">
+              <label class="col-sm-4 col-form-label">API KEY LIST</label>
+              <label class="col-sm-1 double-dot col-form-label">:</label>
+              <div class="col-sm-7 text-left">
+                <input value="{{ $user->api_key_list }}" type="text" name="api_key_list" class="form-control" maxlength="12" />
+                <span class="error api_key_list"></span>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <button id="generate_api" type="button" class="btn btn-custom">Generate API</button> 
+            </div>
+        </div>
         </form>
         <!-- end wrapper -->
 
@@ -687,7 +702,39 @@
 		// End Display Country
 		
 		initButton();
+    generate_api_key();
   });
+
+  // generate api-key
+  function generate_api_key()
+  {
+    $("#generate_api").click(function(){
+      var input = $("input[name='api_key_list']");
+
+      $.ajax({
+        method:'GET',
+        url:'{{ url("generate_api_list") }}',
+        dataType:'json',
+        beforeSend : function()
+        {
+          $("#loader").show();
+          $('.div-loading').addClass('background-load');
+        },
+        success: function(res){
+          input.val(res.txt);
+        },
+        error : function()
+        {
+          $(".error .api_key_list").html('{{ Lang::get("custom.db") }}');
+        },
+        complete : function()
+        {
+          $("#loader").hide();
+          $('.div-loading').removeClass('background-load');
+        }
+      });
+    });
+  }
 
   function agreement()
   {

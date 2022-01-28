@@ -245,6 +245,36 @@ class SettingController extends Controller
       ]);
     }
 
+    //GENERATE KEY FOR API KEY LIST (GIVEAWAY)
+    public function save_api_list()
+    {
+      $user = User::find(Auth::id());
+      $user->api_key_list = self::generate_api_key_list();
+      $user->save();
+      return response()->json(['txt'=>$user->api_key_list]);
+    }
+
+    public static function generate_api_key_list()
+    {
+      $char = self::generate_random();
+      $user = User::where('api_key_list',$char)->first();
+
+      if(is_null($user))
+      {
+        return $char;
+      }
+      else
+      {
+        return self::generate_api_key_list();
+      }
+    }
+
+    private static function generate_random()
+    {
+      $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return substr(str_shuffle($permitted_chars), 0, 16);
+    }
+
     public function showTimeZone(){
       $timezone = array();
       $timestamp = time();
