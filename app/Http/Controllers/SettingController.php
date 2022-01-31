@@ -544,7 +544,7 @@ class SettingController extends Controller
         return $arr;
       }
 
-      // OPT code
+      // OTP code
       $otp_code = Cookie::get('otp_code');
       if($otp_code !== null)
       {

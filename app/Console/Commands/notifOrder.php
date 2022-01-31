@@ -8,6 +8,7 @@ use App\Mail\NotifyOrder;
 use App\User;
 use App\Order;
 use App\Message;
+use App\PhoneNumber;
 use Carbon\Carbon;
 use Date;
 use App\Helpers\ApiHelper;
