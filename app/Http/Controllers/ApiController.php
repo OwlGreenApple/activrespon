@@ -186,7 +186,7 @@ class ApiController extends Controller
 
       if(is_null($user))
       {
-        return json_encode(['status' => null]);
+        return json_encode([]);
       }
 
       $lists = UserList::where('user_id',$user->id)->select('id','label')->get()->toArray();
