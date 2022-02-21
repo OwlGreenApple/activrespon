@@ -225,7 +225,7 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::get('load-phone-number', 'SettingController@load_phone_number');
   Route::get('generate_api_list', 'SettingController@save_api_list');
   Route::get('signout', 'Auth\LoginController@logout');
-	
+  
 	//woowa + simi 
   // Route::get('connect-phone', 'SettingController@connect_phone')->middleware('checkcall');
   Route::post('check-otp', 'SettingController@getOTP');

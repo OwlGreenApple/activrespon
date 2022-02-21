@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Helpers\WamateHelper;
 use Illuminate\Support\Facades\Auth;
-
+  
 
 class WamateHelper
 {

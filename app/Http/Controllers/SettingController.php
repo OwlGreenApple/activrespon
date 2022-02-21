@@ -34,7 +34,7 @@ use App\Jobs\SendNotif;
 use App\Rules\InternationalTel;
 use App\Rules\CheckCallCode;
 use App\Rules\CheckPlusCode;
-
+  
 class SettingController extends Controller
 {
     /**

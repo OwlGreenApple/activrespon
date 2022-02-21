@@ -549,7 +549,7 @@ class CustomerController extends Controller
               // }
 
               // TBO dari tanggal 14/09/2021
-              if($list->id == 285)
+              if($list->id == 369)
               {
                 // send to sendfox
                 //Teknobie Komunitas Bisnis Online
@@ -557,7 +557,7 @@ class CustomerController extends Controller
               }
 
               //komunitas teknobie content creator
-              if($list->id == 5)
+              if($list->id == 372)
               {
                 // send to sendfox
                 //Teknobie Komunitas Content Creator
