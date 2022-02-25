@@ -467,7 +467,8 @@ class CustomerController extends Controller
                 $customer_id = $customer_id->id;
 
                 // TJAPNJALUK (Tjapnjaluk customer always get WA message when entering lottery code)
-                if($list->id == 346)
+                // if($list->id == 346) -- old account
+                if($list->id == 374) //cx7930ls
                 {
                   self::sendMessageReply($list,$customer_id,$message_conf);
                 }
@@ -646,7 +647,8 @@ class CustomerController extends Controller
                $list_id = $list->id;
 
                // IF TJAPNJALUK LOTTERY LOGIC
-               if($list->id == 346)
+               // if($list->id == 346)
+               if($list->id == 374) //cx7930ls
                {
                   if($list->message_conf == null || $list->message_conf == '')
                   {
