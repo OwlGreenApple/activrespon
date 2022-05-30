@@ -34,6 +34,7 @@ use App\Jobs\SendNotif;
 use App\Rules\InternationalTel;
 use App\Rules\CheckCallCode;
 use App\Rules\CheckPlusCode;
+use Illuminate\Database\QueryException;
   
 class SettingController extends Controller
 {
@@ -45,7 +46,7 @@ class SettingController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('authsettings');
+        // $this->middleware('authsettings');
     }
   
     public function index($api = null)
@@ -243,6 +244,43 @@ class SettingController extends Controller
         'server_status'=>$server_status,
         'chat_quota'=>$user->is_chat
       ]);
+    }
+
+    // SAVE WABLAS AND WAFONTE API
+    public function save_token(Request $request)
+    {
+      $service = strip_tags($request->service);
+      $api_token = strip_tags($request->api_token);
+
+      if($service == 1 || $service == 2)
+      {
+        $correct = true;
+      }
+      else
+      {
+        $correct = false;
+      }
+
+      if($correct === false)
+      {
+        return response()->json(['status'=>'failed']);
+      }
+
+      $user = User::find(Auth::id());
+      $user->service = $service;
+      $user->api_token = $api_token;
+
+      try
+      {
+        $user->save();
+        $data['status'] = 'success';
+      }
+      catch(QueryException $e)
+      {
+        $data['status'] = 'failed';
+      }
+
+      return response()->json($data);
     }
 
     //GENERATE KEY FOR API KEY LIST (GIVEAWAY)

@@ -43,21 +43,22 @@
     <div class="modal-content content-premiumid">
       <div class="modal-header header-premiumid">
         <h5 class="modal-title" id="modaltitle">
-          Simpan API anda
+          Connect Whatsapp Anda
         </h5>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body text-center">
         <input type="hidden" name="id_phone_number" id="id_phone_number">
 
-        <!-- <label><h4><b style="color:#e3342f;">Perhatian</b> <br>Sebelum connect ke server kami,<br>
+        <label><h4><b style="color:#e3342f;">Perhatian</b> <br>Sebelum connect ke server kami,<br>
         Anda harus memiliki <b>"Profile Image"</b> pada setting Whatsapp
         </h4></label>
         <br><br>
+        <!--<span class="txt-mode"></span>-->
         <img src="{{url('assets/img/hint-setting.png')}}" class="img img-fluid">
         <br>
 
-        <span> -->
+        <span>
           <h4><b style="color:#e3342f;">PERINGATAN DARI WHATSAPP!</b></h4>
           <p><h5>
           Aktifitas spam, broadcast yang berlebihan ataupun memberikan pesan yang tidak diinginkan penerima dapat mengakibatkan akun di banned.
@@ -81,7 +82,9 @@
         </div>
         
         <div class="col-12 text-center mb-4">
-          <a class="text-danger" role="button" data-dismiss="modal">Batal</a> 
+          <a href="" class="" data-dismiss="modal">
+            Batal
+          </a>  
         </div>
       </div>
     </div>   
@@ -107,26 +110,87 @@
     <!-- TABS 1 -->
     <div class="tabs-container" id="tab1C">
       <div class="act-tel-settings">
-        <div id="notif"></div>
+        <div class="form-control message col-lg-9">
+          <!-- logic here -->
+        </div>
+
         <div class="row col-fix">
             <form class="wrapper add-contact col-lg-9 pad-fix" id="form-connect">
                 <div class="form-group row col-fix">
-                  <label style="min-width : 125px; max-width : 140px">Pilih Layanan</label>
-                  <select name="service" class="form-control">
-                    <option @if(Auth::user()->service == 1) selected @endif value="1">Wablas Token</option>
-                    <option @if(Auth::user()->service == 2) selected @endif value="2">Wafonte Token</option>
-                  </select>
-                </div>
-                <!--  -->
-                <div class="form-group row col-fix">
-                  <label style="min-width : 125px; max-width : 140px">Service Token</label>
-                  <input value="{{ Auth::user()->api_token }}" type="text" class="form-control" name="api_token" />
+                  <label class="col-lg-3 col-md-4 col-form-label">Phone Whatsapp :</label>
+                  <div class="col-lg-9 col-md-8">
+                    <div class="row">
+                   <!--  <div class="col-lg-3 row relativity">
+                      <input id="code_country" name="code_country" class="form-control custom-select-campaign" value="+62" />
+                      <span class="icon-carret-down-circle"></span>
+                      <span class="error code_country"></span>
+                    </div>
+                    -->
+                      <div class="col-sm-12">
+                        <div id="move_tab1">
+                          <input type="text" id="phone" name="phone_number" class="form-control" />
+                          <span class="error code_country"></span>
+                          <span class="error phone_number"></span>
+                        </div>
+
+                        <!-- OTP -->
+                        <div id="otp" class="row mt-3 col-lg-4" style="display:none">
+                          <input placeholder="OTP Code" class="form-control form-control-sm" name="otp"/>
+                        </div>
+                      </div>
+                      <!--<div>Please add avatar / image on your WA account.</div>-->
+                      <div class="col-lg-12 pad-fix"><ul id="display_countries"><!-- Display country here... --></ul></div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="text-left">
-                  <button id="button-start" type="button" class="btn btn-custom">Simpan API</button>
+                <div id="display_button_after_delete_phone" class="text-right">
+                  @if(!$is_registered)
+                    <button id="btn-check" type="button" class="btn btn-custom">Check Phone Number</button>
+                  @endif
+                 <!--  <button type="button" id="button-connect-old" class="btn btn-custom" <php if ($is_registered) { echo "disabled"; } ?> data-attr="<php if (session('mode')==0) { echo session("server_id"); }?>">Connect</button> -->
                 </div>
+
             </form>
+
+            <div class="col-lg-3 col-md-12 col-sm-12 plan account_status">
+              @if($user->status > 0)
+                <div>Current plan : <b>{{ $user->membership }}</b></div>
+                <div>Phone Status : <b>{!! $phone_status !!}</b></div>
+                <div>Server Status : <b>{!! $server_status !!}</b></div>
+                <div>Valid Until : <b>{{ $expired }}</b></div>
+                <div>MESSAGES Quota : <b>{{ $quota }}</b></div>
+                <div>CHATS Quota : <b>{{ $chat_quota }}</b></div>
+                <div><a href="{{ url('pricing') }}"><i>Buy More</i></a></div>
+              @endif
+            </div>
+        </div>
+
+        <div class="wrapper verification" id="div-verify">
+            <div class="form-group"><label class="col-sm-12 col-form-label">Scan this QR code from your <strong>Whatsapp Phone</strong></label></div>
+            <div class="form-group row col-fix">
+              <div class="col-lg-6"><div id="qr-code"></div></div>
+              <div class="col-lg-6"><div id="timer"></div></h3></div>
+            </div>
+
+            <!-- <div class="text-right">
+              <button type="button" id="button-verify" class="btn btn-custom">Submit</button>
+            </div> -->
+        </div>
+
+        <div class="wrapper add-contact table-responsive" id="phone-table">
+            <table class="table table-bordered mt-4">
+              <thead class="bg-dashboard">
+                <tr>
+                  <th class="text-center">No</th>
+                  <th class="text-center">Phone Whatsapp</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-center">Delete</th>
+                </tr>
+              </thead>
+
+              <tbody id="table-phone"></tbody>
+            </table>
         </div>
 
       </div>
@@ -610,7 +674,7 @@
     openEditModal();
     settingUser();
     triggerButtonMod();
-    // intialCountry();
+    intialCountry();
     checkOTP();
     submitOTP();
     agreement();
@@ -797,39 +861,57 @@
      });
   }
 	function buttonConnect(){
-			$('body').on('click','#button-start',function(){
+			$('body').on('click','#button-connect',function(){
 				$("#modal-start-connect").modal();
 			});
 	}
 	function buttonStartConnect(){
-    $('body').on('click','#button-start-connect',function()
-    {
-      var dataphone = $("#form-connect").serialize();
+    $('body').on('click','#button-start-connect',function(){
+      var phone_number = $("#phone").val();
+      var code_country = $(".iti__selected-flag").attr('data-code');
+      var dataphone = $("#form-connect").serializeArray();
+      dataphone.push({name:'code_country', value:code_country});
+
       $.ajax({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-        type: 'POST',
-        url: "{{ url('save_token_api') }}",
+        type: 'GET',
+        url: "{{ url('connect-phone') }}",
         data: dataphone,
-        dataType: 'json',
+        dataType: 'text',
         beforeSend: function()
         {
           $("#modal-start-connect").modal('hide');
           $('#loader').show();
           $('.div-loading').addClass('background-load');
         },
-        success: function(data) 
-        {
+        success: function(result) {
           $('#loader').hide();
           $('.div-loading').removeClass('background-load');
 
-          if(data.status == "success") 
-          {
-              $("#notif").html("<div class='alert alert-success'>Token anda berhasil disimpan.</div>");
+          var data = jQuery.parseJSON(result);
+
+          if(data.status == "success") {
+            $('.message').show();
+            $('.message').html(data.message);
+            $("#button-connect").prop('disabled',true);
+            $("#phone").prop('disabled',true);
+            $("#code_country").prop('disabled',true);
+            // new system loadPhoneNumber();
+            waitingTime();
+            $(".error").hide();
           }
-          else
-          {
-              $("#notif").html("<div class='alert alert-danger'>Maaf server kami terlalu sibuk, silahkan coba lagi.</div>");
+
+          if(data.status == "error") {
+              $(".error").show();
+              $(".phone_number").html(data.phone_number);
+              $('.code_country').html(data.code_country);
           }
+
+          if(data.message !== undefined){
+              $('.message').show();
+              $('.message').html(data.message);
+          }
+
         },
         error: function(xhr,attr,throwable)
         {

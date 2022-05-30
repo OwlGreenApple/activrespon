@@ -35,11 +35,11 @@ class AuthSettings
       }*/
 
       /*RESELLER PAGE / RESELLER USER*/
-      if($user->status == 2)
+      /* if($user->status == 2)
       {
 
         return self::reseller_page($current_url,$next,$request);
-      }
+      } */
 
       // PREVENT NON RESELLER USER OPEN RESELLER PAGE
     /*  $url = ['reseller-invoice','reseller-home','tutorial-api'];
