@@ -51,7 +51,7 @@
               - Italics : _<i>Your Text</i>_<br/>
               - Strikethrough : ~<i>Your Text</i>~
             </div>">
-              <b>See how to fill</b>
+              <b>Cara mengisi</b>
           </div>
 
           <div class="form-group mt-3">
@@ -69,7 +69,7 @@
           </div>
 
           <div class="text-right">
-            <button class="btn btn-custom">Create List</button>
+            <button class="btn btn-custom">Buat List</button>
           </div>
         </form>
       </div>

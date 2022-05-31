@@ -26,6 +26,7 @@ class Customer extends Model
     */
 
 
+  // NOT USING ANYMORE
   public static function create_link_unsubs($id,$list_id){
     $customer = Customer::find($id);
     $list = UserList::find($id);

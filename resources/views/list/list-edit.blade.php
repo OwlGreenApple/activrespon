@@ -294,7 +294,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
     <div class="tabs-container" id="tab2C">
       <div class="act-tel-tab">
         <div class="form-control wrapper bg-telegram">
-          Please click here to : "<a class="open_import"><b>import contacts</b></a>" (.xlsx) <!--or "<b>take from group</b>" if you want -->
+          Silahkan klik : "<a class="open_import"><b>import contacts</b></a>" (.xlsx) <!--or "<b>take from group</b>" if you want -->
         </div>
 
         <div class="wrapper">
@@ -305,7 +305,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
         <div id="move_contact">
         <form class="wrapper add-contact">
             <div class="form-group">
-              <label>Name:</label>
+              <label>Nama:</label>
               <input type="text" name="subscribername" class="form-control" placeholder="Input Your Name" >
               <span class="error name"></span>
             </div>
@@ -314,12 +314,6 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
               <div class="form-group">
                  <label>Phone Number</label>
                  <div class="col-sm-12 row">
-                   <!--  <div class="col-lg-3 row relativity">
-                      <input name="code_country" class="form-control custom-select-campaign" value="+62" autocomplete="off" />
-                      <span class="icon-carret-down-circle"></span>
-                      <span class="error code_country"></span>
-                    </div> -->
-
                     <div class="col-sm-12 row">
                       <input type="text" id="phone" name="phone_number" class="form-control" />
                       <span class="error code_country"></span>
@@ -338,6 +332,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
             <input type="hidden" name="listname" value="{{$listname}}">
             <input type="hidden" name="listid" value="{{ $listid }}">
+            <input type="hidden" name="manual" value="1">
 
             <div class="text-right">
               <button type="submit" class="btn btn-custom">Add Contact</button>

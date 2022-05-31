@@ -232,17 +232,6 @@ class ListController extends Controller
           ;               
       }
 
-      $phone = PhoneNumber::where('user_id',$user->id)->first();
-      if (is_null($phone)) 
-      {
-        return redirect('list-form')->with('error_number','Error! Please set your phone number first ')
-          ->with('listname',$request->listname)
-          ->with('autoreply',$request->autoreply)
-					->with('start_custom_message',$request->start_custom_message)
-					->with('unsubs_custom_message',$request->unsubs_custom_message)
-          ;
-      }
-      
       // pengecekan error nya klo ga ada [START] [UNSUBS] [REPLY_CHAT]
       if ($request->is_secure) {
         // if (strpos($request->autoreply, '[REPLY_CHAT]') == false) {
@@ -273,7 +262,7 @@ class ListController extends Controller
       $list->user_id = Auth::id();
       $list->name = $this->createRandomListName();
       $list->label = $label;
-      $list->phone_number_id = $phone->id;
+      $list->phone_number_id = 0;
       $list->is_secure = $request->is_secure;
       $list->start_custom_message = $request->start_custom_message;
       $list->unsubs_custom_message = $request->unsubs_custom_message;
@@ -284,7 +273,7 @@ class ListController extends Controller
       $check = UserList::where('id',$listid)->first();
 
       if(is_null($check)){
-        return redirect('list-form')->with('error_number','Error! list failed to created, please contact administrator');
+        return redirect('list-form')->with('error_number','Maaf, server kami terlalu sibuk silahkan coba lagi');
       }
 
       //AUTO REPLY

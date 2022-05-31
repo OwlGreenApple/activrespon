@@ -261,7 +261,7 @@ class CustomerController extends Controller
       return response()->json(array_unique($data));
     }
 
-    public function saveSubscriber(Request $request)
+    public function saveSubscriber(Request $request) 
     {
         $birthday = strip_tags($request->birthday);
         $gender = strip_tags($request->sex);
@@ -511,8 +511,6 @@ class CustomerController extends Controller
               $customer_id = $customer->id;
               $customer_join = $customer->created_at;
             }
-
-            $customer::create_link_unsubs($customer->id,$list->id);
 
             /*
             Kalo is_secure maka akan dikirim langsung message wa nya 
@@ -1134,7 +1132,6 @@ class CustomerController extends Controller
             $customer->telegram_number = $wa_number;
             $customer->additional = $addt;
             $customer->save();
-            $customer::create_link_unsubs($customer->id,$get_id_list->id);
             $customer_subscribe_date = $customer->created_at;
             $customerid = $customer->id;
         }

@@ -55,11 +55,16 @@ class AuthSettings
       {
         $valid_url = true;
       }
+
+      if(($user->api_token == null || empty($user->api_token)) && $valid_url === false && !$request->ajax())
+      {
+          return redirect('settings');
+      }
       
-      if(is_null($phone) && $valid_url === false && !$request->ajax())
+      /*+++ if(is_null($phone) && $valid_url === false && !$request->ajax())
       {
         return redirect('settings');
-      }
+      } +++*/
 
       return $next($request);
     }
