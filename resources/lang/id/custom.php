@@ -38,6 +38,7 @@ return [
     'number'=>'No ini sudah terdaftar', //CheckWANumbers
     'old_password'=>'Password lama tidak sesuai', //OldPassword
     'phone'=>'No telepon harus di awali tanda (+) dan dengan menggunakan angka saja.', //CheckPlusCode
+    'phone_package'=>'<b>Penting</b> : Pastikan paket <a target="_blank" href="'.url("settings").'">layanan</a> anda mendukung pengiriman gambar, sebab apabila tidak pesan tidak akan terkirim.',
     'phone_customer'=>'No telepon sudah terdaftar', //SubscriberPhone
     'phone_number'=>'No telepon sudah terdaftar.', //CheckUserPhone
     'phone_import'=>'No telepon tidak boleh menggunakkan awalan 0.', //ImportValidation

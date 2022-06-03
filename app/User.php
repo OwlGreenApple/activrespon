@@ -27,6 +27,11 @@ class User extends Authenticatable
     * 1 -> activ user
     * 2 -> reseller user
     * 
+    * service :
+    * 0 -> not connected
+    * 1 -> wablas
+    * 2 -> wafonnte
+    * 
 		*/
     use Notifiable;
 

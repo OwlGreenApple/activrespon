@@ -10,7 +10,7 @@ class ReminderCustomers extends Model
 		status : 
 		0 = pending
 		1 = sent / success
-		2 = phone offline
+		2 = package not supported
 		3 = error / no-number
     	4 = cancel
 		5 = queued -> supaya ga dieksekusi dobel2

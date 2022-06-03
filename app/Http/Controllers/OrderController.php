@@ -12,7 +12,7 @@ use App\Order;
 use App\UserLog;
 use App\Notification;
 
-use App\Helpers\Helper;
+use App\Helpers\NewCustomHelpers;
 use Carbon\Carbon;
 use Auth,Mail,Validator,Storage,DateTime,Crypt,Session,stdClass;
 
@@ -83,6 +83,33 @@ class OrderController extends Controller
   public function pricing(Request $request)
   {
     return view('order.pricing');
+  }
+
+  public function pricing_list(Request $request)
+  {
+        $pc= new NewCustomHelpers;
+       if($request->default == 12)
+       {
+          $arr = [0,1,2,4,5,7,8]; /* yearly */
+          $save = 40;
+       }
+       else
+       {
+          $arr = [0,1,3,4,6,7,9]; /* 3 month */
+          $save = 15;
+       }
+
+       if(count( $pc->get_price() ) > 0)
+       {
+          foreach($pc->get_price() as $index=>$row):
+            if(in_array($index,$arr))
+            {
+              continue;
+            }
+            $data[] = $index;
+          endforeach;
+       }
+       return view('order.pricing-list',['data'=>$data,'pc'=>$pc,'account'=>$request->account,'save'=>$save]);
   }
 
   public function checkout($id,$coupon_reseller = null){

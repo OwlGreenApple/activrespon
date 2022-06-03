@@ -277,7 +277,7 @@
               keyboard: false,
               backdrop: 'static'
             });
-            $("#auth_message").html('Please connect your phone :');
+            $("#auth_message").html('Mohon masukkan token api anda :');
             $(".btn-primary").html('Settings')
             $(".btn-primary").attr('href','{{ url("settings") }}')
           }

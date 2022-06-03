@@ -163,8 +163,9 @@
 						<label class="custom-file-label" for="inputGroupFile01">
 						</label>
 					</div>
-          <small>Maximum image size is : <b>4Mb</b></small>
-          <div><small>Image Caption Limit is 1000 characters</small></div>
+          <div><small>{!! Lang::get('custom.phone_package') !!}</small></div>
+          <small>Ukuran Maksimal : <b>4Mb</b></small>
+          <div><small>Batas Caption gambar 1000 karakter</small></div>
           <span class="error image"></span>
 				</div>
       </div>

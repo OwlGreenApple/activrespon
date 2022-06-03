@@ -291,7 +291,7 @@ class HomeController extends Controller
       {
         $data['status'] = 'exp';
       } 
-      elseif($phone->count() < 1) 
+      elseif($user->api_token == null || empty($user->api_token)) 
       {
         $data['status'] = 'phone';
       }

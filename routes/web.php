@@ -63,6 +63,7 @@ Route::post('is_pay','ApiController@customerPay');
 Route::post('private-list','ApiController@register_list');
 
 Route::get('pricing','OrderController@pricing')->name('pricing');
+Route::get('price-list','OrderController@pricing_list');
 Route::get('summary','OrderController@summary');
 Route::get('checkout/{id}/{coupon_reseller?}','OrderController@checkout');
 Route::get('thankyou','OrderController@thankyou');
@@ -309,7 +310,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::post('save-campaign', 'CampaignController@SaveCampaign');
   Route::get('campaign-del','CampaignController@delCampaign'); 
   Route::get('list-campaign/{id}/{isevent}/{active}','CampaignController@listCampaign'); 
-  Route::get('list-broadcast-campaign','CampaignController@listBroadcastCampaign'); 
+  Route::get('list-broadcast-campaign','CampaignController@listBroadcastCampaign');
   Route::get('list-event-campaign','CampaignController@listEventCampaign'); 
   Route::get('list-delete-campaign','CampaignController@listDeleteCampaign'); 
   Route::get('list-datatable-campaign','CampaignController@listAutoSchedule'); 

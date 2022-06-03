@@ -4,12 +4,10 @@ use App\PhoneNumber;
 
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-use App\Helpers\ApiHelper;
 use Illuminate\Support\Facades\Auth;
 
 class ApiHelper
 {
-
   static function bar(){
     return 'fb6d0ba27c5170239c7bc08f043e985eee2c913b997ada89';
   }
@@ -148,7 +146,7 @@ class ApiHelper
     );
 
     $res=curl_exec($ch);
-    ApiHelper::qr_status_log($no_wa,$res);
+    self::qr_status_log($no_wa,$res);
 
     // return curl_exec($ch);
     return $res;

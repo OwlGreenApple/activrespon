@@ -176,15 +176,15 @@ use Illuminate\Support\Facades\Storage;
       } 
       elseif($status == 1)
       {
-        return '<span class="text-primary">Success</span>';
+        return '<span class="text-primary">Sukses</span>';
       }
       elseif($status == 2)
       {
-        return '<span class="act-tel-apt-create">Phone Offline</span>';
+        return '<span class="act-tel-apt-create">Paket anda tidak mendukung</span>';
       }
       elseif($status == 3)
       {
-        return '<span class="act-tel-apt-create">Phone Not Available</span>';
+        return '<span class="act-tel-apt-create">Error</span>';
       }
       elseif($status == 4)
       {
@@ -198,42 +198,17 @@ use Illuminate\Support\Facades\Storage;
 
     function getPackage($id_package = null,$check = null)
     {
+      $duration_tri = 3;
+      $duration_year = 12;
+
       $package = array(
-        1 => ['package'=>'basic1','price'=>195000],
-        2 => ['package'=>'bestseller1','price'=>370500],
-        3 => ['package'=>'supervalue1','price'=>526500],
+        1 => ['package'=>'basic_tri','price'=>95000,'duration'=>$duration_tri],
+        2 => ['package'=>'premium_tri','price'=>195000,'duration'=>$duration_tri],
+        3 => ['package'=>'unlimited_tri','price'=>295000,'duration'=>$duration_tri],
         '-----------',
-        4 => ['package'=>'basic2','price'=>295000],
-        5 => ['package'=>'bestseller2','price'=>560500],
-        6 => ['package'=>'supervalue2','price'=>796500],
-        '-----------',
-        7 => ['package'=>'basic3','price'=>395000],
-        8 => ['package'=>'bestseller3','price'=>750500],
-        9 => ['package'=>'supervalue3','price'=>1066500],
-        '-----------',
-        10 => ['package'=>'basic4','price'=>495000],
-        11 => ['package'=>'bestseller4','price'=>940500],
-        12 => ['package'=>'supervalue4','price'=>1336500],
-        '-----------',
-        13 => ['package'=>'basic5','price'=>595000],
-        14 => ['package'=>'bestseller5','price'=>1130500],
-        15 => ['package'=>'supervalue5','price'=>1606500],
-        '-----------',
-        16 => ['package'=>'basic6','price'=>695000],
-        17 => ['package'=>'bestseller6','price'=>1320500],
-        18 => ['package'=>'supervalue6','price'=>1876500],
-        '-----------',
-        19 => ['package'=>'basic7','price'=>795000],
-        20 => ['package'=>'bestseller7','price'=>1510500],
-        21 => ['package'=>'supervalue7','price'=>2146500],
-        '-----------',
-        22 => ['package'=>'basic8','price'=>895000],
-        23 => ['package'=>'bestseller8','price'=>1700500],
-        24 => ['package'=>'supervalue8','price'=>2416500],
-        '-----------',
-        25 => ['package'=>'basic9','price'=>995000],
-        26 => ['package'=>'bestseller9','price'=>1890500],
-        27 => ['package'=>'supervalue9','price'=>2686500],
+        4 => ['package'=>'basic_yearly','price'=>295000,'duration'=>$duration_year],
+        5 => ['package'=>'premium_yearly','price'=>395000,'duration'=>$duration_year],
+        6 => ['package'=>'unlimited_yearly','price'=>495000,'duration'=>$duration_year],
       );
 
       if($id_package == '0')
@@ -266,7 +241,7 @@ use Illuminate\Support\Facades\Storage;
     }
   }
 
-  //TO DETERMINE UPGRADE OR DOWNGRADE EITHER
+  //TO DETERMINE EITHER UPGRADE OR DOWNGRADE
   function checkMembershipDowngrade(array $data)
   {
       // if downgrade return true

@@ -527,16 +527,8 @@ class SendCampaign implements ShouldQueue
 
                 if($reminder_status == 0)
                 {
-                  $sending = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
-                  if($sending['status'] == true)
-                  {
-                      $status = 1;
-                  }
-                  else
-                  {
-                      $status = 3;
-                  }
-
+                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  dd($status);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -588,7 +580,7 @@ class SendCampaign implements ShouldQueue
         'msg'=>$customer_message,
       ];
 
-      if(!empty($image))
+      if(!empty($image) || $image !== null)
       {
         $data['img'] = $image;
         $data['type'] = "image";
@@ -606,7 +598,22 @@ class SendCampaign implements ShouldQueue
       {
         $sending = $send::send_wa_fonte_message($data);
       }
-      return $sending;
+
+      if($sending['status'] == false)
+      {
+        if($sending['message'] == "Please Upgrade Your Account")
+        {
+          return 2; //usually if user using package that not supported image
+        }
+        else
+        {
+          return 3;
+        }
+      }
+      else
+      {
+        return 1;
+      }
     }
 
     public function delay_sending($no)
