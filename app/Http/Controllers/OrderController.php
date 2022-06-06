@@ -20,53 +20,12 @@ class OrderController extends Controller
 {   
   public function cekharga($namapaket, $price){
     //cek paket dengan harga
-    $paket = array(
-      'basic1' => 195000,
-      'bestseller1' => 370500,
-      'supervalue1' => 526500,
-			
-      'basic2' => 295000,
-      'bestseller2' => 560500,
-      'supervalue2' => 796500,
-			
-      'basic3' => 395000,
-      'bestseller3' => 750500,
-      'supervalue3' => 1066500,
-			
-      'basic4' => 495000,
-      'bestseller4' => 940500,
-      'supervalue4' => 1336500,
-			
-      'basic5' => 595000,
-      'bestseller5' => 1130500,
-      'supervalue5' => 1606500,
-			
-      'basic6' => 695000,
-      'bestseller6' => 1320500,
-      'supervalue6' => 1876500,
-			
-      'basic7' => 795000,
-      'bestseller7' => 1510500,
-      'supervalue7' => 2146500,
-			
-      'basic8' => 895000,
-      'bestseller8' => 1700500,
-      'supervalue8' => 2416500,
-			
-      'basic9' => 995000,
-      'bestseller9' => 1890500,
-      'supervalue9' => 2686500,
-			
-    );
-
-    if(isset($paket[$namapaket])){
-      if($price!=$paket[$namapaket]){
-        return false; 
-      } else {
-        return true;
-      }
+    $paket = getPackagePrice($namapaket);
+   
+    if((int)$price !== $paket){
+      return false; 
     } else {
-      return false;
+      return true;
     }
   }
 
@@ -87,29 +46,18 @@ class OrderController extends Controller
 
   public function pricing_list(Request $request)
   {
-        $pc= new NewCustomHelpers;
-       if($request->default == 12)
+       if($request->default == null)
        {
-          $arr = [0,1,2,4,5,7,8]; /* yearly */
-          $save = 40;
+          $arr = [1,2,3]; /* 3 month */
+          $save = 15;
        }
        else
        {
-          $arr = [0,1,3,4,6,7,9]; /* 3 month */
-          $save = 15;
+          $arr = [4,5,6]; /* yearly */
+          $save = 40;
        }
-
-       if(count( $pc->get_price() ) > 0)
-       {
-          foreach($pc->get_price() as $index=>$row):
-            if(in_array($index,$arr))
-            {
-              continue;
-            }
-            $data[] = $index;
-          endforeach;
-       }
-       return view('order.pricing-list',['data'=>$data,'pc'=>$pc,'account'=>$request->account,'save'=>$save]);
+       
+       return view('order.pricing-list',['data'=>$arr,'save'=>$save,'default'=>$request->default]);
   }
 
   public function checkout($id,$coupon_reseller = null){
@@ -151,8 +99,6 @@ class OrderController extends Controller
       }*/
 		}
 
-
-
     // coupon reseller
     $is_coupon = false;
     $coupon = Coupon::where([['kodekupon',$coupon_reseller],['used','=',0]])->first();
@@ -167,7 +113,8 @@ class OrderController extends Controller
               'priceupgrade'=>$priceupgrade,
               'dayleft'=>$dayleft,
               'is_coupon'=>$is_coupon,
-              'coupon_reseller'=>$coupon_reseller
+              'coupon_reseller'=>$coupon_reseller,
+              'prices'=>getPackage()
             ));
   }
 

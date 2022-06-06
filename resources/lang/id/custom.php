@@ -16,6 +16,7 @@ return [
     'city'=>'Kota tidak terdaftar', //CheckCity
     'country'=>'Negara tidak terdaftar', //CheckCountry
     'country_name'=>'Nama negara sudah terdaftar', //CheckCountryName
+    'currency'=>'Rp.',
     'date'=>'Mohon menggunakan tanggal yang valid.', //CheckValidDate
     'date_event'=>'Tanggal dan waktu tidak bisa kurang dari saat ini.', //CheckDateEvent
     'db'=>'Maaf server kami terlalu sibuk, harap coba lagi nanti.',

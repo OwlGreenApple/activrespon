@@ -99,7 +99,7 @@ class SendCampaign implements ShouldQueue
                 $date = Carbon::parse($row->day_send);
 
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname);
+                $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -140,13 +140,13 @@ class SendCampaign implements ShouldQueue
                   continue;
                 }
 
-                $membership = NewCustomHelpers::getMembership($user->membership);
-                if($membership <= 3)
-                {
-                  $broadcastCustomer->status = 4;
-                  $broadcastCustomer->save();
-                  continue;
-                }
+                // $membership = NewCustomHelpers::getMembership($user->membership);
+                // if($membership <= 3)
+                // {
+                //   $broadcastCustomer->status = 4;
+                //   $broadcastCustomer->save();
+                //   continue;
+                // }
 
                 // MAKES BROADCAST STATUS TO 2 WHICH MEAN BROADCAST HAS RUN ALREADY.
                 $broad_cast_id = $broadcastCustomer->broadcast_id;
@@ -165,19 +165,10 @@ class SendCampaign implements ShouldQueue
                   $broad_cast->save();
                 }
 
-                /* SENDING LOGIC */
+                /* SENDING BROADCAST */
                 if($broadcastCustomer->status == 0)
                 {
-                  $sending = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
-                  if($sending['status'] == true)
-                  {
-                      $status = 1;
-                  }
-                  else
-                  {
-                      $status = 3;
-                  }
-
+                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $broadcastCustomer->status = $status;
                   $broadcastCustomer->save();
                 }
@@ -257,7 +248,7 @@ class SendCampaign implements ShouldQueue
                 $reminder_status = $remindercustomer_update->status;
 								
                 $fistname = $this->modFullname($customer_name);  
-                $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname);
+                $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -274,19 +265,10 @@ class SendCampaign implements ShouldQueue
                 $id_campaign = 'reminder_customers_id = '.$row->rcs_id;
                 // $status = 'Sent';
 
-                //  SENDING MESSAGE
+                // SENDING AUTORESPONDER
                 if($reminder_status == 0)
                 {
-                  $sending = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
-                  if($sending['status'] == true)
-                  {
-                      $status = 1;
-                  }
-                  else
-                  {
-                      $status = 3;
-                  }
-
+                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -390,7 +372,7 @@ class SendCampaign implements ShouldQueue
                 }
                 
                 $fistname = $this->modFullname($row->name);  
-                $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname);
+                $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -404,18 +386,11 @@ class SendCampaign implements ShouldQueue
                 $message = $spintax->process($message);  //spin text
                 
                 $reminder_status = $remindercustomer_update->status;
+
+                // SENDING EVENT
                 if($reminder_status == 0)
                 {
-                  $sending = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
-                  if($sending['status'] == true)
-                  {
-                      $status = 1;
-                  }
-                  else
-                  {
-                      $status = 3;
-                  }
-
+                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -508,7 +483,7 @@ class SendCampaign implements ShouldQueue
                 $id_campaign = $row->rcs_id;
 
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessageAppointment($customer_message,$row->name,$row->email,$customer_phone,$date_appt,$time_appt,$fistname);
+                $message = $this->replaceMessageAppointment($customer_message,$row->name,$row->email,$customer_phone,$date_appt,$time_appt,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -525,10 +500,10 @@ class SendCampaign implements ShouldQueue
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
                 $reminder_status = $remindercustomer_update->status;
 
+                // SENDING APPOINTMENT
                 if($reminder_status == 0)
                 {
                   $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
-                  dd($status);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -640,7 +615,7 @@ class SendCampaign implements ShouldQueue
       return $name_length[0];
     }
 
-    public function replaceMessage($customer_message,$name,$email,$phone,$firstname)
+    public function replaceMessage($customer_message,$name,$email,$phone,$firstname,$user)
     {
       $customer_message = $this->get_title($customer_message);
       $replace_target = array(
@@ -651,10 +626,17 @@ class SendCampaign implements ShouldQueue
         $name,$firstname,$email,$phone
       );
       $message = str_replace($replace_target,$replace,$customer_message);
+      $package = $user->membership;
+      $category = getPackagePrice($package,1);
+
+      if($category == 'basic')
+      {
+        $message .= "\n".'Powered by activrespon.com';
+      }
       return $message;
     }
 
-    public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname)
+    public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname,$user)
     {
         $customer_message = $this->get_title($customer_message);
         $replace_target = array(
@@ -666,6 +648,13 @@ class SendCampaign implements ShouldQueue
         );
 
         $message = str_replace($replace_target,$replace,$customer_message);
+        $package = $user->membership;
+        $category = getPackagePrice($package,1);
+  
+        if($category == 'basic')
+        {
+          $message .= "\n".'Powered by activrespon.com';
+        }
         return $message;
     }
 

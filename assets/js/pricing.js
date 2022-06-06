@@ -19,7 +19,8 @@ function display_pricelist(target)
         },
         error : function(xhr)
         {
-            console.log(xhr.responseText);
+            $(".price_list_data").html('<div class="alert alert-danger">Maaf server kami terlalu sibuk.</div>');
+            // console.log(xhr.responseText);
         }
     });
 }

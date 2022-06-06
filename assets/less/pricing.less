@@ -7,6 +7,92 @@ html {
   background-image: none;
 }
 
+.pricing_list {
+  padding: 8px 42px;
+  border: 2px solid #6cb2eb;
+  color: #6cb2eb !important;
+  background-color: #fff;
+  font-size: 20px;
+}
+
+.pricing-discount {
+  background-color: #ffcd03;
+  position: absolute;
+  top : -15px;
+  left : 0;
+  right : 0;
+  bottom : 0;
+  width : 55px;
+  height : 25px;
+  margin-left : auto;
+  margin-right : auto;
+  border-radius: 10px !important;
+  color : white;
+}
+
+.pricing_list.monthly {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-right : 0;
+  margin-left: auto;
+}
+
+.pricing_list.active {
+  background-color: #6cb2eb!important;
+  color: #fff !important;
+}
+
+.pricing_list.yearly {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-right: auto;
+}
+
+.pricing-title {
+  margin-left : auto;
+  margin-right : auto;
+  color : white;
+  padding : 6px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  width : 90px;
+  text-align: center;
+  font-weight : bold;
+}
+
+.pricing ul > li {
+  font-size : 16px;
+  text-transform: capitalize;
+}
+
+@media(min-width : 280px) and (max-width : 359px) {
+  .pricing_list {
+    padding: 6px 15px;
+    font-size: 16px;
+  }
+
+  .pricing-discount {
+    width: 45px;
+    height: 20px;
+    top : -12px;
+  }
+}
+
+@media(min-width : 360px) and (max-width : 991px) {
+  .pricing_list {
+    padding: 8px 24px;
+    font-size: 21px;
+  }
+
+  .pricing-discount {
+    width: 50px;
+    height: 22px;
+    top: -14px;
+  }
+}
+
+// old
+
 .main-pricing{
   background-color : #e7e9f5;
   border-radius: 25px;

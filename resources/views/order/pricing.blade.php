@@ -1,8 +1,9 @@
 @extends('layouts.app')
+<link href="{{ asset('/assets/css/pricing.css') }}" rel="stylesheet" />
 
 @section('content')
 <div class="container mb-5 mt-2">
-    <div class="pricing mb-3 price_list_data"><!--  --></div>
+    <div class="pricing mb-3 price_list_data"><!--  --></div> 
 </div>
 
 <!-- price list -->

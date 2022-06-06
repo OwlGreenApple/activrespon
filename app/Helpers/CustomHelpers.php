@@ -196,19 +196,21 @@ use Illuminate\Support\Facades\Storage;
       }
     }
 
-    function getPackage($id_package = null,$check = null)
+    function getPackage($id_package = null,$check = null) 
     {
       $duration_tri = 3;
       $duration_year = 12;
+      $percent_month = 25;
+      $percent_year = 65;
 
       $package = array(
-        1 => ['package'=>'basic_tri','price'=>95000,'duration'=>$duration_tri],
-        2 => ['package'=>'premium_tri','price'=>195000,'duration'=>$duration_tri],
-        3 => ['package'=>'unlimited_tri','price'=>295000,'duration'=>$duration_tri],
+        1 => ['package'=>'basic_tri','label'=>'basic','price'=>95000,'duration'=>$duration_tri,'percent'=>$percent_month],
+        2 => ['package'=>'premium_tri','label'=>'premium','price'=>195000,'duration'=>$duration_tri,'percent'=>$percent_month],
+        3 => ['package'=>'unlimited_tri','label'=>'unlimited','price'=>295000,'duration'=>$duration_tri,'percent'=>$percent_month],
         '-----------',
-        4 => ['package'=>'basic_yearly','price'=>295000,'duration'=>$duration_year],
-        5 => ['package'=>'premium_yearly','price'=>395000,'duration'=>$duration_year],
-        6 => ['package'=>'unlimited_yearly','price'=>495000,'duration'=>$duration_year],
+        4 => ['package'=>'basic_yearly','label'=>'basic','price'=>295000,'duration'=>$duration_year,'percent'=>$percent_year],
+        5 => ['package'=>'premium_yearly','label'=>'premium','price'=>395000,'duration'=>$duration_year,'percent'=>$percent_year],
+        6 => ['package'=>'unlimited_yearly','label'=>'unlimited','price'=>495000,'duration'=>$duration_year,'percent'=>$percent_year],
       );
 
       if($id_package == '0')
@@ -227,18 +229,36 @@ use Illuminate\Support\Facades\Storage;
       {
           return $package;
       }
-      
     }
 
-  function getPackagePrice($package)
+  function getPackagePrice($package,$label = null)
   {
     foreach(getPackage(null) as $row=>$col)
     {
         if($col['package'] == $package)
         {
-            return $col['price'];
+            if($label == null)
+            { 
+              return $col['price'];
+            }
+            else
+            {
+              return $col['label'];
+            }
         }
     }
+  }
+
+  // FORMAT PRICING
+  function pricingFormat($price)
+  {
+     return str_replace(",",".",number_format($price));
+  }
+
+  function discount($price,$percent)
+  {
+    $discount = $price - ($price * $percent)/100;
+    return $discount;
   }
 
   //TO DETERMINE EITHER UPGRADE OR DOWNGRADE
