@@ -549,20 +549,29 @@ class SendCampaign implements ShouldQueue
     public static function sendingwa($user,$customer_phone,$customer_message,$image)
     {
       $send = new Message;
+      $package = $user->membership;
+      $category = getPackagePrice($package,1);
+
+      if($category == 'basic')
+      {
+        $customer_message .= "\n\n".'Powered by activrespon.com';
+      }
+
+      // dd($customer_message);
       $data = [
         'token'=>$user->api_token,
         'to'=>$customer_phone,
         'msg'=>$customer_message,
       ];
 
-      if(!empty($image) || $image !== null)
+      if(empty($image) || $image == null)
       {
-        $data['img'] = $image;
-        $data['type'] = "image";
+        $data['type'] = "text";
       }
       else
       {
-        $data['type'] = "text";
+        $data['img'] = $image;
+        $data['type'] = "image";
       }
 
       if($user->service == 1)
@@ -626,13 +635,6 @@ class SendCampaign implements ShouldQueue
         $name,$firstname,$email,$phone
       );
       $message = str_replace($replace_target,$replace,$customer_message);
-      $package = $user->membership;
-      $category = getPackagePrice($package,1);
-
-      if($category == 'basic')
-      {
-        $message .= "\n".'Powered by activrespon.com';
-      }
       return $message;
     }
 
@@ -648,13 +650,6 @@ class SendCampaign implements ShouldQueue
         );
 
         $message = str_replace($replace_target,$replace,$customer_message);
-        $package = $user->membership;
-        $category = getPackagePrice($package,1);
-  
-        if($category == 'basic')
-        {
-          $message .= "\n".'Powered by activrespon.com';
-        }
         return $message;
     }
 

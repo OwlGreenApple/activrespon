@@ -1459,7 +1459,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
                   if(result.message !== undefined)
                   {
-                      $(".error_notif").html("<div class='alert alert-danger'>"+result.message+"</div>");
+                      $(".error_notif").html("<div class='alert alert-warning'>"+result.message+"</div>");
                   }
               }
               else if(result.success == 1)
@@ -1478,6 +1478,12 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                       keyboard: false
                   });
                   // console.log(data);
+              }
+              else if(result.status == "err_contacts")
+              {
+                  $("#btn_close_import").trigger("click");
+                  $(".main").html("<div class='alert alert-warning'>"+result.message+"</div>");
+                  $("body .alert-warning").delay(5000).fadeOut(2000);
               }
               else
               { 
@@ -1663,8 +1669,9 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
               {
                   $(".error").show();
                   $(".name").html(result.name);
-                  $(".error_message").html(result.main);
-                  $(".error_message").html(result.list);
+                  $(".error_message").html('<div class="alert alert-danger">'+result.main+'</div>');
+                  $(".error_message").html('<div class="alert alert-danger">'+result.list+'</div>');
+                  $(".error_message").html('<div class="alert alert-warning">'+result.message+'</div>');
                   $(".email").html(result.email);
                   $(".phone_number").html(result.phone);
                   $(".code_country").html(result.code_country);

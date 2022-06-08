@@ -2,6 +2,8 @@
 use App\UserList;
 use App\Customer;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Lang;
+use Carbon\Carbon;
 
   // GET MEMBERSHIP NUMBER
 	function getMembership($membership)
@@ -202,15 +204,17 @@ use Illuminate\Support\Facades\Storage;
       $duration_year = 12;
       $percent_month = 25;
       $percent_year = 65;
+      $basic_contacts = 1000;
+      $premium_contacts = 10000;
 
       $package = array(
-        1 => ['package'=>'basic_tri','label'=>'basic','price'=>95000,'duration'=>$duration_tri,'percent'=>$percent_month],
-        2 => ['package'=>'premium_tri','label'=>'premium','price'=>195000,'duration'=>$duration_tri,'percent'=>$percent_month],
-        3 => ['package'=>'unlimited_tri','label'=>'unlimited','price'=>295000,'duration'=>$duration_tri,'percent'=>$percent_month],
+        1 => ['package'=>'basic_tri','label'=>'basic','price'=>95000,'duration'=>$duration_tri,'percent'=>$percent_month,'contact'=>$basic_contacts],
+        2 => ['package'=>'premium_tri','label'=>'premium','price'=>195000,'duration'=>$duration_tri,'percent'=>$percent_month,'contact'=>$premium_contacts],
+        3 => ['package'=>'unlimited_tri','label'=>'unlimited','price'=>295000,'duration'=>$duration_tri,'percent'=>$percent_month,'contact'=>null],
         '-----------',
-        4 => ['package'=>'basic_yearly','label'=>'basic','price'=>295000,'duration'=>$duration_year,'percent'=>$percent_year],
-        5 => ['package'=>'premium_yearly','label'=>'premium','price'=>395000,'duration'=>$duration_year,'percent'=>$percent_year],
-        6 => ['package'=>'unlimited_yearly','label'=>'unlimited','price'=>495000,'duration'=>$duration_year,'percent'=>$percent_year],
+        4 => ['package'=>'basic_yearly','label'=>'basic','price'=>295000,'duration'=>$duration_year,'percent'=>$percent_year,'contact'=>$basic_contacts],
+        5 => ['package'=>'premium_yearly','label'=>'premium','price'=>395000,'duration'=>$duration_year,'percent'=>$percent_year,'contact'=>$premium_contacts],
+        6 => ['package'=>'unlimited_yearly','label'=>'unlimited','price'=>495000,'duration'=>$duration_year,'percent'=>$percent_year,'contact'=>null],
       );
 
       if($id_package == '0')
@@ -241,6 +245,14 @@ use Illuminate\Support\Facades\Storage;
             { 
               return $col['price'];
             }
+            elseif($label == "duration")
+            {
+              return $col['duration'];
+            }
+            elseif($label == "customer")
+            {
+              return $col['contact'];
+            }
             else
             {
               return $col['label'];
@@ -257,7 +269,7 @@ use Illuminate\Support\Facades\Storage;
 
   function discount($price,$percent)
   {
-    $discount = $price - ($price * $percent)/100;
+    $discount = $price + ($price * $percent)/100;
     return $discount;
   }
 
@@ -314,26 +326,12 @@ use Illuminate\Support\Facades\Storage;
       }
   }
 
+  // GET DAY LEFT WHEN ADMIN CONFIRM ORDER
   function getAdditionalDay($package)
   {
-      $get_package = substr($package,0,-1);
-      $additional_day = 0;
-
-      if($get_package == 'basic')
-      {
-        $additional_day += 30;
-      }
-      
-      if($get_package == 'bestseller')
-      {
-        $additional_day += 60;
-      }
-      
-      if($get_package == 'supervalue')
-      {
-        $additional_day += 90;
-      }
-
+      $duration = getPackagePrice($package,"duration");
+      $get_range = Carbon::now()->addMonth($duration);
+      $additional_day = Carbon::now()->diffInDays($get_range);
       return $additional_day;
   }
 

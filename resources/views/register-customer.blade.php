@@ -504,6 +504,7 @@
                     $(".error_list").text(result.list);
                     $(".error_list").text(result.list);
                     $(".main").html(result.main);
+                    $(".main").html('<div class="alert alert-warning">'+result.message+'</div>');
 
                     $(".birthday").html(result.birthday);
                     $(".sex").html(result.sex);

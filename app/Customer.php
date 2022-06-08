@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Customer;
 use App\UserList;
+use App\User;
+
 class Customer extends Model
 {
 
@@ -25,6 +27,33 @@ class Customer extends Model
             then customer status would be updated.
     */
 
+  // VALIDATION MAX CONTACTS
+  public static function max_contacts($user_id)
+  {
+    $user = User::find($user_id);
+    $user_membership = $user->membership;
+    $package = getPackagePrice($user_membership,1);
+    $max_customer = getPackagePrice($user_membership,"customer");
+    $total_customer = self::where('user_id',$user_id)->count();
+
+    $data['success'] = false;
+    $data['status'] = 'err_contacts';
+
+    if($package == 'basic' && $total_customer >= $max_customer)
+    {
+      $data['message'] = 'Jumlah kontak sudah mencapai 1.000';
+      return $data;
+    }
+
+    if($package == 'premium' && $total_customer >= $max_customer)
+    {
+      $data['message'] = 'Jumlah kontak sudah mencapai 10.000';
+      return $data;
+    }
+
+    $data['success'] = true;
+    return $data;
+  }
 
   // NOT USING ANYMORE
   public static function create_link_unsubs($id,$list_id){
@@ -69,4 +98,6 @@ class Customer extends Model
     
     return false;
   }
+
+/* end class */
 }

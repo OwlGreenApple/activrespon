@@ -1179,14 +1179,22 @@ class ListController extends Controller
         $check = UserList::where([['id',$id_list],['user_id',$userid]])->first();
         if(is_null($check))
         {
+            $msg['success'] = 0;
             $msg['message'] = 'Invalid List!';
             return response()->json($msg);
         }
 
-        $phone = PhoneNumber::where('user_id',$userid)->first();
-        if (is_null($phone)) {
-           return response()->json(['message'=>'Error! Please set your phone number first']);
+        // FILTER VALIDATION MAX CONTACTS
+        $max_contact = Customer::max_contacts($userid);
+        if($max_contact['success'] == false)
+        {
+          return response()->json($max_contact);
         }
+
+        // $phone = PhoneNumber::where('user_id',$userid)->first();
+        // if (is_null($phone)) {
+        //    return response()->json(['message'=>'Error! Please set your phone number first']);
+        // }
 
         $file = $request->file('csv_file');
         $customer = new SubscriberImport;

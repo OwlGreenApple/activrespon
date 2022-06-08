@@ -326,9 +326,18 @@ class CustomerController extends Controller
         }
 
         $req = $request->all();
+        // dd($req);
         $list = UserList::where('name','=',$listname)->first();
         $today = Carbon::now();
         $valid_customer = false;
+
+        // filter total contact in case not unlimited package
+        $max_contact = Customer::max_contacts($list->user_id);
+
+        if($max_contact['success'] == false)
+        {
+          return response()->json($max_contact);
+        }
 
         if(isset($req['data']))
         {

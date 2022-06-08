@@ -22,7 +22,7 @@
             <div data-ribbon="15%" class="card card-pricing shadow px-3 mb-4">
                 <span class="pricing-title text-capitalize bg-info">{{ getPackage($index,1)['label'] }}</span>
                 <div class="bg-transparent card-header pt-4 border-0">
-                    <h5 class="price text-center"><span class="text-info"><strike>{{ pricingFormat(discount(getPackage($index,1)['price'],getPackage($index,1)['percent'])) }}</strike></span></h5>
+                    <h5 class="price text-center"><span class="text-info"><strike>{{ Lang::get('custom.currency') }}{{ pricingFormat(discount(getPackage($index,1)['price'],getPackage($index,1)['percent'])) }}</strike></span></h5>
                     <h3 class="text-center font-weight-normal text-custom text-center mb-0" data-pricing-value="30">{{ Lang::get('custom.currency') }}&nbsp;<span class="price">{{ str_replace(",",".",number_format(round(getPackage($index,1)['price'] / getPackage($index,1)['duration']))) }}</span>
                     <div class="mt-2 text-muted ml-2 h5 mb-0"><span class="text-capitalize">{{ Lang::get('order.month') }}</span></div></h3>
                     <h5 class="price text-center mt-2"><span class="text-info">{{ Lang::get('custom.currency') }}{{ pricingFormat(getPackage($index,1)['price']) }}</span> per {{ getPackage($index,1)['duration'] }} {{ Lang::get('order.monthly') }}</h5>
@@ -34,6 +34,8 @@
                     <ul class="subs list-unstyled mb-4"> 
                         @if($index == 1 || $index == 4)
                             <li><i class="fas fa-check-circle text-info"></i>&nbsp;{{ Lang::get('order.contacts.max') }}</li>
+                        @elseif($index == 2 || $index == 5)
+                        <li><i class="fas fa-check-circle text-info"></i>&nbsp;{{ Lang::get('order.contacts.max.premium') }}</li>
                         @else
                             <li><i class="fas fa-check-circle text-info"></i>&nbsp;{{ Lang::get('order.contacts') }}</li>
                         @endif

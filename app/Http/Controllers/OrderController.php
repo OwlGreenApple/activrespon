@@ -128,6 +128,7 @@ class OrderController extends Controller
 
     $status_upgrade = $request->status_upgrade;
     $reseller_coupon = $request->reseller_coupon;
+    $namapaket = $request->namapaket;
 
     if($reseller_coupon == "0")
     {
@@ -135,22 +136,6 @@ class OrderController extends Controller
     }
 
     //cek kodekupon
-
-    $package = substr($request->namapaket,0,-1);
-
-    if($package == 'basic')
-    {
-      $chat_price = 100000;
-    }
-    elseif($package == 'bestseller')
-    {
-      $chat_price = 200000;
-    }
-    else
-    {
-      $chat_price = 300000;
-    }
-
     if($request->harga == null)
     {
        $pricing = (int)$request->price;
@@ -158,11 +143,6 @@ class OrderController extends Controller
     else
     {
        $pricing = (int)$request->harga;
-    }
-
-    if($request->chat == 1)
-    {
-      $pricing += $chat_price;
     }
 
     $arr['status'] = 'success';
@@ -190,6 +170,13 @@ class OrderController extends Controller
       $arr['packageupgrade'] = $check_membership['packageupgrade'];
     }
     */
+    if($this->cekharga($namapaket, $pricing) == false)
+    {
+        $arr['status'] = 'error';
+        $arr['message'] = 'Paket tidak valid.';
+        return $arr;
+    }
+
     if($status_upgrade == null)
     {
       $arr['total'] = $pricing;
@@ -550,34 +537,11 @@ class OrderController extends Controller
       return redirect($pathUrl)->with("error", $arr['message']);
     }
 
-		$month = 1;
-		if(substr($request->namapaket,0,5) === "basic"){
-			$month = 1;
-      // $chat_price = 100000;
-    }
-		if(substr($request->namapaket,0,10) === "bestseller"){
-			$month = 2;
-      // $chat_price = 200000;
-    }
-		if(substr($request->namapaket,0,10) === "supervalue"){
-			$month = 3;
-      // $chat_price = 300000;
-    }
-
+		$month = getPackagePrice($request->namapaket,"duration");
 		$total =  $base_price;
     $diskon = 0;
     // $total = $request->price;
     $kuponid = $upgrade_package = null;
-
-    /*CHAT ENABLE*/
-    /*if($request->chat == 1)
-    {
-      if($request->kupon == null)
-      {
-         $total += $chat_price;
-      }
-      $base_price += $chat_price;
-    }*/
 
     // USE NORMAL COUPON
     if($request->kupon <> null){
@@ -618,6 +582,7 @@ class OrderController extends Controller
       "price"=>$base_price,
       "namapaket"=>$request->namapaket,
       "namapakettitle"=>$request->namapakettitle,
+      "packagelabel"=>ucwords($request->packagelabel),
       "coupon_code"=>$request->kupon,
       "idpaket" => $request->idpaket,
       "month" => $month,
@@ -640,7 +605,7 @@ class OrderController extends Controller
     {
       session(['order'=>$order]);
     }
-    
+
     return redirect('summary');
   }
 

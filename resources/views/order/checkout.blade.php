@@ -26,6 +26,7 @@
               <input type="hidden" id="namapaket" name="namapaket">
               <input type="hidden" id="namapakettitle" name="namapakettitle">
 							<input type="hidden" id="priceupgrade" name="priceupgrade">
+							<input type="hidden" id="packagelabel" name="packagelabel">
               <!-- <input type="hidden" value="chat" name="chat"> -->
               <h2 class="Daftar-Disini">Choose your package</h2>
 							
@@ -34,7 +35,7 @@
                   <label class="text" for="formGroupExampleInput">Your package:</label>
                   <select class="form-control text-capitalize" name="idpaket" id="select-auto-manage">
                     @foreach($prices as $idx=>$row)
-                        <option class="text-capitalize" data-price="{{ $row['price'] }}" data-paket="{{ $row['package'] }}" data-paket-title="" value="{{ $idx }}" <?php if ($id==$idx) echo "selected" ; ?>>
+                        <option class="text-capitalize" data-price="{{ $row['price'] }}" data-paket="{{ $row['package'] }}" data-paket-title="{{ $row['label'] }}" value="{{ $idx }}" data-label="{{ $row['label'] }} -- {{ $row['duration'] }} {{ Lang::get('order.monthly') }}" <?php if ($id==$idx) echo "selected" ; ?>>
                           {{ $row['label'] }} -- {{ Lang::get('custom.currency') }}{{ pricingFormat($row['price']) }} -- {{ $row['duration'] }} {{ Lang::get('order.monthly') }}
                         </option>
                     @endforeach
@@ -279,10 +280,12 @@
     var price = parseInt($("#select-auto-manage").find("option:selected").attr("data-price"));
     var namapaket = $("#select-auto-manage").find("option:selected").attr("data-paket");
     var namapakettitle = $("#select-auto-manage").find("option:selected").attr("data-paket-title");
+    var label = $("#select-auto-manage").find("option:selected").attr("data-label");
 
     $("#price").val(price);
     $("#namapaket").val(namapaket);
     $("#namapakettitle").val(namapakettitle);
+    $("#packagelabel").val(label);
   }
 
   function applyCoupon()

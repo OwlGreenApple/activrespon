@@ -198,7 +198,8 @@
       <tr>
         <td class="sumo-td-name">
           <div class="sumo-title">
-            <b><?php echo session('order')['namapakettitle'] ?></b>
+            <!-- package -->
+            <b>{{ session('order')['packagelabel'] }}</b>
             
           </div>
         </td>
@@ -274,13 +275,13 @@
         <tr>
           <td class="sumo-td-name">
             <div class="sumo-title">
-              <b><?php echo session('order')['namapakettitle'] ?></b>
+              <b>{{ session('order')['packagelabel'] }}</b>
               
             </div>
           </td>
 					<!--
           <td class="sumo-td-price text-right sumo-checkout-item" data-item-id="2101">
-						Rp. <?php echo number_format(session('order')['price'], 0, '', '.'); ?>
+						Rp. <php echo number_format(session('order')['price'], 0, '', '.'); ?>
           </td>
 					-->
         </tr>
