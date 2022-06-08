@@ -42,6 +42,67 @@ class Message extends Model
     return $message_send;
   }
 
+  // SENDING WAFONTE
+    public static function sendingwa($user,$customer_phone,$customer_message,$image)
+    {
+      // to avoid error user_id = 0
+      if(!is_null($user))
+      {
+        $package = $user->membership;
+        $category = getPackagePrice($package,1);
+  
+        if($category == 'basic')
+        {
+          $customer_message .= "\n\n".'Powered by activrespon.com';
+        }
+      }
+
+      // dd($customer_message);
+      $data = [
+        'token'=>$user->api_token,
+        'to'=>$customer_phone,
+        'msg'=>$customer_message,
+      ];
+
+      if(empty($image) || $image == null)
+      {
+        $data['type'] = "text";
+      }
+      else
+      {
+        $data['img'] = $image;
+        $data['type'] = "image";
+      }
+
+      if($user->service == 1)
+      {
+        $sending = self::send_message_wablas($data);
+      }
+      else
+      {
+        $sending = self::send_wa_fonte_message($data);
+      }
+
+      // dd($sending);
+
+      if($sending['status'] == false)
+      {
+        $msg = str_replace(" ","_",$sending['message']);
+        if($msg == "Please_Upgrade_Your_Account")
+        {
+          return 2; //usually if user using package that not supported image / package run out
+        }
+        else
+        {
+          return 3;
+        }
+      }
+      else
+      {
+        return 1;
+      }
+    }
+
   // WAFONTE SEND MESSAGE
   public static function send_wa_fonte_message($data)
     {

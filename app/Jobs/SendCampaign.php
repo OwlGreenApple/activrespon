@@ -54,6 +54,7 @@ class SendCampaign implements ShouldQueue
 			// send campaign per phone number
 
 			if ($this->attempts() == 1) {
+        //broadcast
 				$this->campaignBroadcast();
 		 
 				//Auto Responder
@@ -167,8 +168,8 @@ class SendCampaign implements ShouldQueue
 
                 /* SENDING BROADCAST */
                 if($broadcastCustomer->status == 0)
-                {
-                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                { 
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $broadcastCustomer->status = $status;
                   $broadcastCustomer->save();
                 }
@@ -268,7 +269,7 @@ class SendCampaign implements ShouldQueue
                 // SENDING AUTORESPONDER
                 if($reminder_status == 0)
                 {
-                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -311,6 +312,8 @@ class SendCampaign implements ShouldQueue
                   ['campaigns.status','>',0],
                   ['lists.status','>',0]]
             )->get();
+
+          // dd($reminder);
          
           if($reminder->count() > 0)
           {
@@ -326,10 +329,10 @@ class SendCampaign implements ShouldQueue
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
 
                 // PREVENT RUN IF MEMBERSHIP LESS THAN 2
-                if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) || $midnightTime == false )
-                {
-                    continue;
-                }
+                // if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) || $midnightTime == false )
+                // {
+                //     continue;
+                // }
 
                 // if the day before / substract 
                 if($days < 0){
@@ -388,9 +391,9 @@ class SendCampaign implements ShouldQueue
                 $reminder_status = $remindercustomer_update->status;
 
                 // SENDING EVENT
-                if($reminder_status == 0)
+                if($reminder_status == 0) 
                 {
-                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -455,10 +458,10 @@ class SendCampaign implements ShouldQueue
                 $time_appt = $event_date->toTimeString();
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
 
-                if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) ||$midnightTime == false)
-                {
-                    continue;
-                }
+                // if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) ||$midnightTime == false)
+                // {
+                //     continue;
+                // }
 
                 $user = User::find($row->user_id);
 
@@ -503,7 +506,7 @@ class SendCampaign implements ShouldQueue
                 // SENDING APPOINTMENT
                 if($reminder_status == 0)
                 {
-                  $status = self::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
                   $remindercustomer_update->status = $status;
                   $remindercustomer_update->save();
                 }
@@ -543,61 +546,6 @@ class SendCampaign implements ShouldQueue
             $string = $format;
             Storage::put($filename,$string);
         }
-    }
-
-    // SENDING WAFONTE
-    public static function sendingwa($user,$customer_phone,$customer_message,$image)
-    {
-      $send = new Message;
-      $package = $user->membership;
-      $category = getPackagePrice($package,1);
-
-      if($category == 'basic')
-      {
-        $customer_message .= "\n\n".'Powered by activrespon.com';
-      }
-
-      // dd($customer_message);
-      $data = [
-        'token'=>$user->api_token,
-        'to'=>$customer_phone,
-        'msg'=>$customer_message,
-      ];
-
-      if(empty($image) || $image == null)
-      {
-        $data['type'] = "text";
-      }
-      else
-      {
-        $data['img'] = $image;
-        $data['type'] = "image";
-      }
-
-      if($user->service == 1)
-      {
-        $sending = $send::send_message_wablas($data);
-      }
-      else
-      {
-        $sending = $send::send_wa_fonte_message($data);
-      }
-
-      if($sending['status'] == false)
-      {
-        if($sending['message'] == "Please Upgrade Your Account")
-        {
-          return 2; //usually if user using package that not supported image
-        }
-        else
-        {
-          return 3;
-        }
-      }
-      else
-      {
-        return 1;
-      }
     }
 
     public function delay_sending($no)

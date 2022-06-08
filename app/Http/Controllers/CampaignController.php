@@ -34,6 +34,7 @@ use App\Helpers\WamateHelper;
 use App\PhoneNumber;
 use App\Server;
 use App\Http\Middleware\CheckBroadcastDuplicate;
+use App\Jobs\SendCampaign;
 use Storage,Session, DB;
 
 class CampaignController extends Controller
@@ -171,89 +172,32 @@ class CampaignController extends Controller
       }
 
 			$user = Auth::user();
-			$phoneNumber = PhoneNumber::where("user_id",$user->id)->first();
-			$key = $phoneNumber->filename;
-      $device_key = $phoneNumber->device_key;
-      $ip_server = $phoneNumber->ip_server;
+      $message_send = new Message;
+      $message_send->user_id=$user->id;
+      $message_send->phone_number=$request->phone;
+      $message_send->message= $message;
+      $message_send->status=11;
+      $message_send->customer_id=0;
+		
+      if($request->hasFile('imageWA')) {
+        //save ke temp local dulu baru di kirim 
+        if(env('APP_ENV')=='local')
+        {
+          $folder = $user->id."/send-test-message/";
+        }
+        else
+        {
+          $folder = $user->id."/send-message/";
+        }
+        
+        Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($request->file('imageWA')), 'public');
+        sleep(1);
 
-			if ($phoneNumber->mode == 0) {
-				$server = Server::where('phone_id',$phoneNumber->id)->first();
-				if(is_null($server)){
-					$error = array(
-						'status'=>'error',
-						'phone'=>"Contact Administrator",
-						'msg'=>"",
-						'image'=>"",
-					);
-					return response()->json($error);
-				}
-			}
+        $url = Storage::disk('s3')->url($folder."temp.jpg");
+        $message_send->img_url=$url;
+      }
 
-			/*if ($user->email=="activomnicom@gmail.com") {
-				ApiHelper::send_message_android(env('BROADCAST_PHONE_KEY'),$request->message,$request->phone,"reminder");
-			}
-			else {*/
-				if($request->hasFile('imageWA')) {
-					//save ke temp local dulu baru di kirim 
-					if(env('APP_ENV')=='local')
-          {
-            $folder = $user->id."/send-test-message/";
-          }
-          else
-          {
-            $folder = $user->id."/send-message/";
-          }
-          
-					Storage::disk('s3')->put($folder."temp.jpg",file_get_contents($request->file('imageWA')), 'public');
-					sleep(1);
-
-					$url = Storage::disk('s3')->url($folder."temp.jpg");
-					if ($phoneNumber->mode == 0) {
-						ApiHelper::send_image_url_simi($request->phone,curl_file_create(
-							$_FILES["imageWA"]["tmp_name"],
-							$_FILES["imageWA"]["type"],
-							$_FILES["imageWA"]["name"]
-						),$message,$server->url);
-					}
-          elseif($phoneNumber->mode == 2)
-          {
-            // WAMATE
-            // WamateHelper::send_media_url_wamate($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,'image',$ip_server);
-            WamateHelper::send_image($request->phone,Storage::disk('s3')->url($folder."temp.jpg"),$message,$device_key,$ip_server);
-          }
-					else {
-						ApiHelper::send_image_url($request->phone,$url,$message,$key);
-
-						$arr = array(
-							'url'=>$url,
-							'status'=>"success",
-						);
-						return response()->json($arr);
-					}
-				}
-				else {
-					// ApiHelper::send_message($request->phone,$request->message,$key);
-					$message_send = new Message;
-					$message_send->phone_number=$request->phone;
-					$message_send->message= $message;
-					if ($phoneNumber->mode == 0) {
-						$message_send->key=$server->url;
-						$message_send->status=6;
-					}
-					if ($phoneNumber->mode == 1) {
-						$message_send->key=$key;
-						$message_send->status=7;
-					}
-					if ($phoneNumber->mode == 2) {
-						$message_send->key=$phoneNumber->device_key;
-						$message_send->status=11;
-					}
-					$message_send->customer_id=0;
-					$message_send->save();
-
-				}
-			// }
-			// return "success";
+      $message_send->save();
 			$arr = array(
 				'status'=>"success",
 			);
