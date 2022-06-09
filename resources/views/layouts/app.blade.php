@@ -162,11 +162,11 @@
                                     
                                     <a href="{{url('create-campaign')}}" class="nav-link {{ (request()->is('create-campaign')) ? 'active' : '' }}">Campaigns</a>
                                   
-                                    @if(getMembership(Auth()->user()->membership) > 1) 
+                                    <!-- if(getMembership(Auth()->user()->membership) > 1)  -->
                                       <a href="{{url('create-event')}}" class="nav-link {{ (request()->is('create-event')) ? 'active' : '' }}">Event</a>  
 
                                       <a href="{{url('create-apt')}}" class="nav-link {{ (request()->is('create-apt')) ? 'active' : '' }}">Appointment</a>
-                                    @endif
+                                    <!-- endif -->
                                 </div>
                             </li> 
 
@@ -178,7 +178,7 @@
                                 <a class="nav-link {{ (request()->is('campaign') || request()->is('add-reminder')) ? 'active' : '' }}" href="{{url('campaign')}}">Campaigns</a>
                             </li> 
                             
-                            @if(getMembership(Auth()->user()->membership) > 1) 
+                            <!-- if(getMembership(Auth()->user()->membership) > 1)  -->
                             <li class="nav-item">
                                 <a class="nav-link {{ (request()->is('event')) ? 'active' : '' }}" href="{{ url('event') }}">Event</a>
                             </li> 
@@ -186,7 +186,7 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ (request()->is('appointment')) ? 'active' : '' }}" href="{{ route('appointment') }}">Appointment</a>
                             </li>
-                            @endif
+                            <!-- endif -->
 
                           @elseif(Auth()->user()->status == 2)
 														<!--

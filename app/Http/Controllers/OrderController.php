@@ -39,25 +39,10 @@ class OrderController extends Controller
     return view('order.summary');
   }
   
-  public function pricing(Request $request)
+  public function pricing(Request $request) 
   {
-    return view('order.pricing');
-  }
-
-  public function pricing_list(Request $request)
-  {
-       if($request->default == null)
-       {
-          $arr = [1,2,3]; /* 3 month */
-          $save = 15;
-       }
-       else
-       {
-          $arr = [4,5,6]; /* yearly */
-          $save = 40;
-       }
-       
-       return view('order.pricing-list',['data'=>$arr,'save'=>$save,'default'=>$request->default]);
+    $arr = [1,2,3,4,5,6];
+    return view('order.pricing',['data'=>$arr,'default'=>$request->default]);
   }
 
   public function checkout($id,$coupon_reseller = null){

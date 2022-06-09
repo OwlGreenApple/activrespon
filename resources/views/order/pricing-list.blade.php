@@ -1,13 +1,13 @@
 @if(count( $data ) > 0) 
     <div class="ml-auto mr-auto col-lg-6 col-md-6 col-12 mb-4">
         <div class="input-group ml-auto mr-auto col-lg-12 col-md-12 col-12">
-            <a role="button" class="pricing_list monthly position-relative @if($default == null) active @endif">
+            <a id="month" role="button" class="pricing_list monthly position-relative active">
                 {{ Lang::get('order.month.t') }}
                 <div class="pricing-discount badge rounded-pill">
                     -25%
                 </div>
             </a> 
-            <a data-total="12" role="button" class="pricing_list yearly position-relative @if($default == 12) active @endif">
+            <a id="year" role="button" class="pricing_list yearly position-relative">
                 {{ Lang::get('order.month.y') }}
                 <div class="pricing-discount badge rounded-pill">
                     -65% 
@@ -17,9 +17,9 @@
     </div>
 
     <div class="row">
-    @foreach($data as $index) 
-        <div class="col-lg-4 col-md-4 col-12"> 
-            <div data-ribbon="15%" class="card card-pricing shadow px-3 mb-4">
+    @foreach($data as $index)
+        <div class="col-lg-4 col-md-4 col-12 @if($index >= 4) d-none year @else month @endif"> 
+            <div class="card card-pricing shadow px-3 mb-4">
                 <span class="pricing-title text-capitalize bg-info">{{ getPackage($index,1)['label'] }}</span>
                 <div class="bg-transparent card-header pt-4 border-0">
                     <h5 class="price text-center"><span class="text-info"><strike>{{ Lang::get('custom.currency') }}{{ pricingFormat(discount(getPackage($index,1)['price'],getPackage($index,1)['percent'])) }}</strike></span></h5>

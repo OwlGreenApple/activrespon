@@ -63,7 +63,6 @@ Route::post('is_pay','ApiController@customerPay');
 Route::post('private-list','ApiController@register_list');
 
 Route::get('pricing','OrderController@pricing')->name('pricing');
-Route::get('price-list','OrderController@pricing_list');
 Route::get('summary','OrderController@summary');
 Route::get('checkout/{id}/{coupon_reseller?}','OrderController@checkout');
 Route::get('thankyou','OrderController@thankyou');
