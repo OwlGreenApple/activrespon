@@ -117,6 +117,14 @@
                     <option @if(Auth::user()->service == 2) selected @endif value="2">Wafonte Token</option>
                   </select>
                 </div>
+                <div class="form-group row col-fix @if(Auth::user()->service == 2) d-none @endif">
+                  <label style="min-width : 125px; max-width : 140px">Wablas URL</label>
+                  <select name="wablas" class="form-control">
+                    @foreach(get_wablas() as $val => $url)
+                      <option @if(Auth::user()->server == $val) selected @endif value="{{ $val }}">{{ $url }}</option>
+                    @endforeach
+                  </select>
+                </div>
                 <!--  -->
                 <div class="form-group row col-fix">
                   <label style="min-width : 125px; max-width : 140px">Service Token</label>

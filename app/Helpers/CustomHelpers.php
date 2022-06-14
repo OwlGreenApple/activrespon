@@ -273,6 +273,31 @@ use Carbon\Carbon;
     return $discount;
   }
 
+  function get_wablas(){
+    $data = [
+      'https://ampel.wablas.com/',
+      'https://console.wablas.com/',
+      'https://india.wablas.com/',
+      'https://klego.wablas.com/',
+      'https://kacangan.wablas.com/',
+      'https://sambi.wablas.com/',
+      'https://selo.wablas.com/',
+      'https://cepogo.wablas.com/',
+      'https://us.wablas.com/',
+      'https://teras.wablas.com/',
+      'https://sawit.wablas.com/',
+      'https://texas.wablas.com/',
+      'https://tx.wablas.com/',
+      'https://solo.wablas.com/',
+      'https://tx.wablas.com/',
+      'https://pati.wablas.com',
+      'https://kudus.wablas.com',
+      'https://eu.wablas.com/',
+    ];
+
+    return $data;
+  }
+
   //TO DETERMINE EITHER UPGRADE OR DOWNGRADE
   function checkMembershipDowngrade(array $data)
   {

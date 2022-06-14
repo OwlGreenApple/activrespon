@@ -76,7 +76,8 @@ class Message extends Model
 
       if($user->service == 1)
       {
-        $sending = self::send_message_wablas($data);
+        $server = $user->server;
+        $sending = self::send_message_wablas($data,$server);
       }
       else
       {
@@ -160,7 +161,7 @@ class Message extends Model
     }
 
     // WABLAS SEND MESSAGE
-    public static function send_message_wablas($data)
+    public static function send_message_wablas($data,$server)
     {
         $curl = curl_init();
 
@@ -174,7 +175,7 @@ class Message extends Model
               'message' => $data['msg'],
               'isGroup' => 'true',
             ];
-            $url = "https://pati.wablas.com/api/send-message";
+            $url = get_wablas()[$server]."/api/send-message";
         }
         else
         {
@@ -186,7 +187,7 @@ class Message extends Model
                 'delay' => '1',
                 'schedule' => '0'
             );
-            $url = "https://pati.wablas.com/api/send-image";    
+            $url = get_wablas()[$server]."/api/send-image";    
         }
 
         curl_setopt($curl, CURLOPT_HTTPHEADER,
