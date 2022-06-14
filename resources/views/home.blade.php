@@ -44,11 +44,11 @@
     <div class="col-center col-lg-3 account_status">
        @if($status > 0)
         <div>Current plan : <b>{{ $membership }}</b></div>
-        <div>Phone Status : <b>{!! $phone_status !!}</b></div>
-        <div>Server Status : <b>{!! $server_status !!}</b></div>
+        <!-- <div>Phone Status : <b>!! $phone_status !!</b></div>
+        <div>Server Status : <b>!! $server_status !!</b></div> -->
         <div>Valid Until : <b>{{ $expired }}</b></div>
-        <div>MESSAGES Quota : <b>{{ $quota }}</b></div>
-        <div>CHATS Quota : <b>{{ $user->is_chat }}</b></div>
+       <!--  <div>MESSAGES Quota : <b> $quota </b></div>
+        <div>CHATS Quota : <b> $user->is_chat </b></div> -->
         <div><a href="{{ url('pricing') }}"><span>Buy More</span></a></div>
 
       @endif

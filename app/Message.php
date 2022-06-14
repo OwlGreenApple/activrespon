@@ -14,7 +14,7 @@ class Message extends Model
     1 -> sent
     2 -> failed
     3 -> server error
-    4 -> server disconnect
+    4 -> server disconnect / invalid token
   */
     
   protected $table = 'messages';
@@ -91,6 +91,10 @@ class Message extends Model
         if($msg == "Please_Upgrade_Your_Account")
         {
           return 2; //usually if user using package that not supported image / package run out
+        }
+        elseif($msg == "token_invalid")
+        {
+          return 4; //invalid token
         }
         else
         {
