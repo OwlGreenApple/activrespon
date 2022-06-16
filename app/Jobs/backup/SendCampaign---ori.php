@@ -26,7 +26,8 @@ use DB;
 use App\Helpers\ApiHelper;
 use App\Helpers\NewCustomHelpers;
 
-class SendCampaign implements ShouldQueue
+// --- class SendCampaign implements ShouldQueue ----
+class SendCampaignbackup implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

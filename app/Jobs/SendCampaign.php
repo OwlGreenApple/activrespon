@@ -38,9 +38,9 @@ class SendCampaign implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($phone_id)
+    public function __construct()
     {
-        $this->phone_id = $phone_id;
+        // $this->phone_id = $phone_id;
     }
 
     /**
@@ -50,7 +50,6 @@ class SendCampaign implements ShouldQueue
      */
     public function handle()
     {
-      // return $this->test();
 			// send campaign per phone number
 
 			if ($this->attempts() == 1) {

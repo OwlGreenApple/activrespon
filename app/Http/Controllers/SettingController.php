@@ -270,6 +270,13 @@ class SettingController extends Controller
       $user->service = $service;
       $user->api_token = $api_token;
 
+      // IF SERVICE SELECTED AS WABLAS, SEE about the value : CustomHelpers/get_wablas()
+      if($service == 1)
+      {
+        $server = strip_tags($request->wablas);
+        $user->server = $server;
+      }
+
       try
       {
         $user->save();
