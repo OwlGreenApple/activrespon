@@ -47,15 +47,8 @@ class CampaignController extends Controller
       $type = $request->type;
       $search = $request->search;
 
-      if(getMembership(Auth::user()->membership) > 3)
-      {
-        $campaign_type = [1,2];
-      }
-      else
-      {
-        $campaign_type = [1];
-      }
-
+      $campaign_type = [1,2];
+      
       if($type == null || $type == 'all')
       {
           $campaign = Campaign::where([['campaigns.user_id',$userid],['lists.status','>',0]])
@@ -104,6 +97,7 @@ class CampaignController extends Controller
       $data['religion'] = $customer::$religion;
       $data['gender'] = $customer::$gender;
       $data['marriage'] = $customer::$marriage;
+      $data['label'] = null;
 
       if($request->ajax())
       {
@@ -650,8 +644,9 @@ class CampaignController extends Controller
 
         $quest = new Request($req);
         $broadcast = new BroadCastController;
-        $saveBroadcast = $broadcast->saveBroadCast($quest,$image);
+        $saveBroadcast = $broadcast->saveBroadCast($quest,$image); 
 				
+        // dd($saveBroadcast);
         if($saveBroadcast == false)
         {
           $data['status'] = false;

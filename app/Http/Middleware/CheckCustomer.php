@@ -68,7 +68,7 @@ class CheckCustomer
         try{
           $id_list = decrypt($id_list);
         }catch(DecryptException $e){
-          $error['main'] = 'Please do not change default value';
+          $error['main'] = 'Harap tidak memodifikasi value yang sudah ada.';
           return response()->json($error);
         }
 
@@ -80,7 +80,6 @@ class CheckCustomer
             'code_country' => ['required',new CheckPlusCode,new CheckCallCode],
             'listname' => ['required',new CheckListName]
          ];
-
 
          // request->manual == save from add contact from list-edit page / manual insert
          if($lists->checkbox_lastname == 1 && $request->manual == null)
@@ -168,6 +167,8 @@ class CheckCustomer
          {
             $rules['phone_number'] = ['required','numeric','digits_between:6,18',new InternationalTel /*new CheckWANumbers($req['code_country'],$id_list)*/];
          }
+
+         // dd($rules); 
 
         $validator = Validator::make($req,$rules);
         if($validator->fails()){

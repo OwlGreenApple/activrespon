@@ -41,8 +41,7 @@
 
           $total_message = $campaign_controller->broadcastCampaign($row->id,'=',0)->count();
           $total_delivered = $campaign_controller->broadcastCampaign($row->id,'>',0)->count();
-        }
-        
+        } 
       @endphp
 
       @if(!is_null($broad_cast))

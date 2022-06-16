@@ -735,9 +735,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
           <a class="btn btn-danger btn-sm text-white" data-dismiss="modal">Close</a>
         </div>
         <div class="modal-body">
-            <div class="text-center">
-              <span class="update_notif"></span>
-            </div>
+            <span class="update_notif"><!--  --></span>
 
             <form class="update-contact">
               <div class="form-group">
@@ -780,6 +778,8 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
 
               <input type="hidden" name="listname" value="{{$listname}}">
               <input type="hidden" name="listid" value="{{ $listid }}">
+              <input type="hidden" name="manual" value="1">
+              <input type="hidden" name="data_update" value="1">
 
               <div class="text-right">
                 <button id="change_btn" type="submit" class="btn btn-success">Update Contact</button>
@@ -1647,7 +1647,7 @@ var _0x2799=['https://activrespon.com/dashboard/entry-google-form','fetch','appl
                   // console.log(data);
               }
 
-              if(result.success == true && result.update == true)
+              if(result.update == 1) 
               {
                  $(".update_notif").html('<div class="alert alert-success text-center">'+result.message+'</div>')
                  $(".error").hide();

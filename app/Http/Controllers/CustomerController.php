@@ -306,6 +306,13 @@ class CustomerController extends Controller
         {
           $arr_data['last_name'] = 'max:255|regex:/^[\s\w-]*$/';
         }
+
+        // PREVENT VALIDATION PHONE NUMBER ON EDIT CUSTOMER DATA ON PAGE LIST
+        if(isset($request->data_update) && $request->phone == null)
+        {
+          $arr_data['phone_number'] = array();
+        }
+
         $validator = Validator::make($request->all(), $arr_data);
         if ($validator->fails()) {
             $data['success'] = false;
@@ -401,7 +408,6 @@ class CustomerController extends Controller
               $customer->email = strip_tags($request->email);
               $customer->code_country = strip_tags($request->data_country);
               $customer->status = 1;
-              $customer->telegram_number = "";
         
               if($request->phone_number !== null)
               {
@@ -411,7 +417,7 @@ class CustomerController extends Controller
               try
               {
                   $customer->save();
-                  $data['update'] = true;
+                  $data['update'] = 1;
                   $data['message'] = 'Success, your contact has updated';
                   $data['newnumber'] = $phone_number;
               }

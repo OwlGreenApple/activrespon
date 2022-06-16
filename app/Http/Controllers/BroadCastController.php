@@ -33,7 +33,7 @@ class BroadCastController extends Controller
     /* Create broadcast list */
     public function saveBroadCast(Request $request,$image = null)
     {
-        // dd($request->all());
+        // dd($request->all()); 
 				$user = Auth::user();
         $message = $request->message;
         $time_sending = $request->hour;
@@ -94,11 +94,21 @@ class BroadCastController extends Controller
         {
           $date_send = null;
         }
-        $cmp = new CampaignController;
-        if($cmp->filter_all($country) == 1)
+
+        if($country == null || empty($country))
         {
           $country = 0;
         }
+
+        if($age_start == null || empty($age_start))
+        {
+          $age_start = 'all';
+        }
+
+        if($age_end == null || empty($age_end))
+        {
+          $age_end = 'all';
+        } 
 
 				$folder="";
 				$filename="";
@@ -141,10 +151,10 @@ class BroadCastController extends Controller
             $channel = null;
 
             $list = new ListController;
-            $chat_id = $list->getChatIDByUsername($phone,$request->group_name);
+            /* $chat_id = $list->getChatIDByUsername($phone,$request->group_name);
             if ($chat_id == 0) {
               return 'Error!! Group name not found, your broadcast failed to create';
-            }
+            } */
         }
         else if($broadcast_schedule == 2)
         {
@@ -152,11 +162,11 @@ class BroadCastController extends Controller
             $group_name = null;
             $channel = $request->channel_name;
             
-            $list = new ListController;
+            /* $list = new ListController;
             $chat_id = $list->getChatIDByUsername($phone,$request->channel_name);
             if ($chat_id == 0) {
               return 'Error!! Channel name not found, your broadcast failed to create';
-            }
+            } */
         }
         else {
             return 'Please reload your browser and then try again without modify default value';
