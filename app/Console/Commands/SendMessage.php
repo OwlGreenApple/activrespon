@@ -3,23 +3,19 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\UserList;
 use App\BroadCast;
 use App\BroadCastCustomers;
 use App\Reminder;
 use App\ReminderCustomers;
-use App\Customer;
 use App\Helpers\Spintax;
 use Carbon\Carbon;
 use App\User;
-use App\PhoneNumber;
-use App\Server;
-use DB;
-use App\Helpers\ApiHelper;
+use App\Message;
+use App\Config;
 
-use App\Jobs\SendCampaign;
+// use App\Jobs\SendCampaign;
 
 class SendMessage extends Command
 {
@@ -49,8 +45,8 @@ class SendMessage extends Command
 
     public function handle()
     {
-      SendCampaign::dispatch(1);
-			/*
+      // SendCampaign::dispatch(1);
+			
       //Broadcast 
       $this->campaignBroadcast();
    
@@ -62,58 +58,42 @@ class SendMessage extends Command
       
       //Appointment
       $this->campaignAppointment();
-			*/
+			
     }    
-
-    /* ---------- NOT USE ANYMORE ----------*/
  
     /* BROADCAST */
     public function campaignBroadcast()
     {
 				$spintax = new Spintax;
-        $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid","phone_numbers.id AS phoneid","users.id AS userid","customers.*","users.timezone","users.email","customers.link_unsubs")
+        $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid","users.id AS userid","customers.*","users.timezone","users.email","customers.link_unsubs")
           ->join('lists','lists.id','=','broad_casts.list_id')
           ->join('users','broad_casts.user_id','=','users.id')
-          ->join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
-          ->join('phone_numbers','phone_numbers.user_id','=','broad_casts.user_id')
+          ->Join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
           ->join('customers',"customers.id","=","broad_cast_customers.customer_id")
           ->join('campaigns',"campaigns.id","=","broad_casts.campaign_id")
-          ->where("broad_cast_customers.status",0)
           ->where("customers.status",1)
-          ->where("phone_numbers.id",$this->phone_id)
           ->where("campaigns.status",1)
           ->where("lists.status",'>',0)
+          ->where("users.api_token","<>",null)
+          ->orWhere("users.api_token","<>","")
           ->orderBy('broad_casts.user_id')
           ->get();
 
         if($broadcast->count() > 0)
         {
+            $no = 1;
             foreach($broadcast as $row)
             {
                 // $customers = Customer::where('id',$row->customer_id)->first();
                 $customer_message = $row->message;
                 $customer_phone = $row->telegram_number;
-                $phoneNumber = PhoneNumber::find($row->phoneid);
-                if(is_null($phoneNumber)){
-                  continue;
-                }
-
-                // REMARK IF NEED TO TEST ON LOCAL
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
+               
                 $user = User::find($row->userid);
-
                 $hour = $row->hour_time; //hour according user set it to sending
                 $date = Carbon::parse($row->day_send);
 
-
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname);
+                $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -125,12 +105,8 @@ class SendMessage extends Command
                   }
                 }
                 $message = $spintax->process($message);  //spin text
-                $chat_id = $row->chat_id;  
-                $counter = $phoneNumber->counter;
-                $counter2 = $phoneNumber->counter2;
-                $max_counter = $phoneNumber->max_counter;
-                $max_counter_day = $phoneNumber->max_counter_day;
-                $key = $phoneNumber->filename;
+                // $chat_id = $row->chat_id;  
+               
                 $now = Carbon::parse(Carbon::now())->timezone($row->timezone);
 
                 $time_sending = $date->toDateString().' '.$hour;
@@ -139,11 +115,10 @@ class SendMessage extends Command
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
                 // $check_valid_customer_join = $this->preventBroadcastNewCustomer($row->bccsid,$time_sending);
 
-
-                if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $deliver_time < 0 || $midnightTime == false /*|| $check_valid_customer_join == false*/ ) {
+                if($deliver_time < 0 || $midnightTime == false) 
+                {
                     continue;
                 }
-
 
                 $campaign = 'broadcast';
                 $id_campaign = $row->bccsid;
@@ -153,22 +128,19 @@ class SendMessage extends Command
                 if (is_null($broadcastCustomer)) {
                   continue;
                 }
-                if ($broadcastCustomer->status==5) {
-                  continue;
-                }
 
-                $membership = NewCustomHelpers::getMembership($user->membership);
-                if($membership <= 3)
+                if ($broadcastCustomer->status== 2 || $broadcastCustomer->status== 3) 
                 {
-                  $broadcastCustomer->status = 4;
-                  $broadcastCustomer->save();
                   continue;
                 }
 
-                $broadcastCustomer->status = 5;
-                $broadcastCustomer->save();
-
-                $status = 'Sent';
+                // $membership = NewCustomHelpers::getMembership($user->membership);
+                // if($membership <= 3)
+                // {
+                //   $broadcastCustomer->status = 4;
+                //   $broadcastCustomer->save();
+                //   continue;
+                // }
 
                 // MAKES BROADCAST STATUS TO 2 WHICH MEAN BROADCAST HAS RUN ALREADY.
                 $broad_cast_id = $broadcastCustomer->broadcast_id;
@@ -179,6 +151,7 @@ class SendMessage extends Command
                   continue;
                 }
 
+                // CHANGE BROADAST STATUS = 2 TO AVOID DUPLICATE FROM QUEUE:CAMPAIGN
                 $status_broadcast = $broad_cast->status;
                 if($status_broadcast == 1)
                 {
@@ -186,67 +159,13 @@ class SendMessage extends Command
                   $broad_cast->save();
                 }
 
-
-                  //====================================
-
-                if ($row->image==""){
-                  if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
-                  }
-                  if ($phoneNumber->mode == 1) {
-                    // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
-                    $send_message = $this->send_message($customer_phone,$message,$key);
-                  }
-                  if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
-                  }
+                /* SENDING BROADCAST */
+                if($broadcastCustomer->status == 0)
+                { 
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $broadcastCustomer->status = $status;
+                  $broadcastCustomer->save();
                 }
-                else {
-                  if ($phoneNumber->mode == 0) {
-                    // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                    // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                    // storage_path('app/temp-send-image-simi/'.$row->image),
-                                    // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    // basename($row->image)
-                                  // ),$message,$server->url);
-                    $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                    storage_path('app/temp-send-image-simi/'.$row->image),
-                                    mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    basename($row->image)
-                                  ),$message,$server->url,$row->image);
-                  }
-                  if ($phoneNumber->mode == 1) {
-                    // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                    $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                  }
-                  if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                    storage_path('app/temp-send-image-simi/'.$row->image),
-                                    mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    basename($row->image)
-                                  ),$message,$phoneNumber->device_key,$row->image);
-                  }
-                }
-
-                $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$send_message);
-                // $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign);
-                $status = $this->getStatus($send_message,$phoneNumber->mode);
-
-                $phoneNumber->counter --;
-
-                if($max_counter > 0)
-                {
-                  $phoneNumber->max_counter --;
-                }
-                if($max_counter_day > 0)
-                {
-                  $phoneNumber->max_counter_day --;
-                }
-                $phoneNumber->save();
-                
-                $broadcastCustomer->status = $status;
-                $broadcastCustomer->save();
 
                 // }
                 if ($user->speed == 0) { //slow
@@ -258,6 +177,10 @@ class SendMessage extends Command
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                // delay message according on config
+                $this->delay_sending($no);
+                $no++;
             }//END LOOPING
 
         } // END BROADCAST 
@@ -269,13 +192,13 @@ class SendMessage extends Command
 				$spintax = new Spintax;
         // Reminder 
         // $current_time = Carbon::now();
+
         $reminder = Reminder::where([
             ['reminder_customers.status','=',0],
             ['reminders.is_event','=',0],
             ['reminders.status','=',1],
             ['customers.status','=',1],
             ['lists.status','>',0],
-            ['phone_numbers.id','=',$this->phone_id],
             // ['customers.created_at','<=',$current_time->toDateTimeString()],
             ])
             ->whereRaw('DATEDIFF(now(),customers.created_at) >= reminders.days')
@@ -283,37 +206,15 @@ class SendMessage extends Command
             ->join('users','reminders.user_id','=','users.id')
             ->rightJoin('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
             ->join('customers','customers.id','=','reminder_customers.customer_id')
-						->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
             ->select('reminder_customers.id AS rcs_id','reminder_customers.status AS rc_st','reminders.*','customers.created_at AS cstreg','customers.telegram_number','customers.name','customers.email','reminders.id AS rid','reminders.user_id AS userid','users.timezone','users.email as useremail','reminder_customers.customer_id',"customers.link_unsubs")
             ->get();
 
-        $counter = $max_counter = 0;
-
         if($reminder->count() > 0)
         {
+            $no = 1;
             foreach($reminder as $row) 
             {
-                $phoneNumber = PhoneNumber::where('user_id','=',$row->userid)->first();
-                if(!is_null($phoneNumber)){
-                  $counter = $phoneNumber->counter;
-                  $counter2 = $phoneNumber->counter2;
-                  $max_counter = $phoneNumber->max_counter;
-                  $max_counter_day = $phoneNumber->max_counter_day;
-                }
-                else
-                {
-                  continue;
-                }
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
                 $user = User::find($row->userid);
-
-                $key = $phoneNumber->filename;
                 $customer_phone = $row->telegram_number;
                 $customer_message = $row->message;
                 $customer_name = $row->name;
@@ -322,30 +223,26 @@ class SendMessage extends Command
                 $hour_time = $row->hour_time;
                 $day_reminder = $row->days; // how many days
                 $customer_signup = Carbon::parse($row->cstreg)->addDays($day_reminder);
-                $adding_with_hour = $customer_signup->toDateString().' '.$hour_time;
+                $adding_with_hour = $customer_signup->toDateString();
+                $date_send = $adding_with_hour.' '.$hour_time;
 
                 $reminder_customer_status = $row->rc_st;
                 $reminder_customers_id = $row->rcs_id;
 								
                 $now = Carbon::now()->timezone($row->timezone);
-                $adding = Carbon::parse($adding_with_hour);
+                $adding = Carbon::parse($date_send);
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
 
-                if(($counter <= 0) || ($counter2 <= 0) || ($max_counter <= 0) || ($max_counter_day <= 0) || $midnightTime == false || $adding->gt($now)) {
+                if($midnightTime == false || $adding->gt($now)) {
                   continue;
                 }
 
 								//status queued 
 								$remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
-								if ($remindercustomer_update->status==5) {
-									continue;
-								}
-								$remindercustomer_update->status = 5;
-								$remindercustomer_update->save();
+                $reminder_status = $remindercustomer_update->status;
 								
-
                 $fistname = $this->modFullname($customer_name);  
-                $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname);
+                $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -357,69 +254,19 @@ class SendMessage extends Command
                   }
                 }
                 $message = $spintax->process($message);  //spin text
-                if ($row->image==""){
-                  if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
-                  }
-                  if ($phoneNumber->mode == 1) {
-                    // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
-                    $send_message = $this->send_message($customer_phone,$message,$key);
-                  }
-                  if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
-                  }
-                }
-                else {
-                  if ($phoneNumber->mode == 0) {
-                    // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                    // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                    // storage_path('app/temp-send-image-simi/'.$row->image),
-                                    // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    // basename($row->image)
-                                  // ),$message,$server->url);
-                        $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                        storage_path('app/temp-send-image-simi/'.$row->image),
-                                        mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                        basename($row->image)
-                                      ),$message,$server->url,$row->image);
-                  }
-                  if ($phoneNumber->mode == 1) {
-                    // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                    $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                  }
-                  if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                    storage_path('app/temp-send-image-simi/'.$row->image),
-                                    mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    basename($row->image)
-                                  ),$message,$phoneNumber->device_key,$row->image);
-                  }
-                }
-
+                
                 $campaign = 'Auto Responder';
                 $id_campaign = 'reminder_customers_id = '.$row->rcs_id;
-                $status = 'Sent';
-                $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
+                // $status = 'Sent';
 
-                $status =  $this->getStatus($send_message,$phoneNumber->mode);
-                $remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
-                $remindercustomer_update->status = $status;
-                $remindercustomer_update->save();
-
-                $phoneNumber->counter--;
-
-                if($max_counter > 0)
+                // SENDING AUTORESPONDER
+                if($reminder_status == 0)
                 {
-                    $phoneNumber->max_counter--;
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $remindercustomer_update->status = $status;
+                  $remindercustomer_update->save();
                 }
-                if($max_counter_day > 0)
-                {
-                    $phoneNumber->max_counter_day--;
-                }
-
-                $phoneNumber->save();
- 
+               
                 if ($user->speed == 0) { //slow
                   sleep(mt_rand(1, 26));
                 }
@@ -429,6 +276,10 @@ class SendMessage extends Command
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                //delay message sending
+                $this->delay_sending($no);
+                $no++;
             }//END LOOPING
         }
     }
@@ -446,13 +297,20 @@ class SendMessage extends Command
           ->join('users','reminders.user_id','=','users.id')
           ->join('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
           ->join('customers','customers.id','=','reminder_customers.customer_id')
-					->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
           ->join('campaigns',"campaigns.id","=","reminders.campaign_id")
-          ->where([['reminder_customers.status',0],['reminders.is_event',1],['customers.status',1],['reminders.status','>',0],['campaigns.status','>',0],['lists.status','>',0],['phone_numbers.id','=',$this->phone_id]])
-          ->get();
+          ->where([['reminder_customers.status',0],
+                  ['reminders.is_event',1],
+                  ['customers.status',1],
+                  ['reminders.status','>',0],
+                  ['campaigns.status','>',0],
+                  ['lists.status','>',0]]
+            )->get();
+
+          // dd($reminder);
          
           if($reminder->count() > 0)
           {
+              $no = 1;
               $counter = 0;
               foreach($reminder as $row)
               {
@@ -463,31 +321,11 @@ class SendMessage extends Command
                 $membership = $row->membership;
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
 
-                $phoneNumber = PhoneNumber::where('user_id','=',$row->user_id)->first();
-                if(!is_null($phoneNumber)){
-                  $customer_phone = $row->telegram_number;
-                  $key = $phoneNumber->filename;
-                  $counter = $phoneNumber->counter;
-                  $counter2 = $phoneNumber->counter2;
-                  $max_counter = $phoneNumber->max_counter;
-                  $max_counter_day = $phoneNumber->max_counter_day;
-                }
-                else
-                {
-                  continue;
-                }
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
                 // PREVENT RUN IF MEMBERSHIP LESS THAN 2
-                if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) || $midnightTime == false )
-                {
-                    continue;
-                }
+                // if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) || $midnightTime == false )
+                // {
+                //     continue;
+                // }
 
                 // if the day before / substract 
                 if($days < 0){
@@ -503,22 +341,14 @@ class SendMessage extends Command
                 $now = Carbon::now()->timezone($row->timezone);
                 $adding = Carbon::parse($time_sending);
 
-								if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) ) {
+								if($adding->gt($now) ) {
 									continue;
 								}
                 
                 $campaign = 'Event';
                 $id_campaign = $row->rcs_id;
 
-                //status queued
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
-                if ($remindercustomer_update->status==5) {
-                  continue;
-                }
-                $remindercustomer_update->status = 5;
-                $remindercustomer_update->save();
-
-                $status = 'Sent';
                 $reminder_id = $remindercustomer_update->reminder_id;
                 $reminder_event = Reminder::find($reminder_id);
 
@@ -526,6 +356,9 @@ class SendMessage extends Command
                 {
                     continue;
                 }
+
+                $customer_phone = $row->telegram_number;
+                $customer_message = $row->message;
 
                 $status_reminder = $reminder_event->status;
                 if($status_reminder == 1)
@@ -535,7 +368,7 @@ class SendMessage extends Command
                 }
                 
                 $fistname = $this->modFullname($row->name);  
-                $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname);
+                $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -548,66 +381,16 @@ class SendMessage extends Command
                 }
                 $message = $spintax->process($message);  //spin text
                 
+                $reminder_status = $remindercustomer_update->status;
 
-                if ($row->image==""){
-                  if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
-                  }
-                  if ($phoneNumber->mode == 1) {
-                    // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
-                    $send_message = $this->send_message($customer_phone,$message,$key);
-                  }
-                  if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
-                  }
-                }
-                else {
-                    if ($phoneNumber->mode == 0) {
-                      // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                      // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                      // storage_path('app/temp-send-image-simi/'.$row->image),
-                                      // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      // basename($row->image)
-                                    // ),$message,$server->url);
-                          $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                          storage_path('app/temp-send-image-simi/'.$row->image),
-                                          mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                          basename($row->image)
-                                        ),$message,$server->url,$row->image);
-                    }
-                    if ($phoneNumber->mode == 1) {
-                      // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                      $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                    }
-                    if ($phoneNumber->mode == 2) {
-                      $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                      storage_path('app/temp-send-image-simi/'.$row->image),
-                                      mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      basename($row->image)
-                                    ),$message,$phoneNumber->device_key,$row->image);
-                    }
-                }
-                  
-                $status =  $this->getStatus($send_message,$phoneNumber->mode);
-                $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
-                $remindercustomer_update = ReminderCustomers::find($id_campaign);
-                $remindercustomer_update->status = $status;
-                $remindercustomer_update->save();
-
-                $phoneNumber->counter--;
-
-                if($max_counter > 0)
+                // SENDING EVENT
+                if($reminder_status == 0) 
                 {
-                    $phoneNumber->max_counter--;
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $remindercustomer_update->status = $status;
+                  $remindercustomer_update->save();
                 }
-                if($max_counter_day > 0)
-                {
-                    $phoneNumber->max_counter_day--;
-                }
-                $phoneNumber->save();
-
-
+                
                 if ($user->speed == 0) { //slow
                   sleep(mt_rand(1, 26));
                 }
@@ -617,11 +400,14 @@ class SendMessage extends Command
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                //delay message sending
+                $this->delay_sending($no);
+                $no++;
               }//END FOR LOOP EVENT
           }
     }
     
-
     /* Appointment */
     public function campaignAppointment()
     {
@@ -637,18 +423,17 @@ class SendMessage extends Command
                   ['customers.status',1], 
                   ['reminders.status','=',1],
                   ['lists.status','>',0],
-									['phone_numbers.id','=',$this->phone_id],
           ])
           ->join('lists','lists.id','=','reminders.list_id')
           ->join('users','reminders.user_id','=','users.id')
           ->join('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
           ->join('customers','customers.id','=','reminder_customers.customer_id')
-					->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
           ->select('reminders.*','reminder_customers.id AS rcs_id','customers.name','customers.telegram_number','customers.email','users.timezone','users.email as useremail','users.membership','reminder_customers.customer_id',"customers.link_unsubs")
           ->get();
 
           if($reminder->count() > 0)
           {
+              $no = 1;
               $counter = 0;
               foreach($reminder as $row)
               {
@@ -657,37 +442,18 @@ class SendMessage extends Command
                 $days = (int)$row->days;
                 $hour = $row->hour_time; //hour according user set it to sending
 
-                $phoneNumber = PhoneNumber::where('user_id','=',$row->user_id)->first();
                 $customer_phone = $row->telegram_number;
                 $customer_message = $row->message;
-                $key = $phoneNumber->filename;
                 $membership = $row->membership;
 
                 $date_appt = $event_date->toFormattedDateString();
                 $time_appt = $event_date->toTimeString();
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
 
-                if(!is_null($phoneNumber)){
-                  $counter = $phoneNumber->counter;
-                  $counter2 = $phoneNumber->counter2;
-                  $max_counter = $phoneNumber->max_counter;
-                  $max_counter_day = $phoneNumber->max_counter_day;
-                }
-                else{
-                  continue;
-                }
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
-                if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) ||$midnightTime == false)
-                {
-                    continue;
-                }
-
+                // if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) ||$midnightTime == false)
+                // {
+                //     continue;
+                // }
 
                 $user = User::find($row->user_id);
 
@@ -703,7 +469,7 @@ class SendMessage extends Command
                 $now = Carbon::now()->timezone($row->timezone);
                 $adding = Carbon::parse($time_sending);
 
-								if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) ) {
+								if($adding->gt($now) ) {
 									continue;
 								}
 
@@ -711,18 +477,8 @@ class SendMessage extends Command
                 $campaign = 'Appointment';
                 $id_campaign = $row->rcs_id;
 
-                //queued status
-                $remindercustomer_update = ReminderCustomers::find($id_campaign);
-                if ($remindercustomer_update->status==5) {
-                  continue;
-                }
-                $remindercustomer_update->status = 5;
-                $remindercustomer_update->save();
-
-                $status = 'Sent';
-
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessageAppointment($customer_message,$row->name,$row->email,$customer_phone,$date_appt,$time_appt,$fistname);
+                $message = $this->replaceMessageAppointment($customer_message,$row->name,$row->email,$customer_phone,$date_appt,$time_appt,$fistname,$user);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -736,56 +492,16 @@ class SendMessage extends Command
                 $message = $spintax->process($message);  //spin text
                 $id_reminder = $row->id_reminder;
    
-                if ($row->image==""){
-                  if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
-                  }
-                  if ($phoneNumber->mode == 1) {
-                    // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
-                    $send_message = $this->send_message($customer_phone,$message,$key);
-                  }
-                  if ($phoneNumber->mode == 2) {
-                    $send_message = $this->send_wamate($customer_phone,$message,$phoneNumber->device_key);
-                  }
-                }
-                else {
-                    if ($phoneNumber->mode == 0) {
-                      // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                      // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                      // storage_path('app/temp-send-image-simi/'.$row->image),
-                                      // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      // basename($row->image)
-                                    // ),$message,$server->url);
-                          $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                          storage_path('app/temp-send-image-simi/'.$row->image),
-                                          mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                          basename($row->image)
-                                        ),$message,$server->url,$row->image);
-                    }
-                    if ($phoneNumber->mode == 1) {
-                      // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                      $send_message = $this->send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
-                    }
-                    if ($phoneNumber->mode == 2) {
-                      $send_message = $this->send_image_url_mate($customer_phone,curl_file_create(
-                                      storage_path('app/temp-send-image-simi/'.$row->image),
-                                      mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      basename($row->image)
-                                    ),$message,$phoneNumber->device_key,$row->image);
-                    }
-                }
-
-                $status =  $this->getStatus($send_message,$phoneNumber->mode);
-                $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
-                $remindercustomer_update->status = $status;
-                $remindercustomer_update->save();
+                $reminder_status = $remindercustomer_update->status;
 
-                $phoneNumber->counter--;
-                $phoneNumber->max_counter--;
-                $phoneNumber->max_counter_day--;
-                $phoneNumber->save();
+                // SENDING APPOINTMENT
+                if($reminder_status == 0)
+                {
+                  $status = Message::sendingwa($user,$customer_phone,$customer_message,$row->image);
+                  $remindercustomer_update->status = $status;
+                  $remindercustomer_update->save();
+                }
 
                 if ($user->speed == 0) { //slow
                   sleep(mt_rand(1, 26));
@@ -796,6 +512,10 @@ class SendMessage extends Command
                 if ($user->speed == 2) { //fast
                   sleep(mt_rand(1, 15));
                 }
+
+                //delay message sending
+                $this->delay_sending($no);
+                $no++;
               }//END FOR LOOP EVENT
           }
     }
@@ -820,14 +540,33 @@ class SendMessage extends Command
         }
     }
 
+    public function delay_sending($no)
+    {
+      $cf = Config::find(1);
+      $total_message = $cf->msg;
+      $time = $cf->time;
+      $target = 1;
+
+      if($total_message > 0)
+      {
+        $target = $no % $total_message;
+      }
+
+      if($target == 0)
+      {
+        sleep($time);
+      }
+    }
+
     public function modFullname($firstname)
     {
       $name_length = explode(' ', $firstname); 
       return $name_length[0];
     }
 
-    public function replaceMessage($customer_message,$name,$email,$phone,$firstname)
+    public function replaceMessage($customer_message,$name,$email,$phone,$firstname,$user)
     {
+      $customer_message = $this->get_title($customer_message);
       $replace_target = array(
         '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]'
       );
@@ -839,8 +578,9 @@ class SendMessage extends Command
       return $message;
     }
 
-    public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname)
+    public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname,$user)
     {
+        $customer_message = $this->get_title($customer_message);
         $replace_target = array(
           '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]','[DATE-APT]','[TIME-APT]'
         );
@@ -853,8 +593,15 @@ class SendMessage extends Command
         return $message;
     }
 
+    //SET CHARACTER INSIDE [] TO UPPERCASE
+    public function get_title($title) {
+        return preg_replace_callback('/[\(\[].*?[\)\]]/', function ($m) {
+            return strtoupper($m[0]);
+        }, $title);
+    }
+
     // GET STATUS AFTER SEND MESSAGE
-    public function getStatus($send_message,$mode)
+    public function getStatus($send_message,$mode,$device_key = null)
     {
 			//default status 
 			$status = 2;
@@ -897,12 +644,25 @@ class SendMessage extends Command
 
       if ($mode == 2) {
 				$obj = json_decode($send_message,true);
-        if ($obj->status == 500){
+        $msg_id = $obj['id'];
+        $get_status = $this->get_status_message_wamate($device_key,$msg_id);
+        $get_status = json_decode($get_status,true);
+
+        if($get_status['status'] == 'FAILED')
+        {
+          $status = 3;
+        }
+        else
+        {
+          $status = 1;
+        }
+
+        /*if ($obj->status == 500){
           $status = 3;
         }
         else {
           $status = 1;
-        }
+        }*/
       }
       return $status;
     }
@@ -911,10 +671,12 @@ class SendMessage extends Command
     public function avoidMidnightTime($timezone)
     {
         $time = Carbon::now()->timezone($timezone);
-        $start = Carbon::createFromTime(21,0,0,$timezone);
-        $end = Carbon::createFromTime(6,0,0,$timezone)->addDays(1);
+        $start1 = Carbon::createFromTime(21,0,0,$timezone);
+        $end1 = Carbon::createFromTime(23,59,59,$timezone);
+        $start2 = Carbon::createFromTime(0,0,0,$timezone);
+        $end2 = Carbon::createFromTime(6,0,0,$timezone);
 
-        if($time->gte($start) && $time->lte($end))
+        if( ($time->gte($start1) && $time->lte($end1)) || ($time->gte($start2) && $time->lte($end2)) )
         {
             return false;
         }
@@ -976,7 +738,7 @@ class SendMessage extends Command
       curl_close($curl);
       return $response;
     }
-
+    
     public function send_message($customer_phone,$message,$key){
       $curl = curl_init();
 
@@ -1005,14 +767,15 @@ class SendMessage extends Command
       curl_close($curl);
       return $response;
     }
-
-    public function send_wamate($customer_phone,$message,$device_key){
+    
+    public function send_wamate($customer_phone,$message,$device_key,$ip_server){
       $curl = curl_init();
 
       $data = array(
           'customer_phone'=>$customer_phone,
           'message'=>$message,
           'device_key'=>$device_key,
+          'user_ip_server'=>$ip_server
       );
 
 		  $url = "https://activrespon.com/dashboard/send-wamate";
@@ -1034,16 +797,16 @@ class SendMessage extends Command
       curl_close($curl);
       return $response;
     }
-
-    public function send_image_url_wamate($customer_phone,$curl,$message,$device_key,$image){
+    
+    public function send_image_url_wamate($customer_phone,$urls3,$message,$device_key,$ip_server){
       $curl = curl_init();
 
       $data = array(
           'customer_phone'=>$customer_phone,
-          'curl'=>$curl,
+          'urls3'=>$urls3,
           'message'=>$message,
           'device_key'=>$device_key,
-          'image'=>$image,
+          'user_ip_server'=>$ip_server
       );
 
 		  $url = "https://activrespon.com/dashboard/send-image-url-wamate";
@@ -1066,6 +829,35 @@ class SendMessage extends Command
       return $response;
     }
 
+    public function get_status_message_wamate($device_key,$msg_id)
+    {
+      $curl = curl_init();
+
+      $data = array(
+          'device_key'=>$device_key,
+          'msg_id'=>$msg_id
+      );
+
+      $url = "https://activrespon.com/dashboard/get-msg-status-wamate";
+
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+      ));
+
+      $response = curl_exec($curl);
+      $err = curl_error($curl);
+
+      curl_close($curl);
+      return $response;
+    }
+    
     public function send_image_url_simi($customer_phone,$curl,$message,$server_url,$image){
       $curl = curl_init();
 
@@ -1096,7 +888,7 @@ class SendMessage extends Command
       curl_close($curl);
       return $response;
     }
-
+    
     public function send_image_url($customer_phone,$urls3,$message,$key){
       $curl = curl_init();
 
@@ -1126,8 +918,8 @@ class SendMessage extends Command
       curl_close($curl);
       return $response;
     }
-
-
+    
+    
     public function send_message_wassenger($customer_phone,$message,$key){
       $curl = curl_init();
 
@@ -1156,6 +948,6 @@ class SendMessage extends Command
       curl_close($curl);
       return $response;
     }
-
+        
 /* end class */
 }
