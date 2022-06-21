@@ -51,13 +51,13 @@ class SendMessage extends Command
       $this->campaignBroadcast();
    
      //Auto Responder
-     /*  $this->campaignAutoResponder();
+      $this->campaignAutoResponder();
      
       //Event
       $this->campaignEvent();
       
       //Appointment
-      $this->campaignAppointment(); */
+      $this->campaignAppointment();
 			
     }    
  
@@ -71,16 +71,15 @@ class SendMessage extends Command
           ->Join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
           ->join('customers',"customers.id","=","broad_cast_customers.customer_id")
           ->join('campaigns',"campaigns.id","=","broad_casts.campaign_id")
-          ->where("broad_cast_customers.status",0)
+          ->where("broad_cast_customers.status","=",0)
           ->where("customers.status",1)
           ->where("campaigns.status",1)
           ->where("lists.status",'>',0)
           ->where("users.api_token","<>",null)
-          ->orWhere("users.api_token","<>","")
           ->orderBy('broad_casts.user_id')
           ->get();
 
-        dd($broadcast->count());
+        // dd($broadcast->count());
 
         if($broadcast->count() > 0)
         {
@@ -202,6 +201,7 @@ class SendMessage extends Command
             ['reminders.status','=',1],
             ['customers.status','=',1],
             ['lists.status','>',0],
+            ["users.api_token","<>",null]
             // ['customers.created_at','<=',$current_time->toDateTimeString()],
             ])
             ->whereRaw('DATEDIFF(now(),customers.created_at) >= reminders.days')
@@ -306,7 +306,8 @@ class SendMessage extends Command
                   ['customers.status',1],
                   ['reminders.status','>',0],
                   ['campaigns.status','>',0],
-                  ['lists.status','>',0]]
+                  ['lists.status','>',0],["users.api_token","<>",null]
+                  ]
             )->get();
 
           // dd($reminder);
@@ -426,6 +427,7 @@ class SendMessage extends Command
                   ['customers.status',1], 
                   ['reminders.status','=',1],
                   ['lists.status','>',0],
+                  ["users.api_token","<>",null]
           ])
           ->join('lists','lists.id','=','reminders.list_id')
           ->join('users','reminders.user_id','=','users.id')
