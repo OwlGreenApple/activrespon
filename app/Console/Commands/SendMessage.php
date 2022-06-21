@@ -71,6 +71,7 @@ class SendMessage extends Command
           ->Join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
           ->join('customers',"customers.id","=","broad_cast_customers.customer_id")
           ->join('campaigns',"campaigns.id","=","broad_casts.campaign_id")
+          ->where("broad_cast_customers.status",0)
           ->where("customers.status",1)
           ->where("campaigns.status",1)
           ->where("lists.status",'>',0)
