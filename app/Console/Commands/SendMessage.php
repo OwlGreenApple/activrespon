@@ -51,13 +51,13 @@ class SendMessage extends Command
       $this->campaignBroadcast();
    
      //Auto Responder
-      $this->campaignAutoResponder();
+     /*  $this->campaignAutoResponder();
      
       //Event
       $this->campaignEvent();
       
       //Appointment
-      $this->campaignAppointment();
+      $this->campaignAppointment(); */
 			
     }    
  
