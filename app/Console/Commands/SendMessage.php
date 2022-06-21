@@ -79,7 +79,7 @@ class SendMessage extends Command
           ->orderBy('broad_casts.user_id')
           ->get();
 
-        dd($broadcast);
+        dd($broadcast->count());
 
         if($broadcast->count() > 0)
         {
