@@ -67,7 +67,7 @@ class SettingController extends Controller
       4. get list no hp 
       5. bisa scan 
       */
-      $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
+      /* $email_wamate = env('APP_ENV')."-".$user->id."@y.com";
       if (is_null($user->email_wamate) ||  $user->email_wamate ==="") {
         $result = WamateHelper::reg($email_wamate,null,env('WAMATE_SERVER'));
         $user->email_wamate = $email_wamate;
@@ -79,7 +79,7 @@ class SettingController extends Controller
         $user->token = $result->token;
         $user->refresh_token = $result->refreshToken;
         $user->save();
-      }
+      } */
 
       /*if(!is_null($user->token))
       {
