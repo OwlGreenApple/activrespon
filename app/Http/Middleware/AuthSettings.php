@@ -21,8 +21,8 @@ class AuthSettings
       $user = Auth::user();
       $phone = PhoneNumber::where('user_id',$user->id)->where('status',"=",2)->first();
       $current_url = Route::current()->uri;
-             
-      /* redirect ke hlmn pricing jika membership user habis */   
+
+      /* redirect ke hlmn pricing jika membership user habis */
       if($user->day_left <= 0)
       {
         return redirect('pricing');
@@ -43,7 +43,7 @@ class AuthSettings
 
       // PREVENT NON RESELLER USER OPEN RESELLER PAGE
     /*  $url = ['reseller-invoice','reseller-home','tutorial-api'];
-      if (in_array($current_url, $url) == true && $user->reseller_token == null) 
+      if (in_array($current_url, $url) == true && $user->reseller_token == null)
       {
           return redirect('settings');
       }*/
@@ -51,11 +51,11 @@ class AuthSettings
       $valid_url = false;
 
       /* daftar url yg tidak akan di redirect jika user phone_number kosong */
-      if($current_url == "settings" || $current_url == "check-otp" || $current_url == "submit-otp" || $current_url == "connect-phone" || $current_url == "verify-phone" || $current_url == "check-qr")
+      if($current_url == "settings" || $current_url == "create-device" || $current_url == "check-otp" || $current_url == "submit-otp" || $current_url == "connect-phone" || $current_url == "verify-phone" || $current_url == "check-qr")
       {
         $valid_url = true;
       }
-      
+
       if(is_null($phone) && $valid_url === false && !$request->ajax())
       {
         return redirect('settings');
@@ -73,7 +73,7 @@ class AuthSettings
 
       $url = ['reseller-home','tutorial-api','reseller-detail','reseller-data','reseller-token-page','reseller-token','reseller-member'];
 
-      if (in_array($current_url, $url) == true && $request->ajax()) 
+      if (in_array($current_url, $url) == true && $request->ajax())
       {
         return $next($request);
       }

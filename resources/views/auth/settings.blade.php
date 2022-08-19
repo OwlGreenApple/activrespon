@@ -19,20 +19,20 @@
         <br><br>
         <span class="txt-mode"></span>
         <br>
-        
+
         <div class="col-12 mb-4" style="margin-top: 30px">
           <button class="btn btn-danger btn-block btn-delete-ok" data-dismiss="modal" id="button-delete-phone">
             Ya, Hapus Sekarang
           </button>
         </div>
-        
+
         <div class="col-12 text-center mb-4">
           <button class="btn  btn-block btn-delete-ok" data-dismiss="modal">
             Batal
-          </button>  
+          </button>
         </div>
       </div>
-    </div>   
+    </div>
   </div>
 </div>
 
@@ -76,18 +76,18 @@
            <h5> Dengan mencentang box ini berarti anda telah: <b>membaca</b>, <b>mengerti</b> dan <b>setuju</b> dengan ketentuan di atas.</h5>
           </label>
         </div>
-       
+
         <div id="display_agreement" class="col-12 mb-4" style="margin-top: 30px">
           <!-- display start -->
         </div>
-        
+
         <div class="col-12 text-center mb-4">
           <a href="" class="" data-dismiss="modal">
             Batal
-          </a>  
+          </a>
         </div>
       </div>
-    </div>   
+    </div>
   </div>
 </div>
 
@@ -115,43 +115,18 @@
         </div>
 
         <div class="row col-fix">
-            <form class="wrapper add-contact col-lg-9 pad-fix" id="form-connect">
+            <div class="col-lg-9 col-md-12 col-sm-12 plan account_status">
                 <div class="form-group row col-fix">
-                  <label class="col-lg-3 col-md-4 col-form-label">Phone Whatsapp :</label>
-                  <div class="col-lg-9 col-md-8">
-                    <div class="row">
-                   <!--  <div class="col-lg-3 row relativity">
-                      <input id="code_country" name="code_country" class="form-control custom-select-campaign" value="+62" />
-                      <span class="icon-carret-down-circle"></span>
-                      <span class="error code_country"></span>
+                    <label class="col-lg-3 col-md-4 col-form-label">Phone Whatsapp :</label>
+                    <div class="form-inline">
+                        @if($is_registered == 0)
+                            <button id="cdevice" type="button" class="btn btn-success">Buat Device</button>
+                        @else
+                            <button id="button-connect" type="button" class="btn btn-primary">Hubungkan Device</button>
+                        @endif
                     </div>
-                    -->
-                      <div class="col-sm-12">
-                        <div id="move_tab1">
-                          <input type="text" id="phone" name="phone_number" class="form-control" />
-                          <span class="error code_country"></span>
-                          <span class="error phone_number"></span>
-                        </div>
-
-                        <!-- OTP -->
-                        <div id="otp" class="row mt-3 col-lg-4" style="display:none">
-                          <input placeholder="OTP Code" class="form-control form-control-sm" name="otp"/>
-                        </div>
-                      </div>
-                      <!--<div>Please add avatar / image on your WA account.</div>-->
-                      <div class="col-lg-12 pad-fix"><ul id="display_countries"><!-- Display country here... --></ul></div>
-                    </div>
-                  </div>
                 </div>
-
-                <div id="display_button_after_delete_phone" class="text-right">
-                  @if(!$is_registered)
-                    <button id="btn-check" type="button" class="btn btn-custom">Check Phone Number</button>
-                  @endif
-                 <!--  <button type="button" id="button-connect-old" class="btn btn-custom" <php if ($is_registered) { echo "disabled"; } ?> data-attr="<php if (session('mode')==0) { echo session("server_id"); }?>">Connect</button> -->
-                </div>
-
-            </form>
+            </div>
 
             <div class="col-lg-3 col-md-12 col-sm-12 plan account_status">
               @if($user->status > 0)
@@ -194,7 +169,7 @@
         </div>
 
       </div>
-    <!-- end tabs -->  
+    <!-- end tabs -->
     </div>
 
     <!-- TABS 2 -->
@@ -205,7 +180,7 @@
 
       <form id="user_contact" class="form-contact">
         <div class="wrapper account mb-5">
-          <h5>Edit Your Personal Data</h5>   
+          <h5>Edit Your Personal Data</h5>
               <div class="form-group row col-fix">
                 <label class="col-sm-4 col-form-label">Email</label>
                 <label class="col-sm-1 double-dot col-form-label">:</label>
@@ -214,7 +189,7 @@
                     {{$user->email}}
                   </div>
                 </div>
-              </div> 
+              </div>
 
               <div class="form-group row col-fix">
                 <label class="col-sm-4 col-form-label">Full Name</label>
@@ -223,7 +198,7 @@
                   <input name="user_name" type="text" class="form-control" value="{{$user->name}}" />
                   <span class="error user_name"></span>
                 </div>
-              </div> 
+              </div>
 
               <div class="form-group row col-fix">
                 <label class="col-sm-4 col-form-label">Phone Number</label>
@@ -239,7 +214,7 @@
                 <label class="col-sm-1 double-dot col-form-label">:</label>
                 <div class="col-sm-7 text-left">
                    <select class="js-example-basic-single form-control" id="timezone"  name="timezone" required>
-                      @foreach($timezone as $time)    
+                      @foreach($timezone as $time)
                           <option value="{{$time['zone']}}"> ({{$time['GMT_difference']. ' ) '.$time['zone']}}</option>
                       @endforeach
                    </select>
@@ -247,7 +222,7 @@
                 </div>
               </div>
         </div>
-        
+
         <div class="wrapper account">
           <h5>Edit Your Password</h5>
               <div class="form-group row col-fix">
@@ -257,7 +232,7 @@
                   <input type="password" name="oldpass" class="form-control" />
                   <span class="error oldpass"></span>
                 </div>
-              </div> 
+              </div>
 
               <div class="form-group row col-fix">
                 <label class="col-sm-4 col-form-label">New Password</label>
@@ -266,7 +241,7 @@
                   <input type="password" name="newpass" class="form-control" />
                   <span class="error newpass"></span>
                 </div>
-              </div> 
+              </div>
 
               <div class="form-group row col-fix">
                 <label class="col-sm-4 col-form-label">Confirm New Password</label>
@@ -293,24 +268,24 @@
             </div>
 
             <div class="text-right">
-              <button id="generate_api" type="button" class="btn btn-custom">Generate API</button> 
+              <button id="generate_api" type="button" class="btn btn-custom">Generate API</button>
             </div>
         </div>
         </form>
         <!-- end wrapper -->
 
       </div>
-    <!-- end tabs -->    
+    <!-- end tabs -->
     </div>
 
   </div>
-<!-- end container -->    
+<!-- end container -->
 </div>
 
 <!-- Modal Edit Phone -->
   <div class="modal fade child-modal" id="edit-phone" role="dialog">
     <div class="modal-dialog">
-    
+
       <!-- Modal content -->
       <div class="modal-content">
         <div class="modal-body">
@@ -322,18 +297,18 @@
                     <div class="form-group">
                       <input type="text" class="form-control" name="edit_phone" />
                     </div>
-                 
+
                     <div class="text-right">
                       <button type="submit" class="btn btn-custom mr-1">Save</button>
                       <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                     </div>
                   </form>
                 </div>
-                
+
             </div>
         </div>
       </div>
-      
+
     </div>
   </div>
   <!-- End Modal -->
@@ -356,12 +331,67 @@
         </div>
 
       </div>
-      
+
     </div>
   </div>
   <!-- End Modal -->
 
-<!-- <script src="{{ asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script> -->
+<!-- <script src=" asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script> -->
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        $('#div-verify').hide();
+        create_device()
+    });
+
+    function create_device()
+    {
+        $("#cdevice").click(function(){
+            ajax_device_create();
+        });
+    }
+
+    function ajax_device_create()
+    {
+        var resp = 0;
+        $.ajax({
+            method : 'GET',
+            url : '{{ url("create-device") }}',
+            dataType : 'json',
+            beforeSend : function()
+            {
+                $('#loader').show();
+                $('.div-loading').addClass('background-load');
+            },
+            success : function(res)
+            {
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+                if(res.success === 1)
+                {
+                    resp = 1;
+                }
+            },
+            complete : function()
+            {
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+
+                if(resp === 1)
+                {
+                    location.href="{{ url('settings') }}"
+                }
+            },
+            error : function(xhr)
+            {
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+            }
+        });
+    }
+
+</script>
+
 <script type="text/javascript">
 
   var code_country = '{{ $user->code_country }}';
@@ -401,7 +431,7 @@
         },
         dropdownContainer: document.body,
         pageHiddenInput : url[4],
-        initialCountry: code_country,  
+        initialCountry: code_country,
         onlyCountries: ['us', 'gb', 'sg', 'au', 'id','my'],
         placeholderNumberType: "MOBILE",
         utilsScript: path+"/intl-tel-input/js/utils.js",
@@ -409,18 +439,18 @@
   }
 
   // Jquery Tabs
-  function tabs() {    
+  function tabs() {
       $('#tabs li a:not(:first)').addClass('inactive');
       $('.tabs-container').hide();
       $('.tabs-container:first').show();
-          
+
       $('#tabs li a').click(function(){
         var t = $(this).attr('id');
 
-        if($(this).hasClass('inactive')){ //this is the start of our condition 
-          $('#tabs li a').addClass('inactive');           
+        if($(this).hasClass('inactive')){ //this is the start of our condition
+          $('#tabs li a').addClass('inactive');
           $(this).removeClass('inactive');
-          
+
           $('.tabs-container').hide();
           moveInputPhone(t);
           $('#'+ t + 'C').fadeIn('slow');
@@ -446,7 +476,7 @@
         $("#phone").val(phone_number);
       }
   }
-  
+
   function loadPhoneNumber(){
     $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -461,12 +491,13 @@
       success: function(result) {
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
+        $('#phone-table').show();
         $('#table-phone').html(result);
       },
       error: function(xhr,attr,throwable){
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
-        alert('Sorry cannot load phone list, please call administrator'); 
+        $('#table-phone').html('Maaf server kami terlalu sibuk, silahkan coba lagi nanti');
       }
     });
   }
@@ -502,7 +533,7 @@
               show: true,
               keyboard: false,
               backdrop: 'static'
-            }); 
+            });
             $("#auth_message").html('Your membership has expired please buy more to continue');
           }
         }
@@ -529,7 +560,7 @@
     }
 
     function codeCountry()
-    { 
+    {
       $("input[name='code_country']").click(function(){$("input[name='code_country']").val('');});
 
       $("body").on('keyup focusin',"input[name='code_country']",delay(function(e){
@@ -612,7 +643,7 @@
       error: function(xhr,attr,throwable){
         $('#loader').hide();
         $('.div-loading').removeClass('background-load');
-        alert('Sorry cannot load phone list, please call administrator'); 
+        alert('Sorry cannot load phone list, please call administrator');
       }
     });
   }
@@ -659,35 +690,30 @@
         error: function(xhr,attr,throwable){
           $('#loader').hide();
           $('.div-loading').removeClass('background-load');
-          alert('Sorry cannot load phone list, please call administrator'); 
+          alert('Sorry cannot load phone list, please call administrator');
         }
       });
       // end ajax
     });
   }
-		
-	$(document).ready(function() {  
-    checkPhone(); 
+
+	$(document).ready(function() {
+    checkPhone();
     tabs();
     loadPhoneNumber();
     editPhoneNumber();
     openEditModal();
     settingUser();
     triggerButtonMod();
-    intialCountry();
-    checkOTP();
-    submitOTP();
+    // intialCountry();
+    // checkOTP();
+    // submitOTP();
     agreement();
     checked_agreement();
     // selJs();
 
     $(".iti").addClass('w-100');
-    $('#div-verify').hide();
     $('.message').hide();
-    $('#phone-table').hide();
-    <?php if ($is_registered) { ?>
-      $('#phone-table').show();
-    <?php } ?>
     buttonStartConnect();
 		buttonConnect();
 
@@ -700,7 +726,7 @@
     putCallCode();
 
 		// End Display Country
-		
+
 		initButton();
     generate_api_key();
   });
@@ -861,17 +887,14 @@
      });
   }
 	function buttonConnect(){
-			$('body').on('click','#button-connect',function(){
-				$("#modal-start-connect").modal();
-			});
+        $('body').on('click','#button-connect',function(){
+            $("#modal-start-connect").modal();
+        });
 	}
-	function buttonStartConnect(){
-    $('body').on('click','#button-start-connect',function(){
-      var phone_number = $("#phone").val();
-      var code_country = $(".iti__selected-flag").attr('data-code');
-      var dataphone = $("#form-connect").serializeArray();
-      dataphone.push({name:'code_country', value:code_country});
-
+	function buttonStartConnect()
+    {
+    $('body').on('click','#button-start-connect',function()
+    {
       $.ajax({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         type: 'GET',
@@ -923,7 +946,7 @@
     });
 	}
 
-	
+
   var tm,flagtm;
   function waitingTime()
   {
@@ -1040,7 +1063,7 @@
 						checkQRcode(phone_number);
 					}
 				}
-				
+
 				// if(sec < 1){
 				if(sec < -60){
 					clearInterval(timerCheckQrCode);
@@ -1086,7 +1109,7 @@
               $("#qr-code").html(result.data);
             }
           <?php } ?>
-				}  
+				}
 				if (result.status=="Congratulations, your phone is connected"){
 					$('#div-verify').hide();
 					$("#timer, #qr-code").html('');
@@ -1107,10 +1130,10 @@
 				console.log(xhr.responseText);
 			}
 		});
-	}	
-	
+	}
+
 	function initButton(){
-		    
+
     $('#button-delete-phone').click(function(){
       $.ajax({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },

@@ -1,5 +1,5 @@
 <?php
- 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -134,7 +134,7 @@ Route::group(['middleware'=>['auth','web','is_admin_woowa']],function(){
   Route::get('/list-invoice/load-invoice-order','Admin\WooWAController@load_invoice_order');
 	Route::post('/list-invoice/confirm','Admin\WooWAController@confirm_invoice');
 });
-	
+
 /* Admin */
 Route::group(['middleware'=>['auth','web','is_admin']],function(){
 	/*Route::get('sendingrate', 'AdminController@SendingRate');
@@ -164,14 +164,14 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   Route::post('sendmessage','SpidermanController@sendMessage');
   /* -- */
 
-  //List Admin 
+  //List Admin
   Route::get('/list-user','Admin\UserController@index');
   Route::get('/list-user/load-user','Admin\UserController@load_user');
   Route::get('/list-user/add-user','Admin\UserController@add_user');
   Route::get('/list-user/edit-user','Admin\UserController@edit_user');
   Route::get('list-user/view-log','Admin\UserController@load_log');
   Route::post('/import-excel-user','Admin\UserController@import_excel_user');
-  
+
 	//List Coupon
 	Route::get('/list-coupon','CouponController@index');
 	Route::get('/list-coupon/load-coupon','CouponController@load_coupon');
@@ -188,7 +188,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   });*/
   Route::get('/list-order/load-order','Admin\OrderController@load_list_order');
   Route::get('/list-order/confirm','Admin\OrderController@confirm_order');
-  
+
   //list phone
   Route::get('/list-phone',function(){
     return view('admin.list-phone.index');
@@ -221,20 +221,21 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
 Route::group(['middleware'=>['auth','web']],function(){
   // Route::get('settings/{mod?}', 'SettingController@index');
   Route::get('settings', 'SettingController@index');
+  Route::get('create-device', 'SettingController@create_device');
   Route::post('save-settings', 'SettingController@settingsUser')->middleware('usersettings');
   Route::get('load-phone-number', 'SettingController@load_phone_number');
   Route::get('generate_api_list', 'SettingController@save_api_list');
   Route::get('signout', 'Auth\LoginController@logout');
-  
-	//woowa + simi 
+
+	//woowa + simi
   // Route::get('connect-phone', 'SettingController@connect_phone')->middleware('checkcall');
   Route::post('check-otp', 'SettingController@getOTP');
   Route::post('submit-otp', 'SettingController@submitOTP');
-  Route::get('connect-phone', 'SettingController@connect_phone')->middleware('checkcall');
+  Route::get('connect-phone', 'SettingController@phone_connect')/* ->middleware('checkcall') */;
   Route::get('verify-phone', 'SettingController@verify_phone')->middleware('checkphone');
   Route::get('check-qr', 'SettingController@check_connected_phone');
   Route::get('delete-phone', 'SettingController@delete_phone');
- 
+
   Route::get('delete-api/{no}', 'SettingController@delete_api');
   Route::get('status-nomor/{no}', 'SettingController@status_nomor');
   Route::get('get-qr-code/{no}', 'SettingController@get_qr_code');
@@ -246,14 +247,14 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::get('send-image', 'SettingController@send_image_url');
   Route::get('test-send-message-temp', 'SettingController@test_send_message');
   // Route::post('edit-phone', 'SettingController@editPhone');
-	
-	//Orders 
+
+	//Orders
 	Route::get('/order','OrderController@index_order');
 	Route::get('/order/load-order','OrderController@load_order');
   Route::get('get-status-upgrade','OrderController@getStatusUpgrade');
 	Route::post('order-confirm-payment','OrderController@confirm_payment_order');
 });
- 
+
 /*** USER ***/
 Route::group(['middleware'=>['auth','web','authsettings']],function(){
 	/* HOME */
@@ -272,7 +273,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('lists-table', 'ListController@dataList');
   Route::get('list-form', 'ListController@formList');
   Route::get('list-create', 'ListController@createList');
-  Route::post('list-save','ListController@saveList')->name('savelist'); 
+  Route::post('list-save','ListController@saveList')->name('savelist');
   Route::get('list-delete','ListController@delListContent')->name('deletelist');
   Route::get('list-search','ListController@searchList')->name('searchlist');
   Route::get('list-edit/{list_id}/{mod?}','ListController@editList');
@@ -304,14 +305,14 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('create-campaign', 'CampaignController@CreateCampaign');
   Route::post('send-test-message', 'CampaignController@sendTestMessage');
   Route::post('save-campaign', 'CampaignController@SaveCampaign');
-  Route::get('campaign-del','CampaignController@delCampaign'); 
-  Route::get('list-campaign/{id}/{isevent}/{active}','CampaignController@listCampaign'); 
-  Route::get('list-broadcast-campaign','CampaignController@listBroadcastCampaign'); 
-  Route::get('list-event-campaign','CampaignController@listEventCampaign'); 
-  Route::get('list-delete-campaign','CampaignController@listDeleteCampaign'); 
-  Route::get('list-datatable-campaign','CampaignController@listAutoSchedule'); 
-  Route::post('edit-campaign-name','CampaignController@editCampaign'); 
-  Route::post('calculate-user','CampaignController@calculate_user_list'); 
+  Route::get('campaign-del','CampaignController@delCampaign');
+  Route::get('list-campaign/{id}/{isevent}/{active}','CampaignController@listCampaign');
+  Route::get('list-broadcast-campaign','CampaignController@listBroadcastCampaign');
+  Route::get('list-event-campaign','CampaignController@listEventCampaign');
+  Route::get('list-delete-campaign','CampaignController@listDeleteCampaign');
+  Route::get('list-datatable-campaign','CampaignController@listAutoSchedule');
+  Route::post('edit-campaign-name','CampaignController@editCampaign');
+  Route::post('calculate-user','CampaignController@calculate_user_list');
 
   /* UTILITY / TARGETING */
   Route::get('targeting-form','CampaignController@utility_form');
@@ -319,7 +320,7 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('targeting-list','Admin\UtilityController@display_category');
   Route::post('targeting-edit','Admin\UtilityController@edit_category');
   Route::get('targeting-del','Admin\UtilityController@delete_category');
-  
+
   /* EVENT */
   Route::get('event-del','EventController@delEvent');
   Route::post('event-duplicate','EventController@duplicateEvent')->middleware('checkeventduplicate');
@@ -341,11 +342,11 @@ Route::group(['middleware'=>['auth','web','authsettings']],function(){
   Route::get('delete-auto-responder','ReminderController@deleteAutoResponder');
 
   /* BROADCAST */
-  Route::get('broadcast-list','BroadCastController@displayBroadCast')->name('broadcastlist'); 
-  Route::get('broadcast-del','BroadCastController@delBroadcast'); 
-  Route::get('broadcast-check','BroadCastController@checkBroadcastType'); 
-  Route::post('broadcast-update','BroadCastController@updateBroadcast')->middleware('checkbroadcastduplicate'); 
-  Route::post('broadcast-duplicate','BroadCastController@duplicateBroadcast')->middleware('checkbroadcastduplicate'); 
+  Route::get('broadcast-list','BroadCastController@displayBroadCast')->name('broadcastlist');
+  Route::get('broadcast-del','BroadCastController@delBroadcast');
+  Route::get('broadcast-check','BroadCastController@checkBroadcastType');
+  Route::post('broadcast-update','BroadCastController@updateBroadcast')->middleware('checkbroadcastduplicate');
+  Route::post('broadcast-duplicate','BroadCastController@duplicateBroadcast')->middleware('checkbroadcastduplicate');
 
   /* APPOINTMENT */
   Route::get('create-apt','AppointmentController@createAppointment');
