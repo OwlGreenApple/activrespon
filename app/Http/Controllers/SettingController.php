@@ -222,10 +222,6 @@ class SettingController extends Controller
 
     public function create_device()
     {
-        $qrcode = new QRCode;
-        $qr = '<img style="width:220px" src="'.$qrcode->render('2@4ZO9lSzMb8qb5i+mYDXxRLumuJvOmSxXksMAsNEDRn3GYUe/FKEWa+xA6RgAe28xvvM1ZILy7hi3Ug==,WxF8OgmZtzHP4xw+5fqWesTDvCPQ6odsMk2lV0EMMnE=,cWR4xL1jR19ovQp/qkaWjUqM+GMEwswSsm/w8eAW52k=,IgqcnChul7Ea1kiCpS+8LD5H1OmTepDC/NQylCogYu0=').'"/>';
-        return $qr;
-        dd('');
         $wa = new Waweb;
         $con = $wa->create_device();
 
@@ -253,7 +249,42 @@ class SettingController extends Controller
         }
 
         $api = new Waweb;
+        $api->scan();
+    }
 
+    public function wawebQR()
+    {
+        $api = new Waweb;
+        $qr_code = $api->qr();
+
+        if(!is_array($qr_code))
+        {
+            $qrcode = new QRCode;
+            $qr = '<img style="width:220px" src="'.$qrcode->render($qr_code).'"/>';
+        }
+        else
+        {
+            $qr = 'error';
+        }
+
+        return $qr;
+    }
+
+    public function wawebStatus()
+    {
+        $api = new Waweb;
+        $res = $api->status();
+
+        $phone = PhoneNumber::where('user_id',Auth::id())->first();
+        if(!is_null($phone))
+        {
+            $device = PhoneNumber::find($phone->id);
+            $device->phone_number = $res['phone'];
+            $device->status = $res['isConnected'];
+            $device->save();
+        }
+
+        return response()->json($res);
     }
 
     //GENERATE KEY FOR API KEY LIST (GIVEAWAY)

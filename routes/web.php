@@ -159,7 +159,7 @@ Route::group(['middleware'=>['auth','web','is_admin']],function(){
   /* Spiderman */
   Route::get('connect-system','SpidermanController@index');
   Route::get('start','SpidermanController@start');
-  Route::get('scan','SpidermanController@scan');
+//   Route::get('scan','SpidermanController@scan');
   Route::get('statusmessage','SpidermanController@status');
   Route::post('sendmessage','SpidermanController@sendMessage');
   /* -- */
@@ -222,6 +222,10 @@ Route::group(['middleware'=>['auth','web']],function(){
   // Route::get('settings/{mod?}', 'SettingController@index');
   Route::get('settings', 'SettingController@index');
   Route::get('create-device', 'SettingController@create_device');
+  Route::get('scan', 'SettingController@phone_connect')/* ->middleware('checkcall') */;
+  Route::get('qrcode', 'SettingController@wawebQR');
+  Route::get('phone-status', 'SettingController@wawebStatus');
+
   Route::post('save-settings', 'SettingController@settingsUser')->middleware('usersettings');
   Route::get('load-phone-number', 'SettingController@load_phone_number');
   Route::get('generate_api_list', 'SettingController@save_api_list');
@@ -231,7 +235,6 @@ Route::group(['middleware'=>['auth','web']],function(){
   // Route::get('connect-phone', 'SettingController@connect_phone')->middleware('checkcall');
   Route::post('check-otp', 'SettingController@getOTP');
   Route::post('submit-otp', 'SettingController@submitOTP');
-  Route::get('connect-phone', 'SettingController@phone_connect')/* ->middleware('checkcall') */;
   Route::get('verify-phone', 'SettingController@verify_phone')->middleware('checkphone');
   Route::get('check-qr', 'SettingController@check_connected_phone');
   Route::get('delete-phone', 'SettingController@delete_phone');

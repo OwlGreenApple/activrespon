@@ -18,6 +18,7 @@ use App\Reminder;
 use App\ReminderCustomers;
 use App\Customer;
 use App\Message;
+use App\Helpers\Waweb;
 use App\Helpers\Spintax;
 use App\User;
 use App\PhoneNumber;
@@ -31,7 +32,7 @@ class SendNotif implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 		protected $key;
-		
+
     /**
      * Create a new job instance.
      *
@@ -55,24 +56,31 @@ class SendNotif implements ShouldQueue
 
 
         //status 11 dari campaign controller
-        //wamate
+        //waweb
         $messages = Message::
                     where("status",11)
-                    ->where('key',$this->key)
+                    // ->where('key',$this->key)
                     ->get();
+
+        $api = new Waweb;
+
         foreach($messages as $message) {
 
           if($message->img_url == null)
           {
-            $send_message = $this->send_wamate($message->phone_number,$message->message,$message->key,$message->ip_server);
+            // $send_message = $this->send_wamate($message->phone_number,$message->message,$message->key,$message->ip_server);
+            $send_message = $api->send_message($message->user_id,$message->phone_number,$message->message);
           }
           else
           {
-            $send_message = self::send_wamate_image($message->phone_number,$message->message,$message->img_url,$message->key,$message->ip_server);
+            $send_message = $api->send_message($message->user_id,$message->phone_number,$message->message,$message->img_url);
           }
 
-          $status = $this->getStatus($send_message,2);
-          $message->status = $status;
+          $res = $send_message;
+
+        //   dd($res);
+          $message->key = $res['msg_id'];
+          $message->status = 1;
           $message->save();
 
           sleep(mt_rand(1, 30));
@@ -87,7 +95,7 @@ class SendNotif implements ShouldQueue
         foreach($messages as $message) {
           $send_message = $this->send_simi($message->phone_number,$message->message,$message->key);
           $status = $this->getStatus($send_message,0);
-          
+
           $message->status = $status;
           $message->save();
 
@@ -129,7 +137,7 @@ class SendNotif implements ShouldQueue
 
           sleep(mt_rand(1, 30));
         }
-        
+
         //status 9 dari customer controller, perlu untuk mengubah status customer
         //woowa
         $messages = Message::
@@ -139,7 +147,7 @@ class SendNotif implements ShouldQueue
         foreach($messages as $message) {
           $send_message = $this->send_message($message->phone_number,$message->message,$message->key);
           $status = $this->getStatus($send_message,1);
-          
+
           $message->status = $status;
           $message->save();
 
@@ -159,7 +167,7 @@ class SendNotif implements ShouldQueue
         foreach($messages as $message) {
           $send_message = $this->send_simi($message->phone_number,$message->message,$message->key);
           $status = $this->getStatus($send_message,0);
-          
+
           $message->status = $status;
           $message->save();
 
@@ -167,12 +175,12 @@ class SendNotif implements ShouldQueue
         }
       }
 		}
-		
+
     public function getStatus($send_message,$mode)
     {
-			//default status 
+			//default status
 			$status = 2;
-			
+
 			if ($mode == 0) {
 				//status simi
 				$obj = json_decode($send_message);
@@ -192,7 +200,7 @@ class SendNotif implements ShouldQueue
 						$status = 2;
 				}
 			}
-			
+
 			if ($mode == 1) {
 				//status woowa
 				if(strtolower($send_message) == 'success')
@@ -202,7 +210,7 @@ class SendNotif implements ShouldQueue
 				elseif($send_message == 'phone_offline')
 				{
 						$status = 2;
-				} 
+				}
 				else
 				{
 						$status = 3;
@@ -213,7 +221,7 @@ class SendNotif implements ShouldQueue
 				$obj = json_decode($send_message,true);
         if(!isset($obj['status']))
         {
-          $status = 4; 
+          $status = 4;
         }
         elseif($obj['status'] == 500)
         {
@@ -223,7 +231,7 @@ class SendNotif implements ShouldQueue
         {
           $status = 2;
         }
-        else 
+        else
         {
           $status = 1;
         }
@@ -260,7 +268,7 @@ class SendNotif implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
+
     public function send_message($customer_phone,$message,$key){
       $curl = curl_init();
 
@@ -289,7 +297,7 @@ class SendNotif implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
+
     public function send_wamate($customer_phone,$message,$device_key,$user_ip_server){
       $curl = curl_init();
 
@@ -298,7 +306,7 @@ class SendNotif implements ShouldQueue
           'message'=>$message,
           'device_key'=>$device_key,
           'user_ip_server'=>$user_ip_server,
-      ); 
+      );
 
 		  $url = "https://activrespon.com/dashboard/send-wamate";
 
@@ -330,7 +338,7 @@ class SendNotif implements ShouldQueue
           'device_key'=>$device_key,
           'user_ip_server'=>$user_ip_server,
           'urls3'=>$urls3,
-      ); 
+      );
 
       $url = "https://activrespon.com/dashboard/send-image-url-wamate";
 
@@ -351,6 +359,6 @@ class SendNotif implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
+
 /* end class */
 }

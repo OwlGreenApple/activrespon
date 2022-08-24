@@ -341,7 +341,8 @@
     $(document).ready(function()
     {
         $('#div-verify').hide();
-        create_device()
+        create_device();
+        buttonQr();
     });
 
     function create_device()
@@ -389,6 +390,153 @@
             }
         });
     }
+
+    function buttonQr()
+    {
+        $("body").on("click","#button-qr",function()
+        {
+            wawebScan();
+        });
+    }
+
+    function wawebScan()
+    {
+        $.ajax({
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            type: 'GET',
+            url: "{{ url('scan') }}",
+            dataType: 'json',
+            beforeSend: function()
+            {
+                $('#div-verify').show();
+                $("#modal-start-connect").modal('hide');
+                timeQR();
+            },
+            success: function(result) {
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+
+                if(result.isConnected === 0)
+                {
+                    // scan timeout
+                    $("#timer").html('<div class="alert alert-warning">{{ Lang::get("custom.db") }}</div>');
+                }
+                else
+                {
+                    $("#timer").html('<div class="alert alert-danger">{{ Lang::get("custom.db") }}</div>');
+                }
+            },
+            error : function(xhr,attr,throwable){
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+                console.log(xhr.responseText);
+                alert('Sorry, unable to display QR-CODE, there is something wrong with our server, please try again later')
+            }
+        });
+    }
+
+    function retQR()
+	{
+		$.ajax({
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            type: 'GET',
+            url: "{{ url('qrcode') }}",
+            dataType: 'html',
+            beforeSend: function()
+            {
+                $('#loader').show();
+                $('.div-loading').addClass('background-load');
+            },
+            success: function(result) {
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+
+                if(result == 'error')
+                {
+                    $("#qr-code").html('<div class="alert alert-danger">{{ Lang::get("custom.db") }}</div>')
+                }
+                else if(result === null)
+                {
+                    $("#qr-code").html('Loading...')
+                }
+                else
+                {
+                    $("#qr-code").html(result);
+                }
+            },
+            error : function(xhr,attr,throwable){
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+                console.log(xhr.responseText);
+                alert('Sorry, unable to display QR-CODE, there is something wrong with our server, please try again later')
+            }
+        });
+	}
+
+    function deviceStatus()
+	{
+		$.ajax({
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            type: 'GET',
+            url: "{{ url('phone-status') }}",
+            dataType: 'json',
+            beforeSend: function()
+            {
+                $('#loader').show();
+                $('.div-loading').addClass('background-load');
+            },
+            success: function(result)
+            {
+                if(result.isConnected == 1)
+                {
+                    location.href="{{ url('settings') }}";
+                }
+                else
+                {
+                    $('#loader').hide();
+                    $('.div-loading').removeClass('background-load');
+                }
+            },
+            error : function(xhr,attr,throwable){
+                $('#loader').hide();
+                $('.div-loading').removeClass('background-load');
+                console.log(xhr.responseText);
+                alert('Sorry, unable to display QR-CODE, there is something wrong with our server, please try again later')
+            }
+        });
+	}
+
+    function timeQR()
+	{
+		var sec = 60; //countdown timer
+		var word = '<h3>Please scan qr-code before time\'s up :</h3>';
+		flagTimerCheckQrCode=false;
+		timerCheckQrCode = setInterval( function(){
+
+				if((sec == 50) || (sec == 45) || (sec == 30))
+                {
+					retQR();
+				}
+
+                if((sec == 12) || (sec == 8) || (sec == 4)|| (sec == 2))
+                {
+                    deviceStatus();
+                }
+
+				if(sec < -60){
+					clearInterval(timerCheckQrCode);
+				}
+
+				if(sec < 10 && sec >= 0 ){
+					$("#timer").html(word+'<h4><b>0'+sec+'</b></h4>');
+				}
+				else if(sec > 10)
+				{
+					$("#timer").html(word+'<h4><b>'+sec+'</b></h4>');
+				}
+				sec--;
+		},1000);
+	}
 
 </script>
 
@@ -767,7 +915,8 @@
     var checked = $("input[name='agreement']").prop('checked');
     if(checked == true)
     {
-      $("#display_agreement").html('<button class="btn btn-secondary btn-block" id="button-start-connect">Start</button>')
+    //   $("#display_agreement").html('<button class="btn btn-secondary btn-block" id="button-start-connect">Start</button>')
+      $("#display_agreement").html('<button class="btn btn-secondary btn-block" id="button-qr">Start</button>')
     }
     else
     {
@@ -917,8 +1066,7 @@
             $('.message').show();
             $('.message').html(data.message);
             $("#button-connect").prop('disabled',true);
-            $("#phone").prop('disabled',true);
-            $("#code_country").prop('disabled',true);
+
             // new system loadPhoneNumber();
             waitingTime();
             $(".error").hide();
@@ -963,6 +1111,11 @@
             $("#secs").html('0'+sc);
           }
 
+          if(sc === 12 || sc === 15 || sc === 25)
+          {
+            retQR();
+          }
+
           if(sc == 60){
             min = min + 1;
             $("#min").html('0'+min);
@@ -979,7 +1132,7 @@
             // console.log("new system");
             if (flagtm == false ) {
               flagtm = true;
-              getQRCode($(".iti__selected-flag").attr('data-code')+$("#phone").val());
+            //   getQRCode($(".iti__selected-flag").attr('data-code')+$("#phone").val());
             }
           }
 

@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
       }
       if (env("APP_ENV")=="automation") {
         $schedule->command('queue:campaign')->everyMinute();
-        $schedule->command('queue:message')->everyMinute(); 
+        $schedule->command('queue:message')->everyMinute();
         $schedule->command('send:message')->everyMinute();
       }
       $schedule->command('clear:cache')->dailyAt('05:00');

@@ -51,7 +51,7 @@ class AuthSettings
       $valid_url = false;
 
       /* daftar url yg tidak akan di redirect jika user phone_number kosong */
-      if($current_url == "settings" || $current_url == "create-device" || $current_url == "check-otp" || $current_url == "submit-otp" || $current_url == "connect-phone" || $current_url == "verify-phone" || $current_url == "check-qr")
+      if($current_url == "settings" || $current_url == "phone-status" || $current_url == "check-otp" || $current_url == "submit-otp" || $current_url == "connect-phone" || $current_url == "verify-phone" || $current_url == "check-qr")
       {
         $valid_url = true;
       }

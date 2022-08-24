@@ -63,6 +63,21 @@ class Waweb
         }
     }
 
+    public function qr()
+    {
+        $device = PhoneNumber::where('user_id',Auth::id())->first();
+
+        if(is_null($device))
+        {
+            return 0;
+        }
+
+        $url = $device->ip_server.'/qr?device_key='.$device->device_key.'';
+        $qrcode = self::go_curl($url,null,'GET');
+
+        return $qrcode;
+    }
+
     public function scan()
     {
         $device = PhoneNumber::where('user_id',Auth::id())->first();
@@ -75,6 +90,69 @@ class Waweb
         $url = $device->ip_server.'/scan';
         $data = ["device_key"=>$device->device_key];
         $scan = self::go_curl($url,$data,'POST');
+        return $scan;
+    }
+
+    public function status()
+    {
+        $device = PhoneNumber::where('user_id',Auth::id())->first();
+
+        if(is_null($device))
+        {
+            return 0;
+        }
+
+        $url = $device->ip_server.'/status?id='.$device->device_key.'';
+        $status = self::go_curl($url,null,'GET');
+        return $status;
+    }
+
+    public function send_message($user_id,$phone,$message,$img = null)
+    {
+        $device = PhoneNumber::where('user_id',$user_id)->first();
+
+        if(is_null($device))
+        {
+            return 0;
+        }
+
+        // $url = $device->ip_server.'/message?message='.$message.'&unique='.env('WA_UNIQUE').'&device_key='.$device->device_key.'&number='.$phone.'&url='.$url.'';
+        $url = $device->ip_server.'/message?message='.$message.'&unique='.env('WA_UNIQUE').'&device_key='.$device->device_key.'&number='.$phone.'';
+        $status = self::test();
+        // $status = self::go_curl($url,null,'GET');
+
+        dd($status);
+        return $status;
+    }
+
+    public static function test()
+    {
+        $url = 'http://192.168.100.96:3200/message';
+        $ch = curl_init($url);
+
+        $data = [
+            'message'=>'aaaa',
+            'unique'=>'Ww7YTPhDWVngJtaf87EdwCCguSKQ6hME',
+            'device_key'=>'a1e6364c220ab0b9d02e09c798b25564',
+            'number'=>'6282302005787'
+        ];
+        $data_string = http_build_query($data);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json')
+        );
+
+        $res=curl_exec($ch);
+        dd($res);
+        return json_decode($res,true);
     }
 
     public static function go_curl($url,$data,$method)
