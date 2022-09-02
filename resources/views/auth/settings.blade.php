@@ -109,49 +109,51 @@
   <div class="tabs-content">
     <!-- TABS 1 -->
     <div class="tabs-container" id="tab1C">
-      <div class="act-tel-settings">
+      <div class="row">
+      <div class="act-tel-settings col-lg-9 col-md-6">
         <div class="form-control message col-lg-9">
           <!-- logic here -->
         </div>
 
         <div class="row col-fix">
-            <div class="col-lg-9 col-md-12 col-sm-12 plan account_status">
-                <div class="form-group row col-fix">
-                    <label class="col-lg-3 col-md-4 col-form-label">Phone Whatsapp :</label>
-                    <div class="form-inline">
+            <div class="col-lg-12 col-md-12 col-sm-12 account_status">
+                <div class="form-inline">
+                    <div>
                         @if($is_registered == 0)
                             <button id="cdevice" type="button" class="btn btn-success">Buat Device</button>
                         @else
-                            <button id="button-connect" type="button" class="btn btn-primary">Hubungkan Device</button>
+                            <button id="button-connect" type="button" class="btn btn-custom">Hubungkan Device</button>
                         @endif
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-3 col-md-12 col-sm-12 plan account_status">
-              @if($user->status > 0)
-                <div>Current plan : <b>{{ $user->membership }}</b></div>
-                <div>Phone Status : <b>{!! $phone_status !!}</b></div>
-                <div>Server Status : <b>{!! $server_status !!}</b></div>
-                <div>Valid Until : <b>{{ $expired }}</b></div>
-                <div>MESSAGES Quota : <b>{{ $quota }}</b></div>
-                <div>CHATS Quota : <b>{{ $chat_quota }}</b></div>
-                <div><a href="{{ url('pricing') }}"><i>Buy More</i></a></div>
-              @endif
-            </div>
         </div>
 
-        <div class="wrapper verification" id="div-verify">
+        <!-- timer -->
+        <div id="waiting" class="wrapper verification d-none text-center">
+            <div class="mx-auto">
+              <h5 class="text-dark">Tunggu Hingga QRCODE keluar</h5>
+              <h5>
+                  <span class="font-weight-bold text-primary" id="min"></span>
+                  <span class="font-weight-bold text-primary ml-1 mr-1" id="min">:</span>
+                  <span class="font-weight-bold text-primary" id="secs"></span>
+              </h5>
+            </div>
+
+            <div class="mt-4" id="qr-code"><!-- qrcode --></div> 
+        </div>
+
+        <!-- <div class="wrapper verification" id="div-verify">
             <div class="form-group"><label class="col-sm-12 col-form-label">Scan this QR code from your <strong>Whatsapp Phone</strong></label></div>
             <div class="form-group row col-fix">
               <div class="col-lg-6"><div id="qr-code"></div></div>
               <div class="col-lg-6"><div id="timer"></div></h3></div>
             </div>
 
-            <!-- <div class="text-right">
+            <div class="text-right">
               <button type="button" id="button-verify" class="btn btn-custom">Submit</button>
-            </div> -->
-        </div>
+            </div> 
+        </div> -->
 
         <div class="wrapper add-contact table-responsive" id="phone-table">
             <table class="table table-bordered mt-4">
@@ -167,9 +169,23 @@
               <tbody id="table-phone"></tbody>
             </table>
         </div>
-
+      <!-- end act-tel -->
       </div>
-    <!-- end tabs -->
+
+      <div class="col-lg-3 col-md-12 col-sm-12 plan account_status">
+        @if($user->status > 0)
+          <div>Current plan : <b>{{ $user->membership }}</b></div>
+          <div>Phone Status : <b>{!! $phone_status !!}</b></div>
+          <div>Server Status : <b>{!! $server_status !!}</b></div>
+          <div>Valid Until : <b>{{ $expired }}</b></div>
+          <div>MESSAGES Quota : <b>{{ $quota }}</b></div>
+          <div>CHATS Quota : <b>{{ $chat_quota }}</b></div>
+          <div><a class="text-success font-weight-bold" href="{{ url('pricing') }}"><i>Buy More</i></a></div>
+        @endif
+      </div>
+    <!-- end row -->
+    </div>
+    <!-- end tabs 1 -->
     </div>
 
     <!-- TABS 2 -->
@@ -338,6 +354,8 @@
 
 <!-- <script src=" asset('/assets/intl-tel-input/callback.js') }}" type="text/javascript"></script> -->
 <script type="text/javascript">
+    var qrscan = 0;
+
     $(document).ready(function()
     {
         $('#div-verify').hide();
@@ -416,15 +434,7 @@
                 $('#loader').hide();
                 $('.div-loading').removeClass('background-load');
 
-                if(result.isConnected === 0)
-                {
-                    // scan timeout
-                    $("#timer").html('<div class="alert alert-warning">{{ Lang::get("custom.db") }}</div>');
-                }
-                else
-                {
-                    $("#timer").html('<div class="alert alert-danger">{{ Lang::get("custom.db") }}</div>');
-                }
+                location.href="{{ url('settings') }}";
             },
             error : function(xhr,attr,throwable){
                 $('#loader').hide();
@@ -435,7 +445,7 @@
         });
     }
 
-    function retQR()
+  function retQR()
 	{
 		$.ajax({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -461,7 +471,14 @@
                 }
                 else
                 {
-                    $("#qr-code").html(result);
+                    $("#qr-code").html('')
+                    $("#qr-code").qrcode({
+                      size : 180,
+                      fill : '#000',
+                      background : null,
+                      content : result
+                    })
+                    qrscan = 1;
                 }
             },
             error : function(xhr,attr,throwable){
@@ -473,7 +490,7 @@
         });
 	}
 
-    function deviceStatus()
+  function deviceStatus()
 	{
 		$.ajax({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -506,36 +523,42 @@
         });
 	}
 
-    function timeQR()
+  function timeQR()
 	{
-		var sec = 60; //countdown timer
-		var word = '<h3>Please scan qr-code before time\'s up :</h3>';
-		flagTimerCheckQrCode=false;
-		timerCheckQrCode = setInterval( function(){
+		    var scd = 0;
+        var sc = 0;
+        var min = qrscan = 0;
 
-				if((sec == 50) || (sec == 45) || (sec == 30))
-                {
-					retQR();
-				}
+        $("#scan").html('Loading...');
+        $("#waiting").removeClass('d-none');
 
-                if((sec == 12) || (sec == 8) || (sec == 4)|| (sec == 2))
+        tm = setInterval(function(){
+            $("#secs").html(sc);
+            $("#min").html('0'+min);
+
+            if(sc < 10)
+            {
+                $("#secs").html('0'+sc);
+            }
+
+            if(sc == 60){
+                min = min + 1;
+                $("#min").html('0'+min);
+                sc = 0;
+                $("#secs").html('0'+sc);
+            }
+
+            if(qrscan == 0)
+            {
+                if(sc % 12 == 0)
                 {
-                    deviceStatus();
+                  retQR();
                 }
+            }
 
-				if(sec < -60){
-					clearInterval(timerCheckQrCode);
-				}
-
-				if(sec < 10 && sec >= 0 ){
-					$("#timer").html(word+'<h4><b>0'+sec+'</b></h4>');
-				}
-				else if(sec > 10)
-				{
-					$("#timer").html(word+'<h4><b>'+sec+'</b></h4>');
-				}
-				sec--;
-		},1000);
+            sc++;
+            scd++;
+        },1000);
 	}
 
 </script>

@@ -78,7 +78,7 @@ class Waweb
         return $qrcode;
     }
 
-    public function scan()
+    public function scan() 
     {
         $device = PhoneNumber::where('user_id',Auth::id())->first();
 

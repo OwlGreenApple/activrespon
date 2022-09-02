@@ -106,6 +106,10 @@
     <!-- Canvas JS -->
     <script type="text/javascript" src="{{ asset('canvasjs/canvasjs.min.js') }}"></script>
 
+    @if(Request::segment(1) == 'settings')
+      <!--QR Code -->
+      <script type="text/javascript" src="{{ asset('assets/jquery-qrcode/jquery-qrcode-0.18.0.min.js') }}"></script>
+    @endif
     <!-- custom scroll -->
    <!--  <link href="{{ asset('assets/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css') }}" rel="stylesheet" /> -->
 
