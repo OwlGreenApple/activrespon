@@ -74,7 +74,6 @@ class Waweb
 
         $url = $device->ip_server.'/qr?device_key='.$device->device_key.'';
         $qrcode = self::go_curl($url,null,'GET');
-
         return $qrcode;
     }
 
@@ -90,7 +89,7 @@ class Waweb
         $url = $device->ip_server.'/scan';
         $data = ["device_key"=>$device->device_key];
         $scan = self::go_curl($url,$data,'POST');
-        return $scan;
+        return json_decode($scan,true);
     }
 
     public function status()
@@ -116,43 +115,55 @@ class Waweb
             return 0;
         }
 
-        // $url = $device->ip_server.'/message?message='.$message.'&unique='.env('WA_UNIQUE').'&device_key='.$device->device_key.'&number='.$phone.'&url='.$url.'';
-        $url = $device->ip_server.'/message?message='.$message.'&unique='.env('WA_UNIQUE').'&device_key='.$device->device_key.'&number='.$phone.'';
-        $status = self::test();
-        // $status = self::go_curl($url,null,'GET');
+        $url = $device->ip_server.'/message';
+        $data = [
+            'message'=>$message,
+            'unique'=>env('WA_UNIQUE'),
+            'device_key'=>$device->device_key,
+            'number'=>str_replace("+","",$phone)
+        ];
 
-        dd($status);
+        if($img !== null)
+        {
+            $data['url'] = $img;
+        }
+        
+        $status = self::go_curl($url,$data,'POST');
         return $status;
     }
 
-    public static function test()
+    // DELETE DEVICE
+    public function delete_device($phone_id)
     {
-        $url = 'http://192.168.100.96:3200/message';
-        $ch = curl_init($url);
+        $device = PhoneNumber::find($phone_id);
+    
+        if(is_null($device))
+        {
+            return 0;
+        }
 
-        $data = [
-            'message'=>'aaaa',
-            'unique'=>'Ww7YTPhDWVngJtaf87EdwCCguSKQ6hME',
-            'device_key'=>'a1e6364c220ab0b9d02e09c798b25564',
-            'number'=>'6282302005787'
-        ];
-        $data_string = http_build_query($data);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, 0);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        $url = $device->ip_server.'/del?device_key='.$device->device_key.'&unique='.env('WA_UNIQUE').'';
+        $del = self::go_curl($url,null,'GET');
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json')
-        );
+        if(isset($del['status']) && $del['status'] == 1)
+        {
+            try
+            {
+                PhoneNumber::find($device->id)->delete();
+                $res = 1;
+            }
+            catch(QueryException $e)
+            {
+                //dd($e->getMessage());
+                $res = 'error';
+            }
+        }
+        else
+        {
+            $res = 0;
+        }
 
-        $res=curl_exec($ch);
-        dd($res);
-        return json_decode($res,true);
+        return $res;
     }
 
     public static function go_curl($url,$data,$method)

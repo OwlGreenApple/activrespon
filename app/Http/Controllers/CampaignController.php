@@ -35,6 +35,7 @@ use App\PhoneNumber;
 use App\Server;
 use App\Http\Middleware\CheckBroadcastDuplicate;
 use Storage,Session, DB;
+use App\Helpers\Waweb;
 
 class CampaignController extends Controller
 {
@@ -176,19 +177,6 @@ class CampaignController extends Controller
       $device_key = $phoneNumber->device_key;
       $ip_server = $phoneNumber->ip_server;
 
-			if ($phoneNumber->mode == 0) {
-				$server = Server::where('phone_id',$phoneNumber->id)->first();
-				if(is_null($server)){
-					$error = array(
-						'status'=>'error',
-						'phone'=>"Contact Administrator",
-						'msg'=>"",
-						'image'=>"",
-					);
-					return response()->json($error);
-				}
-			}
-
 			/*if ($user->email=="activomnicom@gmail.com") {
 				ApiHelper::send_message_android(env('BROADCAST_PHONE_KEY'),$request->message,$request->phone,"reminder");
 			}
@@ -208,12 +196,11 @@ class CampaignController extends Controller
 					sleep(1);
 
 					$url = Storage::disk('s3')->url($folder."temp.jpg");
-					if ($phoneNumber->mode == 0) {
-						ApiHelper::send_image_url_simi($request->phone,curl_file_create(
-							$_FILES["imageWA"]["tmp_name"],
-							$_FILES["imageWA"]["type"],
-							$_FILES["imageWA"]["name"]
-						),$message,$server->url);
+					if ($phoneNumber->mode == 0) 
+          {
+						// WAWEB
+            $wa = new Waweb;
+            $wa->send_message($user->id,$request->phone,$message,$url);
 					}
           elseif($phoneNumber->mode == 2)
           {
@@ -231,15 +218,20 @@ class CampaignController extends Controller
 						return response()->json($arr);
 					}
 				}
-				else {
+				else 
+        {
+          if ($phoneNumber->mode == 0) 
+          {
+            $phone = strip_tags($request->phone);
+            $wa = new Waweb; 
+            $wa->send_message($user->id,$phone,$message,null);
+					}
+
 					// ApiHelper::send_message($request->phone,$request->message,$key);
 					$message_send = new Message;
 					$message_send->phone_number=$request->phone;
 					$message_send->message= $message;
-					if ($phoneNumber->mode == 0) {
-						$message_send->key=$server->url;
-						$message_send->status=6;
-					}
+					
 					if ($phoneNumber->mode == 1) {
 						$message_send->key=$key;
 						$message_send->status=7;
@@ -250,7 +242,6 @@ class CampaignController extends Controller
 					}
 					$message_send->customer_id=0;
 					$message_send->save();
-
 				}
 			// }
 			// return "success";

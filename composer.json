@@ -10,7 +10,6 @@
     "require": {
         "php": "^7.2.5",
         "aws/aws-sdk-php": "~3.0",
-        "chillerlan/php-qrcode": "^4.3",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",

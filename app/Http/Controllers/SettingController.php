@@ -35,7 +35,6 @@ use App\Jobs\SendNotif;
 use App\Rules\InternationalTel;
 use App\Rules\CheckCallCode;
 use App\Rules\CheckPlusCode;
-use chillerlan\QRCode\QRCode;
 
 class SettingController extends Controller
 {
@@ -142,8 +141,6 @@ class SettingController extends Controller
 			session(['mode'=>2]); //difixkan Wamate (new simi)
       // $this->check_table_server($user->id); //difixkan simi, cek dulu ada ngga server available, klo ga ada dikasi ke woowa
 
-
-
       $phone_number = PhoneNumber::where('user_id',$user->id)->first();
       $server = Config::where('config_name','status_server')->first();
 
@@ -163,48 +160,22 @@ class SettingController extends Controller
         $server_status = '-';
       }
 
+      $phone_status = 0;
       if(!is_null($phone_number))
       {
-        $phone_id = $phone_number->id;
-        if($phone_number->status == 2)
+        // check status from waweb api then update
+        $this->wawebStatus();
+        // ----------
+
+        if($phone_number->status < 2)
         {
-          $phone_status = '<span class="span-connected">Connected</span>';
+          $phone_status = 0;
         }
         else
         {
-          $phone_status = '<span class="down">Disconnected</span>';
-        }
-
-        if ($phone_number->mode == 0) {
-          $server = Server::where("phone_id",$phone_number->id)->first();
-          if (is_null($server)){
-            // if ini cuman sebagai pengaman, 99% ga pernah dieksekusi
-            $this->check_table_server($user->id);
-          }
-          else {
-              session([
-                'mode'=>0,
-                'server_id'=>$server->id,
-              ]);
-          }
-
-          if($phone_number->status == 2)
-          {  //new
-              session([
-                'mode'=>0,
-              ]);
-          }
-        }
-        else if ($phone_number->mode == 1) {
-          session(['mode'=>1]);
+          $phone_status = 1;
         }
       }
-      else
-      {
-        $phone_status = '-';
-      }
-
-
 
       return view('auth.settings',[
         'user'=>$user,
@@ -255,19 +226,16 @@ class SettingController extends Controller
     public function wawebQR()
     {
         $api = new Waweb;
-        $qr_code = $api->qr();
+        $pair = $api->qr();
 
-        if(!is_array($qr_code))
+        if($pair !== null)
         {
-            $qrcode = new QRCode;
-            $qr = '<img style="width:220px" src="'.$qrcode->render($qr_code).'"/>';
+            return $pair;
         }
         else
         {
-            $qr = 'error';
+            return 0;
         }
-
-        return $qr;
     }
 
     public function wawebStatus()
@@ -278,9 +246,18 @@ class SettingController extends Controller
         $phone = PhoneNumber::where('user_id',Auth::id())->first();
         if(!is_null($phone))
         {
+            if($res['isConnected'] == 1)
+            {
+              $status = 2;
+            }
+            else
+            {
+              $status = 1;
+            }
+
             $device = PhoneNumber::find($phone->id);
             $device->phone_number = $res['phone'];
-            $device->status = $res['isConnected'];
+            $device->status = $status;
             $device->save();
         }
 
@@ -1019,6 +996,7 @@ class SettingController extends Controller
       }
     }
 
+    // DELETE PHONE LARAVEL
     public function delete_phone(Request $request)
     {
       if($request->api !== null)
@@ -1034,21 +1012,23 @@ class SettingController extends Controller
       $wa_number = $phoneNumber->phone_number;
       $arr['check_button'] = '<button id="btn-check" type="button" class="btn btn-custom">Check Phone Number</button>';
 
-			if ($phoneNumber->mode == 0){
-				$server = Server::where("phone_id",$phoneNumber->id)->first();
+			if($phoneNumber->mode == 0)
+      {
+				// WAWEB
+        $wa = new Waweb;
+        $del = $wa->delete_device($phoneNumber->id);
 
-        if(!is_null($server))
+        if($del == 1)
         {
-          $server->status = 0;
-          $server->save();
+          $arr['status'] = 'success';
+				  $arr['message'] = "Nomer telah dihapus";
         }
-
-				// $phoneNumber->delete();
-        $phoneNumber->status = 0;
-        $phoneNumber->save();
-
-				$arr['status'] = 'success';
-				$arr['message'] = "The phone number has been deleted";
+				else
+        {
+          $arr['status'] = 0;
+				  $arr['message'] = "Maaf, server kami terlalu sibuk, anda bisa memutus hubungan secara langsung melalui aplikasi WA anda.";
+        }
+       
 				return $arr;
 			}
 			else if ($phoneNumber->mode == 1){

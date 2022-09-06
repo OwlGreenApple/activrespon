@@ -12,7 +12,7 @@
                 echo "<span class='down'>Terputus</span>";
             }
             if ($phoneNumber->status == 2) {
-                echo "<span class='span-connected'>Server Tersambung</span>";
+                echo "<span class='text-success'>Server Tersambung</span>";
             }
         ?>
       </td>

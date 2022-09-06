@@ -122,7 +122,9 @@
                         @if($is_registered == 0)
                             <button id="cdevice" type="button" class="btn btn-success">Buat Device</button>
                         @else
+                          @if($phone_status == 0)
                             <button id="button-connect" type="button" class="btn btn-custom">Hubungkan Device</button>
+                          @endif
                         @endif
                     </div>
                 </div>
@@ -132,7 +134,7 @@
         <!-- timer -->
         <div id="waiting" class="wrapper verification d-none text-center">
             <div class="mx-auto">
-              <h5 class="text-dark">Tunggu Hingga QRCODE keluar</h5>
+              <h5 class="text-dark">Tunggu Hingga QRCODE keluar, jangan tutup atau reload browser</h5>
               <h5>
                   <span class="font-weight-bold text-primary" id="min"></span>
                   <span class="font-weight-bold text-primary ml-1 mr-1" id="min">:</span>
@@ -361,7 +363,7 @@
         $('#div-verify').hide();
         create_device();
         buttonQr();
-    });
+     });
 
     function create_device()
     {
@@ -433,39 +435,27 @@
             success: function(result) {
                 $('#loader').hide();
                 $('.div-loading').removeClass('background-load');
-
                 location.href="{{ url('settings') }}";
             },
             error : function(xhr,attr,throwable){
                 $('#loader').hide();
                 $('.div-loading').removeClass('background-load');
                 console.log(xhr.responseText);
-                alert('Sorry, unable to display QR-CODE, there is something wrong with our server, please try again later')
+                location.href="{{ url('settings') }}"
             }
         });
     }
 
-  function retQR()
+  function retQR() 
 	{
 		$.ajax({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             type: 'GET',
             url: "{{ url('qrcode') }}",
-            dataType: 'html',
-            beforeSend: function()
+            dataType: 'text',
+            success: function(result) 
             {
-                $('#loader').show();
-                $('.div-loading').addClass('background-load');
-            },
-            success: function(result) {
-                $('#loader').hide();
-                $('.div-loading').removeClass('background-load');
-
-                if(result == 'error')
-                {
-                    $("#qr-code").html('<div class="alert alert-danger">{{ Lang::get("custom.db") }}</div>')
-                }
-                else if(result === null)
+                if(result == 0)
                 {
                     $("#qr-code").html('Loading...')
                 }
@@ -475,8 +465,7 @@
                     $("#qr-code").qrcode({
                       size : 180,
                       fill : '#000',
-                      background : null,
-                      content : result
+                      text : result
                     })
                     qrscan = 1;
                 }
@@ -485,7 +474,7 @@
                 $('#loader').hide();
                 $('.div-loading').removeClass('background-load');
                 console.log(xhr.responseText);
-                alert('Sorry, unable to display QR-CODE, there is something wrong with our server, please try again later')
+                $("#scan").html('<div class="alert alert-danger">{{ Lang::get("custom.db") }}</div>');
             }
         });
 	}
@@ -560,8 +549,9 @@
             scd++;
         },1000);
 	}
-
 </script>
+
+<!-- end new waweb -->
 
 <script type="text/javascript">
 
@@ -898,7 +888,7 @@
 
 		// End Display Country
 
-		initButton();
+		delButton();
     generate_api_key();
   });
 
@@ -1308,17 +1298,17 @@
 		});
 	}
 
-	function initButton(){
-
+	function delButton()
+  {
     $('#button-delete-phone').click(function(){
       $.ajax({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         type: 'GET',
-        url: "<?php echo url('/delete-phone');?>",
+        url: "<?php echo url('/delete-phone');?>", 
         data: {
           id : $("#id_phone_number").val(),
         },
-        dataType: 'text',
+        dataType: 'json',
         beforeSend: function()
         {
           $('#loader').show();
@@ -1328,16 +1318,23 @@
           $('#loader').hide();
           $('.div-loading').removeClass('background-load');
 
-          var data = jQuery.parseJSON(result);
           $('.message').show();
-          $('.message').html(data.message);
-          $("#phone").prop('disabled',false);
+          $('.message').html(result.message);
+
+          if(result.status == 'success')
+          {
+            setTimeout(function(){
+              location.href="{{ url('settings') }}";
+            },1500);
+          }
+    
+          /* $("#phone").prop('disabled',false);
           $("#code_country").prop('disabled',false);
           $("#button-connect").prop('disabled',false);
           $("#phone").val("");
           $("#phone-table").hide();
           $("#display_button_after_delete_phone").html(data.check_button);
-          loadPhoneNumber();
+          loadPhoneNumber(); */
           // new system loadPhoneNumber();
         },
         error: function(xhr)
