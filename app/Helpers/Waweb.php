@@ -31,9 +31,19 @@ class Waweb
         $device->ip_server = env('WA_SERVER');
 
         try{
-            $device->save();
-            self::get_key(env('WA_SERVER'),$user_id,$label,$device->id);
-            $ret = true;
+            $res = self::get_key(env('WA_SERVER'),$user_id,$label,$device->id);
+
+            if(isset($res['device_key']) && isset($res['id']))
+            {
+                $device->device_key = $res['device_key'];
+                $device->device_id = $res['id'];
+                $device->save();
+                $ret = true;
+            }
+            else
+            {
+                $ret = false;
+            }
         }
         catch(QueryException $e)
         {
@@ -53,14 +63,7 @@ class Waweb
         ];
 
         $res = self::go_curl($url,$data,"POST");
-
-        if(isset($res['device_key']) && isset($res['id']))
-        {
-            $device = PhoneNumber::find($id);
-            $device->device_key = $res['device_key'];
-            $device->device_id = $res['id'];
-            $device->save();
-        }
+        return $res;
     }
 
     public function qr()
@@ -88,8 +91,7 @@ class Waweb
 
         $url = $device->ip_server.'/scan';
         $data = ["device_key"=>$device->device_key];
-        $scan = self::go_curl($url,$data,'POST');
-        return json_decode($scan,true);
+        self::go_curl($url,$data,'POST');
     }
 
     public function status()

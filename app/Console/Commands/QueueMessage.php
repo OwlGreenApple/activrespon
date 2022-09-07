@@ -45,8 +45,8 @@ class QueueMessage extends Command
     {
 		$messages = Message::
               select("key")
-              ->where("status",">=",6)
-              ->where("status","<=",11)
+            //   ->where("status",">=",6)
+              ->where("status","=",11)
               ->groupBy("key")
               ->get();
 

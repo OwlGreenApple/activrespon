@@ -111,9 +111,7 @@
     <div class="tabs-container" id="tab1C">
       <div class="row">
       <div class="act-tel-settings col-lg-9 col-md-6">
-        <div class="form-control message col-lg-9">
-          <!-- logic here -->
-        </div>
+        <div class="alert message mx-2"></div>
 
         <div class="row col-fix">
             <div class="col-lg-12 col-md-12 col-sm-12 account_status">
@@ -386,8 +384,6 @@
             },
             success : function(res)
             {
-                $('#loader').hide();
-                $('.div-loading').removeClass('background-load');
                 if(res.success === 1)
                 {
                     resp = 1;
@@ -395,18 +391,23 @@
             },
             complete : function()
             {
-                $('#loader').hide();
-                $('.div-loading').removeClass('background-load');
-
                 if(resp === 1)
                 {
                     location.href="{{ url('settings') }}"
+                }
+                else
+                {
+                    $('#loader').hide();
+                    $('.div-loading').removeClass('background-load');
+                    $('.message').show();
+                    $('.message').html('Maaf, server kami terlalu sibuk, mohon coba lagi nanti.');
                 }
             },
             error : function(xhr)
             {
                 $('#loader').hide();
                 $('.div-loading').removeClass('background-load');
+                console.log(xhr.responseText);
             }
         });
     }
@@ -432,16 +433,25 @@
                 $("#modal-start-connect").modal('hide');
                 timeQR();
             },
-            success: function(result) {
-                $('#loader').hide();
-                $('.div-loading').removeClass('background-load');
-                location.href="{{ url('settings') }}";
+            success: function(result) 
+            {
+                if(result.status == 'error' || result.status == 0)
+                {
+                  $(".message").show();
+                  $(".message").html(result.message);
+                  $('#waiting').addClass('d-none');
+                  $("#button-connect").remove();
+                }
+               
+                setTimeout(function(){
+                  location.href="{{ url('settings') }}";
+                },4000);
             },
             error : function(xhr,attr,throwable){
                 $('#loader').hide();
                 $('.div-loading').removeClass('background-load');
                 console.log(xhr.responseText);
-                location.href="{{ url('settings') }}"
+                location.href="{{ url('settings') }}";
             }
         });
     }

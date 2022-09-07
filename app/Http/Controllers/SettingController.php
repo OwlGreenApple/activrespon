@@ -35,6 +35,7 @@ use App\Jobs\SendNotif;
 use App\Rules\InternationalTel;
 use App\Rules\CheckCallCode;
 use App\Rules\CheckPlusCode;
+use Illuminate\Database\QueryException;
 
 class SettingController extends Controller
 {
@@ -71,9 +72,7 @@ class SettingController extends Controller
       $mod = request()->get('mod');
 
       $is_registered = 0;
-      $phoneNumber = PhoneNumber::
-                      where("user_id",$user->id)
-                      ->first();
+      $phoneNumber = PhoneNumber::where("user_id",$user->id)->first();
       if (!is_null($phoneNumber)) {
         $is_registered = 1;
       }
@@ -138,7 +137,7 @@ class SettingController extends Controller
       //0-> simi
       //1->woowa
 			// session(['mode'=>1]); //difixkan woowa
-			session(['mode'=>2]); //difixkan Wamate (new simi)
+			// session(['mode'=>2]); //difixkan Wamate (new simi)
       // $this->check_table_server($user->id); //difixkan simi, cek dulu ada ngga server available, klo ga ada dikasi ke woowa
 
       $phone_number = PhoneNumber::where('user_id',$user->id)->first();
@@ -160,18 +159,14 @@ class SettingController extends Controller
         $server_status = '-';
       }
 
+       // check status from waweb api then update
       $phone_status = 0;
       if(!is_null($phone_number))
       {
-        // check status from waweb api then update
         $this->wawebStatus();
-        // ----------
-
-        if($phone_number->status < 2)
-        {
-          $phone_status = 0;
-        }
-        else
+       
+        $phn = PhoneNumber::find($phone_number->id);
+        if($phn->status == 2)
         {
           $phone_status = 1;
         }
@@ -191,7 +186,7 @@ class SettingController extends Controller
       ]);
     }
 
-    public function create_device()
+    public static function create_device()
     {
         $wa = new Waweb;
         $con = $wa->create_device();
@@ -205,18 +200,17 @@ class SettingController extends Controller
             $res['success'] = 0;
         }
 
-        return response()->json($res);
+        return $res;
     }
 
     // SCAN WAWEB LOGIC
-    public function phone_connect(Request $request)
+    public function phone_connect()
     {
-        $user = Auth::user();
-        if($this->checkIsPay() == 0)
+        if($this->checkIsPay() == 0 || $this->checkIsPay() == 'err') 
         {
             $arr['status'] = 'error';
             $arr['message'] = 'Saat ini anda masih belum memiliki paket, silahkan beli terlebih dahulu';
-            return $arr;
+            return response()->json($arr);
         }
 
         $api = new Waweb;
@@ -246,17 +240,19 @@ class SettingController extends Controller
         $phone = PhoneNumber::where('user_id',Auth::id())->first();
         if(!is_null($phone))
         {
-            if($res['isConnected'] == 1)
+            if(isset($res['isConnected']))
             {
-              $status = 2;
+              ($res['isConnected'] == 1)? $status = 2: $status = 1;
+              $wa = $res['phone'];
             }
             else
             {
               $status = 1;
+              $wa = 0;
             }
 
             $device = PhoneNumber::find($phone->id);
-            $device->phone_number = $res['phone'];
+            $device->phone_number = $wa;
             $device->status = $status;
             $device->save();
         }
@@ -972,7 +968,7 @@ class SettingController extends Controller
         }
 
         return 'Congratulations, your phone is connected';
-      }catch(Exception $e){
+      }catch(QueryException $e){
         return 'Sorry, there is some error, please retry to verify your phone';
       }
     }
@@ -980,15 +976,27 @@ class SettingController extends Controller
     public function checkIsPay()
     {
       $userid = Auth::id();
-      $check_order = User::find($userid);
-      if($check_order->membership <> null && $check_order->day_left > 0 && $check_order->status > 0)
+      $user = User::find($userid);
+
+      if($user->membership <> null && $user->day_left > 0 && $user->status > 0)
       {
-          $max_counter = getCountMonthMessage($check_order->membership);
-          $max_counter_day = getCounter($check_order->membership);
+          $max_counter = getCountMonthMessage($user->membership);
+          $max_counter_day = getCounter($user->membership);
 
           $counter['max_counter'] = $max_counter['total_message'];
           $counter['max_counter_day'] = $max_counter_day['max_counter_day'];
-          return $counter;
+
+          $phone = PhoneNumber::where('user_id',$userid);
+
+          try
+          {
+            $phone->update($counter);
+            return 1;
+          }
+          catch(QueryException $e)
+          {
+            return 'err';
+          }
       }
       else
       {

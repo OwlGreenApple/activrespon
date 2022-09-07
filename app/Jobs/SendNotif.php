@@ -78,7 +78,7 @@ class SendNotif implements ShouldQueue
 
           $res = $send_message;
 
-        //   dd($res);
+          // dd($res);
           $message->key = $res['msg_id'];
           $message->status = 1;
           $message->save();

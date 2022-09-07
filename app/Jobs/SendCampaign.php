@@ -25,6 +25,7 @@ use App\Config;
 use DB;
 use App\Helpers\ApiHelper;
 use App\Helpers\NewCustomHelpers;
+use App\Helpers\Waweb;
 
 class SendCampaign implements ShouldQueue
 {
@@ -52,7 +53,9 @@ class SendCampaign implements ShouldQueue
       // return $this->test();
 			// send campaign per phone number
 
-			if ($this->attempts() == 1) {
+			if ($this->attempts() == 1) 
+      {
+        //BROADCAST
 				$this->campaignBroadcast();
 		 
 				//Auto Responder
@@ -65,34 +68,6 @@ class SendCampaign implements ShouldQueue
 				$this->campaignAppointment();
 			}
 		}
-
-    /*public function test()
-    {
-      $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid","phone_numbers.id AS phoneid","users.id AS userid","customers.*","users.timezone","users.email","customers.link_unsubs")
-          ->join('lists','lists.id','=','broad_casts.list_id')
-          ->join('users','broad_casts.user_id','=','users.id')
-          ->join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
-          ->join('phone_numbers','phone_numbers.user_id','=','broad_casts.user_id')
-          ->join('customers',"customers.id","=","broad_cast_customers.customer_id")
-          ->join('campaigns',"campaigns.id","=","broad_casts.campaign_id")
-          ->where("broad_cast_customers.status",0)
-          ->where("customers.status",1)
-          // ->where("phone_numbers.id",$this->phone_id)
-          ->where("campaigns.status",1)
-          ->where("lists.status",'>',0)
-          ->orderBy('broad_casts.user_id')
-          ->get();
-
-          // dd();
-
-        $no = 1;
-        foreach($broadcast as $row)
-        {
-          echo $no.'---'.$row->bccsid."\n";
-          $this->delay_sending($no);
-          $no++;
-        }
-    }*/
 
     /* BROADCAST */
     public function campaignBroadcast()
@@ -126,19 +101,9 @@ class SendCampaign implements ShouldQueue
                   continue;
                 }
 
-                // REMARK IF NEED TO TEST ON LOCAL
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
                 $user = User::find($row->userid);
-
                 $hour = $row->hour_time; //hour according user set it to sending
                 $date = Carbon::parse($row->day_send);
-
 
                 $fistname = $this->modFullname($row->name);
                 $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname);
@@ -168,20 +133,15 @@ class SendCampaign implements ShouldQueue
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
                 // $check_valid_customer_join = $this->preventBroadcastNewCustomer($row->bccsid,$time_sending);
 
-
                 if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $deliver_time < 0 || $midnightTime == false /*|| $check_valid_customer_join == false*/ ) {
                     continue;
                 }
-
 
                 $campaign = 'broadcast';
                 $id_campaign = $row->bccsid;
 
                 //status
                 $broadcastCustomer = BroadCastCustomers::find($id_campaign);
-                if (is_null($broadcastCustomer)) {
-                  continue;
-                }
                 if ($broadcastCustomer->status==5) {
                   continue;
                 }
@@ -215,13 +175,14 @@ class SendCampaign implements ShouldQueue
                   $broad_cast->save();
                 }
 
-
                   //====================================
 
-                if ($row->image==""){
-                  if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
+                if ($row->image=="")
+                {
+                  if ($phoneNumber->mode == 0) 
+                  {
+                    // WAWEB
+                    $send_message = $this->send_simi($customer_phone,$message,$phoneNumber->user_id);
                   }
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
@@ -232,18 +193,11 @@ class SendCampaign implements ShouldQueue
                   }
                 }
                 else {
-                  if ($phoneNumber->mode == 0) {
-                    // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                    // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                    // storage_path('app/temp-send-image-simi/'.$row->image),
-                                    // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    // basename($row->image)
-                                  // ),$message,$server->url);
-                    $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                    storage_path('app/temp-send-image-simi/'.$row->image),
-                                    mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    basename($row->image)
-                                  ),$message,$server->url,$row->image);
+                  if ($phoneNumber->mode == 0) 
+                  {  
+                    // WAWEB IMAGE
+                    $image = Storage::disk('s3')->url($row->image);
+                    $send_message = $this->send_image_url_simi($customer_phone,$message,$phoneNumber->user_id,$image);
                   }
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
@@ -251,13 +205,13 @@ class SendCampaign implements ShouldQueue
                   }
                   if ($phoneNumber->mode == 2) {
                     $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$ip_server);
-
                   }
                 }
 
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$send_message);
                 // $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign);
-                $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                // $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                $status = 1;
 
                 $phoneNumber->counter--;
 
@@ -274,7 +228,6 @@ class SendCampaign implements ShouldQueue
                 $broadcastCustomer->status = $status;
                 $broadcastCustomer->save();
 
-                // }
                 if ($user->speed == 0) { //slow
                   sleep(mt_rand(1, 26));
                 }
@@ -337,14 +290,6 @@ class SendCampaign implements ShouldQueue
                   continue;
                 }
 
-                // REMARK IF ON LOCAL
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
                 $user = User::find($row->userid);
 
                 $key = $phoneNumber->filename;
@@ -393,8 +338,8 @@ class SendCampaign implements ShouldQueue
                 $message = $spintax->process($message);  //spin text
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
+                    // WAWEB
+                    $send_message = $this->send_simi($customer_phone,$message,$phoneNumber->user_id);
                   }
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
@@ -406,17 +351,9 @@ class SendCampaign implements ShouldQueue
                 }
                 else {
                   if ($phoneNumber->mode == 0) {
-                    // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                    // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                    // storage_path('app/temp-send-image-simi/'.$row->image),
-                                    // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                    // basename($row->image)
-                                  // ),$message,$server->url);
-                        $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                        storage_path('app/temp-send-image-simi/'.$row->image),
-                                        mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                        basename($row->image)
-                                      ),$message,$server->url,$row->image);
+                      // WAWEB IMAGE
+                      $image = Storage::disk('s3')->url($row->image);
+                      $send_message = $this->send_image_url_simi($customer_phone,$message,$phoneNumber->user_id,$image);
                   }
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
@@ -432,7 +369,8 @@ class SendCampaign implements ShouldQueue
                 $status = 'Sent';
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
 
-                $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                // $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                $status =  1;
                 $remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
                 $remindercustomer_update->status = $status;
                 $remindercustomer_update->save();
@@ -483,7 +421,7 @@ class SendCampaign implements ShouldQueue
 					->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
           ->join('campaigns',"campaigns.id","=","reminders.campaign_id")
           ->where([['reminder_customers.status',0],['reminders.is_event',1],['customers.status',1],['reminders.status','>',0],['campaigns.status','>',0],['lists.status','>',0],['phone_numbers.id','=',$this->phone_id]])
-          ->get();
+          ->get(); 
          
           if($reminder->count() > 0)
           {
@@ -512,14 +450,6 @@ class SendCampaign implements ShouldQueue
                 {
                   continue;
                 }
-
-                // REMARK IF ON LOCAL
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
 
                 // PREVENT RUN IF MEMBERSHIP LESS THAN 2
                 if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) || $midnightTime == false )
@@ -586,11 +516,10 @@ class SendCampaign implements ShouldQueue
                 }
                 $message = $spintax->process($message);  //spin text
                 
-
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
+                    // WAWEB
+                    $send_message = $this->send_simi($customer_phone,$message,$phoneNumber->user_id);
                   }
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
@@ -602,17 +531,9 @@ class SendCampaign implements ShouldQueue
                 }
                 else {
                     if ($phoneNumber->mode == 0) {
-                      // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                      // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                      // storage_path('app/temp-send-image-simi/'.$row->image),
-                                      // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      // basename($row->image)
-                                    // ),$message,$server->url);
-                          $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                          storage_path('app/temp-send-image-simi/'.$row->image),
-                                          mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                          basename($row->image)
-                                        ),$message,$server->url,$row->image);
+                      // WAWEB IMAGE
+                      $image = Storage::disk('s3')->url($row->image);
+                      $send_message = $this->send_image_url_simi($customer_phone,$message,$phoneNumber->user_id,$image);
                     }
                     if ($phoneNumber->mode == 1) {
                       // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
@@ -623,7 +544,8 @@ class SendCampaign implements ShouldQueue
                     }
                 }
                   
-                $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                // $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                $status =  1;
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
                 $remindercustomer_update->status = $status;
@@ -717,14 +639,6 @@ class SendCampaign implements ShouldQueue
                   continue;
                 }
 
-                // REMARK IF ON LOCAL
-								if ($phoneNumber->mode == 0) {
-									$server = Server::where('phone_id',$phoneNumber->id)->first();
-									if(is_null($server)){
-										continue;
-									}
-								}
-
                 if(NewCustomHelpers::getMembership($membership) < 2 || !is_numeric(NewCustomHelpers::getMembership($membership)) ||$midnightTime == false)
                 {
                     continue;
@@ -779,8 +693,8 @@ class SendCampaign implements ShouldQueue
    
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
-                    // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
-                    $send_message = $this->send_simi($customer_phone,$message,$server->url);
+                    // WAWEB
+                    $send_message = $this->send_simi($customer_phone,$message,$phoneNumber->user_id);
                   }
                   if ($phoneNumber->mode == 1) {
                     // $send_message = ApiHelper::send_message($customer_phone,$message,$key);
@@ -792,17 +706,9 @@ class SendCampaign implements ShouldQueue
                 }
                 else {
                     if ($phoneNumber->mode == 0) {
-                      // Storage::disk('local')->put('temp-send-image-simi/'.$row->image, file_get_contents(Storage::disk('s3')->url($row->image)));
-                      // $send_message = ApiHelper::send_image_url_simi($customer_phone,curl_file_create(
-                                      // storage_path('app/temp-send-image-simi/'.$row->image),
-                                      // mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                      // basename($row->image)
-                                    // ),$message,$server->url);
-                          $send_message = $this->send_image_url_simi($customer_phone,curl_file_create(
-                                          storage_path('app/temp-send-image-simi/'.$row->image),
-                                          mime_content_type(storage_path('app/temp-send-image-simi/'.$row->image)),
-                                          basename($row->image)
-                                        ),$message,$server->url,$row->image);
+                     // WAWEB IMAGE
+                      $image = Storage::disk('s3')->url($row->image);
+                      $send_message = $this->send_image_url_simi($customer_phone,$message,$phoneNumber->user_id,$image);
                     }
                     if ($phoneNumber->mode == 1) {
                       // $send_message = ApiHelper::send_image_url($customer_phone,Storage::disk('s3')->url($row->image),$message,$key);
@@ -813,7 +719,8 @@ class SendCampaign implements ShouldQueue
                     }
                 }
 
-                $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                // $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                $status =  1;
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
                 $remindercustomer_update->status = $status;
@@ -1031,33 +938,17 @@ class SendCampaign implements ShouldQueue
       return true;     
     }
 
-    public function send_simi($customer_phone,$message,$server_url){
-      $curl = curl_init();
+    // WAWEB SEND MESSAGE
+    public function send_simi($phone,$message,$user_id)
+    {
+        $wa = new Waweb;
+        $wa->send_message($user_id,$phone,$message,null);
+    }
 
-      $data = array(
-          'customer_phone'=>$customer_phone,
-          'message'=>$message,
-          'server_url'=>$server_url,
-      );
-
-		  $url = "https://activrespon.com/dashboard/send-simi";
-
-      curl_setopt_array($curl, array(
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 300,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => json_encode($data),
-        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
-      ));
-
-      $response = curl_exec($curl);
-      $err = curl_error($curl);
-
-      curl_close($curl);
-      return $response;
+    // WAWEB SEND IMAGE
+    public function send_image_url_simi($phone,$message,$user_id,$image){
+      $wa = new Waweb;
+      $wa->send_message($user_id,$phone,$message,$image);
     }
     
     public function send_message($customer_phone,$message,$key){
@@ -1178,38 +1069,7 @@ class SendCampaign implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
-    public function send_image_url_simi($customer_phone,$curl,$message,$server_url,$image){
-      $curl = curl_init();
-
-      $data = array(
-          'customer_phone'=>$customer_phone,
-          'curl'=>$curl,
-          'message'=>$message,
-          'server_url'=>$server_url,
-          'image'=>$image,
-      );
-
-		  $url = "https://activrespon.com/dashboard/send-image-url-simi";
-
-      curl_setopt_array($curl, array(
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 300,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => json_encode($data),
-        CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
-      ));
-
-      $response = curl_exec($curl);
-      $err = curl_error($curl);
-
-      curl_close($curl);
-      return $response;
-    }
-    
+  
     public function send_image_url($customer_phone,$urls3,$message,$key){
       $curl = curl_init();
 
