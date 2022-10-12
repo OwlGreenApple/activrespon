@@ -9,9 +9,8 @@
     <!-- BROADCAST -->
     @if($row->type == 2) 
       @php
-        
         $broad_cast = $broadcast->where('campaign_id',$row->id)->first();
-
+      
         if(!is_null($broad_cast))
         {
           if($broad_cast->day_send == null || $broad_cast->day_send =="")
@@ -34,15 +33,10 @@
           {
               $label = $user_list->label;
           }
-          else 
-          {
-              $label = null;
-          }
-
+          
           $total_message = $campaign_controller->broadcastCampaign($row->id,'=',0)->count();
           $total_delivered = $campaign_controller->broadcastCampaign($row->id,'>',0)->count();
         }
-        
       @endphp
 
       @if(!is_null($broad_cast))
@@ -75,7 +69,7 @@
 
         <div class="col-md-3 col-lg-3 pad-fix">
           <div class="row">
-              @if($label !== null)
+              @if($label !== null) 
                 <div class="col-md-6 col-lg-6 pad-fix cardnumber">
                   <div class="big-number">
                     <a class="contacts" href="{{url('list-campaign')}}/{{ $row->id }}/broadcast/1">{{ $total_message }}</a>

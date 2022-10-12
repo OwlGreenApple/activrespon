@@ -93,6 +93,7 @@ class CampaignController extends Controller
       $data['lists'] = displayListWithContact($userid);
       $data['paginate'] = $campaign;
       $data['campaign'] = $campaign;
+      $data['label'] = null;
       $data['broadcast'] = new BroadCast;
       $data['userlist'] = new UserList;
       $data['campaign_controller'] = new CampaignController;

@@ -378,6 +378,11 @@ use Illuminate\Support\Facades\Storage;
   function getCounter($package)
   {
     $type_package = substr($package,-1,1);
+    $data = [
+      'max_counter_day'=>0,
+      'max_counter'=>0
+    ];
+
     if ($type_package=="1") {
       $data = [
         'max_counter_day'=>500,
