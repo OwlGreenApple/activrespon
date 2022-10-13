@@ -57,10 +57,7 @@ class SendNotif implements ShouldQueue
 
         //status 11 dari campaign controller
         //waweb
-        $messages = Message::
-                    where("status",11)
-                    // ->where('key',$this->key)
-                    ->get();
+        $messages = Message::where("status",11)->get();
 
         $api = new Waweb;
 
@@ -78,9 +75,20 @@ class SendNotif implements ShouldQueue
 
           $res = $send_message;
 
+          if(isset($res['msg_id']))
+          {
+            $keymessage = $res['msg_id'];
+            $status = 1;
+          }
+          else
+          {
+            $keymessage = 0;
+            $status = 4;
+          }
+
           // dd($res);
-          $message->key = $res['msg_id'];
-          $message->status = 1;
+          $message->key = $keymessage;
+          $message->status = $status;
           $message->save();
 
           sleep(mt_rand(1, 30));
