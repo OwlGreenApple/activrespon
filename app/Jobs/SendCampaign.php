@@ -32,7 +32,7 @@ class SendCampaign implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 		protected $phone_id;
-		
+
     /**
      * Create a new job instance.
      *
@@ -53,26 +53,26 @@ class SendCampaign implements ShouldQueue
       // return $this->test();
 			// send campaign per phone number
 
-			if ($this->attempts() == 1) 
-      {
-        //BROADCAST
-				$this->campaignBroadcast();
-		 
-				//Auto Responder
-				$this->campaignAutoResponder();
-				
-				//Event
-				$this->campaignEvent();
-				
-				//Appointment
-				$this->campaignAppointment();
-			}
+	    if ($this->attempts() == 1)
+        {
+            //BROADCAST
+            $this->campaignBroadcast();
+
+            //Auto Responder
+            $this->campaignAutoResponder();
+
+            //Event
+            $this->campaignEvent();
+
+            //Appointment
+            $this->campaignAppointment();
 		}
+	}
 
     /* BROADCAST */
     public function campaignBroadcast()
     {
-				$spintax = new Spintax;
+		$spintax = new Spintax;
         $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid","phone_numbers.id AS phoneid","users.id AS userid","customers.*","users.timezone","users.email","customers.link_unsubs")
           ->join('lists','lists.id','=','broad_casts.list_id')
           ->join('users','broad_casts.user_id','=','users.id')
@@ -118,7 +118,7 @@ class SendCampaign implements ShouldQueue
                   }
                 }
                 $message = $spintax->process($message);  //spin text
-                $chat_id = $row->chat_id;  
+                $chat_id = $row->chat_id;
                 $counter = $phoneNumber->counter;
                 $counter2 = $phoneNumber->counter2;
                 $max_counter = $phoneNumber->max_counter;
@@ -179,7 +179,7 @@ class SendCampaign implements ShouldQueue
 
                 if ($row->image=="")
                 {
-                  if ($phoneNumber->mode == 0) 
+                  if ($phoneNumber->mode == 0)
                   {
                     // WAWEB
                     $send_message = $this->send_simi($customer_phone,$message,$phoneNumber->user_id);
@@ -193,8 +193,8 @@ class SendCampaign implements ShouldQueue
                   }
                 }
                 else {
-                  if ($phoneNumber->mode == 0) 
-                  {  
+                  if ($phoneNumber->mode == 0)
+                  {
                     // WAWEB IMAGE
                     $image = Storage::disk('s3')->url($row->image);
                     $send_message = $this->send_image_url_simi($customer_phone,$message,$phoneNumber->user_id,$image);
@@ -224,7 +224,7 @@ class SendCampaign implements ShouldQueue
                   $phoneNumber->max_counter_day--;
                 }
                 $phoneNumber->save();
-                
+
                 $broadcastCustomer->status = $status;
                 $broadcastCustomer->save();
 
@@ -243,14 +243,14 @@ class SendCampaign implements ShouldQueue
                 $no++;
             }//END LOOPING
 
-        } // END BROADCAST 
+        } // END BROADCAST
     }
 
     /* AUTO RESPONDER */
     public function campaignAutoResponder()
     {
 				$spintax = new Spintax;
-        // Reminder 
+        // Reminder
         // $current_time = Carbon::now();
 
         $reminder = Reminder::where([
@@ -275,7 +275,7 @@ class SendCampaign implements ShouldQueue
         if($reminder->count() > 0)
         {
             $no = 1;
-            foreach($reminder as $row) 
+            foreach($reminder as $row)
             {
                 $phoneNumber = PhoneNumber::where('user_id','=',$row->userid)->first();
                 if(!is_null($phoneNumber)){
@@ -305,7 +305,7 @@ class SendCampaign implements ShouldQueue
 
                 $reminder_customer_status = $row->rc_st;
                 $reminder_customers_id = $row->rcs_id;
-								
+
                 $now = Carbon::now()->timezone($row->timezone);
                 $adding = Carbon::parse($adding_with_hour);
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
@@ -314,16 +314,16 @@ class SendCampaign implements ShouldQueue
                   continue;
                 }
 
-								//status queued 
-								$remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
-								if ($remindercustomer_update->status==5) {
-									continue;
-								}
-								$remindercustomer_update->status = 5;
-								$remindercustomer_update->save();
-								
+                //status queued
+                $remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
+                if ($remindercustomer_update->status==5) {
+                    continue;
+                }
+                $remindercustomer_update->status = 5;
+                $remindercustomer_update->save();
 
-                $fistname = $this->modFullname($customer_name);  
+
+                $fistname = $this->modFullname($customer_name);
                 $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname);
 
                 $list = UserList::find($row->list_id);
@@ -387,7 +387,7 @@ class SendCampaign implements ShouldQueue
                 }
 
                 $phoneNumber->save();
- 
+
                 if ($user->speed == 0) { //slow
                   sleep(mt_rand(1, 26));
                 }
@@ -408,7 +408,7 @@ class SendCampaign implements ShouldQueue
     /* EVENT */
     public function campaignEvent()
     {
-					$spintax = new Spintax;
+		  $spintax = new Spintax;
           $idr = null;
           $event = null;
           $today = Carbon::now();
@@ -418,11 +418,11 @@ class SendCampaign implements ShouldQueue
           ->join('users','reminders.user_id','=','users.id')
           ->join('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
           ->join('customers','customers.id','=','reminder_customers.customer_id')
-					->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
+		  ->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
           ->join('campaigns',"campaigns.id","=","reminders.campaign_id")
           ->where([['reminder_customers.status',0],['reminders.is_event',1],['customers.status',1],['reminders.status','>',0],['campaigns.status','>',0],['lists.status','>',0],['phone_numbers.id','=',$this->phone_id]])
-          ->get(); 
-         
+          ->get();
+
           if($reminder->count() > 0)
           {
               $no = 1;
@@ -457,7 +457,7 @@ class SendCampaign implements ShouldQueue
                     continue;
                 }
 
-                // if the day before / substract 
+                // if the day before / substract
                 if($days < 0){
                   $days = abs($days);
                   $date = $event_date->subDays($days);
@@ -466,15 +466,15 @@ class SendCampaign implements ShouldQueue
                 }
 
                 $user = User::find($row->user_id);
-
                 $time_sending = $date->toDateString().' '.$hour;
                 $now = Carbon::now()->timezone($row->timezone);
                 $adding = Carbon::parse($time_sending);
 
-								if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) ) {
-									continue;
-								}
-                
+                if($counter <= 0 || $counter2 == null || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) )
+                {
+                    continue;
+                }
+
                 $campaign = 'Event';
                 $id_campaign = $row->rcs_id;
 
@@ -501,8 +501,8 @@ class SendCampaign implements ShouldQueue
                     $reminder_event->status = 2;
                     $reminder_event->save();
                 }
-                
-                $fistname = $this->modFullname($row->name);  
+
+                $fistname = $this->modFullname($row->name);
                 $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname);
 
                 $list = UserList::find($row->list_id);
@@ -515,7 +515,7 @@ class SendCampaign implements ShouldQueue
                   }
                 }
                 $message = $spintax->process($message);  //spin text
-                
+
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
                     // WAWEB
@@ -543,7 +543,7 @@ class SendCampaign implements ShouldQueue
                       $send_message = $this->send_image_url_wamate($customer_phone,Storage::disk('s3')->url($row->image),$message,$phoneNumber->device_key,$ip_server);
                     }
                 }
-                  
+
                 // $status =  $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
                 $status =  1;
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
@@ -552,6 +552,7 @@ class SendCampaign implements ShouldQueue
                 $remindercustomer_update->save();
 
                 $phoneNumber->counter--;
+                // $phoneNumber->counter2--;
 
                 if($max_counter > 0)
                 {
@@ -580,7 +581,7 @@ class SendCampaign implements ShouldQueue
               }//END FOR LOOP EVENT
           }
     }
-    
+
 
     /* Appointment */
     public function campaignAppointment()
@@ -591,10 +592,10 @@ class SendCampaign implements ShouldQueue
           $today = Carbon::now();
 
           $reminder = Reminder::where([
-                  ['reminder_customers.status',0], 
-                  ['reminders.is_event',2], 
-                  ['reminders.tmp_appt_id',">",0], 
-                  ['customers.status',1], 
+                  ['reminder_customers.status',0],
+                  ['reminders.is_event',2],
+                  ['reminders.tmp_appt_id',">",0],
+                  ['customers.status',1],
                   ['reminders.status','=',1],
                   ['lists.status','>',0],
 									['phone_numbers.id','=',$this->phone_id],
@@ -646,7 +647,7 @@ class SendCampaign implements ShouldQueue
 
                 $user = User::find($row->user_id);
 
-                // if the day before / substract 
+                // if the day before / substract
                 if($days < 0){
                   $days = abs($days);
                   $date = $event_date->subDays($days);
@@ -658,9 +659,9 @@ class SendCampaign implements ShouldQueue
                 $now = Carbon::now()->timezone($row->timezone);
                 $adding = Carbon::parse($time_sending);
 
-								if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) ) {
-									continue;
-								}
+                if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) ) {
+                    continue;
+                }
 
                 // get id reminder for reminder customer
                 $campaign = 'Appointment';
@@ -690,7 +691,7 @@ class SendCampaign implements ShouldQueue
                 }
                 $message = $spintax->process($message);  //spin text
                 $id_reminder = $row->id_reminder;
-   
+
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
                     // WAWEB
@@ -788,7 +789,7 @@ class SendCampaign implements ShouldQueue
 
     public function modFullname($firstname)
     {
-      $name_length = explode(' ', $firstname); 
+      $name_length = explode(' ', $firstname);
       return $name_length[0];
     }
 
@@ -831,9 +832,9 @@ class SendCampaign implements ShouldQueue
     // GET STATUS AFTER SEND MESSAGE
     public function getStatus($send_message,$mode,$device_key = null)
     {
-			//default status 
+			//default status
 			$status = 2;
-			
+
 			if ($mode == 0) {
 				//status simi
 				$obj = json_decode($send_message);
@@ -853,7 +854,7 @@ class SendCampaign implements ShouldQueue
 						$status = 2;
 				}
 			}
-			
+
 			if ($mode == 1) {
 				//status woowa
 				if(strtolower($send_message) == 'success')
@@ -863,7 +864,7 @@ class SendCampaign implements ShouldQueue
 				elseif($send_message == 'phone_offline')
 				{
 						$status = 2;
-				} 
+				}
 				else
 				{
 						$status = 3;
@@ -932,10 +933,10 @@ class SendCampaign implements ShouldQueue
              $broadcast_customer->status = 4;
              $broadcast_customer->save();
              return false; // message would be ignore
-          } 
+          }
       }
-      
-      return true;     
+
+      return true;
     }
 
     // WAWEB SEND MESSAGE
@@ -950,7 +951,7 @@ class SendCampaign implements ShouldQueue
       $wa = new Waweb;
       $wa->send_message($user_id,$phone,$message,$image);
     }
-    
+
     public function send_message($customer_phone,$message,$key){
       $curl = curl_init();
 
@@ -979,7 +980,7 @@ class SendCampaign implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
+
     public function send_wamate($customer_phone,$message,$device_key,$ip_server){
       $curl = curl_init();
 
@@ -1009,7 +1010,7 @@ class SendCampaign implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
+
     public function send_image_url_wamate($customer_phone,$urls3,$message,$device_key,$ip_server){
       $curl = curl_init();
 
@@ -1069,7 +1070,7 @@ class SendCampaign implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-  
+
     public function send_image_url($customer_phone,$urls3,$message,$key){
       $curl = curl_init();
 
@@ -1099,8 +1100,8 @@ class SendCampaign implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-    
-    
+
+
     public function send_message_wassenger($customer_phone,$message,$key){
       $curl = curl_init();
 
@@ -1129,6 +1130,6 @@ class SendCampaign implements ShouldQueue
       curl_close($curl);
       return $response;
     }
-        
+
 /* end class */
 }

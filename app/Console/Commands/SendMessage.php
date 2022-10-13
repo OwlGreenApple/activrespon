@@ -58,7 +58,7 @@ class SendMessage extends Command
                         ->select("phone_numbers.id")
                         ->get();
 
-        foreach($phoneNumbers as $phoneNumber) 
+        foreach($phoneNumbers as $phoneNumber)
         {
           SendCampaign::dispatch($phoneNumber->id);
         }
@@ -70,22 +70,22 @@ class SendMessage extends Command
       }
 
 			/*
-      //Broadcast 
+      //Broadcast
       $this->campaignBroadcast();
-   
+
      //Auto Responder
       $this->campaignAutoResponder();
-     
+
       //Event
       $this->campaignEvent();
-      
+
       //Appointment
       $this->campaignAppointment();
 			*/
-    }    
+    }
 
     /* ---------- NOT USE ANYMORE ----------*/
- 
+
     /* BROADCAST */
     public function campaignBroadcast()
     {
@@ -144,7 +144,7 @@ class SendMessage extends Command
                   }
                 }
                 $message = $spintax->process($message);  //spin text
-                $chat_id = $row->chat_id;  
+                $chat_id = $row->chat_id;
                 $counter = $phoneNumber->counter;
                 $counter2 = $phoneNumber->counter2;
                 $max_counter = $phoneNumber->max_counter;
@@ -263,7 +263,7 @@ class SendMessage extends Command
                   $phoneNumber->max_counter_day --;
                 }
                 $phoneNumber->save();
-                
+
                 $broadcastCustomer->status = $status;
                 $broadcastCustomer->save();
 
@@ -279,14 +279,14 @@ class SendMessage extends Command
                 }
             }//END LOOPING
 
-        } // END BROADCAST 
+        } // END BROADCAST
     }
 
     /* AUTO RESPONDER */
     public function campaignAutoResponder()
     {
 				$spintax = new Spintax;
-        // Reminder 
+        // Reminder
         // $current_time = Carbon::now();
         $reminder = Reminder::where([
             ['reminder_customers.status','=',0],
@@ -310,7 +310,7 @@ class SendMessage extends Command
 
         if($reminder->count() > 0)
         {
-            foreach($reminder as $row) 
+            foreach($reminder as $row)
             {
                 $phoneNumber = PhoneNumber::where('user_id','=',$row->userid)->first();
                 if(!is_null($phoneNumber)){
@@ -345,7 +345,7 @@ class SendMessage extends Command
 
                 $reminder_customer_status = $row->rc_st;
                 $reminder_customers_id = $row->rcs_id;
-								
+
                 $now = Carbon::now()->timezone($row->timezone);
                 $adding = Carbon::parse($adding_with_hour);
                 $midnightTime = $this->avoidMidnightTime($row->timezone);
@@ -354,16 +354,16 @@ class SendMessage extends Command
                   continue;
                 }
 
-								//status queued 
+								//status queued
 								$remindercustomer_update = ReminderCustomers::find($reminder_customers_id);
 								if ($remindercustomer_update->status==5) {
 									continue;
 								}
 								$remindercustomer_update->status = 5;
 								$remindercustomer_update->save();
-								
 
-                $fistname = $this->modFullname($customer_name);  
+
+                $fistname = $this->modFullname($customer_name);
                 $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname);
 
                 $list = UserList::find($row->list_id);
@@ -438,7 +438,7 @@ class SendMessage extends Command
                 }
 
                 $phoneNumber->save();
- 
+
                 if ($user->speed == 0) { //slow
                   sleep(mt_rand(1, 26));
                 }
@@ -469,7 +469,7 @@ class SendMessage extends Command
           ->join('campaigns',"campaigns.id","=","reminders.campaign_id")
           ->where([['reminder_customers.status',0],['reminders.is_event',1],['customers.status',1],['reminders.status','>',0],['campaigns.status','>',0],['lists.status','>',0],['phone_numbers.id','=',$this->phone_id]])
           ->get();
-         
+
           if($reminder->count() > 0)
           {
               $counter = 0;
@@ -508,7 +508,7 @@ class SendMessage extends Command
                     continue;
                 }
 
-                // if the day before / substract 
+                // if the day before / substract
                 if($days < 0){
                   $days = abs($days);
                   $date = $event_date->subDays($days);
@@ -525,7 +525,7 @@ class SendMessage extends Command
 								if($counter <= 0 || $counter2 <= 0 || $max_counter <= 0 || $max_counter_day <= 0 || $adding->gt($now) ) {
 									continue;
 								}
-                
+
                 $campaign = 'Event';
                 $id_campaign = $row->rcs_id;
 
@@ -552,8 +552,8 @@ class SendMessage extends Command
                     $reminder_event->status = 2;
                     $reminder_event->save();
                 }
-                
-                $fistname = $this->modFullname($row->name);  
+
+                $fistname = $this->modFullname($row->name);
                 $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname);
 
                 $list = UserList::find($row->list_id);
@@ -566,7 +566,7 @@ class SendMessage extends Command
                   }
                 }
                 $message = $spintax->process($message);  //spin text
-                
+
 
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
@@ -607,7 +607,7 @@ class SendMessage extends Command
                                     ),$message,$phoneNumber->device_key,$row->image);
                     }
                 }
-                  
+
                 $status =  $this->getStatus($send_message,$phoneNumber->mode);
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$status);
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
@@ -639,7 +639,7 @@ class SendMessage extends Command
               }//END FOR LOOP EVENT
           }
     }
-    
+
 
     /* Appointment */
     public function campaignAppointment()
@@ -650,10 +650,10 @@ class SendMessage extends Command
           $today = Carbon::now();
 
           $reminder = Reminder::where([
-                  ['reminder_customers.status',0], 
-                  ['reminders.is_event',2], 
-                  ['reminders.tmp_appt_id',">",0], 
-                  ['customers.status',1], 
+                  ['reminder_customers.status',0],
+                  ['reminders.is_event',2],
+                  ['reminders.tmp_appt_id',">",0],
+                  ['customers.status',1],
                   ['reminders.status','=',1],
                   ['lists.status','>',0],
 									['phone_numbers.id','=',$this->phone_id],
@@ -710,7 +710,7 @@ class SendMessage extends Command
 
                 $user = User::find($row->user_id);
 
-                // if the day before / substract 
+                // if the day before / substract
                 if($days < 0){
                   $days = abs($days);
                   $date = $event_date->subDays($days);
@@ -754,7 +754,7 @@ class SendMessage extends Command
                 }
                 $message = $spintax->process($message);  //spin text
                 $id_reminder = $row->id_reminder;
-   
+
                 if ($row->image==""){
                   if ($phoneNumber->mode == 0) {
                     // $send_message = ApiHelper::send_simi($customer_phone,$message,$server->url);
@@ -841,7 +841,7 @@ class SendMessage extends Command
 
     public function modFullname($firstname)
     {
-      $name_length = explode(' ', $firstname); 
+      $name_length = explode(' ', $firstname);
       return $name_length[0];
     }
 
@@ -875,9 +875,9 @@ class SendMessage extends Command
     // GET STATUS AFTER SEND MESSAGE
     public function getStatus($send_message,$mode)
     {
-			//default status 
+			//default status
 			$status = 2;
-			
+
 			if ($mode == 0) {
 				//status simi
 				$obj = json_decode($send_message);
@@ -897,7 +897,7 @@ class SendMessage extends Command
 						$status = 2;
 				}
 			}
-			
+
 			if ($mode == 1) {
 				//status woowa
 				if(strtolower($send_message) == 'success')
@@ -907,7 +907,7 @@ class SendMessage extends Command
 				elseif($send_message == 'phone_offline')
 				{
 						$status = 2;
-				} 
+				}
 				else
 				{
 						$status = 3;
@@ -961,10 +961,10 @@ class SendMessage extends Command
              $broadcast_customer->status = 4;
              $broadcast_customer->save();
              return false; // message would be ignore
-          } 
+          }
       }
-      
-      return true;     
+
+      return true;
     }
 
     public function send_simi($customer_phone,$message,$server_url){

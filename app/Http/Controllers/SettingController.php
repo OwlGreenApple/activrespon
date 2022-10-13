@@ -164,7 +164,7 @@ class SettingController extends Controller
       if(!is_null($phone_number))
       {
         $this->wawebStatus();
-       
+
         $phn = PhoneNumber::find($phone_number->id);
         if($phn->status == 2)
         {
@@ -206,7 +206,7 @@ class SettingController extends Controller
     // SCAN WAWEB LOGIC
     public function phone_connect()
     {
-        if($this->checkIsPay() == 0 || $this->checkIsPay() == 'err') 
+        if($this->checkIsPay() == 0 || $this->checkIsPay() == 'err')
         {
             $arr['status'] = 'error';
             $arr['message'] = 'Saat ini anda masih belum memiliki paket, silahkan beli terlebih dahulu';
@@ -1036,7 +1036,7 @@ class SettingController extends Controller
           $arr['status'] = 0;
 				  $arr['message'] = "Maaf, server kami terlalu sibuk, anda bisa memutus hubungan secara langsung melalui aplikasi WA anda.";
         }
-       
+
 				return $arr;
 			}
 			else if ($phoneNumber->mode == 1){
