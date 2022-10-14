@@ -57,7 +57,10 @@ class SendNotif implements ShouldQueue
 
         //status 11 dari campaign controller
         //waweb
-        $messages = Message::where("status",11)->get();
+        $messages = Message::where([["messages.status",11]])
+                  ->join('phone_numbers','phone_numbers.user_id','=','messages.user_id')
+                  ->select('messages.*')
+                  ->get();
 
         $api = new Waweb;
 

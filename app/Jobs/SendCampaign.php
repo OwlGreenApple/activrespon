@@ -140,7 +140,7 @@ class SendCampaign implements ShouldQueue
                 $campaign = 'broadcast';
                 $id_campaign = $row->bccsid;
 
-                //status
+                //status queued
                 $broadcastCustomer = BroadCastCustomers::find($id_campaign);
                 if ($broadcastCustomer->status==5) {
                   continue;
@@ -210,8 +210,8 @@ class SendCampaign implements ShouldQueue
 
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$send_message);
                 // $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign);
-                // $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
-                $status = 1;
+                $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                // $status = 1;
 
                 $phoneNumber->counter--;
 
@@ -321,7 +321,7 @@ class SendCampaign implements ShouldQueue
                 }
                 $remindercustomer_update->status = 5;
                 $remindercustomer_update->save();
-
+               
 
                 $fistname = $this->modFullname($customer_name);
                 $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname);
@@ -667,7 +667,7 @@ class SendCampaign implements ShouldQueue
                 $campaign = 'Appointment';
                 $id_campaign = $row->rcs_id;
 
-                //queued status
+                //status queued
                 $remindercustomer_update = ReminderCustomers::find($id_campaign);
                 if ($remindercustomer_update->status==5) {
                   continue;

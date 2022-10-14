@@ -346,7 +346,10 @@ use Illuminate\Support\Facades\Storage;
   {
       $get_package = substr($package,0,-1);
       $get_message = getCounter($package);
-      $data = array();
+      $data = array(
+        'month'=>0,
+        'total_message'=>0
+      );
 
       if($get_package == 'basic')
       {
