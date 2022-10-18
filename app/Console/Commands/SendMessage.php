@@ -49,7 +49,7 @@ class SendMessage extends Command
 
     public function handle()
     {
-      if (env("APP_ENV")=="automation") {
+      if (env("APP_ENV")=="automation" || env("APP_ENV")=="local") {
         $phoneNumbers = PhoneNumber::
                         join('users',"users.id","=","phone_numbers.user_id")
                         ->where("users.is_started",1)
@@ -62,11 +62,6 @@ class SendMessage extends Command
         {
           SendCampaign::dispatch($phoneNumber->id);
         }
-      }
-
-      if(env("APP_ENV")=="local")
-      {
-        SendCampaign::dispatch(1);
       }
 
 			/*

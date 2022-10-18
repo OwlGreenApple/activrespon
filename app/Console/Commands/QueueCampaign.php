@@ -45,45 +45,36 @@ class QueueCampaign extends Command
 
     public function handle()
     {
-      if (env("APP_ENV")=="automation") {
+      if (env("APP_ENV")=="automation" || env("APP_ENV")=="local") 
+      {
         $queueBroadcastCustomers = QueueBroadcastCustomer::
                         where("status",0)
                         ->get();
-        foreach($queueBroadcastCustomers as $queueBroadcastCustomer) {
-          $customers = Customer::where([
-              ['user_id','=',$queueBroadcastCustomer->user_id],
-              ['list_id','=',$queueBroadcastCustomer->list_id],
-              ['status','=',1],
-          ])->get();
-          foreach($customers as $customer){
-           CreateBroadcast::dispatch($customer->id,$queueBroadcastCustomer->broadcast_id);
+
+        if($queueBroadcastCustomers->count() > 0):
+          foreach($queueBroadcastCustomers as $queueBroadcastCustomer) 
+          {
+            self::get_bc($queueBroadcastCustomer);
+            $queueBroadcastCustomer->status = 1;
+            $queueBroadcastCustomer->save();
           }
-          
-          $queueBroadcastCustomer->status = 1;
-          $queueBroadcastCustomer->save();
-        }
+        endif;
 
         //event
         $queueReminderCustomers = QueueReminderCustomer::
                         where("status",0)
                         ->where("is_event",1)
                         ->get();
-        foreach($queueReminderCustomers as $queueReminderCustomer) {
-          $event = Reminder::where([
-                  ['reminders.id','=',$queueReminderCustomer->reminder_id],
-                  ['reminders.status','=',1],
-                  ['reminders.is_event','=',1],
-                  ['customers.status','=',1],
-                  ['customers.list_id','=',$queueReminderCustomer->list_id],
-                  ['customers.user_id','=',$queueReminderCustomer->user_id],
-                  ])->join('customers','customers.list_id','=','reminders.list_id')->select('reminders.*','customers.id AS csid')->get();
-          foreach($event as $col){
-            CreateEvent::dispatch($queueReminderCustomer->user_id,$queueReminderCustomer->list_id,$col->id,$col->csid);
+
+        if($queueReminderCustomers->count() > 0):
+          foreach($queueReminderCustomers as $queueReminderCustomer) 
+          {
+            self::get_event($queueReminderCustomer);
+
+            $queueReminderCustomer->status = 1;
+            $queueReminderCustomer->save();
           }
-          
-          $queueReminderCustomer->status = 1;
-          $queueReminderCustomer->save();
-        }
+        endif;
         
         //auto responder
         /*$queueReminderCustomers = QueueReminderCustomer::
@@ -123,6 +114,37 @@ class QueueCampaign extends Command
         /**/
       }
 
+    }
+
+    // generate event from queuebc to bccustomer
+    private function get_bc($queueBroadcastCustomer)
+    {
+      $customers = Customer::where([
+        ['user_id','=',$queueBroadcastCustomer->user_id],
+        ['list_id','=',$queueBroadcastCustomer->list_id],
+        ['status','=',1],
+      ])->get();
+
+      foreach($customers as $customer){
+        CreateBroadcast::dispatch($customer->id,$queueBroadcastCustomer->broadcast_id);
+      }
+    }
+
+    // generate event from queueevent to remindercustomer
+    private static function get_event($queueReminderCustomer)
+    {
+      $event = Reminder::where([
+        ['reminders.id','=',$queueReminderCustomer->reminder_id],
+        ['reminders.status','=',1],
+        ['reminders.is_event','=',1],
+        ['customers.status','=',1],
+        ['customers.list_id','=',$queueReminderCustomer->list_id],
+        ['customers.user_id','=',$queueReminderCustomer->user_id],
+        ])->join('customers','customers.list_id','=','reminders.list_id')->select('reminders.*','customers.id AS csid')->get();
+        
+        foreach($event as $col){
+          CreateEvent::dispatch($queueReminderCustomer->user_id,$queueReminderCustomer->list_id,$col->id,$col->csid);
+        }      
     }
  
 /* End command class */    

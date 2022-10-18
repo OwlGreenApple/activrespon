@@ -142,9 +142,13 @@ class SendCampaign implements ShouldQueue
 
                 //status queued
                 $broadcastCustomer = BroadCastCustomers::find($id_campaign);
-                if ($broadcastCustomer->status==5) {
+
+                if ($broadcastCustomer->status==1) {
                   continue;
                 }
+
+                /* $broadcastCustomer->status = 5;
+                $broadcastCustomer->save(); */
 
                 $membership = NewCustomHelpers::getMembership($user->membership);
                 if($membership <= 3)
@@ -153,9 +157,6 @@ class SendCampaign implements ShouldQueue
                   $broadcastCustomer->save();
                   continue;
                 }
-
-                $broadcastCustomer->status = 5;
-                $broadcastCustomer->save();
 
                 $status = 'Sent';
 
@@ -175,7 +176,7 @@ class SendCampaign implements ShouldQueue
                   $broad_cast->save();
                 }
 
-                  //====================================
+                // sending message ---
 
                 if ($row->image=="")
                 {
@@ -210,8 +211,8 @@ class SendCampaign implements ShouldQueue
 
                 $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign,$send_message);
                 // $this->generateLog($phoneNumber->phone_number,$campaign,$id_campaign);
-                $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
-                // $status = 1;
+                // $status = $this->getStatus($send_message,$phoneNumber->mode,$phoneNumber->device_key);
+                $status = 1;
 
                 $phoneNumber->counter--;
 
