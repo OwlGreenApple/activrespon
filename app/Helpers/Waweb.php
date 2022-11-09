@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use chillerlan\QRCode\QRCode;
-
+    
 class Waweb
 {
     public function create_device()

@@ -18,6 +18,7 @@ use App\Helpers\ApiHelper;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
 use App\Message;
+use App\Server;
 
 class ApiWPController extends Controller
 {
