@@ -24,13 +24,13 @@ class Message extends Model
     $message_send->message= $message;
     $message_send->key=$key;
     if ($mode==0) {
-      $message_send->status=10;
+      $message_send->status=11;
     }
     if ($mode==1) { //mode woowa
       $message_send->status=7;
     }
     if ($mode==2) { //mode wamate
-      $message_send->status=11;
+      $message_send->status=10;
       if (is_null($ip_server)){
         $ip_server = env('REMINDER_IP_SERVER');
       }

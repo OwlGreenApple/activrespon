@@ -291,10 +291,10 @@ class ApiWPController extends Controller
         $mode = 0;
         $ip_server = "";
         if (!is_null($phoneNumber)){
-          if ($phoneNumber->mode == 0){ //simi
-            $server = Server::where('phone_id',$phoneNumber->id)->first();
-            $key = $server->url;
+          if ($phoneNumber->mode == 0){ //waweb
+            $key = $phoneNumber->device_key;
             $mode = 0;
+            $ip_server = $phoneNumber->ip_server;
           }
           if ($phoneNumber->mode == 1){ //woowa
             $key = $phoneNumber->filename;
