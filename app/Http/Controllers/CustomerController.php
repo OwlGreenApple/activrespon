@@ -348,7 +348,7 @@ class CustomerController extends Controller
            $data['success'] = false;
            $data['message'] = 'Invalid Link';
            return response()->json($data);
-        } 
+        }
 
         // Filter to avoid unavailable link 
         if(is_null($list)){
@@ -560,8 +560,8 @@ class CustomerController extends Controller
               //komunitas teknobie content creator
               if($list->id == 372)
               {
-                // send to sendfox
-                //Teknobie Komunitas Content Creator
+                // send to sendfox 
+                //Teknobie Komunitas Content Creator 
                 $api->listSendFox(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),297502);
               }
               
@@ -652,7 +652,7 @@ class CustomerController extends Controller
                {
                   if($list->message_conf == null || $list->message_conf == '')
                   {
-                      $message_conf = Lang::get('custom.message_conf');
+                      $message_conf = Lang::get('custom.message_conf'); 
                   }
                   else
                   {
