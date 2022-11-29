@@ -372,6 +372,48 @@ class ApiController extends Controller
         }
     }
 
+    public function listAcumba($email,$first_name,$last_name,$list)
+    {
+        $token ="XmepiyTviuU2NN2Fg9Ad";
+    
+        $data = array(
+            'auth_token'=>$token,
+            'merge_fields[EMAIL]'=>$email,
+            'merge_fields[FIRSTNAME]'=>$first_name,
+            'merge_fields[LASTNAME]'=>$last_name,
+            'list_id'=> $list,
+
+        );
+
+        $url = 'https://acumbamail.com/api/1/addSubscriber/';
+        $data_string = json_encode($data);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        ));
+       
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+          echo "cURL Error #:" . $err;
+        } else {
+          json_decode($response,true);
+        }
+    }
+
+
+
     public function entry_google_form(Request $request)
     {
 			$obj = json_decode($request->getContent());
