@@ -386,21 +386,18 @@ class ApiController extends Controller
         );
 
         $url = 'https://acumbamail.com/api/1/addSubscriber/';
-        $data_string = json_encode($data);
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, 0);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        $url = 'https://acumbamail.com/api/1/addSubscriber/';
+ 
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $response = curl_exec($curl);
        
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
+        $err = curl_error($curl);
+        curl_close($curl);
 
         if ($err) {
           echo "cURL Error #:" . $err;
