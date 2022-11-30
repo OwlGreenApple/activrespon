@@ -397,9 +397,6 @@ class ApiController extends Controller
         curl_setopt($ch, CURLOPT_TIMEOUT, 360);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        ));
        
         $response = curl_exec($ch);
         $err = curl_error($ch);
