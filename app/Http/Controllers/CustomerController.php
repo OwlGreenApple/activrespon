@@ -552,7 +552,7 @@ class CustomerController extends Controller
               //acumba email
               if($list->id == 372)
               {
-                $api->listAcumba(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),679573);
+                $api->listAcumba(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),"679573");
               }
 
               // TBO dari tanggal 14/09/2021
