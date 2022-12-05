@@ -3,8 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Customer;
 use App\UserList;
+use Carbon\Carbon;
+
 class Customer extends Model
 {
 
@@ -25,9 +26,14 @@ class Customer extends Model
             then customer status would be updated.
     */
 
+  // to organize customer member number
+  public static function customer_number($cid,$lid,$cdate)
+  {
+    return $cid.$lid.str_replace("-","",Carbon::parse($cdate)->toDateString());
+  }
 
   public static function create_link_unsubs($id,$list_id){
-    $customer = Customer::find($id);
+    $customer = self::find($id);
     $list = UserList::find($id);
     if (!is_null($customer) && !is_null($list)){
       if ($customer->link_unsubs =="")

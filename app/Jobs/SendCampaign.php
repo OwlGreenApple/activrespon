@@ -72,8 +72,10 @@ class SendCampaign implements ShouldQueue
     /* BROADCAST */
     public function campaignBroadcast()
     {
-		$spintax = new Spintax;
-        $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid","phone_numbers.id AS phoneid","users.id AS userid","customers.*","users.timezone","users.email","customers.link_unsubs")
+		    $spintax = new Spintax;
+        $broadcast = BroadCast::select("broad_casts.*","broad_cast_customers.*","broad_cast_customers.id AS bccsid",
+                    "phone_numbers.id AS phoneid","users.id AS userid","users.timezone","users.email",
+                    "customers.*","customers.link_unsubs","customers.id AS cid","customers.created_at AS cat")
           ->join('lists','lists.id','=','broad_casts.list_id')
           ->join('users','broad_casts.user_id','=','users.id')
           ->join('broad_cast_customers','broad_cast_customers.broadcast_id','=','broad_casts.id')
@@ -106,7 +108,8 @@ class SendCampaign implements ShouldQueue
                 $date = Carbon::parse($row->day_send);
 
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname);
+                $customer_number = Customer::customer_number($row->cid,$row->list_id,$row->cat);
+                $message = $this->replaceMessage($customer_message,$row->name,$row->email,$customer_phone,$fistname,$customer_number);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -269,7 +272,10 @@ class SendCampaign implements ShouldQueue
             ->rightJoin('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
             ->join('customers','customers.id','=','reminder_customers.customer_id')
 						->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
-            ->select('reminder_customers.id AS rcs_id','reminder_customers.status AS rc_st','reminders.*','customers.created_at AS cstreg','customers.telegram_number','customers.name','customers.email','reminders.id AS rid','reminders.user_id AS userid','users.timezone','users.email as useremail','phone_numbers.ip_server','reminder_customers.customer_id',"customers.link_unsubs")
+            ->select('reminder_customers.id AS rcs_id','reminder_customers.status AS rc_st','reminders.*',
+                    'customers.created_at AS cstreg','customers.telegram_number','customers.name','customers.email',
+                    'reminders.id AS rid','reminders.user_id AS userid','users.timezone','users.email as useremail','phone_numbers.ip_server','reminder_customers.customer_id',
+                    "customers.link_unsubs",'customers.id AS cid','customers.list_id')
             ->get();
 
         $counter = $max_counter = 0;
@@ -325,7 +331,8 @@ class SendCampaign implements ShouldQueue
                
 
                 $fistname = $this->modFullname($customer_name);
-                $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname);
+                $customer_number = Customer::customer_number($row->cid,$row->list_id,$row->cstreg);
+                $message = $this->replaceMessage($customer_message,$customer_name,$customer_mail,$customer_phone,$fistname,$customer_number);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -414,7 +421,8 @@ class SendCampaign implements ShouldQueue
           $event = null;
           $today = Carbon::now();
 
-          $reminder = Reminder::select('reminders.*','reminder_customers.id AS rcs_id','customers.name','customers.telegram_number','customers.email','users.timezone','users.email as useremail','users.membership','reminder_customers.customer_id',"customers.link_unsubs")
+          $reminder = Reminder::select('reminders.*','reminder_customers.id AS rcs_id','customers.name','customers.telegram_number','customers.email','users.timezone','users.email as useremail','users.membership','reminder_customers.customer_id',
+            "customers.link_unsubs","customers.id AS cid","customers.list_id AS clid","customers.created_at AS cat")
           ->join('lists','lists.id','=','reminders.list_id')
           ->join('users','reminders.user_id','=','users.id')
           ->join('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
@@ -504,7 +512,8 @@ class SendCampaign implements ShouldQueue
                 }
 
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname);
+                $customer_number = Customer::customer_number($row->cid,$row->clid,$row->cat);
+                $message = $this->replaceMessage($row->message,$row->name,$row->email,$customer_phone,$fistname,$customer_number);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -606,7 +615,9 @@ class SendCampaign implements ShouldQueue
           ->join('reminder_customers','reminder_customers.reminder_id','=','reminders.id')
           ->join('customers','customers.id','=','reminder_customers.customer_id')
 					->join('phone_numbers','phone_numbers.user_id','=','reminders.user_id')
-          ->select('reminders.*','reminder_customers.id AS rcs_id','customers.name','customers.telegram_number','customers.email','users.timezone','users.email as useremail','users.membership','reminder_customers.customer_id',"customers.link_unsubs")
+          ->select('reminders.*','reminder_customers.id AS rcs_id','customers.name',
+            'customers.telegram_number','customers.email',"customers.link_unsubs","customers.id AS cid","customers.list_id AS clid","customers.created_at AS cat",
+            'users.timezone','users.email as useremail','users.membership','reminder_customers.customer_id')
           ->get();
 
           if($reminder->count() > 0)
@@ -679,7 +690,8 @@ class SendCampaign implements ShouldQueue
                 $status = 'Sent';
 
                 $fistname = $this->modFullname($row->name);
-                $message = $this->replaceMessageAppointment($customer_message,$row->name,$row->email,$customer_phone,$date_appt,$time_appt,$fistname);
+                $customer_number = Customer::customer_number($row->cid,$row->clid,$row->cat);
+                $message = $this->replaceMessageAppointment($customer_message,$row->name,$row->email,$customer_phone,$date_appt,$time_appt,$fistname,$customer_number);
 
                 $list = UserList::find($row->list_id);
                 if (!is_null($list)){
@@ -794,29 +806,29 @@ class SendCampaign implements ShouldQueue
       return $name_length[0];
     }
 
-    public function replaceMessage($customer_message,$name,$email,$phone,$firstname)
+    public function replaceMessage($customer_message,$name,$email,$phone,$firstname,$customer_number)
     {
       $customer_message = $this->get_title($customer_message);
       $replace_target = array(
-        '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]'
+        '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]','[NO]'
       );
 
       $replace = array(
-        $name,$firstname,$email,$phone
+        $name,$firstname,$email,$phone,$customer_number
       );
       $message = str_replace($replace_target,$replace,$customer_message);
       return $message;
     }
 
-    public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname)
+    public function replaceMessageAppointment($customer_message,$name,$email,$phone,$date_appt,$time_appt,$firstname,$customer_number)
     {
         $customer_message = $this->get_title($customer_message);
         $replace_target = array(
-          '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]','[DATE-APT]','[TIME-APT]'
+          '[NAME]','[FIRSTNAME]','[EMAIL]','[PHONE]','[DATE-APT]','[TIME-APT]','[NO]'
         );
 
         $replace = array(
-          $name,$firstname,$email,$phone,$date_appt,$time_appt
+          $name,$firstname,$email,$phone,$date_appt,$time_appt,$customer_number
         );
 
         $message = str_replace($replace_target,$replace,$customer_message);

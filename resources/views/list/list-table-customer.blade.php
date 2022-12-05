@@ -16,7 +16,7 @@
     <tbody>
       @foreach($customer as $col)
         <tr>
-          <td>{{ $col->id }}{{ $col->list_id }}{{ str_replace("-","",$carbon::parse($col->created_at)->toDateString()) }}</td>
+          <td>{{ $ct::customer_number($col->id,$col->list_id,$col->created_at) }}</td>
           <td>{{ $col->name }}</td>
           <td>{{ $col->email }}</td>
           <td>{{ $col->telegram_number }}</td>

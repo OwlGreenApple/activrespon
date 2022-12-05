@@ -319,6 +319,7 @@
 						[NAME] <br>
 						[PHONE] <br>
 						[EMAIL] <br>
+						[NO] <br>
             Do NOT use : % or & character on your message<br><br>
 Please use Spintax in your message<br>
 example: {1|2|3} for 3 variations<br>
