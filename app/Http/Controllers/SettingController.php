@@ -161,7 +161,7 @@ class SettingController extends Controller
 
        // check status from waweb api then update
       $phone_status = 0;
-      if(!is_null($phone_number))
+      if(!is_null($phone_number) && env('APP_ENV') !== 'local')
       {
         $this->wawebStatus();
 
