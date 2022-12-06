@@ -17,6 +17,11 @@
         ?>
       </td>
       <td class="text-center">
+        <!-- if($phoneNumber->status == 2)
+          <a id="phone_reset" class="btn btn-warning" data-id="{{$phoneNumber->id}}">Reset</a> 
+        endif -->
+      </td>
+      <td class="text-center">
         <a class="icon icon-delete" data-id="{{$phoneNumber->id}}"></a>
       </td>
     </tr>

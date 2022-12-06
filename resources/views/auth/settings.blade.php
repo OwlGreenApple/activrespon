@@ -162,6 +162,7 @@
                   <th class="text-center">No</th>
                   <th class="text-center">Phone Whatsapp</th>
                   <th class="text-center">Status</th>
+                  <th class="text-center">Reset</th>
                   <th class="text-center">Delete</th>
                 </tr>
               </thead>
@@ -361,6 +362,7 @@
         $('#div-verify').hide();
         create_device();
         buttonQr();
+        // reset_device(); --- temporary until waweb new version launched
      });
 
     function create_device()
@@ -559,6 +561,48 @@
             scd++;
         },1000);
 	}
+
+  function reset_device()
+  {
+    $("body").on("click","#phone_reset",function(){
+      var cf = confirm('Apakah anda yakin?');
+
+      if(cf === false)
+      {
+        return false;
+      }
+
+      $.ajax({
+        method:'GET',
+        url : '{{ url("phone-reset") }}',
+        dataType : 'json',
+        beforeSend: function()
+        {
+            $('#loader').show();
+            $('.div-loading').addClass('background-load');
+        },
+        success : function(res)
+        {
+            if(res.status === 1)
+            {
+              $(".message").html('<div class="alert-success">Berhasil</div>');
+              return;
+            }
+            $(".message").html('<div class="alert-danger">Server sedang sibuk, mohon kontak admin</div>');
+        },
+        error : function()
+        {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+        },
+        complete : function()
+        {
+            $('#loader').hide();
+            $('.div-loading').removeClass('background-load');
+        }
+      });
+    });
+  }
 </script>
 
 <!-- end new waweb -->

@@ -260,6 +260,28 @@ class SettingController extends Controller
         return response()->json($res);
     }
 
+    public function wawebReset()
+    {
+        $api = new Waweb;
+        $res['status'] = 0;
+
+        $phone = PhoneNumber::where('user_id',Auth::id())->first();
+        if(!is_null($phone))
+        {
+            $device = $api->reset_device($phone->id);
+            if($device == 1)
+            {
+              $res['status'] = 1;
+            }
+            else
+            {
+              $res['status'] = $device;
+            }
+        }
+
+        return response()->json($res);
+    }
+
     //GENERATE KEY FOR API KEY LIST (GIVEAWAY)
     public function save_api_list()
     {

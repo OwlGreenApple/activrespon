@@ -134,6 +134,41 @@ class Waweb
         return $status;
     }
 
+    //  RESET DEVICE
+    public function reset_device($phone_id) 
+    {
+        $device = PhoneNumber::find($phone_id);
+    
+        if(is_null($device))
+        {
+            return 0;
+        }
+
+        $url = $device->ip_server.'/logout?device_key='.$device->device_key;
+        $reset = self::go_curl($url,null,'GET');
+        
+        if(isset($reset['disconnect']) == 'successful')
+        {
+            try
+            {
+                $phone = PhoneNumber::find($device->id);
+                $phone->status = 1;
+                $phone->save(); 
+                $res = 1;
+            }
+            catch(QueryException $e)
+            {
+                //dd($e->getMessage());
+                $res = 'error';
+            }
+
+            return $res;
+        }
+
+        // device ot available
+        return 'api-error';
+    }
+
     // DELETE DEVICE
     public function delete_device($phone_id)
     {
