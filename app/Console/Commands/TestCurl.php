@@ -7,6 +7,7 @@ use App\HelpersApiHelper;
 use App\PhoneNumber;
 use App\Server;
 use App\Helpers\ApiHelper;
+use App\Helpers\Waweb;
 
 class TestCurl extends Command
 {
@@ -41,7 +42,10 @@ class TestCurl extends Command
      */
     public function handle()
     {
-      $curl = curl_init();
+        $wa = new Waweb;
+        $wa->send_message('628123238793','debug',3,null);
+
+      /* $curl = curl_init();
 
       $data = array(
           'customer_phone'=>"+628123238793",
@@ -67,5 +71,5 @@ class TestCurl extends Command
 
       curl_close($curl);
       return $response;
-    }
+    } */
 }
