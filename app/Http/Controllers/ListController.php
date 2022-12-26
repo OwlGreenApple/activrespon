@@ -958,7 +958,7 @@ class ListController extends Controller
         $userid = Auth::id();
         $listid = $request->list_id;
         $customer = Customer::where([['list_id',$listid],['user_id',$userid],['status','=',1]])->orderBy('created_at','desc')->get();
-        return view('list.list-table-customer',['customer'=>$customer]);
+        return view('list.list-table-customer',['customer'=>$customer,'ct'=> new Customer]);
     }
 
     //DUPLICATE LIST

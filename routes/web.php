@@ -225,6 +225,7 @@ Route::group(['middleware'=>['auth','web']],function(){
   Route::get('scan', 'SettingController@phone_connect')/* ->middleware('checkcall') */;
   Route::get('qrcode', 'SettingController@wawebQR');
   Route::get('phone-status', 'SettingController@wawebStatus');
+  Route::get('phone-reset', 'SettingController@wawebReset');
 
   Route::post('save-settings', 'SettingController@settingsUser')->middleware('usersettings');
   Route::get('load-phone-number', 'SettingController@load_phone_number');

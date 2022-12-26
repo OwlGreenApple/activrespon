@@ -27,7 +27,7 @@ class ChatsController extends Controller
     public function chat_test()
     {
        $to = '628123238793';
-       $owner_phone = '+62895342472008';
+       $owner_phone = '+6281111111111';
         $owner_phone = substr($owner_phone,1);
        // $owner_phone = '6285967284411';
        $chat_messages = ChatMessages::where('device_id',5)->whereIn('to',[$to,$owner_phone])->orderBy('id')->get();
@@ -457,16 +457,16 @@ class ChatsController extends Controller
         $wh->device_id = $res['device_id'];
         $wh->event = $res['event'];
 
-        if(isset($res['data']['from'])){
+        /* if(isset($res['data']['from'])){
           $wh->from_sender = $res['data']['from'];
-        }
+        } */
+
+        $wh->from_sender = $res['sender'];
+        $wh->receiver = $res['receiver'];
 
         try
         {
-          if($res['event'] == 'received::message')
-          {
             $wh->save();
-          }
         }
         catch(QueryException $e)
         {

@@ -3,6 +3,7 @@
   <table class="table" id="data_customer">
     <thead>
       <tr>
+        <th>No</th>
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
@@ -15,6 +16,7 @@
     <tbody>
       @foreach($customer as $col)
         <tr>
+          <td>{{ $ct::customer_number($col->id,$col->list_id,$col->created_at) }}</td>
           <td>{{ $col->name }}</td>
           <td>{{ $col->email }}</td>
           <td>{{ $col->telegram_number }}</td>

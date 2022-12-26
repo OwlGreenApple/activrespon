@@ -161,7 +161,7 @@ class SettingController extends Controller
 
        // check status from waweb api then update
       $phone_status = 0;
-      if(!is_null($phone_number))
+      if(!is_null($phone_number) && env('APP_ENV') !== 'local')
       {
         $this->wawebStatus();
 
@@ -255,6 +255,28 @@ class SettingController extends Controller
             $device->phone_number = $wa;
             $device->status = $status;
             $device->save();
+        }
+
+        return response()->json($res);
+    }
+
+    public function wawebReset()
+    {
+        $api = new Waweb;
+        $res['status'] = 0;
+
+        $phone = PhoneNumber::where('user_id',Auth::id())->first();
+        if(!is_null($phone))
+        {
+            $device = $api->reset_device($phone->id);
+            if($device == 1)
+            {
+              $res['status'] = 1;
+            }
+            else
+            {
+              $res['status'] = $device;
+            }
         }
 
         return response()->json($res);
