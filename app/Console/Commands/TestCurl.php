@@ -42,8 +42,8 @@ class TestCurl extends Command
      */
     public function handle()
     {
-        $wa = new Waweb;
-        $wa->send_message('628123238793','debug',3,null);
+        //$wa = new Waweb;
+        //$wa->send_message('628123238793','debug',3,null);
 
       /* $curl = curl_init();
 
@@ -70,6 +70,6 @@ class TestCurl extends Command
       $err = curl_error($curl);
 
       curl_close($curl);
-      return $response;
-    } */
+      return $response;*/
+    } 
 }
