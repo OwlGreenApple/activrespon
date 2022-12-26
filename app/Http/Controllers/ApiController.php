@@ -385,7 +385,6 @@ class ApiController extends Controller
 
         );
 
-        $url = 'https://acumbamail.com/api/1/addSubscriber/';
 
         $url = 'https://acumbamail.com/api/1/addSubscriber/';
  
@@ -406,6 +405,30 @@ class ApiController extends Controller
         }
     }
 
+
+    public function listSelzy($email,$first_name,$last_name,$list)
+    {
+        $url = 'https://api.selzy.com/en/api/subscribe?format=json&api_key=64q79hqk3ej6cyd58xxzruaz5qigkajniwuwmywa&list_ids=35&fields[email]='.$email.'&fields[Name]='.$name;
+         
+        $crl = curl_init();
+        curl_setopt($crl, CURLOPT_URL, $url);
+        curl_setopt($crl, CURLOPT_FRESH_CONNECT, true);
+        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+         
+        $response = curl_exec($crl);
+        if(!$response){
+           die('Error: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch));
+        }
+         
+        $err = curl_error($crl);
+        curl_close($crl);
+
+        if ($err) {
+          echo "cURL Error #:" . $err;
+        } else {
+          json_decode($response,true);
+        }
+    }
 
 
     public function entry_google_form(Request $request)

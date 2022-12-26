@@ -549,10 +549,10 @@ class CustomerController extends Controller
               //   // $api->listActivCampaign(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),$phone_number,8);               
               // }
 
-              //acumba email
+              //selzy email
               if($list->id == 372)
               {
-                $api->listAcumba(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),"679573");
+                $api->listSelzy(strip_tags($request->email),strip_tags($request->subscribername),strip_tags($request->last_name),"679573");
               }
 
               // TBO dari tanggal 14/09/2021
