@@ -408,6 +408,7 @@ class ApiController extends Controller
 
     public function listSelzy($email,$first_name,$last_name,$list)
     {
+        $name = $first_name.' '.$last_name;
         $url = 'https://api.selzy.com/en/api/subscribe?format=json&api_key=64q79hqk3ej6cyd58xxzruaz5qigkajniwuwmywa&list_ids=35&fields[email]='.$email.'&fields[Name]='.$name;
          
         $crl = curl_init();
