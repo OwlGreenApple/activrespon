@@ -418,7 +418,7 @@ class ApiController extends Controller
          
         $response = curl_exec($crl);
         if(!$response){
-           die('Error: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch));
+           die('Error: "' . curl_error($crl) . '" - Code: ' . curl_errno($crl));
         }
          
         $err = curl_error($crl);
