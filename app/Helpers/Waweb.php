@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use chillerlan\QRCode\QRCode;
+use Illuminate\Support\Facades\Config;
     
 class Waweb
 {
@@ -28,10 +29,13 @@ class Waweb
         $device->user_id = $user_id;
         $device->phone_number = 0;
         $device->label = $label;
-        $device->ip_server = env('WA_SERVER');
+        //$device->ip_server = env('WA_SERVER');
+        $device->ip_server = Config::get('view.WA_SERVER');
 
         try{
-            $res = self::get_key(env('WA_SERVER'),$user_id,$label,$device->id);
+            //$res = self::get_key(env('WA_SERVER'),$user_id,$label,$device->id);
+            $res = self::get_key(Config::get('view.WA_SERVER'),$user_id,$label,$device->id);
+            
 
             if(isset($res['device_key']) && isset($res['id']))
             {
@@ -120,7 +124,8 @@ class Waweb
         $url = $device->ip_server.'/message';
         $data = [
             'message'=>$message,
-            'unique'=>env('WA_UNIQUE'),
+            //'unique'=>env('WA_UNIQUE'),
+            'unique'=>Config::get('view.WA_UNIQUE'),
             'device_key'=>$device->device_key,
             'number'=>str_replace("+","",$phone)
         ];
@@ -179,7 +184,9 @@ class Waweb
             return 0;
         }
 
-        $url = $device->ip_server.'/del?device_key='.$device->device_key.'&unique='.env('WA_UNIQUE').'';
+        //$url = $device->ip_server.'/del?device_key='.$device->device_key.'&unique='.env('WA_UNIQUE').'';
+        $url = $device->ip_server.'/del?device_key='.$device->device_key.'&unique='.Config::get('view.WA_UNIQUE').'';
+        
         $del = self::go_curl($url,null,'GET');
 
         if(isset($del['status']) && $del['status'] == 1)

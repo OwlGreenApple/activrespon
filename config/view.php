@@ -33,4 +33,9 @@ return [
         realpath(storage_path('framework/views'))
     ),
 
+    
+    'WA_SERVER'=>env('WA_SERVER'),
+    'WA_UNIQUE'=>env('WA_UNIQUE'),
+
+
 ];
