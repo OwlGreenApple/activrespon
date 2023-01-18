@@ -13,7 +13,7 @@
 
 <br/>
 Silakan transfer sekarang ke<br/>
-<b>BCA :  8290-336-261 (Sugiarto Lasjim)</b>
+<b>BCA :  8290-812-845 (Sugiarto Lasjim)</b>
 
 <div>
 Setelah transfer, jangan lupa konfirmasi ke link di bawah ini ya. <br/>

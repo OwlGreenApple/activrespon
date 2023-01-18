@@ -9,7 +9,7 @@
           <p class="card-text">
             Silahkan melakukan Transfer Bank ke
           </p> 
-          <h2>8290-336-261</h2>
+          <h2>8290-812-845</h2>
           <p class="card-text">
             BCA <b>Sugiarto Lasjim</b>
           </p>

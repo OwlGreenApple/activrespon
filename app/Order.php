@@ -155,7 +155,7 @@ class Order extends Model
 
         $message .= "Silahkan melakukan pembayaran dengan bank berikut : \n\n";
         $message .= 'BCA (Sugiarto Lasjim)'."\n";
-        $message .= '8290-336-261'."\n\n";
+        $message .= '8290-812-845'."\n\n";
         
         $message .= "Harus diperhatikan juga, kalau jumlah yang di transfer harus *sama persis dengan nominal diatas* supaya _*kami lebih mudah memproses pembelianmu*_.\n\n";
 

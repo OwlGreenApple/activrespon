@@ -76,7 +76,7 @@ class notifOrder extends Command
 
               $message .= "Silahkan melakukan pembayaran dengan bank berikut : \n\n";
               $message .= 'BCA (Sugiarto Lasjim)'."\n";
-              $message .= '8290-336-261'."\n\n";
+              $message .= '8290-812-845'."\n\n";
               
               $message .= "_Buruan transfer dan konfirmasi agar pembelianmu tidak dihapus oleh sistem._\n\n";
 
@@ -105,7 +105,7 @@ class notifOrder extends Command
 
               $message .= "Silahkan melakukan pembayaran dengan bank berikut : \n\n";
               $message .= 'BCA (Sugiarto Lasjim)'."\n";
-              $message .= '8290-336-261'."\n\n";
+              $message .= '8290-812-845'."\n\n";
               
               $message .= "Buruan transfer dan konfirmasi sekarang karena kalau tidak, _pembelian mu akan dihapus jam 12 malam nanti oleh sistem_. *Kamu juga akan kehilangan kesempatan memiliki Activrespon dengan harga spesial.* \n\n";
 
